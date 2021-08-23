@@ -129,7 +129,9 @@ TEST_CASE("GetKey Validity Checks", "[Hierarchy]")
 
 TEST_CASE("LoadToDepth", "[Hierarchy]")
 {
-    io::CopcReader reader("test/data/autzen-classified.copc.laz");
+    fstream in_stream;
+    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+    io::CopcReader reader(in_stream);
 
     auto copc = reader.GetCopcHeader();
 
