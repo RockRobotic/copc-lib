@@ -126,3 +126,22 @@ TEST_CASE("GetKey Validity Checks", "[Hierarchy]")
     hier_entry = hier.GetKey(VoxelKey(-1, 0, 0, 0));
     REQUIRE(hier_entry.IsValid() == false);
 }
+
+TEST_CASE("LoadToDepth", "[Hierarchy]")
+{
+    io::CopcReader reader("test/data/autzen-classified.copc.laz");
+
+    auto copc = reader.GetCopcHeader();
+
+    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
+
+    Hierarchy hier = Hierarchy(&reader);
+
+    hier.LoadPagesToDepth(hier.GetRootPage(), 3);
+
+    hier = Hierarchy(&reader, 3);
+
+    hier = Hierarchy(&reader, 0);
+
+    hier = Hierarchy(&reader, -1);
+}

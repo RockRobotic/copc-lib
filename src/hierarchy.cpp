@@ -15,9 +15,8 @@ Hierarchy::Hierarchy(io::CopcReader *reader, const int32_t &depth)
 {
     // Save reader
     reader_ = reader;
-    // Load all children until depth
-    // TODO[LEO]: Implement this
-    // LoadToDepth(depth);
+    // Load all pages up to depth
+    LoadPagesToDepth(GetRootPage(), depth);
 }
 
 Entry Hierarchy::GetRootPage()
@@ -126,6 +125,22 @@ int8_t Hierarchy::LoadChildren(const Entry &entry)
     }
 
     return children_found;
+}
+
+void Hierarchy::LoadPagesToDepth(const Entry &entry, const int32_t &depth)
+{
+
+    if (depth < 0)
+        return;
+    LoadPage(entry);
+
+    for (auto const &[loaded_key, loaded_entry] : loadedEntries_)
+    {
+        if (loaded_entry.IsSubpage() && loaded_key.d <= depth)
+        {
+            LoadPagesToDepth(loaded_entry, depth);
+        }
+    }
 }
 
 } // namespace copc

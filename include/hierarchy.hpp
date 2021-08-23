@@ -18,10 +18,7 @@ class Hierarchy
     explicit Hierarchy(io::CopcReader *reader);
 
     // Create hierarchy and load up to depth
-    // TODO[LEO]: finish implementing this
     Hierarchy(io::CopcReader *reader, const int32_t &depth);
-
-    void InitializeRoot();
 
     // Finds the key in the copc hierarchy and returns its entry and page reference
     Entry GetKey(const VoxelKey &key);
@@ -37,18 +34,20 @@ class Hierarchy
     void LoadPage(const Entry &page_ref);
 
     // Load all nodes in hierarchy down to specified depth
-    void LoadToDepth(const int32_t &depth);
+    void LoadPagesToDepth(const Entry &entry, const int32_t &depth);
 
     // Load all nodes in hierarchy up to specified pointcount
+    // TODO[LEO]: Implement this
     void LoadToPointCount(const int32_t &point_count);
+
+    // Returns the Entry corresponding to root Page
+    Entry GetRootPage();
 
   private:
     // Loaded entries accessible by VoxelKey
     std::unordered_map<VoxelKey, Entry> loadedEntries_;
     // Pointer to the reader to read COPC pages
     io::CopcReader *reader_;
-
-    Entry GetRootPage();
 };
 
 } // namespace copc
