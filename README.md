@@ -42,11 +42,7 @@ VoxelKey loadKey(1, 1, 1, 1);
 std::vector<char> point_vec = copc.ReadNodeData(loadEntry);
 ```
 
-You can include copc-lib with CMake or by `make install`ing copc-lib then setting the appropriate g++ flags:
-
-```bash
-g++ example-lib.cpp -o example -lcopc-lib -llazperf
-```
+You can see an example of g++ and cmake build processes [here](https://github.com/RockRobotic/copc-lib-examples).
 
 If other library functionality is needed, feel free to open an issue to see about getting them added.
 
