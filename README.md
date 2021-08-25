@@ -2,6 +2,8 @@
 
 copc-lib is a library which provides an easy-to-use reader ~~and writer~~ interface for [COPC](https://copc.io/) point clouds. The end goal of this project is to provide a complete interface for handling COPC files, without having to use other laz or las libraries.
 
+*Note: This library is in beta and API may change*
+
 ## Installation
 
 copc-lib depends on laz-perf 2.1.0 or greater. See the [laz-perf repo](https://github.com/hobu/laz-perf) for installation instructions.

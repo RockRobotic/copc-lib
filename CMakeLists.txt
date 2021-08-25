@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(copc-lib VERSION 1.0)
+project(copc-lib VERSION 0.1.0)
 
 find_package(lazperf REQUIRED)
 
