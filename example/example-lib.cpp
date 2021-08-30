@@ -2,7 +2,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "copc/copc.hpp"
+#include <copc-lib/copc/copc.hpp>
 
 using namespace copc;
 

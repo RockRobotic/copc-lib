@@ -3,8 +3,8 @@
 
 #include <istream>
 
-#include "las/file.hpp"
-#include "las/vlr.hpp"
+#include <copc-lib/las/file.hpp>
+#include <copc-lib/las/vlr.hpp>
 
 namespace copc
 {

@@ -1,7 +1,7 @@
 #ifndef COPCLIB_LAZ_DECOMPRESS_H_
 #define COPCLIB_LAZ_DECOMPRESS_H_
 
-#include "io/reader.hpp"
+#include <copc-lib/io/reader.hpp>
 
 #include <lazperf/filestream.hpp>
 #include <lazperf/readers.hpp>

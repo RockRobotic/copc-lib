@@ -4,9 +4,9 @@
 #include <istream>
 #include <ostream>
 
-#include "copc/file.hpp"
-#include "hierarchy/hierarchy.hpp"
-#include "io/reader.hpp"
+#include <copc-lib/copc/file.hpp>
+#include <copc-lib/hierarchy/hierarchy.hpp>
+#include <copc-lib/io/reader.hpp>
 
 namespace copc
 {

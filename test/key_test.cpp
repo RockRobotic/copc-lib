@@ -1,4 +1,4 @@
-#include "hierarchy/key.hpp"
+#include <copc-lib/hierarchy/key.hpp>
 #include <catch2/catch.hpp>
 
 using namespace copc::hierarchy;

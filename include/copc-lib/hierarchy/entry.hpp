@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include "hierarchy/key.hpp"
-#include "io/reader.hpp"
-#include "las/point.hpp"
+#include <copc-lib/hierarchy/key.hpp>
+#include <copc-lib/io/reader.hpp>
+#include <copc-lib/las/point.hpp>
 
 namespace copc::hierarchy
 {

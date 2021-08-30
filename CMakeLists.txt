@@ -71,7 +71,7 @@ if (NOT EMSCRIPTEN)
     foreach(HDR IN LISTS HDRS)
         get_filename_component(FILE_DIR ${HDR} DIRECTORY)
         file(RELATIVE_PATH REL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include" "${FILE_DIR}")
-        install(FILES ${HDR} DESTINATION "include/copc-lib/${REL_PATH}")
+        install(FILES ${HDR} DESTINATION "include/${REL_PATH}")
     endforeach()
 
 endif()

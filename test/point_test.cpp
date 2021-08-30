@@ -2,7 +2,7 @@
 #include <cfloat>
 #include <limits>
 
-#include "las/point.hpp"
+#include <copc-lib/las/point.hpp>
 
 using namespace copc::las;
 using namespace std;

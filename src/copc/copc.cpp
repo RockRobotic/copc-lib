@@ -1,4 +1,4 @@
-#include "copc/copc.hpp"
+#include <copc-lib/copc/copc.hpp>
 #include <fstream>
 
 namespace copc

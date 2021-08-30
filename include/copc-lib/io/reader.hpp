@@ -3,7 +3,7 @@
 
 #include <istream>
 
-#include "copc/file.hpp"
+#include <copc-lib/copc/file.hpp>
 
 namespace copc::io
 {

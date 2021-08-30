@@ -1,4 +1,4 @@
-#include "las/file.hpp"
+#include <copc-lib/las/file.hpp>
 
 namespace copc::las
 {

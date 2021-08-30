@@ -1,4 +1,4 @@
-#include "copc/file.hpp"
+#include <copc-lib/copc/file.hpp>
 #include <catch2/catch.hpp>
 #include <cstring>
 #include <fstream>

@@ -1,10 +1,10 @@
-#include "hierarchy/node.hpp"
+#include <copc-lib/hierarchy/node.hpp>
 
 #include <string>
 
-#include "hierarchy/page.hpp"
-#include "las/point.hpp"
-#include "laz/decompressor.hpp"
+#include <copc-lib/hierarchy/page.hpp>
+#include <copc-lib/las/point.hpp>
+#include <copc-lib/laz/decompressor.hpp>
 
 namespace copc::hierarchy
 {

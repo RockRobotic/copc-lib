@@ -7,13 +7,13 @@
 #include <stdexcept>
 #include <vector>
 
-#include "las/internal/extra_bytes.hpp"
-#include "las/internal/gps_time.hpp"
-#include "las/internal/nir.hpp"
-#include "las/internal/point_10.hpp"
-#include "las/internal/point_14.hpp"
-#include "las/internal/rgb.hpp"
-#include "las/internal/utils.hpp"
+#include <copc-lib/las/internal/extra_bytes.hpp>
+#include <copc-lib/las/internal/gps_time.hpp>
+#include <copc-lib/las/internal/nir.hpp>
+#include <copc-lib/las/internal/point_10.hpp>
+#include <copc-lib/las/internal/point_14.hpp>
+#include <copc-lib/las/internal/rgb.hpp>
+#include <copc-lib/las/internal/utils.hpp>
 
 namespace copc::las
 {

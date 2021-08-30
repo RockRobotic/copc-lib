@@ -4,7 +4,7 @@
 #include <istream>
 #include <map>
 
-#include "las/vlr.hpp"
+#include <copc-lib/las/vlr.hpp>
 
 #include <lazperf/readers.hpp>
 

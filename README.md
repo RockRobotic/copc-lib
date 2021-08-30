@@ -23,7 +23,7 @@ sudo make install
 
 For common use cases, see the `example` folder for reference.
 
-Most users will find that the `Copc` object provides enough functionality for them. The goal of the `Copc` api is to provide an interface between the user and the laz/las file data, so that the user can avoid using another library to parse the laz file.
+The `copc::Copc` object provides a complete interface for reading COPC files. If needed, 
 
 ```cpp
 #include <copc-lib/copc_lib.hpp>

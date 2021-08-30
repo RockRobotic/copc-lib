@@ -1,12 +1,12 @@
 #ifndef COPCLIB_HIERARCHY_HIERARCHY_H_
 #define COPCLIB_HIERARCHY_HIERARCHY_H_
 
-#include <map>
+#include <unordered_map>
 
-#include "hierarchy/key.hpp" // include the key so that the hash function gets in namespace
-#include "hierarchy/node.hpp"
-#include "hierarchy/page.hpp"
-#include "io/reader.hpp"
+#include <copc-lib/hierarchy/key.hpp> // include the key so that the hash function gets in namespace
+#include <copc-lib/hierarchy/node.hpp>
+#include <copc-lib/hierarchy/page.hpp>
+#include <copc-lib/io/reader.hpp>
 
 namespace copc::hierarchy
 {

@@ -3,8 +3,8 @@
 #include <sstream>
 
 #include "catch2/catch.hpp"
-#include "hierarchy/hierarchy.hpp"
-#include "io/reader.hpp"
+#include <copc-lib/hierarchy/hierarchy.hpp>
+#include <copc-lib/io/reader.hpp>
 
 using namespace copc::hierarchy;
 using namespace std;
