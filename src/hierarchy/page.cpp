@@ -1,5 +1,5 @@
-#include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/hierarchy/hierarchy.hpp>
+#include <copc-lib/hierarchy/page.hpp>
 
 namespace copc::hierarchy
 {

@@ -1,5 +1,5 @@
-#include <copc-lib/io/reader.hpp>
 #include <copc-lib/copc/copc.hpp>
+#include <copc-lib/io/reader.hpp>
 
 namespace copc::io
 {

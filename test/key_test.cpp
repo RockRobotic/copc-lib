@@ -1,5 +1,5 @@
-#include <copc-lib/hierarchy/key.hpp>
 #include <catch2/catch.hpp>
+#include <copc-lib/hierarchy/key.hpp>
 
 using namespace copc::hierarchy;
 

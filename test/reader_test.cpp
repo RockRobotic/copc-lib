@@ -1,5 +1,5 @@
-#include <copc-lib/copc/file.hpp>
 #include <catch2/catch.hpp>
+#include <copc-lib/copc/file.hpp>
 #include <cstring>
 #include <fstream>
 
