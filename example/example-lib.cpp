@@ -2,7 +2,9 @@
 #include <cstring>
 #include <iostream>
 
-#include "copc_lib.hpp"
+#include "copc/copc.hpp"
+
+using namespace copc;
 
 void PrintPoints(std::vector<char> point_vec, int point_record_length)
 {
@@ -24,83 +26,85 @@ void PrintPoints(std::vector<char> point_vec, int point_record_length)
 int main()
 {
     // Call default constructor with Andrew's test file
-    copc::Copc copc("test/data/autzen-classified.copc.laz");
+    Copc copc("test/data/autzen-classified.copc.laz");
 
     // We can get the CopcData struct
-    auto copcHeader = copc.GetCopcData();
+    auto copcHeader = copc.file->GetCopcHeader();
     std::cout << "CopcData: " << std::endl;
     std::cout << "\tSpan: " << copcHeader.span << std::endl
               << "\tRoot Offset: " << copcHeader.root_hier_offset << std::endl
               << "\tRoot Size: " << copcHeader.root_hier_size << std::endl;
 
     // Get the Las Header
-    auto lasHeader = copc.GetHeader();
+    auto lasHeader = copc.file->GetLasHeader();
     std::cout << std::endl << "Las Header:" << std::endl;
     std::cout << "\tPoint format: " << (int)lasHeader.point_format_id << std::endl
               << "\tPoint count: " << (int)lasHeader.point_count << std::endl;
 
     // Get the WKT string
-    auto wkt = copc.GetWktData();
+    auto wkt = copc.file->GetWkt();
     std::cout << std::endl << "WKT: " << std::endl << wkt << std::endl;
 
-    // Create a new root key (0-0-0-0)
-    copc::VoxelKey key(0, 0, 0, 0);
-    // Get the hierarchy node Entry for the root key
-    copc::Entry rootEntry = copc.GetEntryFromKey(key);
+    std::cout << std::endl;
 
-    // GetEntryFromKey will automatically load the minimum pages needed
-    // to find the key you request, so the page that contains 0-0-0-0
-    // has already been requested and loaded
-    bool isRootSubpage = rootEntry.IsSubpage();
-
-    std::cout << std::endl
-              << "Root Node: " << std::endl
-              << "\tNode " << rootEntry.ToString() << std::endl
-              << "\tKey: " << rootEntry.key.ToString() << std::endl
-              << "\tIsSubpage: " << isRootSubpage << std::endl
-              << "\tPointCount: " << rootEntry.pointCount << std::endl;
-
-    // We can check if a key exists somewhere in the hierarchy with DoesKeyExist
-    copc::VoxelKey keyDoesNotExist(5, 4, 20, 8);
-    if (!copc.DoesKeyExist(key))
-        std::cout << std::endl << "Key " << keyDoesNotExist.ToString() << " does not exist!";
-
-    // Now, we will load all the point data from a node in the hierarchy
-    copc::VoxelKey loadKey(4, 11, 9, 0);
-
-    // Now we can load the node into memory with a voxelkey
-    // Note that loadEntry may be invalid, in which case
-    // point_vec will be empty.
     {
-        copc::Entry loadEntry = copc.GetEntryFromKey(loadKey);
-        // We can also check if an entry is valid ourselves by calling
-        // loadEntry.IsValid()
-        auto point_vec = copc.ReadNodeData(loadEntry);
+        // Create a new root key (0-0-0-0)
+        hierarchy::VoxelKey key(0, 0, 0, 0);
 
-        if (point_vec.size() == 0)
-            std::cout << "Invalid entry " << loadEntry.ToString() << " given to ReadNodeData!" << std::endl;
-        else
+        // FindNode will automatically load the minimum pages needed
+        // to find the key you request
+        auto rootEntry = copc.hierarchy->FindNode(key);
+        std::cout << rootEntry->ToString() << std::endl;
+
+        // If a key doesn't exist, FindNode will return nullptr
+        hierarchy::VoxelKey keyDoesNotExist(5, 4, 20, 8);
+        if (copc.hierarchy->FindNode(keyDoesNotExist) == nullptr)
+            std::cout << std::endl << "Key " << keyDoesNotExist.ToString() << " does not exist!";
+    }
+
+    std::cout << std::endl;
+
+    {
+        // Now, we will load the point data from a node in the hierarchy
+        hierarchy::VoxelKey loadKey(4, 11, 9, 0);
+
+        auto node = copc.hierarchy->FindNode(loadKey);
+        std::vector<char> nodeData = node->GetPointData();
+
+        std::cout << std::endl << "First 5 points: " << std::endl;
+        PrintPoints(nodeData, lasHeader.point_record_length);
+    }
+
+    {
+        // Compare that to loading Point objects:
+        hierarchy::VoxelKey loadKey(4, 11, 9, 0);
+
+        auto node = copc.hierarchy->FindNode(loadKey);
+        auto nodeData = node->GetPoints();
+
+        std::cout << std::endl << "First 5 points: " << std::endl;
+        for (int i = 0; i < 5; i++)
         {
-            std::cout << std::endl << "First 5 points: " << std::endl;
-            PrintPoints(point_vec, lasHeader.point_record_length);
+            std::cout << "Point " << i << ": " << std::endl
+                      << "{" << std::endl
+                      << nodeData[i].ToString() << std::endl
+                      << "}" << std::endl
+                      << std::endl;
         }
     }
 
     std::cout << std::endl;
 
-    // We can also load a node directly from a VoxelKey object.
-    // If the key isn't found, point_vec will again be empty..
     {
-        // Now, we can read the node into point_vec
-        copc::VoxelKey invalidKey(20, 4, -1, 0);
-        auto point_vec = copc.ReadNodeData(invalidKey);
+        // We should always check for a node's existance before working with it
+        hierarchy::VoxelKey invalidKey(20, 4, -1, 0);
 
-        if (point_vec.size() == 0)
-            std::cout << "Invalid key " << invalidKey.ToString() << " given to ReadNodeData!" << std::endl;
-        else
+        auto node = copc.hierarchy->FindNode(invalidKey);
+        if (node != nullptr)
         {
-            std::cout << std::endl << "First 5 points: " << std::endl;
-            PrintPoints(point_vec, lasHeader.point_record_length);
+            std::vector<char> nodeData = node->GetPointData();
         }
+        else
+            std::cout << "Invalid key " << invalidKey.ToString() << "!" << std::endl;
     }
 }
