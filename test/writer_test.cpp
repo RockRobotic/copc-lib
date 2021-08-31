@@ -74,8 +74,24 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer::LasConfig cfg;
             Writer writer(out_stream, cfg, 256);
 
+            // todo: use Reader to check all of these
             auto copc_header = writer.file->GetCopcHeader();
             REQUIRE(copc_header.span == 256);
+
+            writer.Close();
+        }
+
+        SECTION("WKT")
+        {
+            stringstream out_stream;
+
+            Writer::LasConfig cfg;
+            Writer writer(out_stream, cfg, 256, "TEST_WKT");
+
+            // todo: use Reader to check all of these
+            auto copc_header = writer.file->GetCopcHeader();
+            REQUIRE(copc_header.span == 256);
+            REQUIRE(copc_header.wkt == "TEST_WKT");
 
             writer.Close();
         }

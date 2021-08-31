@@ -60,8 +60,9 @@ class Writer
 
     std::vector<lazperf::chunk> chunks_;
 
-    void WriteHeader();
+    void WriteHeader(las::LasHeader &head14);
     void WriteChunkTable();
+    void WriteWkt(las::LasHeader &head14);
 
     las::LasHeader HeaderFromConfig(LasConfig config);
 };

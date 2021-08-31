@@ -22,23 +22,20 @@ Writer::Writer(std::ostream &out_stream, LasConfig config, int span, std::string
 }
 
 void Writer::Close(){
-    WriteHeader();
+    auto head14 = file->GetLasHeader();
     WriteChunkTable();
+    if (!file->GetWkt().empty())
+        WriteWkt(head14);
+    WriteHeader(head14);
 }
 
-void Writer::WriteHeader()
-{
-    auto head14 = file->GetLasHeader();
+void Writer::WriteHeader(las::LasHeader &head14)
+{    
     laz_vlr lazVlr(head14.pointFormat(), head14.ebCount(), VARIABLE_CHUNK_SIZE);
     //eb_vlr ebVlr(head14.ebCount());
 
-    // Set the version number to 2 in order to write something reasonable.
-    if (head14.version.minor < 2 || head14.version.minor > 4)
-        head14.version.minor = 2;
-
     // point_format_id and point_record_length  are set on open().
     head14.header_size = head14.sizeFromVersion();
-    head14.point_offset = head14.header_size;
     head14.vlr_count = 2; // copc + laz
 
     head14.point_format_id |= (1 << 7);
@@ -72,6 +69,23 @@ void Writer::WriteHeader()
     //    ebVlr.header().write(*f);
     //    ebVlr.write(*f);
     //}
+}
+
+void Writer::WriteWkt(las::LasHeader &head14)
+{
+    auto wkt = file->GetWkt();
+    evlr_header h{0, "LASF_Projection", 2112, (uint64_t)wkt.size(), ""};
+    
+    wkt_vlr vlr(wkt);
+
+    out_stream.seekp(0, std::ios::end);
+    int64_t offset = static_cast<int64_t>(out_stream.tellp());
+
+    h.write(out_stream);
+    vlr.write(out_stream);
+
+    head14.evlr_offset = offset;
+    head14.evlr_count++;
 }
 
 void Writer::WriteChunkTable()

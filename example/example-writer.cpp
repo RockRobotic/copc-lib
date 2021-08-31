@@ -17,7 +17,7 @@ int main()
     cfg.point_format_id = 8;
     cfg.scale = vector3{2, 3, 4};
     cfg.offset = vector3{-0.02, -0.03, -40.8};
-    Writer writer(out_stream, cfg);
+    Writer writer(out_stream, cfg, 256, "TEST_WKT!");
 
     writer.Close();
 }
