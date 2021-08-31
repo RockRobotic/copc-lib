@@ -13,7 +13,7 @@ TEST_CASE("Reader tests", "[Reader]")
         fstream in_stream;
         in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
 
-        CopcFile file(in_stream);
+        CopcFile file(&in_stream);
 
         SECTION("GetCopc Test")
         {

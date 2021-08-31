@@ -7,6 +7,7 @@
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/hierarchy/hierarchy.hpp>
 #include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/writer.hpp>
 
 namespace copc
 {
@@ -17,6 +18,8 @@ class Copc
     Copc(std::istream &in_stream);
     Copc(const std::string &in_file);
 
+    Copc(std::ostream &out_stream, io::Writer::LasConfig header);
+
     // Copc (CopcFile &in_file, int span);
     // bool Write(std::ostream *out);
 
@@ -25,6 +28,7 @@ class Copc
 
   private:
     std::shared_ptr<io::Reader> reader;
+    std::shared_ptr<io::Writer> writer;
     std::fstream in_stream;
 };
 } // namespace copc
