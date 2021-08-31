@@ -25,7 +25,7 @@ class Writer
 {
   public:
     struct LasConfig;
-    Writer(std::ostream &out_stream, LasConfig config);
+    Writer(std::ostream &out_stream, LasConfig config, int span = 0, std::string wkt = "");
 
     void Close();
 

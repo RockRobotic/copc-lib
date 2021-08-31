@@ -66,5 +66,18 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(f.header().scale.z == 4);
             REQUIRE(f.header().offset.z == -40.8);
         }
+
+        SECTION("COPC Span")
+        {
+            stringstream out_stream;
+
+            Writer::LasConfig cfg;
+            Writer writer(out_stream, cfg, 256);
+
+            auto copc_header = writer.file->GetCopcHeader();
+            REQUIRE(copc_header.span == 256);
+
+            writer.Close();
+        }
     }
 }

@@ -11,10 +11,10 @@ using namespace lazperf;
 namespace copc::io
 {
 
-Writer::Writer(std::ostream &out_stream, LasConfig config) : out_stream(out_stream)
+Writer::Writer(std::ostream &out_stream, LasConfig config, int span, std::string wkt) : out_stream(out_stream)
 {
     auto header = HeaderFromConfig(config);
-    this->file = std::make_shared<CopcFile>(header);
+    this->file = std::make_shared<CopcFile>(header, span, wkt);
 
     char out_arr[FIRST_CHUNK_OFFSET];
     memset(out_arr, 0, sizeof(out_arr));
