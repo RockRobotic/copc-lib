@@ -17,6 +17,7 @@ Writer::Writer(std::ostream &out_stream, LasConfig config) : out_stream(out_stre
     this->file = std::make_shared<CopcFile>(header);
 
     char out_arr[FIRST_CHUNK_OFFSET];
+    memset(out_arr, 0, sizeof(out_arr));
     out_stream.write(out_arr, sizeof(out_arr));
 }
 
@@ -124,6 +125,13 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig config) {
     h.scale.x = config.scale.x;
     h.scale.y = config.scale.y;
     h.scale.z = config.scale.z;
+
+    h.maxx = 0;
+    h.minx = 0;
+    h.maxy = 0;
+    h.miny = 0;
+    h.maxz = 0;
+    h.minz = 0;
     
     return h;
 }

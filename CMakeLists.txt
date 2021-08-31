@@ -50,6 +50,8 @@ endif()
 if(WITH_EXAMPLES)
     add_executable(example_lib "example/example-lib.cpp")
     target_link_libraries(example_lib ${COPC_SHARED_LIB})
+    add_executable(example_writer "example/example-writer.cpp")
+    target_link_libraries(example_writer ${COPC_SHARED_LIB})
 endif()
 
 # Install

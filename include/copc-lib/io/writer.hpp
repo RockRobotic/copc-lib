@@ -10,6 +10,17 @@ namespace copc::io
 {
 const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
 
+struct vector3
+{
+    vector3() : x(0), y(0), z(0) {}
+
+    vector3(double x, double y, double z) : x(x), y(y), z(z) {}
+
+    double x;
+    double y;
+    double z;
+};
+
 class Writer
 {
   public:
@@ -38,8 +49,8 @@ class Writer
 
         uint8_t point_format_id{};
 
-        lazperf::vector3 scale{0.01, 0.01, 0.01};
-        lazperf::vector3 offset{0, 0, 0};
+        vector3 scale{0.01, 0.01, 0.01};
+        vector3 offset{0, 0, 0};
     };
 
   private:

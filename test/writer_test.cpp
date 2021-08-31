@@ -39,8 +39,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer::LasConfig cfg;
             cfg.file_source_id = 200;
             cfg.point_format_id = 8;
-            cfg.scale = lazperf::vector3{2, 3, 4};
-            cfg.offset = lazperf::vector3{-0.02, -0.03, -40.8};
+            cfg.scale = vector3{2, 3, 4};
+            cfg.offset = vector3{-0.02, -0.03, -40.8};
             Writer writer(out_stream, cfg);
 
             auto las_header = writer.file->GetLasHeader();
