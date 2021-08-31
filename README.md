@@ -21,40 +21,45 @@ sudo make install
 
 ## Usage
 
-For common use cases, see the `example` folder for reference.
-
-Most users will find that the `Copc` object provides enough functionality for them. The goal of the `Copc` api is to provide an interface between the user and the laz/las file data, so that the user can avoid using another library to parse the laz file.
+The `copc::Copc` object provides a complete interface for reading COPC files. For common use cases, use the `example` and `test` folders as reference.
 
 ```cpp
-#include <copc-lib/copc_lib.hpp>
+#include <copc-lib/copc/copc.hpp>
+using namespace copc;
 
 // Create a new Copc library object
 Copc copc("MyCopcFile.copc.laz");
 
 // Get the LAS header from the file
-auto header = copc.GetHeader();
+// The `file` object contains all metadata for both COPC and LAS formats
+auto lasHeader = copc.file->GetLasHeader();
 
 // Get the WKT from the file
-std::string wkt = copc.GetWktData();
+std::string wkt = copc.file->GetWkt();
 
-// Decompress the point data of a node for a given VoxelKey
-VoxelKey loadKey(1, 1, 1, 1);
+// Use VoxelKeys to query the hierarchy
+hierarchy::VoxelKey loadKey(1, 1, 1, 1);
 
-// If the key isn't found, point_vec will be empty.
-std::vector<char> point_vec = copc.ReadNodeData(loadEntry);
+// FindNode queries the hierarchy to get the requested Entry
+auto node = copc.hierarchy->FindNode(loadKey);
+// Once we have the node, we can load it using GetPoints
+std::vector<las::Point> nodeData = node->GetPoints();
+
+// The las::Point interface gives us access to all LAS attributes
+std::cout << nodeData[0].X() << ", " << nodeData[0].Y() << nodeData[0].Z();
 ```
 
 You can see an example of g++ and cmake build processes [here](https://github.com/RockRobotic/copc-lib-examples).
 
-If other library functionality is needed, feel free to open an issue to see about getting them added.
+If other library functionality is needed, feel free to open an issue to see about getting it added.
 
 ## Coming Soon
 - [x] Basic C++ Reader Interface
+- [x] Return Point structures from the reader rather than raw char* arrays, to support a more familiar laspy-like interface.
 - [ ] Add writer for COPC data
 - [ ] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 - [ ] Python bindings
 - [ ] Javascript (emscripten) bindings
-- [ ] Return Point structures from the reader rather than raw char* arrays, to support a more familiar laspy-like interface.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

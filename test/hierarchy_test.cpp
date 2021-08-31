@@ -1,149 +1,264 @@
-#include "hierarchy.hpp"
-#include "reader.hpp"
-#include "structs.hpp"
-#include <catch2/catch.hpp>
+#include <cfloat>
+#include <cstring>
+#include <sstream>
 
-using namespace copc;
+#include "catch2/catch.hpp"
+#include <copc-lib/hierarchy/hierarchy.hpp>
+#include <copc-lib/io/reader.hpp>
 
-TEST_CASE("Voxel Key checks key validity", "[Hierarchy]")
+using namespace copc::hierarchy;
+using namespace std;
+
+TEST_CASE("Page & Node Checks", "[Hierarchy]")
 {
-    REQUIRE(VoxelKey(-1, -1, -1, -1).IsValid() == false);
-    REQUIRE(VoxelKey(-1, 0, 0, 0).IsValid() == false);
-    REQUIRE(VoxelKey(0, -1, 0, 0).IsValid() == false);
-    REQUIRE(VoxelKey(0, 0, -1, 0).IsValid() == false);
-    REQUIRE(VoxelKey(0, 0, 0, -1).IsValid() == false);
-    REQUIRE(VoxelKey(0, 0, 0, 0).IsValid() == true);
-    REQUIRE(VoxelKey(1, 1, 1, 1).IsValid() == true);
+    GIVEN("A valid input stream")
+    {
+        int64_t root_hier_offset = 93169718;
+        int32_t root_hier_size = 8896;
+
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        auto reader = std::make_shared<copc::io::Reader>(in_stream);
+
+        Page page(VoxelKey(0, 0, 0, 0), root_hier_offset, root_hier_size, reader);
+
+        SECTION("Page Loading")
+        {
+            REQUIRE(page.loaded == false);
+            REQUIRE(page.nodes.empty());
+            REQUIRE(page.sub_pages.empty());
+
+            page.Load();
+
+            REQUIRE(page.loaded == true);
+            REQUIRE(page.nodes.size() == 278);
+            REQUIRE(page.sub_pages.empty());
+
+            auto node = page.nodes[VoxelKey(0, 0, 0, 0)];
+            REQUIRE(node->point_count == 61022);
+
+            node = page.nodes[VoxelKey(5, 9, 7, 0)];
+            REQUIRE(node->point_count == 12019);
+        }
+    }
 }
 
-TEST_CASE("GetParent Checks", "[Hierarchy]")
+TEST_CASE("FindKey Check", "[Hierarchy]")
 {
-    REQUIRE(Hierarchy::GetParent(VoxelKey(-1, -1, -1, -1)).IsValid() == false);
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        auto reader = std::make_shared<copc::io::Reader>(in_stream);
 
-    REQUIRE(Hierarchy::GetParent(VoxelKey(4, 4, 6, 12)) == VoxelKey(3, 2, 3, 6));
-    REQUIRE(Hierarchy::GetParent(VoxelKey(4, 5, 6, 13)) == VoxelKey(3, 2, 3, 6));
-    REQUIRE(Hierarchy::GetParent(VoxelKey(3, 2, 3, 6)) == VoxelKey(2, 1, 1, 3));
+        Hierarchy h(reader);
 
-    REQUIRE(!(Hierarchy::GetParent(VoxelKey(3, 2, 3, 6)) == VoxelKey(0, 0, 0, 0)));
+        auto key = VoxelKey(0, 0, 0, 0);
+        auto hier_entry = h.FindNode(key);
 
-    REQUIRE(Hierarchy::GetParent(VoxelKey(1, 1, 1, 1)) == VoxelKey(0, 0, 0, 0));
-    REQUIRE(Hierarchy::GetParent(VoxelKey(1, 1, 1, -1)) == VoxelKey(-1, -1, -1, -1));
+        REQUIRE(hier_entry->IsValid() == true);
+        REQUIRE(hier_entry->key == key);
+        REQUIRE(hier_entry->point_count == 61022);
 
-    REQUIRE(Hierarchy::GetParent(VoxelKey(1, 1, 1, -1)).IsValid() == false);
-    REQUIRE(Hierarchy::GetParent(VoxelKey(0, 0, 0, 0)).IsValid() == false);
+        key = VoxelKey(5, 9, 7, 0);
+        hier_entry = h.FindNode(key);
+
+        REQUIRE(hier_entry->IsValid() == true);
+        REQUIRE(hier_entry->key == key);
+        REQUIRE(hier_entry->point_count == 12019);
+    }
 }
 
-TEST_CASE("GetParents Checks", "[Hierarchy]")
+TEST_CASE("GetPointData Test", "[Hierarchy] ")
 {
-    REQUIRE(Hierarchy::GetParents(VoxelKey(-1, -1, -1, -1), true).empty() == true);
-    REQUIRE(Hierarchy::GetParents(VoxelKey(-1, -1, -1, -1), false).empty() == true);
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        auto reader = std::make_shared<copc::io::Reader>(in_stream);
 
-    std::vector<VoxelKey> testKeys{
-        VoxelKey(4, 4, 6, 12), VoxelKey(3, 2, 3, 6), VoxelKey(2, 1, 1, 3), VoxelKey(1, 0, 0, 1), VoxelKey(0, 0, 0, 0),
-    };
+        int record_length = reader->file->GetLasHeader().point_record_length;
 
-    std::vector<VoxelKey> getParentsInclusive = Hierarchy::GetParents(testKeys[0], true);
-    REQUIRE(getParentsInclusive.size() == testKeys.size());
-    REQUIRE_THAT(getParentsInclusive, Catch::Matchers::Equals(testKeys));
+        Hierarchy h(reader);
 
-    std::vector<VoxelKey> testKeysExclusive = std::vector<VoxelKey>(testKeys.begin() + 1, testKeys.end());
+        auto key = VoxelKey(0, 0, 0, 0);
+        auto hier_entry = h.FindNode(key);
 
-    std::vector<VoxelKey> getParentsNonInclusive = Hierarchy::GetParents(testKeys[0], false);
-    REQUIRE(getParentsNonInclusive.size() == testKeys.size() - 1);
-    REQUIRE_THAT(getParentsNonInclusive, Catch::Matchers::Equals(testKeysExclusive));
+        auto point_vec = hier_entry->GetPointData();
+        REQUIRE(!point_vec.empty());
+        auto point_buff = point_vec.data();
+
+        int x;
+        std::memcpy(&x, point_buff, sizeof(x));
+        REQUIRE(x == -144147);
+        std::memcpy(&x, point_buff + record_length, sizeof(x));
+        REQUIRE(x == -172520);
+        std::memcpy(&x, point_buff + record_length * 2, sizeof(x));
+        REQUIRE(x == -121603);
+        std::memcpy(&x, point_buff + record_length * 3, sizeof(x));
+        REQUIRE(x == -49828);
+        std::memcpy(&x, point_buff + record_length * 4, sizeof(x));
+        REQUIRE(x == -138082);
+    }
 }
 
-TEST_CASE("GetKey Checks", "[Hierarchy]")
+TEST_CASE("GetPoints Test", "[Hierarchy] ")
 {
-    fstream in_stream;
-    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-    io::CopcReader reader(in_stream);
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        auto reader = std::make_shared<copc::io::Reader>(in_stream);
 
-    auto copc = reader.GetCopcHeader();
+        Hierarchy h(reader);
 
-    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
+        auto key = VoxelKey(0, 0, 0, 0);
+        auto hier_entry = h.FindNode(key);
 
-    Hierarchy hier = Hierarchy(&reader);
+        auto points = hier_entry->GetPoints();
 
-    auto key = VoxelKey(0, 0, 0, 0);
-    auto hier_entry = hier.GetKey(key);
+        REQUIRE(points.size() == hier_entry->point_count);
 
-    REQUIRE(hier_entry.key == key);
-    REQUIRE(hier_entry.offset == 90837784);
-    REQUIRE(hier_entry.byteSize == 1082752);
-    REQUIRE(hier_entry.pointCount == 61022);
+        // Getters
+        REQUIRE(points[0].X() == -144147);
+        REQUIRE(points[0].Y() == -13541);
+        REQUIRE(points[0].Z() == -227681);
+        REQUIRE(points[0].Intensity() == 11);
+        REQUIRE(points[0].NumberOfReturns() == 3);
+        REQUIRE(points[0].ReturnNumber() == 1);
+        REQUIRE(points[0].ScanDirFlag() == true);
+        REQUIRE(points[0].EdgeOfFlightLineFlag() == false);
+        REQUIRE(points[0].Classification() == 5);
+        REQUIRE(points[0].ScanAngleRank() == 5);
+        REQUIRE(points[0].UserData() == 124);
+        REQUIRE(points[0].PointSourceId() == 7330);
+        REQUIRE(points[0].GetGpsTimeVal() > 247570);
+        REQUIRE(points[0].GetGpsTimeVal() < 247570.5);
+        REQUIRE(points[0].R() == 46);
+        REQUIRE(points[0].G() == 60);
+        REQUIRE(points[0].B() == 92);
+        REQUIRE_THROWS(points[0].GetNirVal());
+        REQUIRE_THROWS(points[0].FlagsBitFields());
+        REQUIRE_THROWS(points[0].ReturnsBitFields());
+        REQUIRE_THROWS(points[0].ScannerChannel());
+        REQUIRE_THROWS(points[0].ScanAngle());
 
-    auto key2 = VoxelKey(5, 9, 7, 0);
-    auto hier_entry2 = hier.GetKey(key2);
+        // Setters
+        points[0].X(INT32_MAX);
+        points[0].Y(INT32_MAX);
+        points[0].Z(INT32_MAX);
+        points[0].Intensity(UINT16_MAX);
+        points[0].NumberOfReturns(7);
+        points[0].ReturnNumber(7);
+        points[0].ScanDirFlag(false);
+        points[0].EdgeOfFlightLineFlag(true);
+        points[0].Classification(31);
+        points[0].ScanAngleRank(90);
+        points[0].UserData(UINT8_MAX);
+        points[0].PointSourceId(UINT8_MAX);
+        points[0].SetGpsTimeVal(DBL_MAX);
+        points[0].R(UINT16_MAX);
+        points[0].G(UINT16_MAX);
+        points[0].B(UINT16_MAX);
+        REQUIRE_THROWS(points[0].SetNirVal(UINT16_MAX));
+        REQUIRE_THROWS(points[0].FlagsBitFields(UINT8_MAX));
+        REQUIRE_THROWS(points[0].ReturnsBitFields(UINT8_MAX));
+        REQUIRE_THROWS(points[0].ScannerChannel(3));
+        REQUIRE_THROWS(points[0].ScanAngle(INT16_MAX));
 
-    REQUIRE(hier_entry2.key == key2);
-    REQUIRE(hier_entry2.offset == 35154197);
-    REQUIRE(hier_entry2.byteSize == 102416);
-    REQUIRE(hier_entry2.pointCount == 12019);
+        REQUIRE(points[0].X() == INT32_MAX);
+        REQUIRE(points[0].Y() == INT32_MAX);
+        REQUIRE(points[0].Z() == INT32_MAX);
+        REQUIRE(points[0].Intensity() == UINT16_MAX);
+        REQUIRE(points[0].NumberOfReturns() == 7);
+        REQUIRE(points[0].ReturnNumber() == 7);
+        REQUIRE(points[0].ScanDirFlag() == false);
+        REQUIRE(points[0].EdgeOfFlightLineFlag() == true);
+        REQUIRE(points[0].Classification() == 31);
+        REQUIRE(points[0].ScanAngleRank() == 90);
+        REQUIRE(points[0].UserData() == UINT8_MAX);
+        REQUIRE(points[0].PointSourceId() == UINT8_MAX);
+        REQUIRE(points[0].GetGpsTimeVal() == DBL_MAX);
+        REQUIRE(points[0].R() == UINT16_MAX);
+        REQUIRE(points[0].G() == UINT16_MAX);
+        REQUIRE(points[0].B() == UINT16_MAX);
+    }
 }
 
-TEST_CASE("LoadChildren Checks", "[Hierarchy]")
+TEST_CASE("Packing Test", "[Hierarchy] ")
 {
-    fstream in_stream;
-    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-    io::CopcReader reader(in_stream);
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        auto reader = std::make_shared<copc::io::Reader>(in_stream);
 
-    auto copc = reader.GetCopcHeader();
+        Hierarchy h(reader);
 
-    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
+        auto key = VoxelKey(0, 0, 0, 0);
+        auto hier_entry = h.FindNode(key);
 
-    Hierarchy hier = Hierarchy(&reader);
+        // Load las::Points
+        auto points = hier_entry->GetPoints();
 
-    auto hier_entry = hier.GetKey(VoxelKey(0, 0, 0, 0));
-    REQUIRE(hier.LoadChildren(hier_entry) == 4);
-    hier_entry = hier.GetKey(VoxelKey(1, 0, 0, 0));
-    REQUIRE(hier.LoadChildren(hier_entry) == 4);
-    hier_entry = hier.GetKey(VoxelKey(4, 11, 9, 0));
-    REQUIRE(hier.LoadChildren(hier_entry) == 0);
-    hier_entry = hier.GetKey(VoxelKey(-1, -1, -1, -1));
-    REQUIRE(hier.LoadChildren(hier_entry) == 0);
+        // Pack loaded points into stream
+        ostringstream oss;
+        hier_entry->PackPoints(points, oss);
+
+        // Write stream into vector<char> to compare with point_data
+        vector<char> point_data_write;
+        string s = oss.str();
+        point_data_write.insert(point_data_write.end(), s.begin(), s.end());
+
+        // Get point data
+        auto point_data_read = hier_entry->GetPointData();
+
+        REQUIRE(point_data_read == point_data_write);
+    }
 }
 
-TEST_CASE("GetKey Validity Checks", "[Hierarchy]")
-{
-    fstream in_stream;
-    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-    io::CopcReader reader(in_stream);
-
-    auto copc = reader.GetCopcHeader();
-
-    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
-
-    Hierarchy hier = Hierarchy(&reader);
-
-    auto hier_entry = hier.GetKey(VoxelKey(0, 0, 0, 0));
-    REQUIRE(hier_entry.IsValid() == true);
-    hier_entry = hier.GetKey(VoxelKey(4, 11, 9, 0));
-    REQUIRE(hier_entry.IsValid() == true);
-
-    hier_entry = hier.GetKey(VoxelKey(20, 11, 9, 0));
-    REQUIRE(hier_entry.IsValid() == false);
-    hier_entry = hier.GetKey(VoxelKey(-1, 0, 0, 0));
-    REQUIRE(hier_entry.IsValid() == false);
-}
-
-TEST_CASE("LoadToDepth", "[Hierarchy]")
-{
-    fstream in_stream;
-    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-    io::CopcReader reader(in_stream);
-
-    auto copc = reader.GetCopcHeader();
-
-    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
-
-    Hierarchy hier = Hierarchy(&reader);
-
-    hier.LoadPagesToDepth(hier.GetRootPage(), 3);
-
-    hier = Hierarchy(&reader, 3);
-
-    hier = Hierarchy(&reader, 0);
-
-    hier = Hierarchy(&reader, -1);
-}
+//
+// TEST_CASE("LoadChildren Checks", "[Hierarchy]")
+//{
+//    fstream in_stream;
+//    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+//    io::CopcReader reader(in_stream);
+//
+//    auto copc = reader.GetCopcHeader();
+//
+//    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
+//
+//    Hierarchy hier = Hierarchy(&reader);
+//
+//    auto hier_entry = hier.GetKey(VoxelKey(0, 0, 0, 0));
+//    REQUIRE(hier.LoadChildren(hier_entry) == 4);
+//    hier_entry = hier.GetKey(VoxelKey(1, 0, 0, 0));
+//    REQUIRE(hier.LoadChildren(hier_entry) == 4);
+//    hier_entry = hier.GetKey(VoxelKey(4, 11, 9, 0));
+//    REQUIRE(hier.LoadChildren(hier_entry) == 0);
+//    hier_entry = hier.GetKey(VoxelKey(-1, -1, -1, -1));
+//    REQUIRE(hier.LoadChildren(hier_entry) == 0);
+//}
+//
+// TEST_CASE("GetKey Validity Checks", "[Hierarchy]")
+//{
+//    fstream in_stream;
+//    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+//    io::CopcReader reader(in_stream);
+//
+//    auto copc = reader.GetCopcHeader();
+//
+//    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
+//
+//    Hierarchy hier = Hierarchy(&reader);
+//
+//    auto hier_entry = hier.GetKey(VoxelKey(0, 0, 0, 0));
+//    REQUIRE(hier_entry.IsValid() == true);
+//    hier_entry = hier.GetKey(VoxelKey(4, 11, 9, 0));
+//    REQUIRE(hier_entry.IsValid() == true);
+//
+//    hier_entry = hier.GetKey(VoxelKey(20, 11, 9, 0));
+//    REQUIRE(hier_entry.IsValid() == false);
+//    hier_entry = hier.GetKey(VoxelKey(-1, 0, 0, 0));
+//    REQUIRE(hier_entry.IsValid() == false);
+//}

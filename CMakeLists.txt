@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(copc-lib VERSION 0.1.0)
+project(copc-lib VERSION 1.0)
 
 find_package(lazperf REQUIRED)
 
@@ -13,14 +13,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(include)
 include_directories(libs)
 
-file(GLOB SRCS
+file(GLOB_RECURSE SRCS
         src/*.cpp
-        src/copc/*.cpp
-        src/io/*.cpp
-        )
-
-file(GLOB HDRS
-        include/*.hpp
         )
 
 if (NOT EMSCRIPTEN)
@@ -70,5 +64,14 @@ if (NOT EMSCRIPTEN)
     install(FILES cmake/copc-lib-config.cmake DESTINATION ${lib_dest})
     install(EXPORT ${COPC_SHARED_LIB} DESTINATION "${lib_dest}")
     ## Headers
-    install(FILES ${HDRS} DESTINATION "${include_dest}")
+    file(GLOB_RECURSE HDRS
+            include/*.hpp
+            )
+    ### Reproduce the folder hierarchy of include/* in destination
+    foreach(HDR IN LISTS HDRS)
+        get_filename_component(FILE_DIR ${HDR} DIRECTORY)
+        file(RELATIVE_PATH REL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include" "${FILE_DIR}")
+        install(FILES ${HDR} DESTINATION "include/${REL_PATH}")
+    endforeach()
+
 endif()
