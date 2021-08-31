@@ -5,30 +5,32 @@ find_package(lazperf REQUIRED)
 
 set (COPC_SHARED_LIB copc-lib)
 set (COPC_STATIC_LIB copc-lib-s)
+set (COPC_PYTHON_LIB copclib)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include)
-include_directories(libs)
+include_directories(libs/catch2)
 
 file(GLOB_RECURSE SRCS
         src/*.cpp
         )
 
-if (NOT EMSCRIPTEN)
-    add_library(${COPC_SHARED_LIB} SHARED ${SRCS})
-    target_link_libraries(${COPC_SHARED_LIB} LAZPERF::lazperf)
-    target_include_directories(${COPC_SHARED_LIB} INTERFACE $<INSTALL_INTERFACE:include>)
-
-endif()
-add_library(${COPC_STATIC_LIB} STATIC ${SRCS})
-target_link_libraries(${COPC_STATIC_LIB} LAZPERF::lazperf)
+#if (NOT EMSCRIPTEN)
+#    add_library(${COPC_SHARED_LIB} SHARED ${SRCS})
+#    target_link_libraries(${COPC_SHARED_LIB} LAZPERF::lazperf)
+#    target_include_directories(${COPC_SHARED_LIB} INTERFACE $<INSTALL_INTERFACE:include>)
+#
+#endif()
+#add_library(${COPC_STATIC_LIB} STATIC ${SRCS})
+#target_link_libraries(${COPC_STATIC_LIB} LAZPERF::lazperf)
 
 # Choose package components
-set(WITH_TESTS TRUE CACHE BOOL "Choose if unit tests should be built")
-set(WITH_EXAMPLES TRUE CACHE BOOL "Choose if examples should be built")
+set(WITH_TESTS FALSE CACHE BOOL "Choose if unit tests should be built")
+set(WITH_EXAMPLES FALSE CACHE BOOL "Choose if examples should be built")
+set(WITH_PYTHON TRUE CACHE BOOL "Choose if python bindings should be built")
 
 if (WITH_TESTS OR WITH_EXAMPLES)
     file (DOWNLOAD
@@ -52,26 +54,32 @@ if(WITH_EXAMPLES)
     target_link_libraries(example_lib ${COPC_SHARED_LIB})
 endif()
 
+if(WITH_PYTHON)
+    add_subdirectory(libs/pybind11)
+    pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
+    target_compile_definitions(${COPC_PYTHON_LIB} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+endif()
+
 # Install
 set(include_dest "include/copc-lib")
 set(lib_dest "lib/cmake/copc-lib")
 
-if (NOT EMSCRIPTEN)
-
-    ## Targets
-    install(TARGETS ${COPC_SHARED_LIB} EXPORT ${COPC_SHARED_LIB} LIBRARY DESTINATION lib)
-    ## Export
-    install(FILES cmake/copc-lib-config.cmake DESTINATION ${lib_dest})
-    install(EXPORT ${COPC_SHARED_LIB} DESTINATION "${lib_dest}")
-    ## Headers
-    file(GLOB_RECURSE HDRS
-            include/*.hpp
-            )
-    ### Reproduce the folder hierarchy of include/* in destination
-    foreach(HDR IN LISTS HDRS)
-        get_filename_component(FILE_DIR ${HDR} DIRECTORY)
-        file(RELATIVE_PATH REL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include" "${FILE_DIR}")
-        install(FILES ${HDR} DESTINATION "include/${REL_PATH}")
-    endforeach()
-
-endif()
+#if (NOT EMSCRIPTEN)
+#
+#    ## Targets
+#    install(TARGETS ${COPC_SHARED_LIB} EXPORT ${COPC_SHARED_LIB} LIBRARY DESTINATION lib)
+#    ## Export
+#    install(FILES cmake/copc-lib-config.cmake DESTINATION ${lib_dest})
+#    install(EXPORT ${COPC_SHARED_LIB} DESTINATION "${lib_dest}")
+#    ## Headers
+#    file(GLOB_RECURSE HDRS
+#            include/*.hpp
+#            )
+#    ### Reproduce the folder hierarchy of include/* in destination
+#    foreach(HDR IN LISTS HDRS)
+#        get_filename_component(FILE_DIR ${HDR} DIRECTORY)
+#        file(RELATIVE_PATH REL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include" "${FILE_DIR}")
+#        install(FILES ${HDR} DESTINATION "include/${REL_PATH}")
+#    endforeach()
+#
+#endif()

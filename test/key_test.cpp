@@ -5,6 +5,7 @@ using namespace copc::hierarchy;
 
 TEST_CASE("Voxel Key checks key validity", "[Key]")
 {
+    REQUIRE(VoxelKey().IsValid() == false);
     REQUIRE(VoxelKey(-1, -1, -1, -1).IsValid() == false);
     REQUIRE(VoxelKey(-1, 0, 0, 0).IsValid() == false);
     REQUIRE(VoxelKey(0, -1, 0, 0).IsValid() == false);
