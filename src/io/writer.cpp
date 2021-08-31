@@ -61,6 +61,9 @@ void Writer::WriteHeader()
     head14.write(out_stream);
 
     // Write the VLR.
+    file->GetCopcHeader().header().write(out_stream);
+    file->GetCopcHeader().write(out_stream);
+
     lazVlr.header().write(out_stream);
     lazVlr.write(out_stream);
 
