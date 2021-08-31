@@ -58,8 +58,10 @@ void Writer::WriteHeader(las::LasHeader &head14)
     head14.write(out_stream);
 
     // Write the VLR.
-    file->GetCopcHeader().header().write(out_stream);
-    file->GetCopcHeader().write(out_stream);
+    las::CopcVlr copc;
+    copc.span = file->GetSpan();
+    copc.header().write(out_stream);
+    copc.write(out_stream);
 
     lazVlr.header().write(out_stream);
     lazVlr.write(out_stream);

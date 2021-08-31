@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include <copc-lib/copc/file.hpp>
+#include <copc-lib/io/reader.hpp>
 #include <cstring>
 #include <fstream>
 
@@ -13,11 +14,11 @@ TEST_CASE("Reader tests", "[Reader]")
         fstream in_stream;
         in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
 
-        CopcFile file(&in_stream);
+        io::Reader reader(in_stream);
 
         SECTION("GetCopc Test")
         {
-            auto copc = file.GetCopcHeader();
+            auto copc = reader.copc_data;
             REQUIRE(copc.span == 0);
             REQUIRE(copc.root_hier_offset == 93169718);
             REQUIRE(copc.root_hier_size == 8896);
@@ -31,7 +32,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetHeader Test")
         {
-            auto header = file.GetLasHeader();
+            auto header = reader.file->GetLasHeader();
             REQUIRE(header.header_size == 375);
             REQUIRE(header.point_format_id == 3);
             REQUIRE(header.point_count == 10653336);
@@ -39,7 +40,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("WKT")
         {
-            auto wkt = file.GetWkt();
+            auto wkt = reader.file->GetWkt();
             REQUIRE(wkt.size() > 0);
             REQUIRE(wkt.rfind("COMPD_CS[", 0) == 0);
         }

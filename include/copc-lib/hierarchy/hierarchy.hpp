@@ -20,7 +20,8 @@ class Hierarchy
 
     Hierarchy(std::shared_ptr<io::Reader> reader) : reader_(reader)
     {
-        auto copcData = reader->file->GetCopcHeader();
+        auto copcData = reader->copc_data;
+        int size = copcData.root_hier_size;
         // add the root page to the pages list
         seen_pages_[VoxelKey(0, 0, 0, 0)] =
             std::make_shared<Page>(VoxelKey(0, 0, 0, 0), copcData.root_hier_offset, copcData.root_hier_size, reader);
