@@ -28,6 +28,7 @@ add_library(${COPC_STATIC_LIB} STATIC ${SRCS})
 target_link_libraries(${COPC_STATIC_LIB} LAZPERF::lazperf)
 
 # Choose package components
+# TODO[Leo]: Find a way to avoid tests and examples when building python package
 set(WITH_TESTS FALSE CACHE BOOL "Choose if unit tests should be built")
 set(WITH_EXAMPLES FALSE CACHE BOOL "Choose if examples should be built")
 set(WITH_PYTHON TRUE CACHE BOOL "Choose if python bindings should be built")

@@ -89,7 +89,7 @@ class Point
     }
 
     // Copy constructor
-    Point(Point const &point)
+    Point(const Point &point)
     {
         point_byte_size_ = point.point_byte_size_;
 
