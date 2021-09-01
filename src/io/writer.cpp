@@ -1,7 +1,9 @@
 #include <cstring>
 
+#include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/point.hpp>
+#include <copc-lib/laz/compressor.hpp>
 
 #include <lazperf/filestream.hpp>
 #include <lazperf/lazperf.hpp>
@@ -21,18 +23,24 @@ Writer::Writer(std::ostream &out_stream, LasConfig config, int span, std::string
     out_stream.write(out_arr, sizeof(out_arr));
 }
 
-void Writer::Close(){
+void Writer::Close()
+{
     auto head14 = file->GetLasHeader();
     WriteChunkTable();
     if (!file->GetWkt().empty())
         WriteWkt(head14);
+    for (auto page : pages_)
+    {
+        WritePage(page);
+        head14.evlr_count++;
+    }
     WriteHeader(head14);
 }
 
 void Writer::WriteHeader(las::LasHeader &head14)
-{    
+{
     laz_vlr lazVlr(head14.pointFormat(), head14.ebCount(), VARIABLE_CHUNK_SIZE);
-    //eb_vlr ebVlr(head14.ebCount());
+    // eb_vlr ebVlr(head14.ebCount());
 
     // point_format_id and point_record_length  are set on open().
     head14.header_size = head14.sizeFromVersion();
@@ -41,7 +49,7 @@ void Writer::WriteHeader(las::LasHeader &head14)
     head14.point_format_id |= (1 << 7);
     head14.point_offset = OFFSET_TO_POINT_DATA;
 
-    //if (head14.ebCount())
+    // if (head14.ebCount())
     //{
     //    head14.point_offset += ebVlr.size() + ebVlr.header().Size;
     //    head14.vlr_count++;
@@ -65,7 +73,7 @@ void Writer::WriteHeader(las::LasHeader &head14)
     lazVlr.header().write(out_stream);
     lazVlr.write(out_stream);
 
-    //if (head14.ebCount())
+    // if (head14.ebCount())
     //{
     //    ebVlr.header().write(*f);
     //    ebVlr.write(*f);
@@ -76,7 +84,7 @@ void Writer::WriteWkt(las::LasHeader &head14)
 {
     auto wkt = file->GetWkt();
     evlr_header h{0, "LASF_Projection", 2112, (uint64_t)wkt.size(), ""};
-    
+
     wkt_vlr vlr(wkt);
 
     out_stream.seekp(0, std::ios::end);
@@ -89,6 +97,29 @@ void Writer::WriteWkt(las::LasHeader &head14)
 
     head14.evlr_offset = offset;
     head14.evlr_count++;
+}
+
+void Writer::WritePage(std::shared_ptr<hierarchy::Page> page)
+{
+    uint64_t page_size = page->nodes.size() * 32;
+    page_size += page->sub_pages.size() * 32;
+
+    evlr_header h{0, "entwine", 1000, page_size, page->key.ToString()};
+
+    out_stream.seekp(0, std::ios::end);
+    h.write(out_stream);
+
+    if (page->key == hierarchy::VoxelKey(0, 0, 0, 0))
+    {
+        int64_t offset = static_cast<int64_t>(out_stream.tellp());
+        copc_data.root_hier_offset = offset;
+        copc_data.root_hier_size = page_size;
+    }
+
+    for (auto &[key, node] : page->nodes)
+        node->Pack(out_stream);
+    for (auto &[key, node] : page->sub_pages)
+        node->Pack(out_stream);
 }
 
 void Writer::WriteChunkTable()
@@ -123,9 +154,9 @@ void Writer::WriteChunkTable()
     out_stream.write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(chunk_table_offset));
 }
 
+las::LasHeader Writer::HeaderFromConfig(LasConfig config)
+{
 
-las::LasHeader Writer::HeaderFromConfig(LasConfig config) { 
-    
     las::LasHeader h;
     h.file_source_id = config.file_source_id;
     h.global_encoding = config.global_encoding;
@@ -152,7 +183,27 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig config) {
     h.miny = 0;
     h.maxz = 0;
     h.minz = 0;
-    
+
     return h;
 }
+
+Writer::Entry Writer::WriteNode(std::vector<char> uncompressed)
+{
+    Writer::Entry entry;
+    bool good = out_stream.good();
+    entry.offset = out_stream.tellp();
+
+    auto point_count = laz::Compressor::CompressBytes(this, uncompressed);
+    point_count_14_ += point_count;
+
+    uint64_t endpos = (uint64_t)out_stream.tellp();
+    chunks_.push_back(lazperf::chunk{point_count, endpos});
+
+    entry.size = endpos - entry.offset;
+    entry.point_count = point_count;
+    return entry;
+}
+
+// void Writer::WriteNodeCompressed(std::vector<char> compressed, uint64_t &out_offset, int32_t &out_size) {}
+
 } // namespace copc::io

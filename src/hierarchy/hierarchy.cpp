@@ -47,4 +47,26 @@ std::shared_ptr<Page> Hierarchy::NearestLoadedPage(const std::vector<VoxelKey> &
     }
     return nullptr;
 }
+
+std::shared_ptr<Page> Hierarchy::CreateAndInsertPage(VoxelKey key)
+{
+    auto page = std::make_shared<Page>(Entry(key, -1, -1, -1), writer_);
+    InsertPage(page);
+    return page;
+}
+
+bool Hierarchy::InsertPage(std::shared_ptr<Page> page)
+{
+    seen_pages_[page->key] = page;
+    writer_->TrackPage(page);
+    for (auto &[key, node] : page->nodes)
+    {
+        loaded_nodes_[key] = node;
+    }
+    for (auto &[key, page] : page->sub_pages)
+    {
+        InsertPage(page);
+    }
+}
+
 } // namespace copc::hierarchy

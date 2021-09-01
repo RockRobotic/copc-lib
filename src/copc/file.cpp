@@ -3,7 +3,7 @@
 namespace copc
 {
 
-CopcFile::CopcFile(las::LasHeader header, int span, std::string wkt) : LasFile(header) 
+CopcFile::CopcFile(las::LasHeader header, int span, std::string wkt) : LasFile(header)
 {
     las::CopcVlr copc_header;
     copc_header.span = span;

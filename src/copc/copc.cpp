@@ -27,7 +27,7 @@ Copc::Copc(std::ostream &out_stream, io::Writer::LasConfig header)
 {
     this->writer = std::make_unique<io::Writer>(out_stream, header);
     this->file = this->writer->file;
-    //this->hierarchy = std::make_unique<hierarchy::Hierarchy>(this->reader);
+    this->hierarchy = std::make_unique<hierarchy::Hierarchy>(this->reader);
 }
 
 } // namespace copc

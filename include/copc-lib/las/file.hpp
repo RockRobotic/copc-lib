@@ -4,8 +4,8 @@
 #include <iostream>
 #include <map>
 
-#include <copc-lib/las/vlr.hpp>
 #include <copc-lib/las/header.hpp>
+#include <copc-lib/las/vlr.hpp>
 
 namespace copc::las
 {

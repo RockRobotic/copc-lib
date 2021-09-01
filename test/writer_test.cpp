@@ -1,8 +1,8 @@
 #include <catch2/catch.hpp>
-#include <copc-lib/io/writer.hpp>
 #include <copc-lib/io/reader.hpp>
-#include <lazperf/readers.hpp>
+#include <copc-lib/io/writer.hpp>
 #include <cstring>
+#include <lazperf/readers.hpp>
 #include <sstream>
 
 using namespace copc::io;

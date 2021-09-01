@@ -1,7 +1,8 @@
 #include <copc-lib/hierarchy/node.hpp>
 
-#include <string>
 #include <iterator>
+#include <sstream>
+#include <string>
 
 #include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/las/point.hpp>
@@ -29,6 +30,14 @@ std::vector<las::Point> Node::GetPoints()
     return points;
 }
 
+std::vector<char> Node::PackPoints(const std::vector<las::Point> &points)
+{
+    std::stringstream out;
+    PackPoints(points, out);
+    auto ostr = out.str();
+    return std::vector<char>(ostr.begin(), ostr.end());
+}
+
 void Node::PackPoints(const std::vector<las::Point> &points, std::ostream &out_stream)
 {
     for (const auto &point : points)
@@ -44,7 +53,8 @@ std::vector<char> Node::GetPointData()
     return laz::Decompressor::DecompressBytes(reader_, point_count);
 }
 
-std::vector<char> Node::GetPointDataCompressed() { 
+std::vector<char> Node::GetPointDataCompressed()
+{
     std::vector<char> out;
     out.reserve(size_);
 

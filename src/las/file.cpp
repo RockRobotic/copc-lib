@@ -3,8 +3,5 @@
 namespace copc::las
 {
 
-LasFile::LasFile(LasHeader header)
-{
-    this->header_ = header;
-}
+LasFile::LasFile(LasHeader header) { this->header_ = header; }
 } // namespace copc::las

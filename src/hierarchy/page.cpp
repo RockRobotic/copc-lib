@@ -3,7 +3,6 @@
 
 namespace copc::hierarchy
 {
-
 void Page::Load()
 {
     if (!this->IsValid())
@@ -15,31 +14,32 @@ void Page::Load()
     int num_entries = int(size_ / ENTRY_SIZE);
     for (int i = 0; i < num_entries; i++)
     {
-        VoxelKey key;
-        reader_->in_stream.read(reinterpret_cast<char *>(&key.d), sizeof(key.d));
-        reader_->in_stream.read(reinterpret_cast<char *>(&key.x), sizeof(key.x));
-        reader_->in_stream.read(reinterpret_cast<char *>(&key.y), sizeof(key.y));
-        reader_->in_stream.read(reinterpret_cast<char *>(&key.z), sizeof(key.z));
-
-        int64_t offset;
-        reader_->in_stream.read(reinterpret_cast<char *>(&offset), sizeof(offset));
-        int32_t byteSize;
-        reader_->in_stream.read(reinterpret_cast<char *>(&byteSize), sizeof(byteSize));
-        int32_t pointCount;
-        reader_->in_stream.read(reinterpret_cast<char *>(&pointCount), sizeof(pointCount));
+        Entry e = Entry::Unpack(reader_->in_stream);
 
         // Either create a Sub-Page or Node out of the entry
-        if (pointCount == -1)
+        if (e.point_count == -1)
         {
-            this->sub_pages[key] = std::make_shared<Page>(key, offset, byteSize, reader_);
+            this->sub_pages[key] = std::make_shared<Page>(e, reader_);
         }
         else
         {
-            this->nodes[key] = std::make_shared<Node>(key, offset, byteSize, pointCount, reader_);
+            this->nodes[key] = std::make_shared<Node>(e, reader_);
         }
     }
 
     loaded = true;
 }
+
+bool Page::InsertNode(VoxelKey key, std::vector<las::Point> points)
+{
+    std::vector<char> uncompressed = Node::PackPoints(points);
+    auto entry = writer_->WriteNode(uncompressed);
+    auto node = std::make_shared<Node>(key, entry.offset, entry.size, entry.point_count);
+    this->nodes[key] = node;
+}
+
+// std::shared_ptr<Page> Page::GetSubPage(VoxelKey key) { return std::shared_ptr<Page>(); }
+//
+// std::shared_ptr<Node> Page::GetNode(VoxelKey key) { return std::shared_ptr<Node>(); }
 
 } // namespace copc::hierarchy

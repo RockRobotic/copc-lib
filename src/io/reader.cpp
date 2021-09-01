@@ -5,8 +5,8 @@
 
 namespace copc::io
 {
-Reader::Reader(std::istream &in_stream) : in_stream(in_stream) 
-{ 
+Reader::Reader(std::istream &in_stream) : in_stream(in_stream)
+{
     if (!this->in_stream.good())
         throw std::runtime_error("Invalid input stream!");
 

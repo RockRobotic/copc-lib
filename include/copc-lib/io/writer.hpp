@@ -6,7 +6,15 @@
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/las/header.hpp>
 
-namespace copc::io
+namespace copc
+{
+namespace hierarchy
+{
+// should try to remove circular ref...
+class Page;
+} // namespace hierarchy
+
+namespace io
 {
 const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
 
@@ -25,9 +33,14 @@ class Writer
 {
   public:
     struct LasConfig;
+    struct Entry;
     Writer(std::ostream &out_stream, LasConfig config, int span = 0, std::string wkt = "");
 
     void Close();
+
+    Entry WriteNode(std::vector<char> uncompressed);
+    void TrackPage(std::shared_ptr<hierarchy::Page> page) { pages_.push_back(page); }
+    // void WriteNodeCompressed(std::vector<char> compressed, uint64_t &out_offset, int32_t &out_size);
 
     std::shared_ptr<CopcFile> file;
     std::ostream &out_stream;
@@ -53,6 +66,13 @@ class Writer
         vector3 offset{0, 0, 0};
     };
 
+    struct Entry
+    {
+        uint64_t offset;
+        int32_t size;
+        int32_t point_count;
+    };
+
   private:
     las::CopcVlr copc_data;
 
@@ -61,12 +81,17 @@ class Writer
     const uint64_t FIRST_CHUNK_OFFSET = OFFSET_TO_POINT_DATA + sizeof(uint64_t);
 
     std::vector<lazperf::chunk> chunks_;
+    std::vector<std::shared_ptr<hierarchy::Page>> pages_;
+    uint64_t point_count_14_ = 0;
 
     void WriteHeader(las::LasHeader &head14);
     void WriteChunkTable();
     void WriteWkt(las::LasHeader &head14);
+    void WriteChunk(std::vector<char> &compressed);
+    void WritePage(std::shared_ptr<hierarchy::Page> page);
 
     las::LasHeader HeaderFromConfig(LasConfig config);
 };
-} // namespace copc::io
+} // namespace io
+} // namespace copc
 #endif // COPCLIB_IO_WRITER_H_

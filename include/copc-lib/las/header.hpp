@@ -1,8 +1,8 @@
 #ifndef COPCLIB_LAS_HEADER_H_
 #define COPCLIB_LAS_HEADER_H_
 
-#include <lazperf/readers.hpp>
 #include <lazperf/header.hpp>
+#include <lazperf/readers.hpp>
 
 namespace copc::las
 {
