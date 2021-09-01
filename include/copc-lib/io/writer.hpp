@@ -54,6 +54,8 @@ class Writer
     };
 
   private:
+    las::CopcVlr copc_data;
+
     // header + COPC vlr + LAZ vlr (max 4 items)
     const int OFFSET_TO_POINT_DATA = 375 + (54 + 160) + (54 + (34 + 4 * 6));
     const uint64_t FIRST_CHUNK_OFFSET = OFFSET_TO_POINT_DATA + sizeof(uint64_t);

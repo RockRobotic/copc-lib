@@ -58,10 +58,9 @@ void Writer::WriteHeader(las::LasHeader &head14)
     head14.write(out_stream);
 
     // Write the VLR.
-    las::CopcVlr copc;
-    copc.span = file->GetSpan();
-    copc.header().write(out_stream);
-    copc.write(out_stream);
+    copc_data.span = file->GetSpan();
+    copc_data.header().write(out_stream);
+    copc_data.write(out_stream);
 
     lazVlr.header().write(out_stream);
     lazVlr.write(out_stream);
@@ -82,6 +81,8 @@ void Writer::WriteWkt(las::LasHeader &head14)
 
     out_stream.seekp(0, std::ios::end);
     int64_t offset = static_cast<int64_t>(out_stream.tellp());
+    copc_data.wkt_vlr_offset = offset + evlr_header::Size;
+    copc_data.wkt_vlr_size = vlr.size();
 
     h.write(out_stream);
     vlr.write(out_stream);

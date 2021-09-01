@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include <copc-lib/io/writer.hpp>
+#include <copc-lib/io/reader.hpp>
 #include <lazperf/readers.hpp>
 #include <cstring>
 #include <sstream>
@@ -79,6 +80,9 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(span == 256);
 
             writer.Close();
+
+            Reader reader(out_stream);
+            REQUIRE(reader.copc_data.span == 256);
         }
 
         SECTION("WKT")
@@ -92,6 +96,9 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(writer.file->GetWkt() == "TEST_WKT");
 
             writer.Close();
+
+            Reader reader(out_stream);
+            REQUIRE(reader.file->GetWkt() == "TEST_WKT");
         }
     }
 }
