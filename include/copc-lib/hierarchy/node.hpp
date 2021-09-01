@@ -27,7 +27,10 @@ class Node : public Entry
 
     // Reads the node's data into an uncompressed byte array
     std::vector<char> GetPointData();
+    // Reads the node's data into a compressed byte array
+    std::vector<char> GetPointDataCompressed();
 
+    // Reads the node's data into Point objects
     std::vector<las::Point> GetPoints();
 
   private:

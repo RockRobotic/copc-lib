@@ -102,6 +102,24 @@ TEST_CASE("GetPointData Test", "[Hierarchy] ")
     }
 }
 
+TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
+{
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        auto reader = std::make_shared<copc::io::Reader>(in_stream);
+
+        Hierarchy h(reader);
+
+        auto key = VoxelKey(0, 0, 0, 0);
+        auto hier_entry = h.FindNode(key);
+
+        auto point_vec = hier_entry->GetPointDataCompressed();
+        REQUIRE(point_vec.size() > 0);
+    }
+}
+
 TEST_CASE("GetPoints Test", "[Hierarchy] ")
 {
     GIVEN("A valid input stream")

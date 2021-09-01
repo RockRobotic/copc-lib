@@ -1,6 +1,7 @@
 #include <copc-lib/hierarchy/node.hpp>
 
 #include <string>
+#include <iterator>
 
 #include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/las/point.hpp>
@@ -41,6 +42,18 @@ std::vector<char> Node::GetPointData()
 
     reader_->in_stream.seekg(offset_);
     return laz::Decompressor::DecompressBytes(reader_, point_count);
+}
+
+std::vector<char> Node::GetPointDataCompressed() { 
+    std::vector<char> out;
+    out.reserve(size_);
+
+    reader_->in_stream.seekg(offset_);
+
+    // read the data:
+    out.insert(out.begin(), std::istream_iterator<char>(reader_->in_stream), std::istream_iterator<char>());
+
+    return out;
 }
 
 } // namespace copc::hierarchy
