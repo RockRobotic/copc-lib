@@ -106,23 +106,49 @@ void Point2::ToPointFormat(const uint8_t &point_format_id) {
     has_nir_ = FormatHasNir(point_format_id);
 }
 
-//std::string Point2::ToString() const {
-//    std::stringstream ss;
-//    if (point_10_)
-//        ss << point_10_->ToString();
-//    else
-//        ss << point_14_->ToString();
-//    if (gps_time_)
-//        ss << std::endl << gps_time_->ToString();
-//    if (rgb_)
-//        ss << std::endl << rgb_->ToString();
-//    if (nir_)
-//        ss << std::endl << nir_->ToString();
-//    if (!extra_bytes_.empty())
-//        ss << std::endl << "Extra Bytes: " << extra_bytes_.size();
-//
-//    return ss.str();
-//}
+std::string Point2::ToString() const {
+    std::stringstream ss;
+    if (extended_point_type_) {
+        ss << "Point14: " << std::endl;
+        ss << "\tX: " << x_ << ", Y: " << y_ << ", Z: " << z_ << std::endl;
+        ss << "\tIntensity: " << intensity_ << std::endl;
+        ss << "\tReturn Number: " << static_cast<short>(ReturnNumber())
+           << ", Number of Returns: " << static_cast<short>(NumberOfReturns()) << std::endl;
+        ss << "\tClassification Flags: Synthetic: " << Synthetic() << ", Key Point: " << KeyPoint()
+           << ", Withheld: " << Withheld() << ", Overlap: " << Overlap() << std::endl;
+        ss << "\tScannerChannel: " << static_cast<short>(ScannerChannel()) << std::endl;
+        ss << "\tScan Direction: " << ScanDirectionFlag() << std::endl;
+        ss << "\tEdge of Flight Line: " << EdgeOfFlightLineFlag() << std::endl;
+        ss << "\tClasification: " << static_cast<short>(Classification()) << std::endl;
+        ss << "\tUser Data: " << static_cast<short>(user_data_) << std::endl;
+        ss << "\tScan Angle: " << extended_scan_angle_ << std::endl;
+        ss << "\tPoint Source ID: " << point_source_id_;
+    } else {
+        ss << "Point10: " << std::endl;
+        ss << "\tX: " << x_ << ", Y: " << y_ << ", Z: " << z_ << std::endl;
+        ss << "\tIntensity: " << intensity_ << std::endl;
+        ss << "\tReturn Number: " << static_cast<short>(ReturnNumber())
+           << ", Number of Returns: " << static_cast<short>(NumberOfReturns()) << std::endl;
+        ss << "\tScan Direction: " << ScanDirectionFlag() << std::endl;
+        ss << "\tEdge of Flight Line: " << EdgeOfFlightLineFlag() << std::endl;
+        ss << "\tClasification: " << static_cast<short>(Classification()) << std::endl;
+        ss << "\tClassification Flags: Synthetic: " << Synthetic() << ", Key Point: " << KeyPoint()
+           << ", Withheld: " << Withheld() << std::endl;
+        ss << "\tScan Angle Rank: " << static_cast<short>(scan_angle_rank_) << std::endl;
+        ss << "\tUser Data: " << static_cast<short>(user_data_) << std::endl;
+        ss << "\tPoint Source ID: " << point_source_id_;
+    }
+    if (has_gps_time_)
+        ss << std::endl << "GPS Time: " << gps_time_;
+    if (has_rgb_)
+        ss << std::endl << "RGB: [" << rgb_[0] << "," << rgb_[1] << "," << rgb_[2] << "]";
+    if (has_nir_)
+        ss << std::endl << "NIR: " << nir_;
+    if (!extra_bytes_.empty())
+        ss << std::endl << "Extra Bytes: " << extra_bytes_.size();
+
+    return ss.str();
+}
 
 //void Point2::PackAsFormat(std::ostream &out_stream, const uint8_t &point_format_id) const;
 

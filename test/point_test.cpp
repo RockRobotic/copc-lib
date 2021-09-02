@@ -40,8 +40,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.NumberOfReturns(8));
 
         // Scan Direction
-        point0.ScanDirFlag(true);
-        REQUIRE(point0.ScanDirFlag() == true);
+        point0.ScanDirectionFlag(true);
+        REQUIRE(point0.ScanDirectionFlag() == true);
 
         // Edge of Flight Line
         point0.EdgeOfFlightLineFlag(true);
@@ -51,7 +51,7 @@ TEST_CASE("Point tests", "[Point]")
         point0.ReturnsScanDirEofBitFields(172);
         REQUIRE(point0.ReturnNumber() == 4);
         REQUIRE(point0.NumberOfReturns() == 5);
-        REQUIRE(point0.ScanDirFlag() == false);
+        REQUIRE(point0.ScanDirectionFlag() == false);
         REQUIRE(point0.EdgeOfFlightLineFlag() == true);
 
         // Classification
@@ -118,8 +118,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.ExtendedReturns());
         REQUIRE_THROWS(point0.FlagsBitFields(UINT8_MAX));
         REQUIRE_THROWS(point0.FlagsBitFields());
-
-//        REQUIRE_NOTHROW(point0.ToString());
+        REQUIRE_NOTHROW(point0.ToString());
 
         auto point1 = Point2();
         point1.ToPointFormat(1);
@@ -263,10 +262,10 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.ScannerChannel(4));
 
         // Scan Direction
-        point6.ScanDirFlag(true);
-        REQUIRE(point6.ScanDirFlag() == true);
-        point6.ScanDirFlag(false);
-        REQUIRE(point6.ScanDirFlag() == false);
+        point6.ScanDirectionFlag(true);
+        REQUIRE(point6.ScanDirectionFlag() == true);
+        point6.ScanDirectionFlag(false);
+        REQUIRE(point6.ScanDirectionFlag() == false);
 
         // Edge of Flight Line
         point6.EdgeOfFlightLineFlag(true);
@@ -313,7 +312,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.ReturnsScanDirEofBitFields());
         REQUIRE_THROWS(point6.ClassificationBitFields(UINT8_MAX));
         REQUIRE_THROWS(point6.ClassificationBitFields());
-//        REQUIRE_NOTHROW(point6.ToString());
+        REQUIRE_NOTHROW(point6.ToString());
 
         auto point7 = Point2();
         point7.ToPointFormat(7);

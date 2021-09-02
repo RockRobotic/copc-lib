@@ -160,10 +160,10 @@ public:
             throw std::runtime_error("Point10 does not have Scanner Channel.");
     }
 
-    bool ScanDirFlag() const {
+    bool ScanDirectionFlag() const {
         return extended_point_type_ ? (extended_flags_ >> 6) & 0x1 : (returns_flags_eof_ >> 6) & 0x1;
     }
-    void ScanDirFlag(const bool &scan_direction_flag) {
+    void ScanDirectionFlag(const bool &scan_direction_flag) {
         if (extended_point_type_)
             extended_flags_ = (extended_flags_ & 0xBF) | (scan_direction_flag << 6);
         else
