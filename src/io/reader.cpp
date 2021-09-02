@@ -85,14 +85,14 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<PageInternal> page)
     return out;
 }
 
-std::vector<las::Point> Reader::GetPoints(Node node)
+std::vector<las::Point> Reader::GetPoints(Node const &node)
 {
     std::vector<char> point_data = GetPointData(node);
     return Node::UnpackPoints(point_data, file->GetLasHeader().point_format_id,
                               file->GetLasHeader().point_record_length);
 }
 
-std::vector<char> Reader::GetPointData(Node node)
+std::vector<char> Reader::GetPointData(Node const &node)
 {
     if (!node.IsValid())
         return {};
@@ -102,6 +102,18 @@ std::vector<char> Reader::GetPointData(Node node)
     auto las_header = file->GetLasHeader();
     std::vector<char> point_data = laz::Decompressor::DecompressBytes(in_stream, las_header, node.point_count);
     return point_data;
+}
+
+std::vector<char> Reader::GetPointDataCompressed(Node const& node) {
+    if (!node.IsValid())
+        return {};
+
+    in_stream.seekg(node.offset);
+
+    std::vector<char> out;
+    out.resize(node.size);
+    in_stream.read(&out[0], node.size);
+    return out;
 }
 
 } // namespace copc

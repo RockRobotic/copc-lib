@@ -19,9 +19,11 @@ class Reader : public BaseIO
     Reader(const std::string &in_file);
 
     // Reads the node's data into an uncompressed byte array
-    std::vector<char> GetPointData(Node node);
+    std::vector<char> GetPointData(Node const &node);
     // Reads the node's data into Point objects
-    std::vector<las::Point> GetPoints(Node node);
+    std::vector<las::Point> GetPoints(Node const &node);
+    // Reads node data without decompressing
+    std::vector<char> GetPointDataCompressed(Node const &node);
 
   private:
     std::istream &in_stream;

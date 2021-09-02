@@ -103,21 +103,21 @@ TEST_CASE("GetPointData Test", "[Reader] ")
     }
 }
 
-// TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
-//{
-//    GIVEN("A valid input stream")
-//    {
-//        fstream in_stream;
-//        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-//        Reader reader(in_stream);
-//
-//        auto key = VoxelKey(0, 0, 0, 0);
-//        auto hier_entry = reader.FindNode(key);
-//
-//        auto point_vec = hier_entry.GetPointDataCompressed();
-//        REQUIRE(point_vec.size() > 0);
-//    }
-//}
+ TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
+{
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        Reader reader(in_stream);
+
+        auto key = VoxelKey(0, 0, 0, 0);
+        auto hier_entry = reader.FindNode(key);
+
+        auto point_vec = reader.GetPointDataCompressed(hier_entry);
+        REQUIRE(point_vec.size() > 0);
+    }
+}
 
 TEST_CASE("GetPoints Test", "[Reader] ")
 {
