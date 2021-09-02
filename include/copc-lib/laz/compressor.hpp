@@ -28,12 +28,13 @@ class Compressor
 
         uint32_t point_count = in.size() / point_size;
 
-        std::vector<char> buff;
         for (int i = 0; i < point_count; i++)
         {
-            buff = std::vector<char>(in.begin() + (i * point_size), in.begin() + ((i + 1) * point_size));
+            std::vector<char> buff =
+                std::vector<char>(in.begin() + (i * point_size), in.begin() + ((i + 1) * point_size));
             compressor->compress(buff.data());
         }
+        compressor->done();
         return point_count;
     }
 };
