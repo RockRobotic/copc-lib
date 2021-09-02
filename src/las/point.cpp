@@ -152,45 +152,137 @@ void Point::ToPointFormat(const uint8_t &point_format_id){
 
     switch (point_format_id) {
         case 0:
-            point_10_ = new internal::Point10();
+            if(point_format_id_>5){
+                point_10_ = new internal::Point10(point_14_->ToPoint10());
+                point_14_ = nullptr;
+            }
+            if(gps_time_)
+                gps_time_ = nullptr;
+            if(rgb_)
+                rgb_ = nullptr;
+            if(nir_)
+                nir_ = nullptr;
             break;
         case 1:
-            point_10_ = new internal::Point10();
-            gps_time_ = new internal::GpsTime();
+            if(point_format_id_>5){
+                point_10_ = new internal::Point10(point_14_->ToPoint10());
+                point_14_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(rgb_)
+                rgb_ = nullptr;
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 2:point_10_ = new internal::Point10();
-            rgb_ = new internal::Rgb();
+        case 2:
+            if(point_format_id_>5){
+                point_10_ = new internal::Point10(point_14_->ToPoint10());
+                point_14_ = nullptr;
+            }
+            if(gps_time_)
+                gps_time_ = nullptr;
+            if(!rgb_)
+                rgb_ = new internal::Rgb();
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 3:point_10_ = new internal::Point10();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
+        case 3:
+            if(point_format_id_>5){
+                point_10_ = new internal::Point10(point_14_->ToPoint10());
+                point_14_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(!rgb_)
+                rgb_ = new internal::Rgb();
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 4:point_10_ = new internal::Point10();
-            gps_time_ = new internal::GpsTime();
+        case 4:
+            if(point_format_id_>5){
+                point_10_ = new internal::Point10(point_14_->ToPoint10());
+                point_14_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(rgb_)
+                rgb_ = nullptr;
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 5:point_10_ = new internal::Point10();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
+        case 5:
+            if(point_format_id_>5){
+                point_10_ = new internal::Point10(point_14_->ToPoint10());
+                point_14_ = nullptr;
+
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(!rgb_)
+                rgb_ = new internal::Rgb();
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 6:point_14_ = new internal::Point14();
-            gps_time_ = new internal::GpsTime();
+        case 6:
+            if(point_format_id_<6){
+                point_14_ = new internal::Point14(point_10_->ToPoint14());
+                point_10_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(rgb_)
+                rgb_ = nullptr;
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 7:point_14_ = new internal::Point14();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
+        case 7:
+            if(point_format_id_<6){
+                point_14_ = new internal::Point14(point_10_->ToPoint14());
+                point_10_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(!rgb_)
+                rgb_ = new internal::Rgb();
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 8:point_14_ = new internal::Point14();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
-            nir_ = new internal::Nir();
+        case 8:
+            if(point_format_id_<6){
+                point_14_ = new internal::Point14(point_10_->ToPoint14());
+                point_10_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(!rgb_)
+                rgb_ = new internal::Rgb();
+            if(!nir_)
+                nir_ = new internal::Nir();
             break;
-        case 9:point_14_ = new internal::Point14();
-            gps_time_ = new internal::GpsTime();
+        case 9:
+            if(point_format_id_<6){
+                point_14_ = new internal::Point14(point_10_->ToPoint14());
+                point_10_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(rgb_)
+                rgb_ = nullptr;
+            if(nir_)
+                nir_ = nullptr;
             break;
-        case 10:point_14_ = new internal::Point14();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
-            nir_ = new internal::Nir();
+        case 10:
+            if(point_format_id_<6){
+                point_14_ = new internal::Point14(point_10_->ToPoint14());
+                point_10_ = nullptr;
+            }
+            if(!gps_time_)
+                gps_time_ = new internal::GpsTime;
+            if(!rgb_)
+                rgb_ = new internal::Rgb();
+            if(!nir_)
+                nir_ = new internal::Nir();
             break;
         default:throw std::runtime_error("Point format must be 0-10");
     }
