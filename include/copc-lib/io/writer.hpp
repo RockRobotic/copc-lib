@@ -61,6 +61,10 @@ class Writer : public BaseIO
     std::unique_ptr<WriterInternal> writer_;
 
     Node DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
+    std::vector<Entry> ReadPage(std::shared_ptr<PageInternal> page) override
+    {
+        throw std::runtime_error("No pages should be unloaded!");
+    };
 
     las::LasHeader HeaderFromConfig(LasConfig const &config);
 };

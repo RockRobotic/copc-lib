@@ -19,6 +19,7 @@ void Writer::Close() { this->writer_->Close(); }
 Page Writer::AddPage(VoxelKey key)
 {
     auto page = std::make_shared<PageInternal>(key);
+    page->loaded = true;
     hierarchy->seen_pages_[page->key] = page;
     return *page;
 }

@@ -40,10 +40,10 @@ void test_page()
 
     Writer writer(out_stream, cfg, 256, "TEST_WKT!");
 
-    auto page = writer.CreateAndInsertPage(VoxelKey(0, 0, 0, 0));
+    auto page = writer.AddPage(VoxelKey(0, 0, 0, 0));
     auto in_pts = reader.GetPoints(reader.FindNode(page.key));
 
-    writer.InsertNode(page, VoxelKey(0, 0, 0, 0), in_pts);
+    writer.AddNode(page, VoxelKey(0, 0, 0, 0), in_pts);
 
     writer.Close();
 }
