@@ -19,7 +19,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Lazperf
+      uses: actions/checkout@v2
+      with:
+        path: lazperf
+        repository: hobu/laz-perf
+        
+    - name: Build lazperf
+      shell: bash
+      working-directory: lazperf
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+        sudo make install
+    
+    - name: Checkout Copclib
+      uses: actions/checkout@v2
+      with:
+        path: main
+        submodules: true
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
