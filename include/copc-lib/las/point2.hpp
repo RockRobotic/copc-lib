@@ -261,13 +261,19 @@ public:
     uint16_t PointSourceId() const { return point_source_id_; }
     void PointSourceId(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
 
-    void SetRgb(const uint16_t &r, const uint16_t &g, const uint16_t &b) {
+    const uint16_t *Rgb() const {
+        if (has_rgb_) {
+            return rgb_;
+        } else
+            throw std::runtime_error("This point format does not have RGB.");
+    }
+
+    void Rgb(const uint16_t &r, const uint16_t &g, const uint16_t &b) {
         if (has_rgb_) {
             rgb_[0] = r;
             rgb_[1] = g;
             rgb_[2] = b;
-        }
-        else
+        } else
             throw std::runtime_error("This point format does not have RGB.");
     }
 

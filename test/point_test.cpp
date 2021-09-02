@@ -145,7 +145,7 @@ TEST_CASE("Point tests", "[Point]")
         point2.B(UINT16_MAX);
         REQUIRE(point2.B() == UINT16_MAX);
 
-        point2.SetRgb(UINT16_MAX / 2, UINT16_MAX / 2, UINT16_MAX / 2);
+        point2.Rgb(UINT16_MAX / 2, UINT16_MAX / 2, UINT16_MAX / 2);
         REQUIRE(point2.R() == UINT16_MAX / 2);
         REQUIRE(point2.G() == UINT16_MAX / 2);
         REQUIRE(point2.B() == UINT16_MAX / 2);
@@ -160,7 +160,7 @@ TEST_CASE("Point tests", "[Point]")
 
         REQUIRE_NOTHROW(point3.GpsTime(DBL_MAX));
         REQUIRE_NOTHROW(point3.GpsTime());
-        REQUIRE_NOTHROW(point3.SetRgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        REQUIRE_NOTHROW(point3.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
         REQUIRE_NOTHROW(point3.R());
         REQUIRE_NOTHROW(point3.G());
         REQUIRE_NOTHROW(point3.B());
@@ -172,7 +172,7 @@ TEST_CASE("Point tests", "[Point]")
 
         REQUIRE_NOTHROW(point4.GpsTime(DBL_MAX));
         REQUIRE_NOTHROW(point4.GpsTime());
-        REQUIRE_THROWS(point4.SetRgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        REQUIRE_THROWS(point4.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
         REQUIRE_THROWS(point4.R());
         REQUIRE_THROWS(point4.G());
         REQUIRE_THROWS(point4.B());
@@ -184,7 +184,7 @@ TEST_CASE("Point tests", "[Point]")
 
         REQUIRE_NOTHROW(point5.GpsTime(DBL_MAX));
         REQUIRE_NOTHROW(point5.GpsTime());
-        REQUIRE_NOTHROW(point5.SetRgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        REQUIRE_NOTHROW(point5.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
         REQUIRE_NOTHROW(point5.R());
         REQUIRE_NOTHROW(point5.G());
         REQUIRE_NOTHROW(point5.B());
@@ -300,7 +300,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.GpsTime() == DBL_MAX);
 
         // Checks
-        REQUIRE_THROWS(point6.SetRgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        REQUIRE_THROWS(point6.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
         REQUIRE_THROWS(point6.R());
         REQUIRE_THROWS(point6.G());
         REQUIRE_THROWS(point6.B());
@@ -317,7 +317,7 @@ TEST_CASE("Point tests", "[Point]")
         auto point7 = Point2();
         point7.ToPointFormat(7);
 
-        point7.SetRgb(UINT16_MAX, UINT16_MAX, UINT16_MAX);
+        point7.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX);
         REQUIRE(point7.R() == UINT16_MAX);
         REQUIRE(point7.G() == UINT16_MAX);
         REQUIRE(point7.B() == UINT16_MAX);
@@ -334,7 +334,7 @@ TEST_CASE("Point tests", "[Point]")
         auto point9 = Point2();
         point9.ToPointFormat(9);
 
-        REQUIRE_THROWS(point9.SetRgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        REQUIRE_THROWS(point9.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
         REQUIRE_THROWS(point9.R());
         REQUIRE_THROWS(point9.G());
         REQUIRE_THROWS(point9.B());
@@ -343,111 +343,68 @@ TEST_CASE("Point tests", "[Point]")
 
         // No need to test point10, it has all attributes and they have all been tested already
     }
-//
-//    SECTION("Point conversion")
-//    {
-//        auto point0 = Point(0);
-//        point0.X(12345);
-//        point0.Y(12345);
-//        point0.Z(12345);
-//
-//        REQUIRE_THROWS(point0.ScannerChannel());
-//        REQUIRE_THROWS(point0.GpsTime());
-//        REQUIRE_THROWS(point0.GetRgb());
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(1);
-//
-//        REQUIRE(point0.X() == 12345);
-//        REQUIRE(point0.Y() == 12345);
-//        REQUIRE(point0.Z() == 12345);
-//
-//        REQUIRE_THROWS(point0.ScannerChannel());
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE_THROWS(point0.GetRgb());
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(2);
-//
-//        REQUIRE_THROWS(point0.ScannerChannel());
-//        REQUIRE_THROWS(point0.GpsTime());
-//        REQUIRE(point0.R() == 0);
-//        REQUIRE(point0.G() == 0);
-//        REQUIRE(point0.B() == 0);
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(3);
-//
-//        REQUIRE_THROWS(point0.ScannerChannel());
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE(point0.R() == 0);
-//        REQUIRE(point0.G() == 0);
-//        REQUIRE(point0.B() == 0);
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(4);
-//
-//        REQUIRE_THROWS(point0.ScannerChannel());
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE_THROWS(point0.GetRgb());
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(5);
-//
-//        REQUIRE_THROWS(point0.ScannerChannel());
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE(point0.R() == 0);
-//        REQUIRE(point0.G() == 0);
-//        REQUIRE(point0.B() == 0);
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ScanAngleRank(90);
-//
-//        point0.ToPointFormat(6);
-//
-//        REQUIRE_THROWS(point0.ScanAngleRank());
-//        REQUIRE(point0.ScannerChannel() == 0);
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE(point0.ScanAngle() == 15000);
-//        REQUIRE_THROWS(point0.GetRgb());
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(7);
-//
-//        REQUIRE_THROWS(point0.ScanAngleRank());
-//        REQUIRE(point0.ScannerChannel() == 0);
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE(point0.R() == 0);
-//        REQUIRE(point0.G() == 0);
-//        REQUIRE(point0.B() == 0);
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(8);
-//
-//        REQUIRE_THROWS(point0.ScanAngleRank());
-//        REQUIRE(point0.ScannerChannel() == 0);
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE(point0.R() == 0);
-//        REQUIRE(point0.G() == 0);
-//        REQUIRE(point0.B() == 0);
-//        REQUIRE(point0.Nir() == 0);
-//
-//        point0.ToPointFormat(9);
-//
-//        REQUIRE_THROWS(point0.ScanAngleRank());
-//        REQUIRE(point0.ScannerChannel() == 0);
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE_THROWS(point0.GetRgb());
-//        REQUIRE_THROWS(point0.Nir());
-//
-//        point0.ToPointFormat(10);
-//
-//        REQUIRE_THROWS(point0.ScanAngleRank());
-//        REQUIRE(point0.ScannerChannel() == 0);
-//        REQUIRE(point0.GpsTime() == 0);
-//        REQUIRE(point0.R() == 0);
-//        REQUIRE(point0.G() == 0);
-//        REQUIRE(point0.B() == 0);
-//        REQUIRE(point0.Nir() == 0);
-//    }
+
+    SECTION("Point conversion")
+    {
+        auto point0 = Point2();
+        point0.ToPointFormat(0);
+
+        REQUIRE_THROWS(point0.ScannerChannel());
+        REQUIRE_THROWS(point0.GpsTime());
+        REQUIRE_THROWS(point0.Rgb());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(1);
+
+        REQUIRE_THROWS(point0.ScannerChannel());
+        REQUIRE_THROWS(point0.Rgb());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(2);
+
+        REQUIRE_THROWS(point0.ScannerChannel());
+        REQUIRE_THROWS(point0.GpsTime());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(3);
+
+        REQUIRE_THROWS(point0.ScannerChannel());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(4);
+
+        REQUIRE_THROWS(point0.ScannerChannel());
+        REQUIRE_THROWS(point0.Rgb());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(5);
+
+        REQUIRE_THROWS(point0.ScannerChannel());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(6);
+
+        REQUIRE_THROWS(point0.ScanAngleRank());
+        REQUIRE_THROWS(point0.Rgb());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(7);
+
+        REQUIRE_THROWS(point0.ScanAngleRank());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(8);
+
+        REQUIRE_THROWS(point0.ScanAngleRank());
+
+        point0.ToPointFormat(9);
+
+        REQUIRE_THROWS(point0.ScanAngleRank());
+        REQUIRE_THROWS(point0.Rgb());
+        REQUIRE_THROWS(point0.Nir());
+
+        point0.ToPointFormat(10);
+
+        REQUIRE_THROWS(point0.ScanAngleRank());
+    }
 }
