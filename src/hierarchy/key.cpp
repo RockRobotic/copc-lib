@@ -51,7 +51,7 @@ std::vector<VoxelKey> VoxelKey::GetParents(bool include_current) const
 
 bool VoxelKey::ChildOf(VoxelKey parent_key)
 {
-    for (auto parent : GetParents(false))
+    for (auto parent : GetParents(true))
     {
         if (parent == parent_key)
             return true;

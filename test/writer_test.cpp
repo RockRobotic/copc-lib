@@ -4,6 +4,7 @@
 #include <cstring>
 #include <lazperf/readers.hpp>
 #include <sstream>
+#include "test_data.h"
 
 using namespace copc;
 using namespace std;
@@ -156,32 +157,34 @@ TEST_CASE("Writer Pages", "[Writer]")
     }
 }
 
-// TEST_CASE("Writer Node Uncompressed", "[Writer]")
-//{
-//    SECTION("Root Page")
-//    {
-//        stringstream out_stream;
-//
-//        Writer writer(out_stream, Writer::LasConfig());
-//
-//        REQUIRE(!writer.FindNode(VoxelKey::BaseKey()).IsValid());
-//        REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
-//        REQUIRE(!writer.FindNode(VoxelKey(5, 4, 3, 2)).IsValid());
-//
-//        REQUIRE_NOTHROW(writer.GetRootPage());
-//        Page root_page = writer.GetRootPage();
-//        REQUIRE(root_page.IsValid());
-//        REQUIRE(root_page.loaded == true);
-//
-//        REQUIRE(writer.AddSubPage(VoxelKey::BaseKey()) == root_page);
-//
-//        REQUIRE_THROWS(writer.AddSubPage(VoxelKey::InvalidKey()));
-//
-//        writer.Close();
-//
-//        Reader reader(out_stream);
-//        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-//        REQUIRE(reader.file->GetCopc().root_hier_size == 0);
-//        REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
-//    }
-//}
+TEST_CASE("Writer Node Uncompressed", "[Writer]")
+{
+    SECTION("Root Page")
+    {
+        stringstream out_stream;
+
+        Writer::LasConfig cfg;
+        cfg.point_format_id = 3;
+        Writer writer(out_stream, cfg);
+
+        Page root_page = writer.GetRootPage();
+
+        REQUIRE_THROWS(writer.AddNode(root_page, VoxelKey::InvalidKey(), std::vector<char>()));
+        REQUIRE_THROWS(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), std::vector<char>()));
+
+        std::vector<char> root_node(twenty_pts_prdf3, twenty_pts_prdf3 + sizeof(twenty_pts_prdf3));
+        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), root_node));
+
+        writer.Close();
+
+        Reader reader(out_stream);
+        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
+        REQUIRE(reader.file->GetCopc().root_hier_size == 32);
+
+        auto node = reader.FindNode(VoxelKey::BaseKey());
+        REQUIRE(node.IsValid());
+        auto root_node_test = reader.GetPointData(node);
+
+        REQUIRE(root_node_test == root_node);
+    }
+}

@@ -65,6 +65,10 @@ Node Writer::AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &po
 
 Node Writer::AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed)
 {
+    int point_size = file->GetLasHeader().point_record_length;
+    if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
+        throw std::runtime_error("Invalid point data array!");
+
     return DoAddNode(page, key, uncompressed, 0, false);
 }
 
