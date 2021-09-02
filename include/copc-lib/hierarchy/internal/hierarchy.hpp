@@ -12,6 +12,7 @@ namespace copc
 class Hierarchy
 {
   public:
+    Hierarchy(){};
     Hierarchy(int64_t root_hier_offset, int32_t root_hier_size)
     {
         // add the root page to the pages list

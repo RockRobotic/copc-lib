@@ -46,6 +46,7 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
 
     head14.point_format_id |= (1 << 7);
     head14.point_offset = OFFSET_TO_POINT_DATA;
+    head14.point_count_14 = point_count_14_;
 
     // if (head14.ebCount())
     //{

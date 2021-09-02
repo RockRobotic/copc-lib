@@ -11,6 +11,7 @@ Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span, std:
 {
     auto header = HeaderFromConfig(config);
     this->file = std::make_shared<CopcFile>(header, span, wkt);
+    this->hierarchy = std::make_shared<Hierarchy>();
     this->writer_ = std::make_unique<WriterInternal>(out_stream, this->file, this->hierarchy);
 }
 
@@ -18,6 +19,9 @@ void Writer::Close() { this->writer_->Close(); }
 
 Page Writer::AddPage(VoxelKey key)
 {
+    if (!key.IsValid())
+        throw std::runtime_error("Invalid key!");
+
     auto page = std::make_shared<PageInternal>(key);
     page->loaded = true;
     hierarchy->seen_pages_[page->key] = page;
@@ -26,6 +30,9 @@ Page Writer::AddPage(VoxelKey key)
 
 Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed)
 {
+    if (!page.IsPage() || !page.IsValid() || !key.IsValid())
+        throw std::runtime_error("Invalid page or target key!");
+
     Entry e = writer_->WriteNode(in, point_count, compressed);
     e.key = key;
 
