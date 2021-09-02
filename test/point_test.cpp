@@ -61,7 +61,7 @@ TEST_CASE("Internal tests", "[Point]")
         REQUIRE(point_14.EdgeOfFlightLineFlag() == true);
         REQUIRE(point_14.Classification() == 31);
         REQUIRE(point_14.UserData() == UINT8_MAX);
-        REQUIRE(point_14.ScanAngle() == 0);
+        REQUIRE(point_14.ScanAngle() == 15000);
         REQUIRE(point_14.PointSourceId() == UINT16_MAX);
     }
 
@@ -119,7 +119,7 @@ TEST_CASE("Internal tests", "[Point]")
         REQUIRE(point_10.KeyPoint() == false);
         REQUIRE(point_10.Withheld() == true);
         REQUIRE(point_10.UserData() == UINT8_MAX);
-        REQUIRE(point_10.ScanAngleRank() == 0);
+        REQUIRE(point_10.ScanAngleRank() == 90);
         REQUIRE(point_10.PointSourceId() == UINT16_MAX);
     }
 }
@@ -515,11 +515,14 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point0.B() == 0);
         REQUIRE_THROWS(point0.GetNirVal());
 
+        point0.ScanAngleRank(90);
+
         point0.ToPointFormat(6);
 
         REQUIRE_THROWS(point0.ScanAngleRank());
         REQUIRE(point0.ScannerChannel() == 0);
         REQUIRE(point0.GetGpsTimeVal() == 0);
+        REQUIRE(point0.ScanAngle() == 15000);
         REQUIRE_THROWS(point0.GetRgb());
         REQUIRE_THROWS(point0.GetNirVal());
 

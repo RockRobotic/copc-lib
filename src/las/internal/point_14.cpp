@@ -102,7 +102,7 @@ Point10 Point14::ToPoint10() const {
                    KeyPoint(),
                    Withheld(),
                    user_data_,
-                   0,
+                   static_cast<int8_t>(static_cast<double>(std::max(-15000,std::min(int(15000),int(scan_angle_))))*0.006),
                    point_source_id_);
 }
 

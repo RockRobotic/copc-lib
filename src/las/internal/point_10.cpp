@@ -97,7 +97,7 @@ Point14 Point10::ToPoint14() const {
                    EdgeOfFlightLineFlag(),
                    Classification(),
                    user_data_,
-                   0,
+                   static_cast<int16_t>(static_cast<double>(scan_angle_rank_)/0.006),
                    point_source_id_);
 }
 
