@@ -4,9 +4,8 @@
 
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/io/reader.hpp>
-#include <copc-lib/hierarchy/hierarchy.hpp>
 
-using namespace copc::io;
+using namespace copc;
 using namespace std;
 
 void test_header()
@@ -37,18 +36,16 @@ void test_page()
 
     fstream in_stream;
     in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-    auto reader = std::make_shared<copc::io::Reader>(in_stream);
-    copc::hierarchy::Hierarchy h_in(reader);
+    Reader reader(in_stream);
 
-    auto writer = std::make_shared<Writer>(out_stream, cfg, 256, "TEST_WKT!");
-    copc::hierarchy::Hierarchy h(writer);
+    Writer writer(out_stream, cfg, 256, "TEST_WKT!");
 
-    auto page = h.CreateAndInsertPage(copc::hierarchy::VoxelKey(0, 0, 0, 0));
-    auto node = h_in.FindNode(page->key);
-    bool good = writer-> out_stream.good();
-    page->InsertNode(page->key, node->GetPoints());
+    auto page = writer.CreateAndInsertPage(VoxelKey(0, 0, 0, 0));
+    auto in_pts = reader.GetPoints(reader.FindNode(page.key));
 
-    writer->Close();
+    writer.InsertNode(page, VoxelKey(0, 0, 0, 0), in_pts);
+
+    writer.Close();
 }
 
 int main() { 

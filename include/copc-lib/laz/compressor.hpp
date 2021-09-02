@@ -16,14 +16,13 @@ namespace copc::laz
 class Compressor
 {
   public:
-    static uint32_t CompressBytes(io::Writer *writer, std::vector<char> &in)
+    static uint32_t CompressBytes(std::ostream &out_stream, las::LasHeader const &header, std::vector<char> &in)
     {
-        OutFileStream stream(writer->out_stream);
+        OutFileStream stream(out_stream);
 
-        las_compressor::ptr compressor = build_las_compressor(stream.cb(), writer->file->GetLasHeader().point_format_id,
-                                                              writer->file->GetLasHeader().ebCount());
+        las_compressor::ptr compressor = build_las_compressor(stream.cb(), header.point_format_id, header.ebCount());
 
-        int point_size = writer->file->GetLasHeader().point_record_length;
+        int point_size = header.point_record_length;
         if (in.size() % point_size != 0)
             throw std::runtime_error("Invalid input stream for compression!");
 
