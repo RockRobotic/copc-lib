@@ -60,25 +60,22 @@ Point::Point(const uint8_t &point_format_id) : point_format_id_(point_format_id)
 // Copy constructor
 Point::Point(const Point &point) : point_format_id_(point.point_format_id_), point_byte_size_(point.point_byte_size_) {
 
-    if (point.HasPoint10()) {
+    point_10_ = nullptr;
+    point_14_ = nullptr;
+    gps_time_ = nullptr;
+    rgb_ = nullptr;
+    nir_ = nullptr;
+
+    if (point.HasPoint10())
         point_10_ = new internal::Point10(point.GetPoint10());
-        point_14_ = nullptr;
-    } else {
-        point_10_ = nullptr;
+    else
         point_14_ = new internal::Point14(point.GetPoint14());
-    }
     if (point.HasGpsTime())
         gps_time_ = new internal::GpsTime();
-    else
-        gps_time_ = nullptr;
     if (point.HasRgb())
         rgb_ = new internal::Rgb(point.GetRgb());
-    else
-        rgb_ = nullptr;
     if (point.HasNir())
         nir_ = new internal::Nir(point.GetNir());
-    else
-        nir_ = nullptr;
 }
 
 void Point::Unpack(std::istream &in_stream, const uint16_t &point_record_length) {
@@ -148,140 +145,183 @@ std::string Point::ToString() const {
     return ss.str();
 }
 
-void Point::ToPointFormat(const uint8_t &point_format_id){
+void Point::ToPointFormat(const uint8_t &point_format_id) {
 
     switch (point_format_id) {
         case 0:
-            if(point_format_id_>5){
+            if (point_format_id_ > 5) {
                 point_10_ = new internal::Point10(point_14_->ToPoint10());
+                delete point_14_;
                 point_14_ = nullptr;
             }
-            if(gps_time_)
+            if (gps_time_ != nullptr) {
+                delete gps_time_;
                 gps_time_ = nullptr;
-            if(rgb_)
+            }
+            if (rgb_) {
+                delete rgb_;
                 rgb_ = nullptr;
-            if(nir_)
+            }
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 1:
-            if(point_format_id_>5){
+            if (point_format_id_ > 5) {
                 point_10_ = new internal::Point10(point_14_->ToPoint10());
+                delete point_14_;
                 point_14_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(rgb_)
+            if (rgb_) {
+                delete rgb_;
                 rgb_ = nullptr;
-            if(nir_)
+            }
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 2:
-            if(point_format_id_>5){
+            if (point_format_id_ > 5) {
                 point_10_ = new internal::Point10(point_14_->ToPoint10());
+                delete point_14_;
                 point_14_ = nullptr;
             }
-            if(gps_time_)
+            if (gps_time_) {
+                delete gps_time_;
                 gps_time_ = nullptr;
-            if(!rgb_)
+            }
+            if (!rgb_)
                 rgb_ = new internal::Rgb();
-            if(nir_)
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 3:
-            if(point_format_id_>5){
+            if (point_format_id_ > 5) {
                 point_10_ = new internal::Point10(point_14_->ToPoint10());
+                delete point_14_;
                 point_14_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(!rgb_)
+            if (!rgb_)
                 rgb_ = new internal::Rgb();
-            if(nir_)
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 4:
-            if(point_format_id_>5){
+            if (point_format_id_ > 5) {
                 point_10_ = new internal::Point10(point_14_->ToPoint10());
+                delete point_14_;
                 point_14_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(rgb_)
+            if (rgb_) {
+                delete rgb_;
                 rgb_ = nullptr;
-            if(nir_)
+            }
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 5:
-            if(point_format_id_>5){
+            if (point_format_id_ > 5) {
                 point_10_ = new internal::Point10(point_14_->ToPoint10());
+                delete point_14_;
                 point_14_ = nullptr;
 
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(!rgb_)
+            if (!rgb_)
                 rgb_ = new internal::Rgb();
-            if(nir_)
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 6:
-            if(point_format_id_<6){
+            if (point_format_id_ < 6) {
                 point_14_ = new internal::Point14(point_10_->ToPoint14());
+                delete point_10_;
                 point_10_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(rgb_)
+            if (rgb_) {
+                delete rgb_;
                 rgb_ = nullptr;
-            if(nir_)
+            }
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 7:
-            if(point_format_id_<6){
+            if (point_format_id_ < 6) {
                 point_14_ = new internal::Point14(point_10_->ToPoint14());
+                delete point_10_;
                 point_10_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(!rgb_)
+            if (!rgb_)
                 rgb_ = new internal::Rgb();
-            if(nir_)
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 8:
-            if(point_format_id_<6){
+            if (point_format_id_ < 6) {
                 point_14_ = new internal::Point14(point_10_->ToPoint14());
+                delete point_10_;
                 point_10_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(!rgb_)
+            if (!rgb_)
                 rgb_ = new internal::Rgb();
-            if(!nir_)
+            if (!nir_)
                 nir_ = new internal::Nir();
             break;
         case 9:
-            if(point_format_id_<6){
+            if (point_format_id_ < 6) {
                 point_14_ = new internal::Point14(point_10_->ToPoint14());
+                delete point_10_;
                 point_10_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(rgb_)
+            if (rgb_) {
+                delete rgb_;
                 rgb_ = nullptr;
-            if(nir_)
+            }
+            if (nir_) {
+                delete nir_;
                 nir_ = nullptr;
+            }
             break;
         case 10:
-            if(point_format_id_<6){
+            if (point_format_id_ < 6) {
                 point_14_ = new internal::Point14(point_10_->ToPoint14());
+                delete point_10_;
                 point_10_ = nullptr;
             }
-            if(!gps_time_)
+            if (!gps_time_)
                 gps_time_ = new internal::GpsTime;
-            if(!rgb_)
+            if (!rgb_)
                 rgb_ = new internal::Rgb();
-            if(!nir_)
+            if (!nir_)
                 nir_ = new internal::Nir();
             break;
         default:throw std::runtime_error("Point format must be 0-10");
