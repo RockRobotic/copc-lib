@@ -5,35 +5,21 @@
 #include <vector>
 
 #include <copc-lib/hierarchy/entry.hpp>
-#include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/io/reader.hpp>
 #include <copc-lib/las/point.hpp>
 
-namespace copc::hierarchy
+namespace copc
 {
 
 class Page;
 class Node : public Entry
 {
   public:
-    Node(VoxelKey key, uint64_t offset, int32_t size, int32_t point_count) : Entry(key, offset, size, point_count){};
-    Node(Entry e, std::shared_ptr<io::Reader> reader) : Entry(e), reader_(reader){};
-    Node(VoxelKey key, uint64_t offset, int32_t size, int32_t point_count, std::shared_ptr<io::Reader> reader)
-        : Entry(key, offset, size, point_count), reader_(reader){};
+    Node(Entry e) : Entry(e){};
 
     static void PackPoints(const std::vector<las::Point> &points, std::ostream &out_stream);
     static std::vector<char> PackPoints(const std::vector<las::Point> &points);
-
-    // Reads the node's data into an uncompressed byte array
-    std::vector<char> GetPointData();
-    // Reads the node's data into a compressed byte array
-    std::vector<char> GetPointDataCompressed();
-
-    // Reads the node's data into Point objects
-    std::vector<las::Point> GetPoints();
-
-  private:
-    std::shared_ptr<io::Reader> reader_;
+    static std::vector<las::Point> UnpackPoints(const std::vector<char> &in, int point_format_id,
+                                                int point_record_length);
 };
 
 } // namespace copc::hierarchy

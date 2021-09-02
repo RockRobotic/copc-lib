@@ -8,27 +8,8 @@
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/laz/decompressor.hpp>
 
-namespace copc::hierarchy
+namespace copc
 {
-
-std::vector<las::Point> Node::GetPoints()
-{
-    // Get data from node chunk in laz file
-    reader_->in_stream.seekg(offset_);
-    std::vector<char> point_data = laz::Decompressor::DecompressBytes(reader_, point_count);
-
-    // Make a stream out of the vector of char
-    auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
-
-    // Go through each Point to unpack the data from the stream
-    std::vector<las::Point> points(point_count, reader_->file->GetLasHeader().point_format_id);
-
-    // Unpack points
-    for (auto &point : points)
-        point.Unpack(ss, reader_->file->GetLasHeader().point_record_length);
-
-    return points;
-}
 
 std::vector<char> Node::PackPoints(const std::vector<las::Point> &points)
 {
@@ -38,32 +19,30 @@ std::vector<char> Node::PackPoints(const std::vector<las::Point> &points)
     return std::vector<char>(ostr.begin(), ostr.end());
 }
 
+std::vector<las::Point> copc::Node::UnpackPoints(const std::vector<char> &point_data, int point_format_id, int point_record_length)
+{
+    if (point_data.size() % point_record_length != 0)
+        throw std::runtime_error("Invalid input point array!");
+
+            uint64_t point_count = point_data.size() / point_record_length;
+
+    // Make a stream out of the vector of char
+    auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
+
+    // Go through each Point to unpack the data from the stream
+    std::vector<las::Point> points(point_count, point_format_id);
+
+    // Unpack points
+    for (auto &point : points)
+        point.Unpack(ss, point_record_length);
+
+    return points;
+}
+
 void Node::PackPoints(const std::vector<las::Point> &points, std::ostream &out_stream)
 {
     for (const auto &point : points)
         point.Pack(out_stream);
-}
-
-std::vector<char> Node::GetPointData()
-{
-    if (this == nullptr || !this->IsValid())
-        return {};
-
-    reader_->in_stream.seekg(offset_);
-    return laz::Decompressor::DecompressBytes(reader_, point_count);
-}
-
-std::vector<char> Node::GetPointDataCompressed()
-{
-    std::vector<char> out;
-    out.reserve(size_);
-
-    reader_->in_stream.seekg(offset_);
-
-    // read the data:
-    out.insert(out.begin(), std::istream_iterator<char>(reader_->in_stream), std::istream_iterator<char>());
-
-    return out;
 }
 
 } // namespace copc::hierarchy

@@ -12,7 +12,7 @@ namespace copc::las
 class LasFile
 {
   public:
-    LasFile(LasHeader header);
+    LasFile(LasHeader header) : header_(header){};
 
     std::vector<Vlr> vlrs;
     LasHeader GetLasHeader() const { return header_; }

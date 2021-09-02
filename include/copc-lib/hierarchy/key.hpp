@@ -5,7 +5,7 @@
 #include <functional> // for hash
 #include <sstream>
 
-namespace copc::hierarchy
+namespace copc
 {
 
 class VoxelKey
@@ -108,9 +108,9 @@ inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b);
 namespace std
 {
 // Hash function to allow VoxelKeys as unordered_map keys
-template <> struct hash<copc::hierarchy::VoxelKey>
+template <> struct hash<copc::VoxelKey>
 {
-    std::size_t operator()(copc::hierarchy::VoxelKey const &k) const noexcept
+    std::size_t operator()(copc::VoxelKey const &k) const noexcept
     {
         std::hash<uint64_t> h;
 

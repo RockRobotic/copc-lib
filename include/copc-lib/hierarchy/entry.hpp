@@ -5,25 +5,24 @@
 #include <vector>
 
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/io/reader.hpp>
 #include <copc-lib/las/point.hpp>
 
-namespace copc::hierarchy
+namespace copc
 {
 class Entry;
 class Entry
 {
   public:
-    Entry() : offset_(-1), size_(-1), key(VoxelKey()), point_count(-1){};
+    Entry() : offset(-1), size(-1), key(VoxelKey()), point_count(-1){};
     Entry(VoxelKey key, int64_t offset, int32_t size, int32_t point_count)
-        : offset_(offset), size_(size), key(key), point_count(point_count){};
+        : offset(offset), size(size), key(key), point_count(point_count){};
 
-    bool IsValid() const { return offset_ >= 0 && size_ >= 0 && key.IsValid(); }
+    bool IsValid() const { return offset >= 0 && size >= 0 && key.IsValid(); }
 
     std::string ToString() const
     {
         std::stringstream ss;
-        ss << "Entry " << key.ToString() << ": off=" << offset_ << ", size=" << size_ << ", count=" << point_count;
+        ss << "Entry " << key.ToString() << ": off=" << offset << ", size=" << size << ", count=" << point_count;
         return ss.str();
     }
 
@@ -34,8 +33,8 @@ class Entry
         out_stream.write(reinterpret_cast<char *>(&key.y), sizeof(key.y));
         out_stream.write(reinterpret_cast<char *>(&key.z), sizeof(key.z));
 
-        out_stream.write(reinterpret_cast<char *>(&offset_), sizeof(offset_));
-        out_stream.write(reinterpret_cast<char *>(&size_), sizeof(size_));
+        out_stream.write(reinterpret_cast<char *>(&offset), sizeof(offset));
+        out_stream.write(reinterpret_cast<char *>(&size), sizeof(size));
         out_stream.write(reinterpret_cast<char *>(&point_count), sizeof(point_count));
     }
 
@@ -47,22 +46,20 @@ class Entry
         in_stream.read(reinterpret_cast<char *>(&key.y), sizeof(key.y));
         in_stream.read(reinterpret_cast<char *>(&key.z), sizeof(key.z));
 
-        int64_t offset_;
-        in_stream.read(reinterpret_cast<char *>(&offset_), sizeof(offset_));
-        int32_t size_;
-        in_stream.read(reinterpret_cast<char *>(&size_), sizeof(size_));
+        int64_t offset;
+        in_stream.read(reinterpret_cast<char *>(&offset), sizeof(offset));
+        int32_t size;
+        in_stream.read(reinterpret_cast<char *>(&size), sizeof(size));
         int32_t point_count;
         in_stream.read(reinterpret_cast<char *>(&point_count), sizeof(point_count));
 
-        return Entry(key, offset_, size_, point_count);
+        return Entry(key, offset, size, point_count);
     }
 
     int32_t point_count;
     VoxelKey key;
-
-  protected:
-    int64_t offset_;
-    int32_t size_;
+    int64_t offset;
+    int32_t size;
 };
 
 } // namespace copc::hierarchy

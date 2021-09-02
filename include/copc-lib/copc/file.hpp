@@ -13,13 +13,13 @@ const int COPC_OFFSET = 429;
 class CopcFile : public las::LasFile
 {
   public:
-    CopcFile(las::LasHeader header, int span = 0, std::string wkt = "");
+    CopcFile(las::LasHeader header, las::CopcVlr copc, las::WktVlr wkt) : LasFile(header), copc(copc), wkt(wkt){};
 
     // WKT string if defined, else empty
     std::string GetWkt() const { return wkt.wkt; }
 
     // CopcData
-    int64_t GetSpan() const { return copc.span; }
+    las::CopcVlr GetCopc() const { return copc; }
 
   private:
     las::WktVlr wkt;

@@ -1,7 +1,7 @@
 #ifndef COPCLIB_LAZ_DECOMPRESS_H_
 #define COPCLIB_LAZ_DECOMPRESS_H_
 
-#include <copc-lib/io/reader.hpp>
+#include <copc-lib/las/header.hpp>
 
 #include <lazperf/filestream.hpp>
 #include <lazperf/readers.hpp>
@@ -17,15 +17,15 @@ namespace copc::laz
 class Decompressor
 {
   public:
-    static std::vector<char> DecompressBytes(std::shared_ptr<io::Reader> reader, int point_count)
+    static std::vector<char> DecompressBytes(std::istream &in_stream, las::LasHeader &header, int point_count)
     {
         std::vector<char> out;
 
-        InFileStream stre(reader->in_stream);
-        las_decompressor::ptr decompressor = build_las_decompressor(
-            stre.cb(), reader->file->GetLasHeader().point_format_id, reader->file->GetLasHeader().ebCount());
+        InFileStream stre(in_stream);
+        las_decompressor::ptr decompressor =
+            build_las_decompressor(stre.cb(), header.point_format_id, header.ebCount());
 
-        int point_size = reader->file->GetLasHeader().point_record_length;
+        int point_size = header.point_record_length;
         char buff[255];
         for (int i = 0; i < point_count; i++)
         {

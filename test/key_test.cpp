@@ -1,7 +1,7 @@
 #include <catch2/catch.hpp>
 #include <copc-lib/hierarchy/key.hpp>
 
-using namespace copc::hierarchy;
+using namespace copc;
 
 TEST_CASE("Voxel Key checks key validity", "[Key]")
 {
