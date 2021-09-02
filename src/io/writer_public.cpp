@@ -21,6 +21,8 @@ Page Writer::AddPage(VoxelKey key)
 {
     if (!key.IsValid())
         throw std::runtime_error("Invalid key!");
+    if (hierarchy->PageExists(key))
+        return *hierarchy->seen_pages_[key];
 
     auto page = std::make_shared<PageInternal>(key);
     page->loaded = true;

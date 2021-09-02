@@ -3,6 +3,7 @@
 namespace copc
 {
 
+bool operator==(const Page &lhs, const Page &rhs) { return lhs.IsEqual(rhs) && lhs.loaded == rhs.loaded; }
 // bool Page::InsertNode(std::shared_ptr<io::Writer> writer_, VoxelKey key, std::vector<las::Point> points)
 //{
 //    std::vector<char> uncompressed = Node::PackPoints(points);

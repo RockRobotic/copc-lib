@@ -14,10 +14,9 @@ class Hierarchy
   public:
     Hierarchy()
     {
-        auto page = std::make_shared<PageInternal>(VoxelKey::BaseKey(), -1, -1);
-        page->loaded = true;
         // add the root page to the pages list
-        seen_pages_[VoxelKey::BaseKey()] = page;
+        seen_pages_[VoxelKey::BaseKey()] = std::make_shared<PageInternal>(VoxelKey::BaseKey(), -1, -1);
+        seen_pages_[VoxelKey::BaseKey()]->loaded = true;
     }
     Hierarchy(int64_t root_hier_offset, int32_t root_hier_size)
     {
@@ -39,6 +38,10 @@ class Hierarchy
         }
         return nullptr;
     }
+
+    bool PageExists(VoxelKey key) { return seen_pages_.find(key) != seen_pages_.end(); }
+
+    bool NodeExists(VoxelKey key) { return loaded_nodes_.find(key) != loaded_nodes_.end(); }
 
     std::unordered_map<VoxelKey, std::shared_ptr<PageInternal>> seen_pages_;
     std::unordered_map<VoxelKey, std::shared_ptr<Node>> loaded_nodes_;

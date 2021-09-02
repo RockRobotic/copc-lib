@@ -18,9 +18,13 @@ class Page : public Entry
     Page(Entry e) : Entry(e){};
     Page(VoxelKey key, int64_t offset, int32_t size) : Entry(key, offset, size, -1){};
 
-    bool loaded = false;
-};
+    // If a page is "loaded" it doesn't matter the offset/size (since the writer doesn't set offset/size)
+    bool IsValid() const { return (loaded || (offset >= 0 && size >= 0)) && key.IsValid(); }
 
+    bool loaded = false;
+
+    friend bool operator==(const Page &lhs, const Page &rhs);
+};
 } // namespace copc
 
 #endif // COPCLIB_HIERARCHY_PAGE_H_
