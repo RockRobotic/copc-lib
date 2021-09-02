@@ -102,3 +102,86 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         }
     }
 }
+
+TEST_CASE("Writer Pages", "[Writer]")
+{
+    SECTION("Root Page")
+    {
+        stringstream out_stream;
+
+        Writer writer(out_stream, Writer::LasConfig());
+
+        REQUIRE(!writer.FindNode(VoxelKey::BaseKey()).IsValid());
+        REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
+        REQUIRE(!writer.FindNode(VoxelKey(5, 4, 3, 2)).IsValid());
+
+        REQUIRE_NOTHROW(writer.GetRootPage());
+        Page root_page = writer.GetRootPage();
+        REQUIRE(root_page.IsValid());
+        REQUIRE(root_page.IsPage());
+        REQUIRE(root_page.loaded == true);
+
+        REQUIRE_THROWS(writer.AddSubPage(root_page, VoxelKey::InvalidKey()));
+
+        writer.Close();
+
+        Reader reader(out_stream);
+        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
+        REQUIRE(reader.file->GetCopc().root_hier_size == 0);
+        REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
+    }
+
+    SECTION("Nested Page")
+    {
+        stringstream out_stream;
+
+        Writer writer(out_stream, Writer::LasConfig());
+
+        Page root_page = writer.GetRootPage();
+
+        auto sub_page = writer.AddSubPage(root_page, VoxelKey(1,1,1,1));
+        REQUIRE(sub_page.IsPage());
+        REQUIRE(sub_page.IsValid());
+        REQUIRE(sub_page.loaded == true);
+
+        REQUIRE_THROWS(writer.AddSubPage(sub_page, VoxelKey(1, 1, 1, 0)));
+        REQUIRE_THROWS(writer.AddSubPage(sub_page, VoxelKey(2, 4, 5, 0)));
+
+        writer.Close();
+
+        Reader reader(out_stream);
+        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
+        REQUIRE(reader.file->GetCopc().root_hier_size == 32);
+        REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
+    }
+}
+
+// TEST_CASE("Writer Node Uncompressed", "[Writer]")
+//{
+//    SECTION("Root Page")
+//    {
+//        stringstream out_stream;
+//
+//        Writer writer(out_stream, Writer::LasConfig());
+//
+//        REQUIRE(!writer.FindNode(VoxelKey::BaseKey()).IsValid());
+//        REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
+//        REQUIRE(!writer.FindNode(VoxelKey(5, 4, 3, 2)).IsValid());
+//
+//        REQUIRE_NOTHROW(writer.GetRootPage());
+//        Page root_page = writer.GetRootPage();
+//        REQUIRE(root_page.IsValid());
+//        REQUIRE(root_page.loaded == true);
+//
+//        REQUIRE(writer.AddSubPage(VoxelKey::BaseKey()) == root_page);
+//
+//        REQUIRE_THROWS(writer.AddSubPage(VoxelKey::InvalidKey()));
+//
+//        writer.Close();
+//
+//        Reader reader(out_stream);
+//        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
+//        REQUIRE(reader.file->GetCopc().root_hier_size == 0);
+//        REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
+//    }
+//}
