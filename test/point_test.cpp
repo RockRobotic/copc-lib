@@ -1,11 +1,128 @@
-#include <catch2/catch.hpp>
 #include <cfloat>
 #include <limits>
 
+#include <catch2/catch.hpp>
 #include <copc-lib/las/point.hpp>
 
 using namespace copc::las;
 using namespace std;
+
+TEST_CASE("Internal tests", "[Point]")
+{
+    SECTION("Point10")
+    {
+        REQUIRE_NOTHROW(internal::Point10());
+        auto point_10 = internal::Point10(INT32_MAX,
+                                          INT32_MAX,
+                                          INT32_MAX,
+                                          UINT16_MAX,
+                                          7,
+                                          7,
+                                          true,
+                                          true,
+                                          31,
+                                          true,
+                                          true,
+                                          true,
+                                          UINT8_MAX,
+                                          90,
+                                          UINT16_MAX);
+
+        REQUIRE(point_10.X() == INT32_MAX);
+        REQUIRE(point_10.Y() == INT32_MAX);
+        REQUIRE(point_10.Z() == INT32_MAX);
+        REQUIRE(point_10.Intensity() == UINT16_MAX);
+        REQUIRE(point_10.ReturnNumber() == 7);
+        REQUIRE(point_10.NumberOfReturns() == 7);
+        REQUIRE(point_10.ScanDirectionFlag() == true);
+        REQUIRE(point_10.EdgeOfFlightLineFlag() == true);
+        REQUIRE(point_10.Classification() == 31);
+        REQUIRE(point_10.Synthetic() == true);
+        REQUIRE(point_10.KeyPoint() == true);
+        REQUIRE(point_10.Withheld() == true);
+        REQUIRE(point_10.UserData() == UINT8_MAX);
+        REQUIRE(point_10.ScanAngleRank() == 90);
+        REQUIRE(point_10.PointSourceId() == UINT16_MAX);
+
+        // Conversion
+        internal::Point14 point_14 = point_10.ToPoint14();
+        REQUIRE(point_14.X() == INT32_MAX);
+        REQUIRE(point_14.Y() == INT32_MAX);
+        REQUIRE(point_14.Z() == INT32_MAX);
+        REQUIRE(point_14.Intensity() == UINT16_MAX);
+        REQUIRE(point_14.ReturnNumber() == 7);
+        REQUIRE(point_14.NumberOfReturns() == 7);
+        REQUIRE(point_14.Synthetic() == true);
+        REQUIRE(point_14.KeyPoint() == true);
+        REQUIRE(point_14.Withheld() == true);
+        REQUIRE(point_14.Overlap() == false);
+        REQUIRE(point_14.ScannerChannel() == 0);
+        REQUIRE(point_14.ScanDirectionFlag() == true);
+        REQUIRE(point_14.EdgeOfFlightLineFlag() == true);
+        REQUIRE(point_14.Classification() == 31);
+        REQUIRE(point_14.UserData() == UINT8_MAX);
+        REQUIRE(point_14.ScanAngle() == 0);
+        REQUIRE(point_14.PointSourceId() == UINT16_MAX);
+    }
+
+    SECTION("Point14")
+    {
+        REQUIRE_NOTHROW(internal::Point14());
+        auto point_14 = internal::Point14(INT32_MAX,
+                                          INT32_MAX,
+                                          INT32_MAX,
+                                          UINT16_MAX,
+                                          15,
+                                          15,
+                                          true,
+                                          false,
+                                          true,
+                                          false,
+                                          0,
+                                          true,
+                                          true,
+                                          UINT8_MAX,
+                                          UINT8_MAX,
+                                          30000,
+                                          UINT16_MAX);
+
+        REQUIRE(point_14.X() == INT32_MAX);
+        REQUIRE(point_14.Y() == INT32_MAX);
+        REQUIRE(point_14.Z() == INT32_MAX);
+        REQUIRE(point_14.Intensity() == UINT16_MAX);
+        REQUIRE(point_14.ReturnNumber() == 15);
+        REQUIRE(point_14.NumberOfReturns() == 15);
+        REQUIRE(point_14.Synthetic() == true);
+        REQUIRE(point_14.KeyPoint() == false);
+        REQUIRE(point_14.Withheld() == true);
+        REQUIRE(point_14.Overlap() == false);
+        REQUIRE(point_14.ScannerChannel() == 0);
+        REQUIRE(point_14.ScanDirectionFlag() == true);
+        REQUIRE(point_14.EdgeOfFlightLineFlag() == true);
+        REQUIRE(point_14.Classification() == UINT8_MAX);
+        REQUIRE(point_14.UserData() == UINT8_MAX);
+        REQUIRE(point_14.ScanAngle() == 30000);
+        REQUIRE(point_14.PointSourceId() == UINT16_MAX);
+
+        // Conversion
+        internal::Point10 point_10 = point_14.ToPoint10();
+        REQUIRE(point_10.X() == INT32_MAX);
+        REQUIRE(point_10.Y() == INT32_MAX);
+        REQUIRE(point_10.Z() == INT32_MAX);
+        REQUIRE(point_10.Intensity() == UINT16_MAX);
+        REQUIRE(point_10.ReturnNumber() == 7);
+        REQUIRE(point_10.NumberOfReturns() == 7);
+        REQUIRE(point_10.ScanDirectionFlag() == true);
+        REQUIRE(point_10.EdgeOfFlightLineFlag() == true);
+        REQUIRE(point_10.Classification() == 31);
+        REQUIRE(point_10.Synthetic() == true);
+        REQUIRE(point_10.KeyPoint() == false);
+        REQUIRE(point_10.Withheld() == true);
+        REQUIRE(point_10.UserData() == UINT8_MAX);
+        REQUIRE(point_10.ScanAngleRank() == 0);
+        REQUIRE(point_10.PointSourceId() == UINT16_MAX);
+    }
+}
 
 TEST_CASE("Point tests", "[Point]")
 {
@@ -13,8 +130,7 @@ TEST_CASE("Point tests", "[Point]")
     {
 
         // Test format 0-10
-        for (int i = 0; i < 11; i++)
-        {
+        for (int i = 0; i < 11; i++) {
             REQUIRE_NOTHROW(Point(i));
         }
         // Test check for other values
