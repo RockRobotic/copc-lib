@@ -32,7 +32,7 @@ set(WITH_EXAMPLES TRUE CACHE BOOL "Choose if examples should be built")
 if (WITH_TESTS OR WITH_EXAMPLES)
     file (DOWNLOAD
     "https://github.com/PDAL/data/raw/master/autzen/autzen-classified.copc.laz"
-    "test/data/autzen-classified.copc.laz")
+    "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
 endif()
 
 if(WITH_TESTS)
