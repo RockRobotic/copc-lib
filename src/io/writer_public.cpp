@@ -25,6 +25,9 @@ Page Writer::AddSubPage(Page &parent, VoxelKey key)
         throw std::runtime_error("Page already exists!");
     if (!hierarchy->PageExists(parent.key))
         throw std::runtime_error("Parent page does not exist!");
+    if (!key.ChildOf(parent.key))
+        throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
+                                 parent.key.ToString());
 
     auto child_page = std::make_shared<PageInternal>(key);
     child_page->loaded = true;

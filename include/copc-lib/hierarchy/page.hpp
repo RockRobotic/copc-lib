@@ -20,11 +20,13 @@ class Page : public Entry
 
     // If a page is "loaded" it doesn't matter the offset/size (since the writer doesn't set offset/size)
     bool IsValid() const { return (loaded || (offset >= 0 && size >= 0)) && key.IsValid(); }
+    bool IsPage() const { return IsValid() && point_count == -1; }
 
     bool loaded = false;
 
     friend bool operator==(const Page &lhs, const Page &rhs);
 };
+
 } // namespace copc
 
 #endif // COPCLIB_HIERARCHY_PAGE_H_
