@@ -39,6 +39,8 @@ class WriterInternal
     void WriteChunk(std::vector<char> &compressed);
     void WritePage(std::shared_ptr<PageInternal> page);
     bool InsertPage(std::shared_ptr<PageInternal> page);
+
+    void WritePageTree(std::shared_ptr<PageInternal> current);
 };
 } // namespace copc
 #endif // COPCLIB_IO_WRITER_INTERNAL_H_

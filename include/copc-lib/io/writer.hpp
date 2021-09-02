@@ -60,7 +60,7 @@ class Writer : public BaseIO
     Node AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count);
     Node AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed);
 
-    Page AddPage(VoxelKey key);
+    Page AddSubPage(Page &page, VoxelKey key);
 
   private:
     std::unique_ptr<WriterInternal> writer_;

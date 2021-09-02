@@ -17,17 +17,23 @@ Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span, std:
 
 void Writer::Close() { this->writer_->Close(); }
 
-Page Writer::AddPage(VoxelKey key)
+Page Writer::AddSubPage(Page &parent, VoxelKey key)
 {
     if (!key.IsValid())
         throw std::runtime_error("Invalid key!");
     if (hierarchy->PageExists(key))
-        return *hierarchy->seen_pages_[key];
+        throw std::runtime_error("Page already exists!");
+    if (!hierarchy->PageExists(parent.key))
+        throw std::runtime_error("Parent page does not exist!");
 
-    auto page = std::make_shared<PageInternal>(key);
-    page->loaded = true;
-    hierarchy->seen_pages_[page->key] = page;
-    return *page;
+    auto child_page = std::make_shared<PageInternal>(key);
+    child_page->loaded = true;
+
+    auto parent_page = hierarchy->seen_pages_[parent.key];
+    parent_page->sub_pages.push_back(child_page);
+    hierarchy->seen_pages_[key] = child_page;
+
+    return *child_page;
 }
 
 Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed)

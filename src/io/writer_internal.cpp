@@ -25,13 +25,15 @@ void WriterInternal::Close()
 {
     auto head14 = file->GetLasHeader();
     WriteChunkTable();
+
     if (!file->GetWkt().empty())
         WriteWkt(head14);
-    for (auto &[key, page] : hierarchy->seen_pages_)
-    {
-        WritePage(page);
-        head14.evlr_count++;
-    }
+
+    // Page writing must be done in a postorder traversal because each parent
+    // has to write the offset of all of its children, which we don't know in advance
+    WritePageTree(hierarchy->seen_pages_[VoxelKey::BaseKey()]);
+    head14.evlr_count += hierarchy->seen_pages_.size();
+
     WriteHeader(head14);
 }
 
@@ -160,9 +162,12 @@ void WriterInternal::WritePage(std::shared_ptr<PageInternal> page)
     out_stream.seekp(0, std::ios::end);
     h.write(out_stream);
 
+    int64_t offset = static_cast<int64_t>(out_stream.tellp());
+    page->offset = offset;
+    page->size = page_size;
+
     if (page->key == VoxelKey::BaseKey())
     {
-        int64_t offset = static_cast<int64_t>(out_stream.tellp());
         copc_data.root_hier_offset = offset;
         copc_data.root_hier_size = page_size;
     }
@@ -171,5 +176,22 @@ void WriterInternal::WritePage(std::shared_ptr<PageInternal> page)
         node->Pack(out_stream);
     for (auto node : page->sub_pages)
         node->Pack(out_stream);
+}
+
+// https://en.wikipedia.org/wiki/Tree_traversal#Arbitrary_trees
+void WriterInternal::WritePageTree(std::shared_ptr<PageInternal> current) 
+{
+    // If the current node is empty then return.
+    if (current == nullptr)
+        return;
+
+    // For each i from 1 to the current node's number of subtrees, do: 
+    for (auto child : current->sub_pages)
+    {
+        WritePageTree(child);
+    }
+
+    // Visit the current node for post-order traversal.
+    WritePage(current);
 }
 } // namespace copc
