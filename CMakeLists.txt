@@ -11,7 +11,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include)
-include_directories(libs)
 
 file(GLOB_RECURSE SRCS
         src/*.cpp
@@ -37,14 +36,19 @@ if (WITH_TESTS OR WITH_EXAMPLES)
 endif()
 
 if(WITH_TESTS)
-    enable_testing()
+    add_subdirectory(lib/Catch2)
 
     file(GLOB TEST_SRCS
             test/*.cpp
             )
 
     add_executable(tests ${TEST_SRCS})
-    target_link_libraries(tests ${COPC_SHARED_LIB})
+    target_link_libraries(tests ${COPC_SHARED_LIB} Catch2::Catch2)
+
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/Catch2/contrib")
+    include(CTest)
+    include(Catch)
+    catch_discover_tests(tests)
 endif()
 
 if(WITH_EXAMPLES)
