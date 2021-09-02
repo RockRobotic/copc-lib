@@ -38,7 +38,7 @@ class Reader
     las::CopcVlr GetCopcData();
     las::WktVlr GetWktData(las::CopcVlr copc_data);
 
-    void ReadPage(std::shared_ptr<Page> page);
+    std::vector<Entry> ReadPage(std::shared_ptr<Page> page);
 };
 } // namespace copc::io
 #endif // COPCLIB_IO_READER_H_

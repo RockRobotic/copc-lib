@@ -18,10 +18,6 @@ class Page : public Entry
     Page(Entry e) : Entry(e){};
     Page(VoxelKey key, int64_t offset, int32_t size) : Entry(key, offset, size, -1){};
 
-    // User can't assign/change these!!
-    std::unordered_map<VoxelKey, std::shared_ptr<Page>> sub_pages;
-    std::unordered_map<VoxelKey, std::shared_ptr<Node>> nodes;
-
     bool loaded = false;
 };
 

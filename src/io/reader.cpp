@@ -61,8 +61,9 @@ las::WktVlr Reader::GetWktData(las::CopcVlr copc_data)
     return wkt;
 }
 
-void Reader::ReadPage(std::shared_ptr<Page> page)
+std::vector<Entry> Reader::ReadPage(std::shared_ptr<Page> page)
 {
+    std::vector<Entry> out;
     if (!page->IsValid())
         throw std::runtime_error("Cannot load an invalid page.");
 
@@ -74,18 +75,14 @@ void Reader::ReadPage(std::shared_ptr<Page> page)
     for (int i = 0; i < num_entries; i++)
     {
         Entry e = Entry::Unpack(in_stream);
-        // Either create a Sub-Page or Node out of the entry
-        if (e.point_count == -1)
-        {
-            page->sub_pages[e.key] = std::make_shared<Page>(e);
-        }
-        else
-        {
-            page->nodes[e.key] = std::make_shared<Node>(e);
-        }
+        if (!e.IsValid())
+            throw std::runtime_error("Entry is invalid! " + e.ToString());
+
+        out.push_back(e);
     }
 
     page->loaded = true;
+    return out;
 }
 
 // Find a node object given a key
@@ -108,14 +105,13 @@ std::shared_ptr<Node> Reader::FindNode(VoxelKey key)
         return nullptr;
 
     // Load the page and add the subpages and page nodes
-    ReadPage(nearest_page);
-    for (auto &[key, node] : nearest_page->nodes)
+    auto children = ReadPage(nearest_page);
+    for (Entry e : children)
     {
-        hierarchy->loaded_nodes_[key] = node;
-    }
-    for (auto &[key, page] : nearest_page->sub_pages)
-    {
-        hierarchy->seen_pages_[key] = page;
+        if (e.IsPage())
+            hierarchy->seen_pages_[e.key] = std::make_shared<Page>(e);
+        else
+            hierarchy->loaded_nodes_[e.key] = std::make_shared<Node>(e);
     }
 
     // Try to find the key again

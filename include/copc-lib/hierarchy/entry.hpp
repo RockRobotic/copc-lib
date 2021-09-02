@@ -18,6 +18,7 @@ class Entry
         : offset(offset), size(size), key(key), point_count(point_count){};
 
     bool IsValid() const { return offset >= 0 && size >= 0 && key.IsValid(); }
+    bool IsPage() const { return IsValid() && point_count == -1; }
 
     std::string ToString() const
     {

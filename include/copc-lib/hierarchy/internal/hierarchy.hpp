@@ -6,8 +6,6 @@
 #include <copc-lib/hierarchy/key.hpp> // include the key so that the hash function gets in namespace
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/hierarchy/page.hpp>
-#include <copc-lib/io/reader.hpp>
-#include <copc-lib/io/writer.hpp>
 
 namespace copc
 {
