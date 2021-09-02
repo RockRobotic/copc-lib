@@ -2,6 +2,7 @@
 #define COPCLIB_LAS_POINT2_H_
 
 #include <vector>
+#include <sstream>
 
 namespace copc::las {
 
@@ -10,11 +11,15 @@ public:
 
     Point2() = default;
 
-    void Unpack(std::istream &in_stream, const uint16_t &point_format_id,const uint16_t &point_record_length);
+    void Unpack(std::istream &in_stream, const uint16_t &point_format_id, const uint16_t &point_record_length);
 
     void Pack(std::ostream &out_stream) const;
 
     void PackAsFormat(std::ostream &out_stream, const uint8_t &point_format_id) const;
+
+    void ToPointFormat(const uint8_t &point_format_id);
+
+    std::string ToString() const;
 
     static uint8_t BaseByteSize(const uint8_t &point_format_id);
 
@@ -127,7 +132,7 @@ public:
 
     bool Overlap() const {
         if (extended_point_type_)
-            (extended_flags_ >> 3) & 0x1;
+            return (extended_flags_ >> 3) & 0x1;
         else
             throw std::runtime_error("Point10 does not have Overlap.");
     }
@@ -140,14 +145,17 @@ public:
 
     uint8_t ScannerChannel() const {
         if (extended_point_type_)
-            (extended_flags_ >> 4) & 0x03;
+            return (extended_flags_ >> 4) & 0x03;
         else
             throw std::runtime_error("Point10 does not have Scanner Channel.");
 
     }
     void ScannerChannel(const uint8_t &scanner_channel) {
         if (extended_point_type_)
-            extended_flags_ = (extended_flags_ & 0xCF) | (scanner_channel << 4);
+            if (scanner_channel > 3)
+                throw std::runtime_error("Scanner channel must be <= 3");
+            else
+                extended_flags_ = (extended_flags_ & 0xCF) | (scanner_channel << 4);
         else
             throw std::runtime_error("Point10 does not have Scanner Channel.");
     }
@@ -189,7 +197,7 @@ public:
     uint8_t Classification() const { return extended_point_type_ ? extended_classification_ : classification_ & 0x1F; }
     void Classification(const uint8_t &classification) {
         if (extended_point_type_)
-            classification_ = classification;
+            extended_classification_ = classification;
         else {
             if (classification > 31)
                 throw std::runtime_error("Classification for Point10 must be <= 31");
@@ -224,7 +232,10 @@ public:
 
     void ExtendedScanAngle(const int16_t &scan_angle) {
         if (extended_point_type_)
-            extended_scan_angle_ = scan_angle;
+            if (scan_angle < -30000 || scan_angle > 30000)
+                throw std::runtime_error("Scan Angle must be between -30000 and 30000");
+            else
+                extended_scan_angle_ = scan_angle;
         else
             throw std::runtime_error("Point10 does not have Scan Angle.");
     }
@@ -333,14 +344,11 @@ public:
 
     bool HasNir() const { return has_nir_; }
 
-    static bool FormatHasGps(const uint8_t &point_format_id) {
-        switch(point_format_id) {
-            case 0:
-                return false;
-            case 1:
-                return true;
-            case 2:
-                return false;
+    static bool FormatHasGpsTime(const uint8_t &point_format_id) {
+        switch (point_format_id) {
+            case 0:return false;
+            case 1:return true;
+            case 2:return false;
             case 3:
             case 4:
             case 5:
@@ -427,7 +435,7 @@ protected:
     bool has_rgb_;
     bool has_nir_;
 
-    std::vector<internal::ExtraByte> extra_bytes_;
+    std::vector<uint8_t> extra_bytes_;
 
     uint32_t point_byte_size_;
 };

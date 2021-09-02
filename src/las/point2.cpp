@@ -29,21 +29,21 @@ void Point2::Unpack(std::istream &in_stream, const uint16_t &point_format_id, co
     }
     point_source_id_ = internal::unpack<uint16_t>(in_stream);
 
-    if(FormatHasGps(point_format_id))
+    if (FormatHasGpsTime(point_format_id))
         gps_time_ = internal::unpack<double>(in_stream);
-    if(FormatHasRgb(point_format_id)) {
+    if (FormatHasRgb(point_format_id)) {
         rgb_[0] = internal::unpack<uint16_t>(in_stream);
         rgb_[1] = internal::unpack<uint16_t>(in_stream);
         rgb_[2] = internal::unpack<uint16_t>(in_stream);
     }
-    if(FormatHasNir(point_format_id)) {
+    if (FormatHasNir(point_format_id)) {
         nir_ = internal::unpack<uint16_t>(in_stream);
     }
 
     point_byte_size_ = BaseByteSize(point_format_id);
 
-    for (uint16_t i = 0; i < (point_record_length - point_byte_size_); i++) {
-        extra_bytes_.emplace_back(in_stream);
+    for (uint32_t i = 0; i < (point_record_length - point_byte_size_); i++) {
+        extra_bytes_.emplace_back(internal::unpack<uint8_t>(in_stream));
     }
 }
 
@@ -55,11 +55,11 @@ void Point2::Pack(std::ostream &out_stream) const {
     internal::pack(z_, out_stream);
     internal::pack(intensity_, out_stream);
     if (extended_point_type_) {
-        internal::pack(returns_, out_stream);
-        internal::pack(flags_, out_stream);
+        internal::pack(extended_returns_, out_stream);
+        internal::pack(extended_flags_, out_stream);
         internal::pack(classification_, out_stream);
         internal::pack(user_data_, out_stream);
-        internal::pack(scan_angle_, out_stream);
+        internal::pack(extended_scan_angle_, out_stream);
     } else {
         internal::pack(returns_flags_eof_, out_stream);
         internal::pack(classification_, out_stream);
@@ -79,10 +79,10 @@ void Point2::Pack(std::ostream &out_stream) const {
         internal::pack(nir_, out_stream);
 
     for (auto eb: extra_bytes_)
-        internal::pack(eb, out_stream)
+        internal::pack(eb, out_stream);
 }
 
-static uint8_t Point2::BaseByteSize(const uint8_t &point_format_id) {
+uint8_t Point2::BaseByteSize(const uint8_t &point_format_id) {
     switch (point_format_id) {
         case 0:return 20;
         case 1:return 28;
@@ -95,9 +95,34 @@ static uint8_t Point2::BaseByteSize(const uint8_t &point_format_id) {
         case 8:return 38;
         case 9:return 30;
         case 10:return 38;
-        default:return 0;
+        default:throw std::runtime_error("Point format must be 0-10");;
     }
 }
+
+void Point2::ToPointFormat(const uint8_t &point_format_id) {
+    extended_point_type_ = point_format_id > 5;
+    has_gps_time_ = FormatHasGpsTime(point_format_id);
+    has_rgb_ = FormatHasRgb(point_format_id);
+    has_nir_ = FormatHasNir(point_format_id);
+}
+
+//std::string Point2::ToString() const {
+//    std::stringstream ss;
+//    if (point_10_)
+//        ss << point_10_->ToString();
+//    else
+//        ss << point_14_->ToString();
+//    if (gps_time_)
+//        ss << std::endl << gps_time_->ToString();
+//    if (rgb_)
+//        ss << std::endl << rgb_->ToString();
+//    if (nir_)
+//        ss << std::endl << nir_->ToString();
+//    if (!extra_bytes_.empty())
+//        ss << std::endl << "Extra Bytes: " << extra_bytes_.size();
+//
+//    return ss.str();
+//}
 
 //void Point2::PackAsFormat(std::ostream &out_stream, const uint8_t &point_format_id) const;
 
