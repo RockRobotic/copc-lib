@@ -1,6 +1,7 @@
 #include <copc-lib/las/point.hpp>
 
 #include <sstream>
+#include <copc-lib/las/internal/utils.hpp>
 
 namespace copc::las {
 
@@ -329,6 +330,41 @@ void Point::ToPointFormat(const uint8_t &point_format_id) {
 
     point_format_id_ = point_format_id;
     point_byte_size_ = BaseByteSize(point_format_id);
+}
+
+void Point::PackAsFormat(std::ostream &out_stream, const uint8_t &point_format_id) const {
+
+    if(FormatHasPoint10(point_format_id)){
+        if (point_10_)
+            point_10_->Pack(out_stream);
+        else
+            point_14_->ToPoint10().Pack(out_stream);
+    }else{
+        if (point_10_)
+            point_10_->ToPoint14().Pack(out_stream);
+        else
+            point_14_->Pack(out_stream);
+    }
+    if(FormatHasGps(point_format_id)){
+        if (gps_time_)
+            gps_time_->Pack(out_stream);
+        else
+            internal::GpsTime().Pack(out_stream);
+    }
+    if(FormatHasRgb(point_format_id)){
+        if (rgb_)
+            rgb_->Pack(out_stream);
+        else
+            internal::Rgb().Pack(out_stream);
+    }
+    if(FormatHasNir(point_format_id)){
+        if (nir_)
+            nir_->Pack(out_stream);
+        else
+            internal::Nir().Pack(out_stream);
+    }
+    for (auto eb: extra_bytes_)
+        eb.Pack(out_stream);
 }
 
 } // namespace copc::las

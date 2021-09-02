@@ -27,6 +27,8 @@ public:
 
     void Pack(std::ostream &out_stream) const;
 
+    void PackAsFormat(std::ostream &out_stream, const uint8_t &point_format_id) const;
+
     static uint8_t BaseByteSize(const uint8_t &point_format_id);
 
     std::string ToString() const;
@@ -359,6 +361,79 @@ public:
             return *nir_;
         else
             throw std::runtime_error("This point format does not have NIR.");
+    }
+
+    static bool FormatHasPoint10(const uint8_t &point_format_id) {
+        if(point_format_id > 10)
+            throw std::runtime_error("Point format must be 0-10");
+        return point_format_id < 6;
+    }
+
+    static bool FormatHasGps(const uint8_t &point_format_id) {
+        switch(point_format_id) {
+            case 0:
+                return false;
+            case 1:
+                return true;
+            case 2:
+                return false;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                return true;
+            default:throw std::runtime_error("Point format must be 0-10");
+        }
+    }
+
+    static bool FormatHasRgb(const uint8_t &point_format_id) {
+        switch(point_format_id) {
+            case 0:
+            case 1:
+                return false;
+            case 2:
+            case 3:
+                return true;
+            case 4:
+                return false;
+            case 5:
+                return true;
+            case 6:
+                return false;
+            case 7:
+            case 8:
+                return true;
+            case 9:
+                return false;
+            case 10:
+                return true;
+            default:throw std::runtime_error("Point format must be 0-10");
+        }
+    }
+
+    static bool FormatHasNir(const uint8_t &point_format_id) {
+        switch(point_format_id) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                return false;
+            case 8:
+                return true;
+            case 9:
+                return false;
+            case 10:
+                return true;
+            default:throw std::runtime_error("Point format must be 0-10");
+        }
     }
 
     ~Point() {
