@@ -179,13 +179,13 @@ void WriterInternal::WritePage(std::shared_ptr<PageInternal> page)
 }
 
 // https://en.wikipedia.org/wiki/Tree_traversal#Arbitrary_trees
-void WriterInternal::WritePageTree(std::shared_ptr<PageInternal> current) 
+void WriterInternal::WritePageTree(std::shared_ptr<PageInternal> current)
 {
     // If the current node is empty then return.
     if (current == nullptr)
         return;
 
-    // For each i from 1 to the current node's number of subtrees, do: 
+    // For each i from 1 to the current node's number of subtrees, do:
     for (auto child : current->sub_pages)
     {
         WritePageTree(child);

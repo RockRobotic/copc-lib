@@ -27,54 +27,17 @@ class VoxelKey
     }
 
     // Returns the corresponding key depending on direction [0,7]
-    VoxelKey Bisect(uint64_t direction) const
-    {
-        VoxelKey key(*this);
-        ++key.d;
-
-        auto step([&key, direction](uint8_t i) {
-            key.IdAt(i) *= 2;
-            const bool positive(direction & (((uint64_t)1) << i));
-            if (positive)
-                ++key.IdAt(i);
-        });
-
-        for (uint8_t i(0); i < 3; ++i)
-            step(i);
-
-        return key;
-    }
+    VoxelKey Bisect(uint64_t direction) const;
 
     // The hierarchial parent of this key
-    VoxelKey GetParent() const
-    {
-        // If key is valid, return parent, if not, return invalid key
-        if (IsValid())
-            return {d - 1, x / 2, y / 2, z / 2};
-        else
-            return {};
-    }
+    VoxelKey GetParent() const;
 
     // A list of the key's parents from the key to the root node
     // optionally including the key itself
-    std::vector<VoxelKey> GetParents(bool include_current = false) const
-    {
-        std::vector<VoxelKey> out;
-        if (!IsValid())
-            return out;
+    std::vector<VoxelKey> GetParents(bool include_current = false) const;
 
-        if (include_current)
-            out.push_back(*this);
-
-        auto parentKey = this->GetParent();
-        while (parentKey.IsValid())
-        {
-            out.push_back(parentKey);
-            parentKey = parentKey.GetParent();
-        }
-
-        return out;
-    }
+    // Tests whether the current key is a child of a given key
+    bool ChildOf(VoxelKey parent_key);
 
     int32_t d;
     int32_t x;

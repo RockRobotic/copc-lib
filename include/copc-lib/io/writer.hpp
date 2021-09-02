@@ -48,10 +48,7 @@ class Writer : public BaseIO
 
     Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, std::string wkt = "");
 
-    Page GetRootPage()
-    {
-        return *hierarchy->seen_pages_[VoxelKey::BaseKey()];
-    }
+    Page GetRootPage() { return *hierarchy->seen_pages_[VoxelKey::BaseKey()]; }
 
     void Close();
 

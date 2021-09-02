@@ -62,9 +62,10 @@ class Entry
     int64_t offset;
     int32_t size;
 
-    protected:
-        bool IsEqual(const Entry& rhs) const {
-            return offset == rhs.offset && size == rhs.size && point_count == rhs.point_count && key == rhs.key;
+  protected:
+    bool IsEqual(const Entry &rhs) const
+    {
+        return offset == rhs.offset && size == rhs.size && point_count == rhs.point_count && key == rhs.key;
     }
 };
 

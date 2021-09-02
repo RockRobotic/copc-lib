@@ -41,6 +41,10 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     if (!page.IsPage() || !page.IsValid() || !key.IsValid())
         throw std::runtime_error("Invalid page or target key!");
 
+    if (!key.ChildOf(page.key))
+        throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
+                                 page.key.ToString());
+
     Entry e = writer_->WriteNode(in, point_count, compressed);
     e.key = key;
 

@@ -9538,7 +9538,7 @@ class TokenStream
         return m_tokenBuffer.front();
     }
 
-    auto operator->() const -> Token const *
+    auto operator-> () const -> Token const *
     {
         assert(!m_tokenBuffer.empty());
         return &m_tokenBuffer.front();
@@ -9615,8 +9615,7 @@ template <typename T> class ResultValueBase : public ResultBase
             m_value.~T();
     }
 
-    union
-    {
+    union {
         T m_value;
     };
 };
