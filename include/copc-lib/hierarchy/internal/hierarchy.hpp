@@ -12,12 +12,18 @@ namespace copc
 class Hierarchy
 {
   public:
-    Hierarchy(){};
+    Hierarchy()
+    {
+        auto page = std::make_shared<PageInternal>(VoxelKey::BaseKey(), -1, -1);
+        page->loaded = true;
+        // add the root page to the pages list
+        seen_pages_[VoxelKey::BaseKey()] = page;
+    }
     Hierarchy(int64_t root_hier_offset, int32_t root_hier_size)
     {
         // add the root page to the pages list
-        seen_pages_[VoxelKey(0, 0, 0, 0)] =
-            std::make_shared<PageInternal>(VoxelKey(0, 0, 0, 0), root_hier_offset, root_hier_size);
+        seen_pages_[VoxelKey::BaseKey()] =
+            std::make_shared<PageInternal>(VoxelKey::BaseKey(), root_hier_offset, root_hier_size);
     };
 
     // Find the lowest depth page that has been seen within a hierarchy list
