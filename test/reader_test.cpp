@@ -59,16 +59,16 @@ TEST_CASE("FindKey Check", "[Reader]")
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
 
-        REQUIRE(hier_entry->IsValid() == true);
-        REQUIRE(hier_entry->key == key);
-        REQUIRE(hier_entry->point_count == 61022);
+        REQUIRE(hier_entry.IsValid() == true);
+        REQUIRE(hier_entry.key == key);
+        REQUIRE(hier_entry.point_count == 61022);
 
         key = VoxelKey(5, 9, 7, 0);
         hier_entry = reader.FindNode(key);
 
-        REQUIRE(hier_entry->IsValid() == true);
-        REQUIRE(hier_entry->key == key);
-        REQUIRE(hier_entry->point_count == 12019);
+        REQUIRE(hier_entry.IsValid() == true);
+        REQUIRE(hier_entry.key == key);
+        REQUIRE(hier_entry.point_count == 12019);
     }
 }
 
@@ -85,7 +85,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
 
-        auto point_vec = reader.GetPointData(*hier_entry);
+        auto point_vec = reader.GetPointData(hier_entry);
         REQUIRE(!point_vec.empty());
         auto point_buff = point_vec.data();
 
@@ -114,7 +114,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
 //        auto key = VoxelKey(0, 0, 0, 0);
 //        auto hier_entry = reader.FindNode(key);
 //
-//        auto point_vec = hier_entry->GetPointDataCompressed();
+//        auto point_vec = hier_entry.GetPointDataCompressed();
 //        REQUIRE(point_vec.size() > 0);
 //    }
 //}
@@ -130,9 +130,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
 
-        auto points = reader.GetPoints(*hier_entry);
+        auto points = reader.GetPoints(hier_entry);
 
-        REQUIRE(points.size() == hier_entry->point_count);
+        REQUIRE(points.size() == hier_entry.point_count);
 
         // Getters
         REQUIRE(points[0].X() == -144147);

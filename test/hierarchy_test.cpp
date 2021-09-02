@@ -21,11 +21,11 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
         auto hier_entry = reader.FindNode(key);
 
         // Load las::Points
-        auto points = reader.GetPoints(*hier_entry);
+        auto points = reader.GetPoints(hier_entry);
 
         // Pack loaded points into stream
         ostringstream oss;
-        hier_entry->PackPoints(points, oss);
+        hier_entry.PackPoints(points, oss);
 
         // Write stream into vector<char> to compare with point_data
         vector<char> point_data_write;
@@ -33,7 +33,7 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
         point_data_write.insert(point_data_write.end(), s.begin(), s.end());
 
         // Get point data
-        auto point_data_read = reader.GetPointData(*hier_entry);
+        auto point_data_read = reader.GetPointData(hier_entry);
 
         REQUIRE(point_data_read == point_data_write);
     }

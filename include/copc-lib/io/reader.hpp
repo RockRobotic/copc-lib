@@ -23,7 +23,7 @@ class Reader
     std::vector<las::Point> GetPoints(Node node);
 
     // Find a node object given a key
-    std::shared_ptr<Node> FindNode(VoxelKey key);
+    Node FindNode(VoxelKey key);
 
     std::unique_ptr<CopcFile> file;
   private:

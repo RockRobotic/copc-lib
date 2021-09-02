@@ -15,6 +15,7 @@ class Node : public Entry
 {
   public:
     Node(Entry e) : Entry(e){};
+    Node() : Entry(){};
 
     static void PackPoints(const std::vector<las::Point> &points, std::ostream &out_stream);
     static std::vector<char> PackPoints(const std::vector<las::Point> &points);

@@ -86,12 +86,12 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Page> page)
 }
 
 // Find a node object given a key
-std::shared_ptr<Node> Reader::FindNode(VoxelKey key)
+Node Reader::FindNode(VoxelKey key)
 {
     // Check if the entry has already been loaded
     if (hierarchy->loaded_nodes_.find(key) != hierarchy->loaded_nodes_.end())
     {
-        return hierarchy->loaded_nodes_[key];
+        return *hierarchy->loaded_nodes_[key];
     }
 
     // Get a list of the key's hierarchial parents, so we can see if any of them are loaded
@@ -102,7 +102,7 @@ std::shared_ptr<Node> Reader::FindNode(VoxelKey key)
     // If none of the key's ancestors exist, then this key doesn't exist in the hierarchy
     // Or, if the nearest ancestor has already been loaded, that means the key isn't a node within that page.
     if (nearest_page == nullptr || nearest_page->loaded)
-        return nullptr;
+        return {};
 
     // Load the page and add the subpages and page nodes
     auto children = ReadPage(nearest_page);
