@@ -8,7 +8,6 @@
 
 using namespace lazperf;
 
-
 namespace copc
 {
 

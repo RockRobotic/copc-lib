@@ -23,6 +23,6 @@ class Node : public Entry
                                                 int point_record_length);
 };
 
-} // namespace copc::hierarchy
+} // namespace copc
 
 #endif // COPCLIB_HIERARCHY_NODE_H_

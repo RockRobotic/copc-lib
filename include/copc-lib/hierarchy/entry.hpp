@@ -63,6 +63,6 @@ class Entry
     int32_t size;
 };
 
-} // namespace copc::hierarchy
+} // namespace copc
 
 #endif // COPCLIB_HIERARCHY_ENTRY_H_

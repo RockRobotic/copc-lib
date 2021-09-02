@@ -14,7 +14,9 @@ class CopcFile : public las::LasFile
 {
   public:
     CopcFile(las::LasHeader header, las::CopcVlr copc, las::WktVlr wkt) : LasFile(header), copc(copc), wkt(wkt){};
-    CopcFile(las::LasHeader header, int span, std::string wkt) : LasFile(header){ this->wkt.wkt = wkt;
+    CopcFile(las::LasHeader header, int span, std::string wkt) : LasFile(header)
+    {
+        this->wkt.wkt = wkt;
         this->copc.span = span;
     };
 

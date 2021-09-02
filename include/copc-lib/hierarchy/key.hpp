@@ -103,7 +103,7 @@ inline bool operator==(const VoxelKey &a, const VoxelKey &b)
 
 inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b); }
 
-} // namespace copc::hierarchy
+} // namespace copc
 
 namespace std
 {

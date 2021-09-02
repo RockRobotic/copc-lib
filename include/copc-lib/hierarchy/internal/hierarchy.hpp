@@ -3,9 +3,9 @@
 
 #include <unordered_map>
 
+#include <copc-lib/hierarchy/internal/page.hpp>
 #include <copc-lib/hierarchy/key.hpp> // include the key so that the hash function gets in namespace
 #include <copc-lib/hierarchy/node.hpp>
-#include <copc-lib/hierarchy/internal/page.hpp>
 
 namespace copc
 {
@@ -37,6 +37,6 @@ class Hierarchy
     std::unordered_map<VoxelKey, std::shared_ptr<Node>> loaded_nodes_;
 };
 
-} // namespace copc::hierarchy
+} // namespace copc
 
 #endif // COPCLIB_HIERARCHY_HIERARCHY_H_

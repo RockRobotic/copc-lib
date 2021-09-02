@@ -1,9 +1,9 @@
 #include <catch2/catch.hpp>
+#include <cfloat>
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <cstring>
 #include <fstream>
-#include <cfloat>
 
 using namespace copc;
 using namespace std;
@@ -103,7 +103,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
     }
 }
 
-//TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
+// TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
 //{
 //    GIVEN("A valid input stream")
 //    {

@@ -2,8 +2,8 @@
 #include <cstring>
 #include <fstream>
 
-#include <copc-lib/io/writer.hpp>
 #include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/writer.hpp>
 
 using namespace copc;
 using namespace std;
@@ -48,7 +48,8 @@ void test_page()
     writer.Close();
 }
 
-int main() { 
+int main()
+{
     test_header();
     test_page();
 }

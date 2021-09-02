@@ -1,13 +1,12 @@
 #include <cstring>
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 #include "catch2/catch.hpp"
 #include <copc-lib/io/reader.hpp>
 
 using namespace copc;
 using namespace std;
-
 
 TEST_CASE("Packing Test", "[Hierarchy] ")
 {

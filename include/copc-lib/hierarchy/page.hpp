@@ -21,6 +21,6 @@ class Page : public Entry
     bool loaded = false;
 };
 
-} // namespace copc::hierarchy
+} // namespace copc
 
 #endif // COPCLIB_HIERARCHY_PAGE_H_

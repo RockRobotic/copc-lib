@@ -23,7 +23,8 @@ Page Writer::AddPage(VoxelKey key)
     return *page;
 }
 
-Node Writer::DoAddNode(Page& page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed) {
+Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed)
+{
     Entry e = writer_->WriteNode(in, point_count, compressed);
     e.key = key;
 
@@ -80,4 +81,4 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
 
     return h;
 }
-} // namespace copc::io
+} // namespace copc

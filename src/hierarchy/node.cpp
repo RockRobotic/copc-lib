@@ -19,12 +19,13 @@ std::vector<char> Node::PackPoints(const std::vector<las::Point> &points)
     return std::vector<char>(ostr.begin(), ostr.end());
 }
 
-std::vector<las::Point> copc::Node::UnpackPoints(const std::vector<char> &point_data, int point_format_id, int point_record_length)
+std::vector<las::Point> copc::Node::UnpackPoints(const std::vector<char> &point_data, int point_format_id,
+                                                 int point_record_length)
 {
     if (point_data.size() % point_record_length != 0)
         throw std::runtime_error("Invalid input point array!");
 
-            uint64_t point_count = point_data.size() / point_record_length;
+    uint64_t point_count = point_data.size() / point_record_length;
 
     // Make a stream out of the vector of char
     auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
@@ -45,4 +46,4 @@ void Node::PackPoints(const std::vector<las::Point> &points, std::ostream &out_s
         point.Pack(out_stream);
 }
 
-} // namespace copc::hierarchy
+} // namespace copc

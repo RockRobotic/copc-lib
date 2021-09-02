@@ -4,10 +4,10 @@
 #include <istream>
 
 #include <copc-lib/copc/file.hpp>
-#include <copc-lib/io/base_io.hpp>
 #include <copc-lib/hierarchy/internal/hierarchy.hpp>
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/hierarchy/page.hpp>
+#include <copc-lib/io/base_io.hpp>
 #include <copc-lib/las/vlr.hpp>
 
 namespace copc
@@ -36,5 +36,5 @@ class Reader : public BaseIO
 
     std::vector<Entry> ReadPage(std::shared_ptr<PageInternal> page) override;
 };
-} // namespace copc::io
+} // namespace copc
 #endif // COPCLIB_IO_READER_H_

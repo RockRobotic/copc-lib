@@ -3,7 +3,7 @@
 namespace copc
 {
 
-//bool Page::InsertNode(std::shared_ptr<io::Writer> writer_, VoxelKey key, std::vector<las::Point> points)
+// bool Page::InsertNode(std::shared_ptr<io::Writer> writer_, VoxelKey key, std::vector<las::Point> points)
 //{
 //    std::vector<char> uncompressed = Node::PackPoints(points);
 //    auto entry = writer_->WriteNode(uncompressed);
@@ -15,4 +15,4 @@ namespace copc
 //
 // std::shared_ptr<Node> Page::GetNode(VoxelKey key) { return std::shared_ptr<Node>(); }
 
-} // namespace copc::hierarchy
+} // namespace copc

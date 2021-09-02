@@ -85,7 +85,7 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<PageInternal> page)
     return out;
 }
 
-std::vector<las::Point> Reader::GetPoints(Node node) 
+std::vector<las::Point> Reader::GetPoints(Node node)
 {
     std::vector<char> point_data = GetPointData(node);
     return Node::UnpackPoints(point_data, file->GetLasHeader().point_format_id,
@@ -104,6 +104,4 @@ std::vector<char> Reader::GetPointData(Node node)
     return point_data;
 }
 
-
-
-} // namespace copc::io
+} // namespace copc

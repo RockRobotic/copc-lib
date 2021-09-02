@@ -47,9 +47,9 @@ class Writer : public BaseIO
     };
 
     Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, std::string wkt = "");
-    
+
     void Close();
-    
+
     // Don't handle subpages right now...
     Node AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &points);
     Node AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count);

@@ -5,10 +5,10 @@
 //#include <lazperf/readers.hpp>
 //#include <sstream>
 //
-//using namespace copc::io;
-//using namespace std;
+// using namespace copc::io;
+// using namespace std;
 //
-//TEST_CASE("Writer Config Tests", "[Writer]")
+// TEST_CASE("Writer Config Tests", "[Writer]")
 //{
 //    GIVEN("A valid output stream")
 //    {
