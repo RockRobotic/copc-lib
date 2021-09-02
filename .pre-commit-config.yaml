@@ -5,6 +5,6 @@ repos:
     -   id: end-of-file-fixer
 
 -   repo: git://github.com/doublify/pre-commit-clang-format
-    rev: master
+    rev: 62302476d0da01515660132d76902359bed0f782
     hooks:
     -   id: clang-format
