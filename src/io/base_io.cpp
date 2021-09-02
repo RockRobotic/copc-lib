@@ -16,7 +16,7 @@ Node BaseIO::FindNode(VoxelKey key)
     auto parents_list = key.GetParents(true);
 
     // Find if of the key's ancestors have been seen
-    std::shared_ptr<Page> nearest_page = hierarchy->NearestLoadedPage(parents_list);
+    std::shared_ptr<PageInternal> nearest_page = hierarchy->NearestLoadedPage(parents_list);
     // If none of the key's ancestors exist, then this key doesn't exist in the hierarchy
     // Or, if the nearest ancestor has already been loaded, that means the key isn't a node within that page.
     if (nearest_page == nullptr || nearest_page->loaded)
@@ -27,9 +27,17 @@ Node BaseIO::FindNode(VoxelKey key)
     for (Entry e : children)
     {
         if (e.IsPage())
-            hierarchy->seen_pages_[e.key] = std::make_shared<Page>(e);
+        {
+            auto subpage = std::make_shared<PageInternal>(e);
+            hierarchy->seen_pages_[e.key] = subpage;
+            nearest_page->sub_pages.push_back(subpage);
+        }
         else
-            hierarchy->loaded_nodes_[e.key] = std::make_shared<Node>(e);
+        {
+            auto node = std::make_shared<Node>(e);
+            hierarchy->loaded_nodes_[e.key] = node;
+            nearest_page->nodes.push_back(node);
+        }
     }
 
     // Try to find the key again

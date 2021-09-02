@@ -15,11 +15,11 @@ class BaseIO
     // Find a node object given a key
     Node FindNode(VoxelKey key);
 
-    std::unique_ptr<CopcFile> file;
+    std::shared_ptr<CopcFile> file;
 
   protected:
-    std::unique_ptr<Hierarchy> hierarchy;
-    virtual std::vector<Entry> ReadPage(std::shared_ptr<Page> page){};
+    std::shared_ptr<Hierarchy> hierarchy;
+    virtual std::vector<Entry> ReadPage(std::shared_ptr<PageInternal> page) = 0;
 };
 } // namespace copc
 #endif // COPCLIB_IO_BASE_H_

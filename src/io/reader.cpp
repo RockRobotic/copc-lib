@@ -25,8 +25,8 @@ void Reader::InitFile()
     auto copc_data = GetCopcData();
     auto wkt = GetWktData(copc_data);
 
-    this->file = std::make_unique<CopcFile>(header, copc_data, wkt);
-    this->hierarchy = std::make_unique<Hierarchy>(copc_data.root_hier_offset, copc_data.root_hier_size);
+    this->file = std::make_shared<CopcFile>(header, copc_data, wkt);
+    this->hierarchy = std::make_shared<Hierarchy>(copc_data.root_hier_offset, copc_data.root_hier_size);
 }
 
 void Reader::ReadVlrs()
@@ -61,7 +61,7 @@ las::WktVlr Reader::GetWktData(las::CopcVlr copc_data)
     return wkt;
 }
 
-std::vector<Entry> Reader::ReadPage(std::shared_ptr<Page> page)
+std::vector<Entry> Reader::ReadPage(std::shared_ptr<PageInternal> page)
 {
     std::vector<Entry> out;
     if (!page->IsValid())
