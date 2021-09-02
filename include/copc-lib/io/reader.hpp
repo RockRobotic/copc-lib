@@ -4,6 +4,7 @@
 #include <istream>
 
 #include <copc-lib/copc/file.hpp>
+#include <copc-lib/io/base_io.hpp>
 #include <copc-lib/hierarchy/internal/hierarchy.hpp>
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/hierarchy/page.hpp>
@@ -11,7 +12,7 @@
 
 namespace copc
 {
-class Reader
+class Reader : public BaseIO
 {
   public:
     Reader(std::istream &in_stream);
@@ -22,13 +23,8 @@ class Reader
     // Reads the node's data into Point objects
     std::vector<las::Point> GetPoints(Node node);
 
-    // Find a node object given a key
-    Node FindNode(VoxelKey key);
-
-    std::unique_ptr<CopcFile> file;
   private:
     std::istream &in_stream;
-    std::unique_ptr<Hierarchy> hierarchy;
 
     std::unique_ptr<lazperf::reader::generic_file> reader_;
     std::map<uint64_t, las::VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
@@ -38,7 +34,7 @@ class Reader
     las::CopcVlr GetCopcData();
     las::WktVlr GetWktData(las::CopcVlr copc_data);
 
-    std::vector<Entry> ReadPage(std::shared_ptr<Page> page);
+    std::vector<Entry> ReadPage(std::shared_ptr<Page> page) override;
 };
 } // namespace copc::io
 #endif // COPCLIB_IO_READER_H_
