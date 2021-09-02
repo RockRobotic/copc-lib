@@ -13,7 +13,7 @@ class Entry;
 class Entry
 {
   public:
-    Entry() : offset(-1), size(-1), key(VoxelKey()), point_count(-1){};
+    Entry() : offset(-1), size(-1), key(VoxelKey::InvalidKey()), point_count(-1){};
     Entry(VoxelKey key, int64_t offset, int32_t size, int32_t point_count)
         : offset(offset), size(size), key(key), point_count(point_count){};
 

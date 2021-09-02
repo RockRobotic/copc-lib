@@ -14,6 +14,9 @@ class VoxelKey
     VoxelKey(int32_t d, int32_t x, int32_t y, int32_t z) : d(d), x(x), y(y), z(z) {}
     VoxelKey() : VoxelKey(-1, -1, -1, -1) {}
 
+    static VoxelKey InvalidKey() { return VoxelKey(); }
+    static VoxelKey BaseKey() { return VoxelKey(0, 0, 0, 0); }
+
     bool IsValid() const { return d >= 0 && x >= 0 && y >= 0 && z >= 0; }
 
     std::string ToString() const

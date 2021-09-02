@@ -160,7 +160,7 @@ void WriterInternal::WritePage(std::shared_ptr<PageInternal> page)
     out_stream.seekp(0, std::ios::end);
     h.write(out_stream);
 
-    if (page->key == VoxelKey(0, 0, 0, 0))
+    if (page->key == VoxelKey::BaseKey())
     {
         int64_t offset = static_cast<int64_t>(out_stream.tellp());
         copc_data.root_hier_offset = offset;

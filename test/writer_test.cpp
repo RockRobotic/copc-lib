@@ -5,8 +5,8 @@
 #include <lazperf/readers.hpp>
 #include <sstream>
 
- using namespace copc;
- using namespace std;
+using namespace copc;
+using namespace std;
 
 TEST_CASE("Writer Config Tests", "[Writer]")
 {

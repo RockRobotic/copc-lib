@@ -103,7 +103,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
     }
 }
 
- TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
+TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
 {
     GIVEN("A valid input stream")
     {

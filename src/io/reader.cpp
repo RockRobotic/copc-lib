@@ -104,7 +104,8 @@ std::vector<char> Reader::GetPointData(Node const &node)
     return point_data;
 }
 
-std::vector<char> Reader::GetPointDataCompressed(Node const& node) {
+std::vector<char> Reader::GetPointDataCompressed(Node const &node)
+{
     if (!node.IsValid())
         return {};
 
