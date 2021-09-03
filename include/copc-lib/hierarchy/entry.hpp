@@ -26,7 +26,8 @@ class Entry
     std::string ToString() const
     {
         std::stringstream ss;
-        ss << "Entry " << key.ToString() << ": off=" << offset << ", size=" << size << ", count=" << point_count << ", is_valid=" << IsValid();
+        ss << "Entry " << key.ToString() << ": off=" << offset << ", size=" << size << ", count=" << point_count
+           << ", is_valid=" << IsValid();
         return ss.str();
     }
 
