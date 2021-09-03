@@ -184,7 +184,4 @@ std::string Point::ToString() const {
     return ss.str();
 }
 
-//void Point::PackAsFormat(std::ostream &out_stream, const uint8_t &point_format_id) const;
-
-
 } // namespace copc::las
