@@ -35,20 +35,20 @@ int main()
     Reader reader(in_stream);
 
     // We can get the CopcData struct
-    auto copc_vlr = reader.file->GetCopc();
+    auto copc_vlr = reader.GetCopcHeader();
     cout << "CopcData: " << endl;
     cout << "\tSpan: " << copc_vlr.span << endl
               << "\tRoot Offset: " << copc_vlr.root_hier_offset << endl
               << "\tRoot Size: " << copc_vlr.root_hier_size << endl;
 
     // Get the Las Header
-    auto las_header = reader.file->GetLasHeader();
+    auto las_header = reader.GetLasHeader();
     cout << endl << "Las Header:" << endl;
     cout << "\tPoint format: " << (int)las_header.point_format_id << endl
               << "\tPoint count: " << (int)las_header.point_count << endl;
 
     // Get the WKT string
-    auto wkt = reader.file->GetWkt();
+    auto wkt = reader.GetWkt();
     cout << endl << "WKT: " << endl << wkt << endl;
 
     cout << endl;

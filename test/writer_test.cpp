@@ -20,7 +20,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer::LasConfig cfg;
             Writer writer(out_stream, cfg);
 
-            auto las_header = writer.file->GetLasHeader();
+            auto las_header = writer.GetLasHeader();
             REQUIRE(las_header.scale.z == 0.01);
             REQUIRE(las_header.offset.z == 0);
             REQUIRE(las_header.point_format_id == 0);
@@ -45,7 +45,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             cfg.offset = vector3{-0.02, -0.03, -40.8};
             Writer writer(out_stream, cfg);
 
-            auto las_header = writer.file->GetLasHeader();
+            auto las_header = writer.GetLasHeader();
             REQUIRE(las_header.file_source_id == 200);
             REQUIRE(las_header.point_format_id == 8);
             REQUIRE(las_header.scale.x == 2);
@@ -77,13 +77,13 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer writer(out_stream, cfg, 256);
 
             // todo: use Reader to check all of these
-            auto span = writer.file->GetCopc().span;
+            auto span = writer.GetCopcHeader().span;
             REQUIRE(span == 256);
 
             writer.Close();
 
             Reader reader(out_stream);
-            REQUIRE(reader.file->GetCopc().span == 256);
+            REQUIRE(reader.GetCopcHeader().span == 256);
         }
 
         SECTION("WKT")
@@ -94,12 +94,12 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer writer(out_stream, cfg, 256, "TEST_WKT");
 
             // todo: use Reader to check all of these
-            REQUIRE(writer.file->GetWkt() == "TEST_WKT");
+            REQUIRE(writer.GetWkt() == "TEST_WKT");
 
             writer.Close();
 
             Reader reader(out_stream);
-            REQUIRE(reader.file->GetWkt() == "TEST_WKT");
+            REQUIRE(reader.GetWkt() == "TEST_WKT");
         }
     }
 }
@@ -127,8 +127,8 @@ TEST_CASE("Writer Pages", "[Writer]")
         writer.Close();
 
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 0);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
     }
 
@@ -151,8 +151,8 @@ TEST_CASE("Writer Pages", "[Writer]")
         writer.Close();
 
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 32);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
     }
 }
@@ -178,8 +178,8 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         writer.Close();
 
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 32);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
 
         auto node = reader.FindNode(VoxelKey::BaseKey());
         REQUIRE(node.IsValid());
@@ -211,8 +211,8 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
 
         std::string ostr = out_stream.str();
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
         {
             auto node = reader.FindNode(VoxelKey::BaseKey());
@@ -275,8 +275,8 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         */
 
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
         {
             auto sub_node = reader.FindNode(VoxelKey(2, 2, 2, 2));
@@ -326,8 +326,8 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         writer.Close();
 
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 32);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
 
         auto node = reader.FindNode(VoxelKey::BaseKey());
         REQUIRE(node.IsValid());
@@ -362,8 +362,8 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
 
         std::string ostr = out_stream.str();
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
         {
             auto sub_node = reader.FindNode(VoxelKey::BaseKey());
@@ -429,8 +429,8 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         */
 
         Reader reader(out_stream);
-        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
-        REQUIRE(reader.file->GetCopc().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
         {
             auto sub_node = reader.FindNode(VoxelKey(2, 2, 2, 2));

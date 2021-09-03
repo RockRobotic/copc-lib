@@ -19,7 +19,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetCopc Test")
         {
-            auto copc = reader.file->GetCopc();
+            auto copc = reader.GetCopcHeader();
             REQUIRE(copc.span == 0);
             REQUIRE(copc.root_hier_offset == 93169718);
             REQUIRE(copc.root_hier_size == 8896);
@@ -33,7 +33,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetHeader Test")
         {
-            auto header = reader.file->GetLasHeader();
+            auto header = reader.GetLasHeader();
             REQUIRE(header.header_size == 375);
             REQUIRE(header.point_format_id == 3);
             REQUIRE(header.point_count == 10653336);
@@ -41,7 +41,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("WKT")
         {
-            auto wkt = reader.file->GetWkt();
+            auto wkt = reader.GetWkt();
             REQUIRE(wkt.size() > 0);
             REQUIRE(wkt.rfind("COMPD_CS[", 0) == 0);
         }
@@ -80,7 +80,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
         in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
         Reader reader(in_stream);
 
-        int record_length = reader.file->GetLasHeader().point_record_length;
+        int record_length = reader.GetLasHeader().point_record_length;
 
         {
             auto key = VoxelKey(0, 0, 0, 0);

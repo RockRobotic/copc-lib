@@ -16,9 +16,15 @@ class BaseIO
     // Find a node object given a key
     Node FindNode(VoxelKey key);
 
-    std::shared_ptr<CopcFile> file;
+    // WKT string if defined, else empty
+    std::string GetWkt() const { return this->file->GetWkt(); }
+    // CopcData
+    las::CopcVlr GetCopcHeader() const { return this->file->GetCopc(); }
+    // Las header
+    las::LasHeader GetLasHeader() const { return this->file->GetLasHeader(); }
 
   protected:
+    std::shared_ptr<CopcFile> file;
     std::shared_ptr<Internal::Hierarchy> hierarchy;
     virtual std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) = 0;
 };
