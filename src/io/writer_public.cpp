@@ -74,6 +74,9 @@ Node Writer::AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompre
 
 Node Writer::AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count)
 {
+    if (point_count == 0)
+        throw std::runtime_error("Point count must be >0!");
+
     return DoAddNode(page, key, compressed, point_count, true);
 }
 
