@@ -71,14 +71,19 @@ class Point
     void ReturnNumber(const uint8_t &return_number)
     {
         if (extended_point_type_)
+        {
             if (return_number > 15)
                 throw std::runtime_error("Return Number must be <= 15");
             else
                 extended_returns_ = return_number | (extended_returns_ & 0xF0);
-        else if (return_number > 7)
-            throw std::runtime_error("Return Number must be <= 7");
+        }
         else
-            returns_flags_eof_ = (returns_flags_eof_ & 0xF8) | return_number;
+        {
+            if (return_number > 7)
+                throw std::runtime_error("Return Number must be <= 7");
+            else
+                returns_flags_eof_ = (returns_flags_eof_ & 0xF8) | return_number;
+        }
     }
 
     uint8_t NumberOfReturns() const
@@ -88,10 +93,12 @@ class Point
     void NumberOfReturns(const uint8_t &number_of_returns)
     {
         if (extended_point_type_)
+        {
             if (number_of_returns > 15)
                 throw std::runtime_error("Number of Returns must be <= 15");
             else
                 extended_returns_ = (number_of_returns << 4) | (extended_returns_ & 0xF);
+        }
         else
         {
             if (number_of_returns > 7)
@@ -250,10 +257,12 @@ class Point
     void ExtendedScanAngle(const int16_t &scan_angle)
     {
         if (extended_point_type_)
+        {
             if (scan_angle < -30000 || scan_angle > 30000)
                 throw std::runtime_error("Scan Angle must be between -30000 and 30000");
             else
                 extended_scan_angle_ = scan_angle;
+        }
         else
             throw std::runtime_error("Point10 does not have Scan Angle.");
     }
