@@ -1,10 +1,10 @@
+#include "data/test_data.h"
 #include <catch2/catch.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <cstring>
 #include <lazperf/readers.hpp>
 #include <sstream>
-#include "data/test_data.h"
 
 using namespace copc;
 using namespace std;
@@ -140,7 +140,7 @@ TEST_CASE("Writer Pages", "[Writer]")
 
         Page root_page = writer.GetRootPage();
 
-        auto sub_page = writer.AddSubPage(root_page, VoxelKey(1,1,1,1));
+        auto sub_page = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 1));
         REQUIRE(sub_page.IsPage());
         REQUIRE(sub_page.IsValid());
         REQUIRE(sub_page.loaded == true);

@@ -69,9 +69,7 @@ inline bool operator==(const VoxelKey &a, const VoxelKey &b)
 }
 inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b); }
 
-
 } // namespace copc
-
 
 // Hash function to allow VoxelKeys as unordered_map keys
 namespace std

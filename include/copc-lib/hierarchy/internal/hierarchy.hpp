@@ -47,6 +47,6 @@ class Hierarchy
     std::unordered_map<VoxelKey, std::shared_ptr<Node>> loaded_nodes_;
 };
 
-} // namespace copc
+} // namespace copc::Internal
 
 #endif // COPCLIB_HIERARCHY_HIERARCHY_H_

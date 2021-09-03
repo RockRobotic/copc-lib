@@ -44,5 +44,5 @@ class WriterInternal
     // Iterates through a given page in a postorder traversal and writes the pages
     void WritePageTree(std::shared_ptr<PageInternal> current);
 };
-} // namespace copc
+} // namespace copc::Internal
 #endif // COPCLIB_IO_WRITER_INTERNAL_H_

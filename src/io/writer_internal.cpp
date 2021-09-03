@@ -27,7 +27,7 @@ void WriterInternal::Close()
     WriteChunkTable();
 
     // Always write the wkt for now, since it sets evlr_offset
-    //if (!file->GetWkt().empty())
+    // if (!file->GetWkt().empty())
     WriteWkt(head14);
 
     // Page writing must be done in a postorder traversal because each parent
@@ -200,4 +200,4 @@ void WriterInternal::WritePageTree(std::shared_ptr<PageInternal> current)
     // Visit the current node for post-order traversal.
     WritePage(current);
 }
-} // namespace copc
+} // namespace copc::Internal

@@ -16,7 +16,7 @@ class Page : public Entry
     Page(Entry e) : Entry(e){};
     Page(VoxelKey key, int64_t offset, int32_t size) : Entry(key, offset, size, -1){};
 
-    // If a page is "loaded" it doesn't matter the offset/size 
+    // If a page is "loaded" it doesn't matter the offset/size
     // (since the writer will default the offset/size to -1)
     bool IsValid() const { return (loaded || (offset >= 0 && size >= 0)) && key.IsValid(); }
     bool IsPage() const { return IsValid() && point_count == -1; }

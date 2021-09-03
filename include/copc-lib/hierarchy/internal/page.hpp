@@ -18,6 +18,6 @@ class PageInternal : public Page
     std::vector<std::shared_ptr<Node>> nodes;
 };
 
-} // namespace copc
+} // namespace copc::Internal
 
 #endif // COPCLIB_HIERARCHY_PAGE_INTERNAL_H_
