@@ -95,7 +95,7 @@ std::vector<las::Point> Reader::GetPoints(Node const &node)
 std::vector<char> Reader::GetPointData(Node const &node)
 {
     if (!node.IsValid())
-        return {};
+        throw std::runtime_error("Cannot load an invalid node.");
 
     in_stream.seekg(node.offset);
 
@@ -107,7 +107,7 @@ std::vector<char> Reader::GetPointData(Node const &node)
 std::vector<char> Reader::GetPointDataCompressed(Node const &node)
 {
     if (!node.IsValid())
-        return {};
+        throw std::runtime_error("Cannot load an invalid node.");
 
     in_stream.seekg(node.offset);
 

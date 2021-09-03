@@ -27,7 +27,7 @@ target_link_libraries(${COPC_STATIC_LIB} LAZPERF::lazperf)
 
 # Choose package components
 set(WITH_TESTS TRUE CACHE BOOL "Choose if unit tests should be built")
-set(WITH_EXAMPLES FALSE CACHE BOOL "Choose if examples should be built")
+set(WITH_EXAMPLES TRUE CACHE BOOL "Choose if examples should be built")
 
 if (WITH_TESTS OR WITH_EXAMPLES)
     file (DOWNLOAD

@@ -1,12 +1,15 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <fstream>
 
-#include <copc-lib/copc/copc.hpp>
+#include <copc-lib/io/reader.hpp>
+#include <copc-lib/laz/decompressor.hpp>
 
 using namespace copc;
+using namespace std;
 
-void PrintPoints(std::vector<char> point_vec, int point_record_length)
+void PrintPoints(vector<char> point_vec, int point_record_length)
 {
     auto point_buff = point_vec.data();
     for (int i = 0; i < 5; i++)
@@ -16,95 +19,115 @@ void PrintPoints(std::vector<char> point_vec, int point_record_length)
         int32_t x, y, z;
 
         size_t point_size = sizeof(x);
-        std::memcpy(&x, point_buff + pointOffset, point_size);
-        std::memcpy(&y, point_buff + pointOffset + point_size, point_size);
-        std::memcpy(&z, point_buff + pointOffset + point_size * 2, point_size);
-        std::cout << "Point " << i << ": X=" << x << ", Y=" << y << ", Z=" << z << std::endl;
+        memcpy(&x, point_buff + pointOffset, point_size);
+        memcpy(&y, point_buff + pointOffset + point_size, point_size);
+        memcpy(&z, point_buff + pointOffset + point_size * 2, point_size);
+        cout << "Point " << i << ": X=" << x << ", Y=" << y << ", Z=" << z << endl;
     }
 }
 
 int main()
 {
-    // Call default constructor with Andrew's test file
-    Copc copc("test/data/autzen-classified.copc.laz");
+    fstream in_stream;
+    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+
+    // Create a reader object
+    Reader reader(in_stream);
 
     // We can get the CopcData struct
-    auto copcHeader = copc.file->GetCopcHeader();
-    std::cout << "CopcData: " << std::endl;
-    std::cout << "\tSpan: " << copcHeader.span << std::endl
-              << "\tRoot Offset: " << copcHeader.root_hier_offset << std::endl
-              << "\tRoot Size: " << copcHeader.root_hier_size << std::endl;
+    auto copc_vlr = reader.file->GetCopc();
+    cout << "CopcData: " << endl;
+    cout << "\tSpan: " << copc_vlr.span << endl
+              << "\tRoot Offset: " << copc_vlr.root_hier_offset << endl
+              << "\tRoot Size: " << copc_vlr.root_hier_size << endl;
 
     // Get the Las Header
-    auto lasHeader = copc.file->GetLasHeader();
-    std::cout << std::endl << "Las Header:" << std::endl;
-    std::cout << "\tPoint format: " << (int)lasHeader.point_format_id << std::endl
-              << "\tPoint count: " << (int)lasHeader.point_count << std::endl;
+    auto las_header = reader.file->GetLasHeader();
+    cout << endl << "Las Header:" << endl;
+    cout << "\tPoint format: " << (int)las_header.point_format_id << endl
+              << "\tPoint count: " << (int)las_header.point_count << endl;
 
     // Get the WKT string
-    auto wkt = copc.file->GetWkt();
-    std::cout << std::endl << "WKT: " << std::endl << wkt << std::endl;
+    auto wkt = reader.file->GetWkt();
+    cout << endl << "WKT: " << endl << wkt << endl;
 
-    std::cout << std::endl;
+    cout << endl;
 
     {
         // Create a new root key (0-0-0-0)
-        hierarchy::VoxelKey key(0, 0, 0, 0);
+        VoxelKey key(0, 0, 0, 0);
 
         // FindNode will automatically load the minimum pages needed
         // to find the key you request
-        auto rootEntry = copc.hierarchy->FindNode(key);
-        std::cout << rootEntry->ToString() << std::endl;
+        Node root_node = reader.FindNode(key);
+        cout << root_node.ToString() << endl;
 
-        // If a key doesn't exist, FindNode will return nullptr
-        hierarchy::VoxelKey keyDoesNotExist(5, 4, 20, 8);
-        if (copc.hierarchy->FindNode(keyDoesNotExist) == nullptr)
-            std::cout << std::endl << "Key " << keyDoesNotExist.ToString() << " does not exist!";
+        // If a key doesn't exist, FindNode will return an "invalid" node
+        VoxelKey keyDoesNotExist(5, 4, 20, 8);
+        Node invalid_node = reader.FindNode(keyDoesNotExist);
+        if (!invalid_node.IsValid())
+            cout << endl << "Key " << keyDoesNotExist.ToString() << " does not exist!";
     }
 
-    std::cout << std::endl;
+    cout << endl;
 
     {
         // Now, we will load the point data from a node in the hierarchy
-        hierarchy::VoxelKey loadKey(4, 11, 9, 0);
+        VoxelKey loadKey(4, 11, 9, 0);
 
-        auto node = copc.hierarchy->FindNode(loadKey);
-        std::vector<char> nodeData = node->GetPointData();
+        Node node = reader.FindNode(loadKey);
+        vector<char> uncompressed_data = reader.GetPointData(node);
 
-        std::cout << std::endl << "First 5 points: " << std::endl;
-        PrintPoints(nodeData, lasHeader.point_record_length);
+        cout << endl << "First 5 points: " << endl;
+        PrintPoints(uncompressed_data, las_header.point_record_length);
     }
 
     {
-        // Compare that to loading Point objects:
-        hierarchy::VoxelKey loadKey(4, 11, 9, 0);
+        // We can also load into "Point" objects, which have accessors:
+        VoxelKey loadKey(4, 11, 9, 0);
 
-        auto node = copc.hierarchy->FindNode(loadKey);
-        auto nodeData = node->GetPoints();
+        Node node = reader.FindNode(loadKey);
+        auto nodeData = reader.GetPoints(node);
 
-        std::cout << std::endl << "First 5 points: " << std::endl;
+        cout << endl << "First 5 points: " << endl;
         for (int i = 0; i < 5; i++)
         {
-            std::cout << "Point " << i << ": " << std::endl
-                      << "{" << std::endl
-                      << nodeData[i].ToString() << std::endl
-                      << "}" << std::endl
-                      << std::endl;
+            cout << "Point " << i << ": " << endl
+                      << "{" << endl
+                      << nodeData[i].ToString() << endl
+                      << "}" << endl
+                      << endl;
         }
     }
 
-    std::cout << std::endl;
+    {
+        // Note that trying to get an invalid node's data will result in an exception:
+        VoxelKey keyDoesNotExist(5, 4, 20, 8);
+        Node invalid_node = reader.FindNode(keyDoesNotExist);
+
+        try
+        {
+            auto node_data = reader.GetPointData(invalid_node);
+        }
+        catch (std::runtime_error)
+        {
+            cout << "Can't get point data of an invalid node!" << endl;
+        }
+    }
 
     {
-        // We should always check for a node's existance before working with it
-        hierarchy::VoxelKey invalidKey(20, 4, -1, 0);
+        // We can also get the raw compressed data if we want to decompress it ourselves:
+        VoxelKey loadKey(4, 11, 9, 0);
 
-        auto node = copc.hierarchy->FindNode(invalidKey);
-        if (node != nullptr)
-        {
-            std::vector<char> nodeData = node->GetPointData();
-        }
-        else
-            std::cout << "Invalid key " << invalidKey.ToString() << "!" << std::endl;
+        Node node = reader.FindNode(loadKey);
+        vector<char> compressed_data = reader.GetPointDataCompressed(node);
+
+        // only decompress the first 5 points
+        // or we can decompress the entire node by passing node.point_count
+        auto uncompressed_data =
+            copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, 5);
+
+        cout << endl << "5 decompressed points: " << endl;
+        PrintPoints(uncompressed_data, las_header.point_record_length);
     }
 }
