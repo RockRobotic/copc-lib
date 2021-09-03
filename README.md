@@ -1,6 +1,6 @@
 # copc-lib
 
-copc-lib is a library which provides an easy-to-use reader ~~and writer~~ interface for [COPC](https://copc.io/) point clouds. The end goal of this project is to provide a complete interface for handling COPC files, without having to use other laz or las libraries.
+copc-lib is a library which provides an easy-to-use reader and writer interface for [COPC](https://copc.io/) point clouds. The end goal of this project is to provide a complete interface for handling COPC files, without having to use other laz or las libraries.
 
 *Note: This library is in beta and API may change*
 
@@ -21,33 +21,9 @@ sudo make install
 
 ## Usage
 
-The `copc::Copc` object provides a complete interface for reading COPC files. For common use cases, use the `example` and `test` folders as reference.
+The `Reader` and `Writer` objects provide the primary means of interfacing with your COPC files. For more complex use cases, we also provide additional objects such as LAZ Compressors and Decompressors.
 
-```cpp
-#include <copc-lib/copc/copc.hpp>
-using namespace copc;
-
-// Create a new Copc library object
-Copc copc("MyCopcFile.copc.laz");
-
-// Get the LAS header from the file
-// The `file` object contains all metadata for both COPC and LAS formats
-auto lasHeader = copc.file->GetLasHeader();
-
-// Get the WKT from the file
-std::string wkt = copc.file->GetWkt();
-
-// Use VoxelKeys to query the hierarchy
-hierarchy::VoxelKey loadKey(1, 1, 1, 1);
-
-// FindNode queries the hierarchy to get the requested Entry
-auto node = copc.hierarchy->FindNode(loadKey);
-// Once we have the node, we can load it using GetPoints
-std::vector<las::Point> nodeData = node->GetPoints();
-
-// The las::Point interface gives us access to all LAS attributes
-std::cout << nodeData[0].X() << ", " << nodeData[0].Y() << nodeData[0].Z();
-```
+For common use cases, see the `example` and `test` folders for full usage examples.
 
 You can see an example of g++ and cmake build processes [here](https://github.com/RockRobotic/copc-lib-examples).
 
@@ -56,7 +32,7 @@ If other library functionality is needed, feel free to open an issue to see abou
 ## Coming Soon
 - [x] Basic C++ Reader Interface
 - [x] Return Point structures from the reader rather than raw char* arrays, to support a more familiar laspy-like interface.
-- [ ] Add writer for COPC data
+- [x] Add writer for COPC data
 - [ ] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 - [ ] Python bindings
 - [ ] Javascript (emscripten) bindings
