@@ -733,6 +733,25 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point == point_other);
     }
 
+    SECTION("Operator =")
+    {
+        auto point = Point();
+        point.ToPointFormat(10);
+
+        point.X(4);
+        point.Y(4);
+        point.Z(4);
+
+        point.GpsTime(4.0);
+        point.R(4.0);
+        point.Nir(4.0);
+
+        auto point_other = Point();
+        point_other = point;
+
+        REQUIRE(point == point_other);
+    }
+
     SECTION("Packing and Unpacking")
     {
 

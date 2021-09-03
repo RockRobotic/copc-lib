@@ -398,8 +398,6 @@ class Point
 
     uint32_t PointByteSize() const { return point_byte_size_; }
 
-    uint32_t NumberExtraBytes() const { return extra_bytes_.size(); }
-
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
 
     static bool FormatHasGpsTime(const uint8_t &point_format_id)
@@ -510,6 +508,53 @@ class Point
     };
 
     bool operator!=(const Point &other) const { return !(*this == other); };
+
+    Point &operator=(const Point &other)
+    {
+
+        if (&other != this)
+        {
+            extended_point_type_ = other.HasExtendedPoint();
+            has_gps_time_ = other.HasGpsTime();
+            has_rgb_ = other.HasRgb();
+            has_nir_ = other.HasNir();
+
+            x_ = other.X();
+            y_ = other.Y();
+            z_ = other.Z();
+            intensity_ = other.Intensity();
+            user_data_ = other.UserData();
+            point_source_id_ = other.PointSourceId();
+
+            if (extended_point_type_)
+            {
+                extended_returns_ = other.ExtendedReturns();
+                extended_flags_ = other.ExtendedFlags();
+                extended_classification_ = other.Classification();
+                extended_scan_angle_ = other.ExtendedScanAngle();
+            }
+            else
+            {
+                returns_flags_eof_ = other.ReturnsScanDirEofBitFields();
+                classification_ = other.ClassificationBitFields();
+            }
+
+            if (has_gps_time_)
+                gps_time_ = other.gps_time_;
+            if (has_rgb_)
+            {
+                rgb_[0] = other.R();
+                rgb_[1] = other.G();
+                rgb_[2] = other.B();
+            }
+            if (has_nir_)
+                nir_ = other.Nir();
+
+            extra_bytes_ = other.ExtraBytes();
+        }
+
+        return *this;
+    };
 
   protected:
     int32_t x_;
