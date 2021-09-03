@@ -100,6 +100,35 @@ uint8_t Point2::BaseByteSize(const uint8_t &point_format_id) {
 }
 
 void Point2::ToPointFormat(const uint8_t &point_format_id) {
+
+    if (extended_point_type_ && point_format_id < 6) {
+        // Convert points values from 1.4 to 1.0
+        // Returns and flags
+        returns_flags_eof_ =
+            (EdgeOfFlightLineFlag() << 7) | (ScanDirectionFlag() << 6) | (std::min(int(NumberOfReturns()), 7) << 3)
+                | std::min(int(ReturnNumber()), 7);
+        // Classification
+        classification_ =
+            (Withheld() << 7) | (KeyPoint() << 6) | (Synthetic() << 5) | std::min(int(Classification()), 31);
+
+        // Scan angle
+        scan_angle_rank_ = static_cast<int8_t>(std::max(-90, std::min(90, int(float(ExtendedScanAngle()) * 0.006f))));
+
+    } else if (!extended_point_type_ && point_format_id > 5) {
+        // Convert point values from 1.0 to 1.4
+        // Returns
+        extended_returns_ = (NumberOfReturns() << 4) | ReturnNumber();
+        // Flags
+        extended_flags_ =
+            (EdgeOfFlightLineFlag() << 7) | (ScanDirectionFlag() << 6) | (Withheld() << 2) | (KeyPoint() << 1)
+                | Synthetic();
+        //Classification
+        extended_classification_ = Classification();
+        // Scan angle
+        extended_scan_angle_ = static_cast<int16_t>(float(ScanAngleRank()) / 0.006f);
+    }
+
+    // Update flags
     extended_point_type_ = point_format_id > 5;
     has_gps_time_ = FormatHasGpsTime(point_format_id);
     has_rgb_ = FormatHasRgb(point_format_id);

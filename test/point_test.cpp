@@ -346,65 +346,68 @@ TEST_CASE("Point tests", "[Point]")
 
     SECTION("Point conversion")
     {
-        auto point0 = Point2();
-        point0.ToPointFormat(0);
+        auto point = Point2();
+        point.ToPointFormat(0);
 
-        REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.GpsTime());
-        REQUIRE_THROWS(point0.Rgb());
-        REQUIRE_THROWS(point0.Nir());
+        point.ReturnNumber(5);
+        point.NumberOfReturns(6);
+        point.ScanDirectionFlag(false);
+        point.EdgeOfFlightLineFlag(true);
+        point.Classification(15);
+        point.Synthetic(true);
+        point.KeyPoint(false);
+        point.Withheld(true);
+        point.ScanAngleRank(45);
 
-        point0.ToPointFormat(1);
+        point.ToPointFormat(6);
 
-        REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.Rgb());
-        REQUIRE_THROWS(point0.Nir());
+        REQUIRE(point.ReturnNumber() == 5);
+        REQUIRE(point.NumberOfReturns() == 6);
+        REQUIRE(point.ScanDirectionFlag() == false);
+        REQUIRE(point.EdgeOfFlightLineFlag() == true);
+        REQUIRE(point.Classification() == 15);
+        REQUIRE(point.Synthetic() == true);
+        REQUIRE(point.KeyPoint() == false);
+        REQUIRE(point.Withheld() == true);
+        REQUIRE(point.Overlap() == false);
+        REQUIRE(point.ExtendedScanAngle() == 7500);
+        REQUIRE(point.ScannerChannel() == 0);
 
-        point0.ToPointFormat(2);
+        point.ToPointFormat(0);
 
-        REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.GpsTime());
-        REQUIRE_THROWS(point0.Nir());
+        REQUIRE(point.ReturnNumber() == 5);
+        REQUIRE(point.NumberOfReturns() == 6);
+        REQUIRE(point.ScanDirectionFlag() == false);
+        REQUIRE(point.EdgeOfFlightLineFlag() == true);
+        REQUIRE(point.Classification() == 15);
+        REQUIRE(point.Synthetic() == true);
+        REQUIRE(point.KeyPoint() == false);
+        REQUIRE(point.Withheld() == true);
+        REQUIRE(point.ScanAngleRank() == 45);
 
-        point0.ToPointFormat(3);
+        point.ToPointFormat(6);
 
-        REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.Nir());
+        point.ReturnNumber(13);
+        point.NumberOfReturns(14);
+        point.Classification(134);
+        point.Synthetic(true);
+        point.KeyPoint(false);
+        point.Withheld(true);
+        point.ExtendedScanAngle(28000);
 
-        point0.ToPointFormat(4);
+        point.ToPointFormat(0);
 
-        REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.Rgb());
-        REQUIRE_THROWS(point0.Nir());
+        REQUIRE(point.ReturnNumber() == 7);
+        REQUIRE(point.NumberOfReturns() == 7);
+        REQUIRE(point.Classification() == 31);
+        REQUIRE(point.ScanAngleRank() == 90);
 
-        point0.ToPointFormat(5);
+        point.ToPointFormat(6);
 
-        REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.Nir());
+        REQUIRE(point.ReturnNumber() == 7);
+        REQUIRE(point.NumberOfReturns() == 7);
+        REQUIRE(point.Classification() == 31);
+        REQUIRE(point.ExtendedScanAngle() == 15000);
 
-        point0.ToPointFormat(6);
-
-        REQUIRE_THROWS(point0.ScanAngleRank());
-        REQUIRE_THROWS(point0.Rgb());
-        REQUIRE_THROWS(point0.Nir());
-
-        point0.ToPointFormat(7);
-
-        REQUIRE_THROWS(point0.ScanAngleRank());
-        REQUIRE_THROWS(point0.Nir());
-
-        point0.ToPointFormat(8);
-
-        REQUIRE_THROWS(point0.ScanAngleRank());
-
-        point0.ToPointFormat(9);
-
-        REQUIRE_THROWS(point0.ScanAngleRank());
-        REQUIRE_THROWS(point0.Rgb());
-        REQUIRE_THROWS(point0.Nir());
-
-        point0.ToPointFormat(10);
-
-        REQUIRE_THROWS(point0.ScanAngleRank());
     }
 }
