@@ -1,6 +1,6 @@
 #include <copc-lib/las/point.hpp>
 
-#include <copc-lib/las/internal/utils.hpp>
+#include <copc-lib/las/utils.hpp>
 
 namespace copc::las
 {
