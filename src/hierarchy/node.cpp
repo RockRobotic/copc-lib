@@ -23,8 +23,7 @@ std::vector<las::Point> Node::GetPoints()
 
     // Unpack points
     for (auto &point : points)
-        point.Unpack(ss,
-                     reader_->file->GetLasHeader().point_format_id,
+        point.Unpack(ss, reader_->file->GetLasHeader().point_format_id,
                      reader_->file->GetLasHeader().point_record_length);
 
     return points;

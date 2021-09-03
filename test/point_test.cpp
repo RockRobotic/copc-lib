@@ -9,10 +9,7 @@ using namespace std;
 
 TEST_CASE("Point tests", "[Point]")
 {
-    SECTION("Point Format Test")
-    {
-        REQUIRE_NOTHROW(Point());
-    }
+    SECTION("Point Format Test") { REQUIRE_NOTHROW(Point()); }
 
     SECTION("Point with format LAS 1.0 Test")
     {
@@ -410,6 +407,5 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.NumberOfReturns() == 7);
         REQUIRE(point.Classification() == 31);
         REQUIRE(point.ExtendedScanAngle() == 15000);
-
     }
 }
