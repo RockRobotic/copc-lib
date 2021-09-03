@@ -96,8 +96,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point0.PointSourceId() == UINT16_MAX);
 
         // Checks
-        REQUIRE_THROWS(point0.FlagsBitFields(0));
-        REQUIRE_THROWS(point0.FlagsBitFields());
+        REQUIRE_THROWS(point0.ExtendedFlags(0));
+        REQUIRE_THROWS(point0.ExtendedFlags());
         REQUIRE_THROWS(point0.ScannerChannel(0));
         REQUIRE_THROWS(point0.ScannerChannel());
         REQUIRE_THROWS(point0.Nir(UINT16_MAX));
@@ -116,8 +116,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.Overlap());
         REQUIRE_THROWS(point0.ExtendedReturns(UINT8_MAX));
         REQUIRE_THROWS(point0.ExtendedReturns());
-        REQUIRE_THROWS(point0.FlagsBitFields(UINT8_MAX));
-        REQUIRE_THROWS(point0.FlagsBitFields());
+        REQUIRE_THROWS(point0.ExtendedFlags(UINT8_MAX));
+        REQUIRE_THROWS(point0.ExtendedFlags());
         REQUIRE_NOTHROW(point0.ToString());
 
         auto point1 = Point();
@@ -227,8 +227,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.NumberOfReturns(16));
 
         // Flags
-        point6.FlagsBitFields(UINT8_MAX);
-        REQUIRE(point6.FlagsBitFields() == UINT8_MAX);
+        point6.ExtendedFlags(UINT8_MAX);
+        REQUIRE(point6.ExtendedFlags() == UINT8_MAX);
 
         // Synthetic
         point6.Synthetic(false);
