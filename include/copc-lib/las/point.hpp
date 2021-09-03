@@ -1,5 +1,5 @@
-#ifndef COPCLIB_LAS_POINT2_H_
-#define COPCLIB_LAS_POINT2_H_
+#ifndef COPCLIB_LAS_POINT_H_
+#define COPCLIB_LAS_POINT_H_
 
 #include <sstream>
 #include <vector>
@@ -495,4 +495,4 @@ class Point
 };
 
 } // namespace copc::las
-#endif // COPCLIB_LAS_POINT2_H_
+#endif // COPCLIB_LAS_POINT_H_
