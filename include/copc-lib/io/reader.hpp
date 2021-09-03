@@ -16,7 +16,6 @@ class Reader : public BaseIO
 {
   public:
     Reader(std::istream &in_stream);
-    Reader(const std::string &in_file);
 
     // Reads the node's data into an uncompressed byte array
     std::vector<char> GetPointData(Node const &node);
