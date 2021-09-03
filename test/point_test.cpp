@@ -2,7 +2,7 @@
 #include <limits>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/las/point2.hpp>
+#include <copc-lib/las/point.hpp>
 
 using namespace copc::las;
 using namespace std;
@@ -11,12 +11,12 @@ TEST_CASE("Point tests", "[Point]")
 {
     SECTION("Point Format Test")
     {
-        REQUIRE_NOTHROW(Point2());
+        REQUIRE_NOTHROW(Point());
     }
 
     SECTION("Point with format LAS 1.0 Test")
     {
-        auto point0 = Point2();
+        auto point0 = Point();
         // Position
         point0.X(INT32_MAX);
         point0.Y(INT32_MAX);
@@ -83,7 +83,7 @@ TEST_CASE("Point tests", "[Point]")
         // Scan Angle
         point0.ScanAngleRank(90);
         REQUIRE(point0.ScanAngleRank() == 90);
-        REQUIRE(point0.ScanAngle() == 90);
+        REQUIRE(point0.ScanAngle() == 90.0);
         REQUIRE_THROWS(point0.ScanAngleRank(91));
         REQUIRE_THROWS(point0.ScanAngleRank(-91));
 
@@ -120,7 +120,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.FlagsBitFields());
         REQUIRE_NOTHROW(point0.ToString());
 
-        auto point1 = Point2();
+        auto point1 = Point();
         point1.ToPointFormat(1);
 
         point1.GpsTime(DBL_MAX);
@@ -135,7 +135,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.Nir(UINT16_MAX));
         REQUIRE_THROWS(point0.Nir());
 
-        auto point2 = Point2();
+        auto point2 = Point();
         point2.ToPointFormat(2);
 
         point2.R(UINT16_MAX);
@@ -155,7 +155,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point2.Nir(UINT16_MAX));
         REQUIRE_THROWS(point2.Nir());
 
-        auto point3 = Point2();
+        auto point3 = Point();
         point3.ToPointFormat(3);
 
         REQUIRE_NOTHROW(point3.GpsTime(DBL_MAX));
@@ -167,7 +167,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point3.Nir(UINT16_MAX));
         REQUIRE_THROWS(point3.Nir());
 
-        auto point4 = Point2();
+        auto point4 = Point();
         point4.ToPointFormat(4);
 
         REQUIRE_NOTHROW(point4.GpsTime(DBL_MAX));
@@ -179,7 +179,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point4.Nir(UINT16_MAX));
         REQUIRE_THROWS(point4.Nir());
 
-        auto point5 = Point2();
+        auto point5 = Point();
         point5.ToPointFormat(5);
 
         REQUIRE_NOTHROW(point5.GpsTime(DBL_MAX));
@@ -194,7 +194,7 @@ TEST_CASE("Point tests", "[Point]")
 
     SECTION("Point with format LAS 1.4 Test")
     {
-        auto point6 = Point2();
+        auto point6 = Point();
         point6.ToPointFormat(6);
         // Position
         point6.X(INT32_MAX);
@@ -282,9 +282,11 @@ TEST_CASE("Point tests", "[Point]")
         // Scan Angle
         point6.ExtendedScanAngle(-30000);
         REQUIRE(point6.ExtendedScanAngle() == -30000);
+        REQUIRE(point6.ScanAngle() == -180.0);
         REQUIRE_THROWS(point6.ExtendedScanAngle(-30001));
         point6.ExtendedScanAngle(30000);
         REQUIRE(point6.ExtendedScanAngle() == 30000);
+        REQUIRE(point6.ScanAngle() == 180.0);
         REQUIRE_THROWS(point6.ExtendedScanAngle(30001));
 
         // User Data
@@ -314,7 +316,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.ClassificationBitFields());
         REQUIRE_NOTHROW(point6.ToString());
 
-        auto point7 = Point2();
+        auto point7 = Point();
         point7.ToPointFormat(7);
 
         point7.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX);
@@ -325,13 +327,13 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point7.Nir(UINT16_MAX));
         REQUIRE_THROWS(point7.Nir());
 
-        auto point8 = Point2();
+        auto point8 = Point();
         point8.ToPointFormat(8);
 
         point8.Nir(UINT16_MAX);
         REQUIRE(point8.Nir() == UINT16_MAX);
 
-        auto point9 = Point2();
+        auto point9 = Point();
         point9.ToPointFormat(9);
 
         REQUIRE_THROWS(point9.Rgb(UINT16_MAX, UINT16_MAX, UINT16_MAX));
@@ -346,7 +348,7 @@ TEST_CASE("Point tests", "[Point]")
 
     SECTION("Point conversion")
     {
-        auto point = Point2();
+        auto point = Point();
         point.ToPointFormat(0);
 
         point.ReturnNumber(5);
