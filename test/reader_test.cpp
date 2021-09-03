@@ -82,24 +82,35 @@ TEST_CASE("GetPointData Test", "[Reader] ")
 
         int record_length = reader.file->GetLasHeader().point_record_length;
 
-        auto key = VoxelKey(0, 0, 0, 0);
-        auto hier_entry = reader.FindNode(key);
+        {
+            auto key = VoxelKey(0, 0, 0, 0);
+            auto hier_entry = reader.FindNode(key);
 
-        auto point_vec = reader.GetPointData(hier_entry);
-        REQUIRE(!point_vec.empty());
-        auto point_buff = point_vec.data();
+            auto point_vec = reader.GetPointData(hier_entry);
+            REQUIRE(!point_vec.empty());
+            auto point_buff = point_vec.data();
 
-        int x;
-        std::memcpy(&x, point_buff, sizeof(x));
-        REQUIRE(x == -144147);
-        std::memcpy(&x, point_buff + record_length, sizeof(x));
-        REQUIRE(x == -172520);
-        std::memcpy(&x, point_buff + record_length * 2, sizeof(x));
-        REQUIRE(x == -121603);
-        std::memcpy(&x, point_buff + record_length * 3, sizeof(x));
-        REQUIRE(x == -49828);
-        std::memcpy(&x, point_buff + record_length * 4, sizeof(x));
-        REQUIRE(x == -138082);
+            int x;
+            std::memcpy(&x, point_buff, sizeof(x));
+            REQUIRE(x == -144147);
+            std::memcpy(&x, point_buff + record_length, sizeof(x));
+            REQUIRE(x == -172520);
+            std::memcpy(&x, point_buff + record_length * 2, sizeof(x));
+            REQUIRE(x == -121603);
+            std::memcpy(&x, point_buff + record_length * 3, sizeof(x));
+            REQUIRE(x == -49828);
+            std::memcpy(&x, point_buff + record_length * 4, sizeof(x));
+            REQUIRE(x == -138082);
+        }
+
+        {
+            auto key = VoxelKey(1, 0, 0, 0);
+            auto hier_entry = reader.FindNode(key);
+
+            auto point_vec = reader.GetPointData(hier_entry);
+            REQUIRE(!point_vec.empty());
+            auto point_buff = point_vec.data();
+        }
     }
 }
 

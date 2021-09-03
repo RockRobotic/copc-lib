@@ -26,8 +26,9 @@ void WriterInternal::Close()
     auto head14 = file->GetLasHeader();
     WriteChunkTable();
 
-    if (!file->GetWkt().empty())
-        WriteWkt(head14);
+    // Always write the wkt for now, since it sets evlr_offset
+    //if (!file->GetWkt().empty())
+    WriteWkt(head14);
 
     // Page writing must be done in a postorder traversal because each parent
     // has to write the offset of all of its children, which we don't know in advance

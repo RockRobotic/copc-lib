@@ -32,6 +32,8 @@ class Decompressor
             decompressor->decompress(buff);
             out.insert(out.end(), buff, buff + point_size);
         }
+        // clear the EOF flag, since lazperf may read too large of a buffer
+        in_stream.clear();
         return out;
     }
 };
