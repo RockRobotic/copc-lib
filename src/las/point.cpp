@@ -141,44 +141,45 @@ void Point::ToPointFormat(const uint8_t &point_format_id) {
 
 std::string Point::ToString() const {
     std::stringstream ss;
+    ss << "Point: " << std::endl;
     if (extended_point_type_) {
-        ss << "Point14: " << std::endl;
-        ss << "\tX: " << x_ << ", Y: " << y_ << ", Z: " << z_ << std::endl;
-        ss << "\tIntensity: " << intensity_ << std::endl;
-        ss << "\tReturn Number: " << static_cast<short>(ReturnNumber())
+        ss << "\tPoint14: " << std::endl;
+        ss << "\t\tX: " << x_ << ", Y: " << y_ << ", Z: " << z_ << std::endl;
+        ss << "\t\tIntensity: " << intensity_ << std::endl;
+        ss << "\t\tReturn Number: " << static_cast<short>(ReturnNumber())
            << ", Number of Returns: " << static_cast<short>(NumberOfReturns()) << std::endl;
-        ss << "\tClassification Flags: Synthetic: " << Synthetic() << ", Key Point: " << KeyPoint()
+        ss << "\t\tClassification Flags: Synthetic: " << Synthetic() << ", Key Point: " << KeyPoint()
            << ", Withheld: " << Withheld() << ", Overlap: " << Overlap() << std::endl;
-        ss << "\tScannerChannel: " << static_cast<short>(ScannerChannel()) << std::endl;
-        ss << "\tScan Direction: " << ScanDirectionFlag() << std::endl;
-        ss << "\tEdge of Flight Line: " << EdgeOfFlightLineFlag() << std::endl;
-        ss << "\tClasification: " << static_cast<short>(Classification()) << std::endl;
-        ss << "\tUser Data: " << static_cast<short>(user_data_) << std::endl;
-        ss << "\tScan Angle: " << extended_scan_angle_ << std::endl;
-        ss << "\tPoint Source ID: " << point_source_id_;
+        ss << "\t\tScannerChannel: " << static_cast<short>(ScannerChannel()) << std::endl;
+        ss << "\t\tScan Direction: " << ScanDirectionFlag() << std::endl;
+        ss << "\t\tEdge of Flight Line: " << EdgeOfFlightLineFlag() << std::endl;
+        ss << "\t\tClasification: " << static_cast<short>(Classification()) << std::endl;
+        ss << "\t\tUser Data: " << static_cast<short>(user_data_) << std::endl;
+        ss << "\t\tScan Angle: " << extended_scan_angle_ << std::endl;
+        ss << "\t\tPoint Source ID: " << point_source_id_ << std::endl;
     } else {
-        ss << "Point10: " << std::endl;
-        ss << "\tX: " << x_ << ", Y: " << y_ << ", Z: " << z_ << std::endl;
-        ss << "\tIntensity: " << intensity_ << std::endl;
-        ss << "\tReturn Number: " << static_cast<short>(ReturnNumber())
+        ss << "\tPoint10: " << std::endl;
+        ss << "\t\tX: " << x_ << ", Y: " << y_ << ", Z: " << z_ << std::endl;
+        ss << "\t\tIntensity: " << intensity_ << std::endl;
+        ss << "\t\tReturn Number: " << static_cast<short>(ReturnNumber())
            << ", Number of Returns: " << static_cast<short>(NumberOfReturns()) << std::endl;
-        ss << "\tScan Direction: " << ScanDirectionFlag() << std::endl;
-        ss << "\tEdge of Flight Line: " << EdgeOfFlightLineFlag() << std::endl;
-        ss << "\tClasification: " << static_cast<short>(Classification()) << std::endl;
-        ss << "\tClassification Flags: Synthetic: " << Synthetic() << ", Key Point: " << KeyPoint()
+        ss << "\t\tScan Direction: " << ScanDirectionFlag() << std::endl;
+        ss << "\t\tEdge of Flight Line: " << EdgeOfFlightLineFlag() << std::endl;
+        ss << "\t\tClasification: " << static_cast<short>(Classification()) << std::endl;
+        ss << "\t\tClassification Flags: Synthetic: " << Synthetic() << ", Key Point: " << KeyPoint()
            << ", Withheld: " << Withheld() << std::endl;
-        ss << "\tScan Angle Rank: " << static_cast<short>(scan_angle_rank_) << std::endl;
-        ss << "\tUser Data: " << static_cast<short>(user_data_) << std::endl;
-        ss << "\tPoint Source ID: " << point_source_id_;
+        ss << "\t\tScan Angle Rank: " << static_cast<short>(scan_angle_rank_) << std::endl;
+        ss << "\t\tUser Data: " << static_cast<short>(user_data_) << std::endl;
+        ss << "\t\tPoint Source ID: " << point_source_id_ << std::endl;
     }
     if (has_gps_time_)
-        ss << std::endl << "GPS Time: " << gps_time_;
+        ss << "\tGPS Time: " << gps_time_ << std::endl;
     if (has_rgb_)
-        ss << std::endl << "RGB: [" << rgb_[0] << "," << rgb_[1] << "," << rgb_[2] << "]";
+        ss << "\tRGB: [" << rgb_[0] << "," << rgb_[1] << "," << rgb_[2] << "]" << std::endl;
     if (has_nir_)
-        ss << std::endl << "NIR: " << nir_;
+        ss << "\tNIR: " << nir_ << std::endl;
     if (!extra_bytes_.empty())
-        ss << std::endl << "Extra Bytes: " << extra_bytes_.size();
+        ss << "\tExtra Bytes: " << extra_bytes_.size() << std::endl;
 
     return ss.str();
 }
