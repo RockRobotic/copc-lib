@@ -31,12 +31,16 @@ class Reader : public BaseIO
     std::unique_ptr<lazperf::reader::generic_file> reader_;
     std::map<uint64_t, las::VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
 
+    // Constructor helper function, initializes the file and hierarchy
     void InitFile();
+    // Reads file VLRs into vlrs_
     void ReadVlrs();
+    // Finds and loads the COPC vlr
     las::CopcVlr GetCopcData();
+    // Finds and loads the WKT vlr
     las::WktVlr GetWktData(las::CopcVlr copc_data);
 
-    std::vector<Entry> ReadPage(std::shared_ptr<PageInternal> page) override;
+    std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override;
 };
 } // namespace copc
 #endif // COPCLIB_IO_READER_H_

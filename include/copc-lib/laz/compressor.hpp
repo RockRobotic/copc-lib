@@ -16,6 +16,7 @@ namespace copc::laz
 class Compressor
 {
   public:
+    // Compresses bytes and writes them to the out stream
     static uint32_t CompressBytes(std::ostream &out_stream, las::LasHeader const &header, std::vector<char> &in)
     {
         OutFileStream stream(out_stream);

@@ -9,6 +9,7 @@
 
 namespace copc
 {
+// Base class for all IO reader/writers
 class BaseIO
 {
   public:
@@ -18,8 +19,8 @@ class BaseIO
     std::shared_ptr<CopcFile> file;
 
   protected:
-    std::shared_ptr<Hierarchy> hierarchy;
-    virtual std::vector<Entry> ReadPage(std::shared_ptr<PageInternal> page) = 0;
+    std::shared_ptr<Internal::Hierarchy> hierarchy;
+    virtual std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) = 0;
 };
 } // namespace copc
 #endif // COPCLIB_IO_BASE_H_

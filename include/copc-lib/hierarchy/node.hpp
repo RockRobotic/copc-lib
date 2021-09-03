@@ -17,6 +17,7 @@ class Node : public Entry
     Node(Entry e) : Entry(e){};
     Node() : Entry(){};
 
+    // Provides helper functions for handling lists of Point objects
     static void PackPoints(const std::vector<las::Point> &points, std::ostream &out_stream);
     static std::vector<char> PackPoints(const std::vector<las::Point> &points);
     static std::vector<las::Point> UnpackPoints(const std::vector<char> &in, int point_format_id,

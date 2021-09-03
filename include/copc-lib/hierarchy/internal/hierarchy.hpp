@@ -7,17 +7,21 @@
 #include <copc-lib/hierarchy/key.hpp> // include the key so that the hash function gets in namespace
 #include <copc-lib/hierarchy/node.hpp>
 
-namespace copc
+namespace copc::Internal
 {
+// Hierarchy class provides helper functionality for handling groups of PageInternal objects
 class Hierarchy
 {
   public:
+    // Writer Constructor
     Hierarchy()
     {
         // add the root page to the pages list
         seen_pages_[VoxelKey::BaseKey()] = std::make_shared<PageInternal>(VoxelKey::BaseKey(), -1, -1);
+        // Set as "loaded" for the writer
         seen_pages_[VoxelKey::BaseKey()]->loaded = true;
     }
+    // Reader Constructor
     Hierarchy(int64_t root_hier_offset, int32_t root_hier_size)
     {
         // add the root page to the pages list
@@ -30,17 +34,13 @@ class Hierarchy
     {
         // Iterates through the list of key ancestors to find if any have been seen
         for (auto &nearest_seen_parent : parents_list)
-        {
-            if (seen_pages_.find(nearest_seen_parent) != seen_pages_.end())
-            {
+            if (PageExists(nearest_seen_parent))
                 return seen_pages_[nearest_seen_parent];
-            }
-        }
+
         return nullptr;
     }
 
     bool PageExists(VoxelKey key) { return seen_pages_.find(key) != seen_pages_.end(); }
-
     bool NodeExists(VoxelKey key) { return loaded_nodes_.find(key) != loaded_nodes_.end(); }
 
     std::unordered_map<VoxelKey, std::shared_ptr<PageInternal>> seen_pages_;

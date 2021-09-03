@@ -10,9 +10,12 @@
 namespace copc
 {
 class Entry;
+// Entry class is a base class for Node and Page objects
 class Entry
 {
   public:
+    static const int ENTRY_SIZE = 32;
+
     Entry() : offset(-1), size(-1), key(VoxelKey::InvalidKey()), point_count(-1){};
     Entry(VoxelKey key, int64_t offset, int32_t size, int32_t point_count)
         : offset(offset), size(size), key(key), point_count(point_count){};
@@ -63,6 +66,7 @@ class Entry
     int32_t size;
 
   protected:
+    // Helper function for the equality comparisons of children classes
     bool IsEqual(const Entry &rhs) const
     {
         return offset == rhs.offset && size == rhs.size && point_count == rhs.point_count && key == rhs.key;

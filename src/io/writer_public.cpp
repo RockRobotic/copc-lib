@@ -11,12 +11,13 @@ Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span, std:
 {
     auto header = HeaderFromConfig(config);
     this->file = std::make_shared<CopcFile>(header, span, wkt);
-    this->hierarchy = std::make_shared<Hierarchy>();
-    this->writer_ = std::make_unique<WriterInternal>(out_stream, this->file, this->hierarchy);
+    this->hierarchy = std::make_shared<Internal::Hierarchy>();
+    this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file, this->hierarchy);
 }
 
 void Writer::Close() { this->writer_->Close(); }
 
+// Create a page, add it to the hierarchy and reference it as a subpage in the parent
 Page Writer::AddSubPage(Page &parent, VoxelKey key)
 {
     if (!key.IsValid())
@@ -29,7 +30,7 @@ Page Writer::AddSubPage(Page &parent, VoxelKey key)
         throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
                                  parent.key.ToString());
 
-    auto child_page = std::make_shared<PageInternal>(key);
+    auto child_page = std::make_shared<Internal::PageInternal>(key);
     child_page->loaded = true;
 
     auto parent_page = hierarchy->seen_pages_[parent.key];
@@ -39,6 +40,7 @@ Page Writer::AddSubPage(Page &parent, VoxelKey key)
     return *child_page;
 }
 
+// Writes a node to the file and reference it in the hierarchy and in the parent page
 Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed)
 {
     if (!page.IsPage() || !page.IsValid() || !key.IsValid())

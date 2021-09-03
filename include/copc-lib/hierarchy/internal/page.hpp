@@ -3,9 +3,10 @@
 
 #include <copc-lib/hierarchy/page.hpp>
 
-namespace copc
+namespace copc::Internal
 {
 class PageInternal;
+// This internal class allows for tracking of a page's subpages and nodes without exposing them to the user
 class PageInternal : public Page
 {
   public:

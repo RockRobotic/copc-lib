@@ -17,6 +17,7 @@ namespace copc::laz
 class Decompressor
 {
   public:
+    // Decompresses bytes from the instream and returns them
     static std::vector<char> DecompressBytes(std::istream &in_stream, las::LasHeader &header, int point_count)
     {
         std::vector<char> out;

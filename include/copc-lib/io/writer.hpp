@@ -14,7 +14,6 @@ namespace copc
 struct vector3
 {
     vector3() : x(0), y(0), z(0) {}
-
     vector3(double x, double y, double z) : x(x), y(y), z(z) {}
 
     double x;
@@ -22,9 +21,11 @@ struct vector3
     double z;
 };
 
+// Provides the public interface for writing COPC files
 class Writer : public BaseIO
 {
   public:
+    // Header config for creating a new file
     struct LasConfig
     {
         uint16_t file_source_id{};
@@ -50,24 +51,27 @@ class Writer : public BaseIO
 
     Page GetRootPage() { return *hierarchy->seen_pages_[VoxelKey::BaseKey()]; }
 
+    // Writes the file out
     void Close();
 
-    // Don't handle subpages right now...
+    // Adds a node to a given page
     Node AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &points);
     Node AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count);
     Node AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed);
 
+    // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
 
   private:
-    std::unique_ptr<WriterInternal> writer_;
+    std::unique_ptr<Internal::WriterInternal> writer_;
 
     Node DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
-    std::vector<Entry> ReadPage(std::shared_ptr<PageInternal> page) override
+    std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override
     {
         throw std::runtime_error("No pages should be unloaded!");
     };
 
+    // Converts the lasconfig object into an actual LasHeader
     las::LasHeader HeaderFromConfig(LasConfig const &config);
 };
 } // namespace copc

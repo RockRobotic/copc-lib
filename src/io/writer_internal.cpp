@@ -8,7 +8,7 @@
 
 using namespace lazperf;
 
-namespace copc
+namespace copc::Internal
 {
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcFile> file,
@@ -38,6 +38,7 @@ void WriterInternal::Close()
     WriteHeader(head14);
 }
 
+// Writes the LAS header and VLRs
 void WriterInternal::WriteHeader(las::LasHeader &head14)
 {
     laz_vlr lazVlr(head14.pointFormat(), head14.ebCount(), VARIABLE_CHUNK_SIZE);
@@ -97,6 +98,7 @@ void WriterInternal::WriteWkt(las::LasHeader &head14)
     h.write(out_stream);
     vlr.write(out_stream);
 
+    // TODO: Let the Page writer set the evlr offset if no wkt exists
     head14.evlr_offset = offset;
     head14.evlr_count++;
 }
@@ -133,6 +135,7 @@ void WriterInternal::WriteChunkTable()
     out_stream.write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(chunk_table_offset));
 }
 
+// Writes a node and returns the node's offset and size in the file
 Entry WriterInternal::WriteNode(std::vector<char> in, uint64_t point_count, bool compressed)
 {
     Entry entry;
@@ -163,10 +166,12 @@ void WriterInternal::WritePage(std::shared_ptr<PageInternal> page)
     out_stream.seekp(0, std::ios::end);
     h.write(out_stream);
 
+    // Set the page's offset/size
     int64_t offset = static_cast<int64_t>(out_stream.tellp());
     page->offset = offset;
     page->size = page_size;
 
+    // Set the copc header info if needed
     if (page->key == VoxelKey::BaseKey())
     {
         copc_data.root_hier_offset = offset;

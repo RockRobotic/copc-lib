@@ -26,7 +26,7 @@ void Reader::InitFile()
     auto wkt = GetWktData(copc_data);
 
     this->file = std::make_shared<CopcFile>(header, copc_data, wkt);
-    this->hierarchy = std::make_shared<Hierarchy>(copc_data.root_hier_offset, copc_data.root_hier_size);
+    this->hierarchy = std::make_shared<Internal::Hierarchy>(copc_data.root_hier_offset, copc_data.root_hier_size);
 }
 
 void Reader::ReadVlrs()
@@ -61,7 +61,7 @@ las::WktVlr Reader::GetWktData(las::CopcVlr copc_data)
     return wkt;
 }
 
-std::vector<Entry> Reader::ReadPage(std::shared_ptr<PageInternal> page)
+std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page)
 {
     std::vector<Entry> out;
     if (!page->IsValid())
@@ -71,7 +71,7 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<PageInternal> page)
     in_stream.seekg(page->offset);
 
     // Iterate through each Entry in the page
-    int num_entries = int(page->size / ENTRY_SIZE);
+    int num_entries = int(page->size / Entry::ENTRY_SIZE);
     for (int i = 0; i < num_entries; i++)
     {
         Entry e = Entry::Unpack(in_stream);

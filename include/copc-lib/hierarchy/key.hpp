@@ -62,18 +62,20 @@ class VoxelKey
     }
 };
 
+// Equality operations
 inline bool operator==(const VoxelKey &a, const VoxelKey &b)
 {
     return a.d == b.d && a.x == b.x && a.y == b.y && a.z == b.z;
 }
-
 inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b); }
+
 
 } // namespace copc
 
+
+// Hash function to allow VoxelKeys as unordered_map keys
 namespace std
 {
-// Hash function to allow VoxelKeys as unordered_map keys
 template <> struct hash<copc::VoxelKey>
 {
     std::size_t operator()(copc::VoxelKey const &k) const noexcept
