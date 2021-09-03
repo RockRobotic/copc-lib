@@ -41,8 +41,8 @@ class Writer : public BaseIO
             uint16_t year{};
         } creation;
 
-        // default to 7, the widest format
-        uint8_t point_format_id{7};
+        // default to 0
+        uint8_t point_format_id{};
 
         // xyz scale/offset
         vector3 scale{0.01, 0.01, 0.01};
