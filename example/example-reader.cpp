@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <cstring>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/laz/decompressor.hpp>
@@ -38,14 +38,14 @@ int main()
     auto copc_vlr = reader.file->GetCopc();
     cout << "CopcData: " << endl;
     cout << "\tSpan: " << copc_vlr.span << endl
-              << "\tRoot Offset: " << copc_vlr.root_hier_offset << endl
-              << "\tRoot Size: " << copc_vlr.root_hier_size << endl;
+         << "\tRoot Offset: " << copc_vlr.root_hier_offset << endl
+         << "\tRoot Size: " << copc_vlr.root_hier_size << endl;
 
     // Get the Las Header
     auto las_header = reader.file->GetLasHeader();
     cout << endl << "Las Header:" << endl;
     cout << "\tPoint format: " << (int)las_header.point_format_id << endl
-              << "\tPoint count: " << (int)las_header.point_count << endl;
+         << "\tPoint count: " << (int)las_header.point_count << endl;
 
     // Get the WKT string
     auto wkt = reader.file->GetWkt();
@@ -93,10 +93,10 @@ int main()
         for (int i = 0; i < 5; i++)
         {
             cout << "Point " << i << ": " << endl
-                      << "{" << endl
-                      << nodeData[i].ToString() << endl
-                      << "}" << endl
-                      << endl;
+                 << "{" << endl
+                 << nodeData[i].ToString() << endl
+                 << "}" << endl
+                 << endl;
         }
     }
 
@@ -124,8 +124,7 @@ int main()
 
         // only decompress the first 5 points
         // or we can decompress the entire node by passing node.point_count
-        auto uncompressed_data =
-            copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, 5);
+        auto uncompressed_data = copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, 5);
 
         cout << endl << "5 decompressed points: " << endl;
         PrintPoints(uncompressed_data, las_header.point_record_length);

@@ -5,10 +5,10 @@
 //#include <copc-lib/io/reader.hpp>
 //#include <copc-lib/io/writer.hpp>
 //
-//using namespace copc;
-//using namespace std;
+// using namespace copc;
+// using namespace std;
 //
-//void test_header()
+// void test_header()
 //{
 //    fstream out_stream;
 //    out_stream.open("test/data/test-header.laz", ios::out | ios::binary);
@@ -23,7 +23,7 @@
 //    writer.Close();
 //}
 //
-//void test_page()
+// void test_page()
 //{
 //    fstream out_stream;
 //    out_stream.open("test/data/test-page.laz", ios::out | ios::binary);
@@ -48,7 +48,7 @@
 //    writer.Close();
 //}
 //
-//int main()
+// int main()
 //{
 //    // We'll get our point data from this file
 //    fstream in_stream;
@@ -71,7 +71,7 @@
 //
 //    // The root page is automatically created and added for us
 //    Page root_page = writer.GetRootPage();
-//    
+//
 //    // Let's grab the root node data from the original file:
 //    std::
 //
