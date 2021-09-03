@@ -159,7 +159,7 @@ TEST_CASE("Writer Pages", "[Writer]")
 
 TEST_CASE("Writer Node Uncompressed", "[Writer]")
 {
-    SECTION("Root Page")
+    SECTION("Add one")
     {
         stringstream out_stream;
 
@@ -186,5 +186,121 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         auto root_node_test = reader.GetPointData(node);
 
         REQUIRE(root_node_test == root_node);
+    }
+
+    SECTION("Add multiple")
+    {
+        stringstream out_stream;
+
+        Writer::LasConfig cfg;
+        cfg.point_format_id = 3;
+        Writer writer(out_stream, cfg, 256, "test_wkt");
+
+        Page root_page = writer.GetRootPage();
+
+        std::vector<char> twenty(twenty_pts_prdf3, twenty_pts_prdf3 + sizeof(twenty_pts_prdf3));
+        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), twenty));
+
+        std::vector<char> twelve(twelve_pts_prdf3, twelve_pts_prdf3 + sizeof(twelve_pts_prdf3));
+        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(1, 1, 1, 1), twelve));
+
+        std::vector<char> sixty(sixty_pts_prdf3, sixty_pts_prdf3 + sizeof(sixty_pts_prdf3));
+        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(1, 1, 1, 0), sixty));
+
+        writer.Close();
+
+        std::string ostr = out_stream.str();
+        Reader reader(out_stream);
+        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
+        REQUIRE(reader.file->GetCopc().root_hier_size == 32 * 3);
+
+        {
+            auto node = reader.FindNode(VoxelKey::BaseKey());
+            REQUIRE(node.IsValid());
+            auto node_data = reader.GetPointData(node);
+            REQUIRE(node_data == twenty);
+        }
+
+        {
+            auto node = reader.FindNode(VoxelKey(1, 1, 1, 1));
+            REQUIRE(node.IsValid());
+            auto node_data = reader.GetPointData(node);
+            REQUIRE(node_data == twelve);
+        }
+
+        {
+            auto node = reader.FindNode(VoxelKey(1, 1, 1, 0));
+            REQUIRE(node.IsValid());
+            auto node_data = reader.GetPointData(node);
+            REQUIRE(node_data == sixty);
+        }
+    }
+
+    SECTION("Add hierarchy")
+    {
+        stringstream out_stream;
+
+        Writer::LasConfig cfg;
+        cfg.point_format_id = 3;
+        Writer writer(out_stream, cfg);
+
+        Page root_page = writer.GetRootPage();
+        Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
+        Page sub_page2 = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 1));
+
+        std::vector<char> twenty(twenty_pts_prdf3, twenty_pts_prdf3 + sizeof(twenty_pts_prdf3));
+        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), twenty));
+
+        std::vector<char> twelve(twelve_pts_prdf3, twelve_pts_prdf3 + sizeof(twelve_pts_prdf3));
+        REQUIRE_NOTHROW(writer.AddNode(sub_page1, VoxelKey(1, 0, 0, 0), twelve));
+
+        std::vector<char> sixty(sixty_pts_prdf3, sixty_pts_prdf3 + sizeof(sixty_pts_prdf3));
+        REQUIRE_NOTHROW(writer.AddNode(sub_page2, VoxelKey(1, 1, 1, 1), sixty));
+        REQUIRE_NOTHROW(writer.AddNode(sub_page2, VoxelKey(2, 2, 2, 2), twenty));
+
+        // Can't add a node that's not a child of the page
+        REQUIRE_THROWS(writer.AddNode(sub_page2, VoxelKey(1, 2, 2, 2), twenty));
+
+        writer.Close();
+
+        /*
+            hierarchy should look like this:
+            Page 0-0-0-0
+                Node 0-0-0-0
+                Page 1-0-0-0
+                    Node 1-0-0-0
+                Page 1-1-1-1
+                    Node 1-1-1-1
+                    Node 2-2-2-2
+        */
+
+        Reader reader(out_stream);
+        REQUIRE(reader.file->GetCopc().root_hier_offset > 0);
+        REQUIRE(reader.file->GetCopc().root_hier_size == 32*3);
+
+        {
+            auto sub_node = reader.FindNode(VoxelKey(2, 2, 2, 2));
+            REQUIRE(sub_node.IsValid());
+            auto sub_node_data = reader.GetPointData(sub_node);
+            REQUIRE(sub_node_data == twenty);
+        }
+        {
+            auto sub_node = reader.FindNode(VoxelKey(1, 1, 1, 1));
+            REQUIRE(sub_node.IsValid());
+            auto sub_node_data = reader.GetPointData(sub_node);
+            REQUIRE(sub_node_data == sixty);
+        }
+        {
+            auto sub_node = reader.FindNode(VoxelKey(1,0,0,0));
+            REQUIRE(sub_node.IsValid());
+            auto sub_node_data = reader.GetPointData(sub_node);
+            REQUIRE(sub_node_data == twelve);
+        }
+        {
+            auto sub_node = reader.FindNode(VoxelKey(0,0,0,0));
+            REQUIRE(sub_node.IsValid());
+            auto sub_node_data = reader.GetPointData(sub_node);
+            REQUIRE(sub_node_data == twenty);
+        }
     }
 }
