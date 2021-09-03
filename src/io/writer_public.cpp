@@ -111,6 +111,8 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     h.maxz = config.max.z;
     h.minz = config.min.z;
 
+    h.points_by_return_14 = config.points_by_return_14;
+
     return h;
 }
 } // namespace copc

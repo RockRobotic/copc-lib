@@ -41,12 +41,18 @@ class Writer : public BaseIO
             uint16_t year{};
         } creation;
 
-        uint8_t point_format_id{};
+        // default to 7, the widest format
+        uint8_t point_format_id{7};
 
+        // xyz scale/offset
         vector3 scale{0.01, 0.01, 0.01};
         vector3 offset{0, 0, 0};
+        // xyz min/max for las header
         vector3 max{0, 0, 0};
         vector3 min{0, 0, 0};
+
+        // # of points per return 0-14
+        uint64_t points_by_return_14[15]{};
     };
 
     Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, std::string wkt = "");
