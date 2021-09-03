@@ -556,18 +556,254 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.ScannerChannel() == 0);
     }
 
-    SECTION("Packing and Unpacking")
+    SECTION("Operator == and !=")
     {
 
         // Format 0
         auto point = Point();
+        auto point_other = Point();
 
-        // Pack
+        REQUIRE(point == point_other);
+
+        // Format 1
+        point_other.ToPointFormat(1);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(1);
+        REQUIRE(point == point_other);
+
+        // Format 2
+        point_other.ToPointFormat(2);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(2);
+        REQUIRE(point == point_other);
+
+        // Format 3
+        point_other.ToPointFormat(3);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(3);
+        REQUIRE(point == point_other);
+
+        // Format 4
+        point_other.ToPointFormat(4);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(4);
+        REQUIRE(point == point_other);
+
+        // Format 5
+        point_other.ToPointFormat(5);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(5);
+        REQUIRE(point == point_other);
+
+        // Format 6
+        point_other.ToPointFormat(6);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(6);
+        REQUIRE(point == point_other);
+
+        // Format 7
+        point_other.ToPointFormat(7);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(7);
+        REQUIRE(point == point_other);
+
+        // Format 8
+        point_other.ToPointFormat(8);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(8);
+        REQUIRE(point == point_other);
+
+        // Format 9
+        point_other.ToPointFormat(9);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(9);
+        REQUIRE(point == point_other);
+
+        // Format 10
+        point_other.ToPointFormat(10);
+        REQUIRE(point != point_other);
+        point.ToPointFormat(10);
+        REQUIRE(point == point_other);
+
+        // Atributes
+
+        point.X(4);
+        REQUIRE(point != point_other);
+        point_other.X(4);
+        REQUIRE(point == point_other);
+
+        point.Y(4);
+        REQUIRE(point != point_other);
+        point_other.Y(4);
+        REQUIRE(point == point_other);
+
+        point.Z(4);
+        REQUIRE(point != point_other);
+        point_other.Z(4);
+        REQUIRE(point == point_other);
+
+        point.Intensity(4);
+        REQUIRE(point != point_other);
+        point_other.Intensity(4);
+        REQUIRE(point == point_other);
+
+        point.ReturnNumber(4);
+        REQUIRE(point != point_other);
+        point_other.ReturnNumber(4);
+        REQUIRE(point == point_other);
+
+        point.NumberOfReturns(4);
+        REQUIRE(point != point_other);
+        point_other.NumberOfReturns(4);
+        REQUIRE(point == point_other);
+
+        point.Classification(4);
+        REQUIRE(point != point_other);
+        point_other.Classification(4);
+        REQUIRE(point == point_other);
+
+        point.ScanDirectionFlag(true);
+        REQUIRE(point != point_other);
+        point_other.ScanDirectionFlag(true);
+        REQUIRE(point == point_other);
+
+        point.EdgeOfFlightLineFlag(true);
+        REQUIRE(point != point_other);
+        point_other.EdgeOfFlightLineFlag(true);
+        REQUIRE(point == point_other);
+
+        point.Synthetic(true);
+        REQUIRE(point != point_other);
+        point_other.Synthetic(true);
+        REQUIRE(point == point_other);
+
+        point.KeyPoint(true);
+        REQUIRE(point != point_other);
+        point_other.KeyPoint(true);
+        REQUIRE(point == point_other);
+
+        point.Withheld(true);
+        REQUIRE(point != point_other);
+        point_other.Withheld(true);
+        REQUIRE(point == point_other);
+
+        point.Overlap(true);
+        REQUIRE(point != point_other);
+        point_other.Overlap(true);
+        REQUIRE(point == point_other);
+
+        point.ScannerChannel(2);
+        REQUIRE(point != point_other);
+        point_other.ScannerChannel(2);
+        REQUIRE(point == point_other);
+
+        point.UserData(4);
+        REQUIRE(point != point_other);
+        point_other.UserData(4);
+        REQUIRE(point == point_other);
+
+        point.PointSourceId(4);
+        REQUIRE(point != point_other);
+        point_other.PointSourceId(4);
+        REQUIRE(point == point_other);
+
+        point.GpsTime(4.0);
+        REQUIRE(point != point_other);
+        point_other.GpsTime(4.0);
+        REQUIRE(point == point_other);
+
+        point.R(4);
+        REQUIRE(point != point_other);
+        point_other.R(4);
+        REQUIRE(point == point_other);
+
+        point.G(4);
+        REQUIRE(point != point_other);
+        point_other.G(4);
+        REQUIRE(point == point_other);
+
+        point.B(4);
+        REQUIRE(point != point_other);
+        point_other.B(4);
+        REQUIRE(point == point_other);
+
+        point.Nir(4);
+        REQUIRE(point != point_other);
+        point_other.Nir(4);
+        REQUIRE(point == point_other);
+    }
+
+    SECTION("Packing and Unpacking")
+    {
+
         std::stringstream ss;
-        point.Pack(ss);
+        auto point = Point();
+        auto point_other = Point();
 
-        // Unpack
-        //        auto point2 = Point();
-        //        point2.Unpack(ss,0,point.PointByteSize());
+        // Format 0
+        point.ToPointFormat(0);
+        point.Pack(ss);
+        point_other.Unpack(ss, 0, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 1
+        point.ToPointFormat(1);
+        point.Pack(ss);
+        point_other.Unpack(ss, 1, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 2
+        point.ToPointFormat(2);
+        point.Pack(ss);
+        point_other.Unpack(ss, 2, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 3
+        point.ToPointFormat(3);
+        point.Pack(ss);
+        point_other.Unpack(ss, 3, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 4
+        point.ToPointFormat(4);
+        point.Pack(ss);
+        point_other.Unpack(ss, 4, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 5
+        point.ToPointFormat(5);
+        point.Pack(ss);
+        point_other.Unpack(ss, 5, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 6
+        point.ToPointFormat(6);
+        point.Pack(ss);
+        point_other.Unpack(ss, 6, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 7
+        point.ToPointFormat(7);
+        point.Pack(ss);
+        point_other.Unpack(ss, 7, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 8
+        point.ToPointFormat(8);
+        point.Pack(ss);
+        point_other.Unpack(ss, 8, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 9
+        point.ToPointFormat(9);
+        point.Pack(ss);
+        point_other.Unpack(ss, 9, point.PointByteSize());
+        REQUIRE(point == point_other);
+
+        // Format 10
+        point.ToPointFormat(10);
+        point.Pack(ss);
+        point_other.Unpack(ss, 10, point.PointByteSize());
+        REQUIRE(point == point_other);
     }
 }

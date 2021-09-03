@@ -400,6 +400,8 @@ class Point
 
     uint32_t NumberExtraBytes() const { return extra_bytes_.size(); }
 
+    std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
+
     static bool FormatHasGpsTime(const uint8_t &point_format_id)
     {
         switch (point_format_id)
@@ -475,6 +477,39 @@ class Point
             throw std::runtime_error("Point format must be 0-10");
         }
     }
+
+    bool operator==(const Point &other) const
+    {
+        if (extended_point_type_ != HasExtendedPoint() || has_gps_time_ != other.HasGpsTime() ||
+            has_rgb_ != other.HasRgb() || has_nir_ != other.HasNir())
+            return false;
+        if (x_ != other.X() || y_ != other.Y() || z_ != other.Z() || intensity_ != other.Intensity())
+            return false;
+        if (ReturnNumber() != other.ReturnNumber() || NumberOfReturns() != other.NumberOfReturns())
+            return false;
+        if (ScanDirectionFlag() != other.ScanDirectionFlag() || EdgeOfFlightLineFlag() != other.EdgeOfFlightLineFlag())
+            return false;
+        if (Classification() != other.Classification())
+            return false;
+        if (Synthetic() != other.Synthetic() || KeyPoint() != other.KeyPoint() || Withheld() != other.Withheld())
+            return false;
+        if (ScanAngle() != other.ScanAngle() || user_data_ != other.UserData() ||
+            point_source_id_ != other.PointSourceId())
+            return false;
+        if (ExtraBytes() != other.ExtraBytes())
+            return false;
+        if (extended_point_type_ && (Overlap() != other.Overlap() || ScannerChannel() != other.ScannerChannel()))
+            return false;
+        if (has_gps_time_ && (gps_time_ != other.GpsTime()))
+            return false;
+        if (has_rgb_ && (rgb_[0] != other.R() || rgb_[1] != other.G() || rgb_[2] != other.B()))
+            return false;
+        if (has_nir_ && (nir_ != other.Nir()))
+            return false;
+        return true;
+    };
+
+    bool operator!=(const Point &other) const { return !(*this == other); };
 
   protected:
     int32_t x_;

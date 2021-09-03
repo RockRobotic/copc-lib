@@ -39,6 +39,8 @@ void Point::Unpack(std::istream &in_stream, const uint16_t &point_format_id, con
         gps_time_ = internal::unpack<double>(in_stream);
         has_gps_time_ = true;
     }
+    else
+        has_gps_time_ = false;
     if (FormatHasRgb(point_format_id))
     {
         rgb_[0] = internal::unpack<uint16_t>(in_stream);
@@ -46,11 +48,15 @@ void Point::Unpack(std::istream &in_stream, const uint16_t &point_format_id, con
         rgb_[2] = internal::unpack<uint16_t>(in_stream);
         has_rgb_ = true;
     }
+    else
+        has_rgb_ = false;
     if (FormatHasNir(point_format_id))
     {
         nir_ = internal::unpack<uint16_t>(in_stream);
         has_nir_ = true;
     }
+    else
+        has_nir_ = false;
 
     point_byte_size_ = BaseByteSize(point_format_id);
 
@@ -167,6 +173,7 @@ void Point::ToPointFormat(const uint8_t &point_format_id)
     has_gps_time_ = FormatHasGpsTime(point_format_id);
     has_rgb_ = FormatHasRgb(point_format_id);
     has_nir_ = FormatHasNir(point_format_id);
+    point_byte_size_ = BaseByteSize(point_format_id);
 }
 
 std::string Point::ToString() const
