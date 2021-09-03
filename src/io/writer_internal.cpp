@@ -19,10 +19,14 @@ WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcFil
     char out_arr[FIRST_CHUNK_OFFSET];
     std::memset(out_arr, 0, sizeof(out_arr));
     out_stream.write(out_arr, sizeof(out_arr));
+    open = true;
 }
 
 void WriterInternal::Close()
 {
+    if (!open)
+        return;
+
     auto head14 = file->GetLasHeader();
     WriteChunkTable();
 
@@ -36,6 +40,8 @@ void WriterInternal::Close()
     head14.evlr_count += hierarchy->seen_pages_.size();
 
     WriteHeader(head14);
+
+    open = false;
 }
 
 // Writes the LAS header and VLRs

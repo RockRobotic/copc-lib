@@ -104,12 +104,12 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     h.scale.y = config.scale.y;
     h.scale.z = config.scale.z;
 
-    h.maxx = 0;
-    h.minx = 0;
-    h.maxy = 0;
-    h.miny = 0;
-    h.maxz = 0;
-    h.minz = 0;
+    h.maxx = config.max.x;
+    h.minx = config.min.x;
+    h.maxy = config.max.y;
+    h.miny = config.min.y;
+    h.maxz = config.max.z;
+    h.minz = config.min.z;
 
     return h;
 }

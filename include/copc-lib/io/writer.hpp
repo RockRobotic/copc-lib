@@ -45,6 +45,8 @@ class Writer : public BaseIO
 
         vector3 scale{0.01, 0.01, 0.01};
         vector3 offset{0, 0, 0};
+        vector3 max{0, 0, 0};
+        vector3 min{0, 0, 0};
     };
 
     Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, std::string wkt = "");

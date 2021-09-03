@@ -23,11 +23,19 @@ class WriterInternal
 
     // Writes the header and COPC vlrs
     void Close();
+    // Call close on destructor if needed
+    ~WriterInternal()
+    {
+        if (open)
+            Close();
+    }
 
     // Writes a chunk to the laz file
     Entry WriteNode(std::vector<char> in, uint64_t point_count, bool compressed);
 
   private:
+    bool open;
+
     las::CopcVlr copc_data;
     std::ostream &out_stream;
     std::shared_ptr<CopcFile> file;
