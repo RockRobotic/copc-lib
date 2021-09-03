@@ -139,8 +139,8 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         REQUIRE(points[0].G() == 60);
         REQUIRE(points[0].B() == 92);
         REQUIRE_THROWS(points[0].Nir());
-        REQUIRE_THROWS(points[0].ExtendedFlags());
-        REQUIRE_THROWS(points[0].ExtendedReturns());
+        REQUIRE_THROWS(points[0].ExtendedFlagsBitFields());
+        REQUIRE_THROWS(points[0].ExtendedReturnsBitFields());
         REQUIRE_THROWS(points[0].ScannerChannel());
         REQUIRE_THROWS(points[0].ExtendedScanAngle());
 
@@ -162,8 +162,8 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         points[0].G(UINT16_MAX);
         points[0].B(UINT16_MAX);
         REQUIRE_THROWS(points[0].Nir(UINT16_MAX));
-        REQUIRE_THROWS(points[0].ExtendedFlags(UINT8_MAX));
-        REQUIRE_THROWS(points[0].ExtendedReturns(UINT8_MAX));
+        REQUIRE_THROWS(points[0].ExtendedFlagsBitFields(UINT8_MAX));
+        REQUIRE_THROWS(points[0].ExtendedReturnsBitFields(UINT8_MAX));
         REQUIRE_THROWS(points[0].ScannerChannel(3));
         REQUIRE_THROWS(points[0].ScanAngle(INT16_MAX));
 

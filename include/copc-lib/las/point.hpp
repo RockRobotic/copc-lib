@@ -38,31 +38,31 @@ class Point
     uint8_t ReturnsScanDirEofBitFields() const
     {
         if (extended_point_type_)
-            throw std::runtime_error(
-                "Point14 does not have ReturnsScanDirEofBitFields, use ExtendedReturns or ExtendedFlags instead.");
+            throw std::runtime_error("Point14 does not have ReturnsScanDirEofBitFields, use ExtendedReturnsBitFields "
+                                     "or ExtendedFlagsBitFields instead.");
         else
             return returns_flags_eof_;
     }
     void ReturnsScanDirEofBitFields(const uint8_t &returns_bit_fields)
     {
         if (extended_point_type_)
-            throw std::runtime_error(
-                "Point14 does not have ReturnsScanDirEofBitFields, use ExtendedReturns or ExtendedFlags instead.");
+            throw std::runtime_error("Point14 does not have ReturnsScanDirEofBitFields, use ExtendedReturnsBitFields "
+                                     "or ExtendedFlagsBitFields instead.");
         else
             returns_flags_eof_ = returns_bit_fields;
     }
 
-    uint8_t ExtendedReturns() const
+    uint8_t ExtendedReturnsBitFields() const
     {
         if (!extended_point_type_)
             throw std::runtime_error("Point10 does not have ReturnsBitFields, use ReturnsScanDirEofBitFields instead.");
         else
             return extended_returns_;
     }
-    void ExtendedReturns(const uint8_t &extended_returns)
+    void ExtendedReturnsBitFields(const uint8_t &extended_returns)
     {
         if (!extended_point_type_)
-            throw std::runtime_error("Point10 does not have extended returns, use ReturnsScanDirEofBitFields instead.");
+            throw std::runtime_error("Point10 does not have ReturnsBitFields, use ReturnsScanDirEofBitFields instead.");
         else
             extended_returns_ = extended_returns;
     }
@@ -108,14 +108,14 @@ class Point
         }
     }
 
-    uint8_t ExtendedFlags() const
+    uint8_t ExtendedFlagsBitFields() const
     {
         if (extended_point_type_)
             return extended_flags_;
         else
             throw std::runtime_error("Point10 does not have extended flags, use ReturnsScanDirEofBitFields instead.");
     }
-    void ExtendedFlags(const uint8_t &class_flags)
+    void ExtendedFlagsBitFields(const uint8_t &class_flags)
     {
         if (extended_point_type_)
             extended_flags_ = class_flags;
@@ -528,8 +528,8 @@ class Point
 
             if (extended_point_type_)
             {
-                extended_returns_ = other.ExtendedReturns();
-                extended_flags_ = other.ExtendedFlags();
+                extended_returns_ = other.ExtendedReturnsBitFields();
+                extended_flags_ = other.ExtendedFlagsBitFields();
                 extended_classification_ = other.Classification();
                 extended_scan_angle_ = other.ExtendedScanAngle();
             }

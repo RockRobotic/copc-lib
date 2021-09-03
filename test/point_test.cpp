@@ -158,8 +158,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point0.PointSourceId() == UINT16_MAX);
 
         // Checks
-        REQUIRE_THROWS(point0.ExtendedFlags(0));
-        REQUIRE_THROWS(point0.ExtendedFlags());
+        REQUIRE_THROWS(point0.ExtendedFlagsBitFields(0));
+        REQUIRE_THROWS(point0.ExtendedFlagsBitFields());
         REQUIRE_THROWS(point0.ScannerChannel(0));
         REQUIRE_THROWS(point0.ScannerChannel());
         REQUIRE_THROWS(point0.Nir(UINT16_MAX));
@@ -176,10 +176,10 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.ExtendedScanAngle());
         REQUIRE_THROWS(point0.Overlap(true));
         REQUIRE_THROWS(point0.Overlap());
-        REQUIRE_THROWS(point0.ExtendedReturns(UINT8_MAX));
-        REQUIRE_THROWS(point0.ExtendedReturns());
-        REQUIRE_THROWS(point0.ExtendedFlags(UINT8_MAX));
-        REQUIRE_THROWS(point0.ExtendedFlags());
+        REQUIRE_THROWS(point0.ExtendedReturnsBitFields(UINT8_MAX));
+        REQUIRE_THROWS(point0.ExtendedReturnsBitFields());
+        REQUIRE_THROWS(point0.ExtendedFlagsBitFields(UINT8_MAX));
+        REQUIRE_THROWS(point0.ExtendedFlagsBitFields());
         REQUIRE_NOTHROW(point0.ToString());
 
         auto point1 = Point();
@@ -271,8 +271,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.Intensity() == INT8_MAX);
 
         // Return BitField
-        point6.ExtendedReturns(UINT8_MAX);
-        REQUIRE(point6.ExtendedReturns() == UINT8_MAX);
+        point6.ExtendedReturnsBitFields(UINT8_MAX);
+        REQUIRE(point6.ExtendedReturnsBitFields() == UINT8_MAX);
 
         // Return Number
         point6.ReturnNumber(0);
@@ -289,8 +289,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.NumberOfReturns(16));
 
         // Flags
-        point6.ExtendedFlags(UINT8_MAX);
-        REQUIRE(point6.ExtendedFlags() == UINT8_MAX);
+        point6.ExtendedFlagsBitFields(UINT8_MAX);
+        REQUIRE(point6.ExtendedFlagsBitFields() == UINT8_MAX);
 
         // Synthetic
         point6.Synthetic(false);
@@ -543,8 +543,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.ScanAngleRank() == 90);
         REQUIRE_THROWS(point.Overlap());
         REQUIRE_THROWS(point.ScannerChannel());
-        REQUIRE_THROWS(point.ExtendedReturns());
-        REQUIRE_THROWS(point.ExtendedFlags());
+        REQUIRE_THROWS(point.ExtendedReturnsBitFields());
+        REQUIRE_THROWS(point.ExtendedFlagsBitFields());
 
         point.ToPointFormat(6);
 
