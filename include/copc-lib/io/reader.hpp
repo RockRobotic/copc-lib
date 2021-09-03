@@ -24,11 +24,12 @@ class Reader : public BaseIO
     // Reads node data without decompressing
     std::vector<char> GetPointDataCompressed(Node const &node);
 
+    las::EbVlr GetExtraByteVlr();
+
   private:
     std::istream &in_stream;
 
     std::unique_ptr<lazperf::reader::generic_file> reader_;
-    std::map<uint64_t, las::VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
 
     // Constructor helper function, initializes the file and hierarchy
     void InitFile();

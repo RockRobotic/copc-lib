@@ -20,12 +20,12 @@ void Reader::InitFile()
 {
     auto header = this->reader_->header();
 
-    ReadVlrs();
-
     auto copc_data = GetCopcData();
     auto wkt = GetWktData(copc_data);
 
     this->file = std::make_shared<CopcFile>(header, copc_data, wkt);
+    ReadVlrs();
+
     this->hierarchy = std::make_shared<Internal::Hierarchy>(copc_data.root_hier_offset, copc_data.root_hier_size);
 }
 
@@ -34,13 +34,13 @@ void Reader::ReadVlrs()
     // Move stream to beginning of VLRs
     this->in_stream.seekg(this->reader_->header().header_size);
 
-    // Iterate through all vlr's and add them to the `vlrs_` list
+    // Iterate through all vlr's and add them to the `vlrs` list
     size_t count = 0;
     while (count < this->reader_->header().vlr_count && this->in_stream.good() && !this->in_stream.eof())
     {
         uint64_t cur_pos = this->in_stream.tellg();
         las::VlrHeader h = las::VlrHeader::create(this->in_stream);
-        vlrs_[cur_pos] = h;
+        this->file->vlrs[cur_pos] = h;
 
         this->in_stream.seekg(h.data_length, std::ios::cur); // jump foward
         count++;
@@ -115,6 +115,19 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     out.resize(node.size);
     in_stream.read(&out[0], node.size);
     return out;
+}
+
+las::EbVlr Reader::GetExtraByteVlr()
+{ 
+    for (auto &[offset, vlr_header] : file->vlrs)
+    {
+        if (vlr_header.user_id == "LASF_Spec" && vlr_header.record_id == 4)
+        {
+            in_stream.seekg(offset + vlr_header.Size);
+            return las::EbVlr::create(in_stream, vlr_header.data_length);
+        }
+    }
+    return {};
 }
 
 } // namespace copc

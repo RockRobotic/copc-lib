@@ -72,6 +72,25 @@ TEST_CASE("FindKey Check", "[Reader]")
     }
 }
 
+TEST_CASE("GetExtraByteVlrs Test", "[Reader] ")
+{
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        Reader reader(in_stream);
+
+        auto eb_vlr = reader.GetExtraByteVlr();
+        REQUIRE(eb_vlr.items.size() == 2);
+
+        REQUIRE(eb_vlr.items[0].data_type == 1);
+        REQUIRE(eb_vlr.items[0].name == "FIELD_0");
+
+        REQUIRE(eb_vlr.items[1].data_type == 1);
+        REQUIRE(eb_vlr.items[1].name == "FIELD_1");
+    }
+}
+
 TEST_CASE("GetPointData Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
@@ -114,7 +133,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
     }
 }
 
-TEST_CASE("GetPointDataCompressed Test", "[Hierarchy] ")
+TEST_CASE("GetPointDataCompressed Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
     {

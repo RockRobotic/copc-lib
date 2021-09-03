@@ -14,7 +14,7 @@ class LasFile
   public:
     LasFile(LasHeader header) : header_(header){};
 
-    std::vector<Vlr> vlrs;
+    std::map<uint64_t, las::VlrHeader> vlrs; // maps from absolute offsets to VLR entries
     LasHeader GetLasHeader() const { return header_; }
 
   protected:
