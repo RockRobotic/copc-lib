@@ -1,5 +1,6 @@
 #include <cfloat>
 #include <limits>
+#include <sstream>
 
 #include <catch2/catch.hpp>
 #include <copc-lib/las/point.hpp>
@@ -9,7 +10,71 @@ using namespace std;
 
 TEST_CASE("Point tests", "[Point]")
 {
-    SECTION("Point Format Test") { REQUIRE_NOTHROW(Point()); }
+    SECTION("Point Format Initialization")
+    {
+
+        auto point = Point();
+
+        REQUIRE(point.HasExtendedPoint() == false);
+        REQUIRE(point.HasGpsTime() == false);
+        REQUIRE(point.HasRgb() == false);
+        REQUIRE(point.HasNir() == false);
+
+        point.ToPointFormat(5);
+        REQUIRE(point.X() == 0);
+        REQUIRE(point.Y() == 0);
+        REQUIRE(point.Z() == 0);
+        REQUIRE(point.Intensity() == 0);
+        REQUIRE(point.ReturnNumber() == 0);
+        REQUIRE(point.NumberOfReturns() == 0);
+        REQUIRE(point.ScanDirectionFlag() == false);
+        REQUIRE(point.EdgeOfFlightLineFlag() == false);
+        REQUIRE(point.Classification() == 0);
+        REQUIRE(point.Synthetic() == false);
+        REQUIRE(point.KeyPoint() == false);
+        REQUIRE(point.Withheld() == false);
+        REQUIRE(point.ScanAngleRank() == 0);
+        REQUIRE(point.ScanAngle() == 0.0);
+        REQUIRE(point.UserData() == 0);
+        REQUIRE(point.PointSourceId() == 0);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.R() == 0);
+        REQUIRE(point.G() == 0);
+        REQUIRE(point.B() == 0);
+        REQUIRE(point.HasExtendedPoint() == false);
+        REQUIRE(point.HasGpsTime() == true);
+        REQUIRE(point.HasRgb() == true);
+        REQUIRE(point.HasNir() == false);
+
+        auto point_ext = Point();
+        point_ext.ToPointFormat(10);
+
+        REQUIRE(point_ext.X() == 0);
+        REQUIRE(point_ext.Y() == 0);
+        REQUIRE(point_ext.Z() == 0);
+        REQUIRE(point_ext.Intensity() == 0);
+        REQUIRE(point_ext.ReturnNumber() == 0);
+        REQUIRE(point_ext.NumberOfReturns() == 0);
+        REQUIRE(point_ext.ScanDirectionFlag() == false);
+        REQUIRE(point_ext.EdgeOfFlightLineFlag() == false);
+        REQUIRE(point_ext.Classification() == 0);
+        REQUIRE(point_ext.Synthetic() == false);
+        REQUIRE(point_ext.KeyPoint() == false);
+        REQUIRE(point_ext.Withheld() == false);
+        REQUIRE(point_ext.ExtendedScanAngle() == 0);
+        REQUIRE(point_ext.ScanAngle() == 0.0);
+        REQUIRE(point_ext.UserData() == 0);
+        REQUIRE(point_ext.PointSourceId() == 0);
+        REQUIRE(point_ext.GpsTime() == 0);
+        REQUIRE(point_ext.R() == 0);
+        REQUIRE(point_ext.G() == 0);
+        REQUIRE(point_ext.B() == 0);
+        REQUIRE(point_ext.Nir() == 0);
+        REQUIRE(point_ext.HasExtendedPoint() == true);
+        REQUIRE(point_ext.HasGpsTime() == true);
+        REQUIRE(point_ext.HasRgb() == true);
+        REQUIRE(point_ext.HasNir() == true);
+    }
 
     SECTION("Point with format LAS 1.0 Test")
     {
@@ -343,7 +408,81 @@ TEST_CASE("Point tests", "[Point]")
         // No need to test point10, it has all attributes and they have all been tested already
     }
 
-    SECTION("Point conversion")
+    SECTION("Point conversion Point10")
+    {
+        auto point = Point();
+
+        point.ToPointFormat(1);
+        REQUIRE(point.GpsTime() == 0);
+
+        point.ToPointFormat(2);
+        REQUIRE(point.R() == 0);
+        REQUIRE(point.G() == 0);
+        REQUIRE(point.B() == 0);
+
+        point.ToPointFormat(3);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.R() == 0);
+        REQUIRE(point.G() == 0);
+        REQUIRE(point.B() == 0);
+
+        point.ToPointFormat(4);
+        REQUIRE(point.GpsTime() == 0);
+
+        point.ToPointFormat(5);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.R() == 0);
+        REQUIRE(point.G() == 0);
+        REQUIRE(point.B() == 0);
+    }
+
+    SECTION("Point conversion Point10")
+    {
+        auto point = Point();
+
+        point.ToPointFormat(6);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.ScannerChannel() == 0);
+        REQUIRE(point.Overlap() == 0);
+        REQUIRE(point.GpsTime() == 0);
+
+        point.ToPointFormat(7);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.ScannerChannel() == 0);
+        REQUIRE(point.Overlap() == 0);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.R() == 0);
+        REQUIRE(point.G() == 0);
+        REQUIRE(point.B() == 0);
+
+        point.ToPointFormat(8);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.ScannerChannel() == 0);
+        REQUIRE(point.Overlap() == 0);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.R() == 0);
+        REQUIRE(point.G() == 0);
+        REQUIRE(point.B() == 0);
+        REQUIRE(point.Nir() == 0);
+
+        point.ToPointFormat(9);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.ScannerChannel() == 0);
+        REQUIRE(point.Overlap() == 0);
+        REQUIRE(point.GpsTime() == 0);
+
+        point.ToPointFormat(10);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.ScannerChannel() == 0);
+        REQUIRE(point.Overlap() == 0);
+        REQUIRE(point.GpsTime() == 0);
+        REQUIRE(point.R() == 0);
+        REQUIRE(point.G() == 0);
+        REQUIRE(point.B() == 0);
+        REQUIRE(point.Nir() == 0);
+    }
+
+    SECTION("Point conversion Point10 to Poin14")
     {
         auto point = Point();
         point.ToPointFormat(0);
@@ -371,6 +510,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Overlap() == false);
         REQUIRE(point.ExtendedScanAngle() == 7500);
         REQUIRE(point.ScannerChannel() == 0);
+        REQUIRE_THROWS(point.ReturnsScanDirEofBitFields());
 
         point.ToPointFormat(0);
 
@@ -389,6 +529,7 @@ TEST_CASE("Point tests", "[Point]")
         point.ReturnNumber(13);
         point.NumberOfReturns(14);
         point.Classification(134);
+        point.ScannerChannel(2);
         point.Synthetic(true);
         point.KeyPoint(false);
         point.Withheld(true);
@@ -400,6 +541,10 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.NumberOfReturns() == 7);
         REQUIRE(point.Classification() == 31);
         REQUIRE(point.ScanAngleRank() == 90);
+        REQUIRE_THROWS(point.Overlap());
+        REQUIRE_THROWS(point.ScannerChannel());
+        REQUIRE_THROWS(point.ExtendedReturns());
+        REQUIRE_THROWS(point.ExtendedFlags());
 
         point.ToPointFormat(6);
 
@@ -407,5 +552,22 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.NumberOfReturns() == 7);
         REQUIRE(point.Classification() == 31);
         REQUIRE(point.ExtendedScanAngle() == 15000);
+        REQUIRE(point.Overlap() == false);
+        REQUIRE(point.ScannerChannel() == 0);
+    }
+
+    SECTION("Packing and Unpacking")
+    {
+
+        // Format 0
+        auto point = Point();
+
+        // Pack
+        std::stringstream ss;
+        point.Pack(ss);
+
+        // Unpack
+        //        auto point2 = Point();
+        //        point2.Unpack(ss,0,point.PointByteSize());
     }
 }

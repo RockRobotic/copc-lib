@@ -396,6 +396,10 @@ class Point
 
     bool HasNir() const { return has_nir_; }
 
+    uint32_t PointByteSize() const { return point_byte_size_; }
+
+    uint32_t NumberExtraBytes() const { return extra_bytes_.size(); }
+
     static bool FormatHasGpsTime(const uint8_t &point_format_id)
     {
         switch (point_format_id)
