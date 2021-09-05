@@ -20,17 +20,21 @@ void Reader::InitFile()
 {
     auto header = this->reader_->header();
 
-    auto copc_data = GetCopcData();
-    auto wkt = GetWktData(copc_data);
+    std::map<uint64_t, las::VlrHeader> vlrs = ReadVlrs();
+    auto copc_data = ReadCopcData();
+    auto wkt = ReadWktData(copc_data);
+    auto eb = ReadExtraByteVlr(vlrs);
 
-    this->file = std::make_shared<CopcFile>(header, copc_data, wkt);
-    ReadVlrs();
+    this->file = std::make_shared<CopcFile>(header, copc_data, wkt, eb);
+    this->file->vlrs = vlrs;
 
     this->hierarchy = std::make_shared<Internal::Hierarchy>(copc_data.root_hier_offset, copc_data.root_hier_size);
 }
 
-void Reader::ReadVlrs()
+std::map<uint64_t, las::VlrHeader> Reader::ReadVlrs()
 {
+    std::map<uint64_t, las::VlrHeader> out;
+
     // Move stream to beginning of VLRs
     this->in_stream.seekg(this->reader_->header().header_size);
 
@@ -40,21 +44,22 @@ void Reader::ReadVlrs()
     {
         uint64_t cur_pos = this->in_stream.tellg();
         las::VlrHeader h = las::VlrHeader::create(this->in_stream);
-        this->file->vlrs[cur_pos] = h;
+        out[cur_pos] = h;
 
         this->in_stream.seekg(h.data_length, std::ios::cur); // jump foward
         count++;
     }
+    return out;
 }
 
-las::CopcVlr Reader::GetCopcData()
+las::CopcVlr Reader::ReadCopcData()
 {
     this->in_stream.seekg(COPC_OFFSET);
     las::CopcVlr copc = las::CopcVlr::create(this->in_stream);
     return copc;
 }
 
-las::WktVlr Reader::GetWktData(las::CopcVlr copc_data)
+las::WktVlr Reader::ReadWktData(las::CopcVlr copc_data)
 {
     this->in_stream.seekg(copc_data.wkt_vlr_offset);
     las::WktVlr wkt = las::WktVlr::create(this->in_stream, copc_data.wkt_vlr_size);
@@ -117,9 +122,9 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     return out;
 }
 
-las::EbVlr Reader::GetExtraByteVlr()
-{ 
-    for (auto &[offset, vlr_header] : file->vlrs)
+las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
+{
+    for (auto &[offset, vlr_header] : vlrs)
     {
         if (vlr_header.user_id == "LASF_Spec" && vlr_header.record_id == 4)
         {

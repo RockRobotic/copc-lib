@@ -22,6 +22,8 @@ class BaseIO
     las::CopcVlr GetCopcHeader() const { return this->file->GetCopc(); }
     // Las header
     las::LasHeader GetLasHeader() const { return this->file->GetLasHeader(); }
+    // EB Vlr
+    las::EbVlr GetExtraByteVlr() const { return this->file->GetExtraBytes(); }
 
   protected:
     std::shared_ptr<CopcFile> file;

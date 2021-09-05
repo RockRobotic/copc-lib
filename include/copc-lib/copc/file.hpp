@@ -13,8 +13,9 @@ const int COPC_OFFSET = 429;
 class CopcFile : public las::LasFile
 {
   public:
-    CopcFile(las::LasHeader header, las::CopcVlr copc, las::WktVlr wkt) : LasFile(header), copc(copc), wkt(wkt){};
-    CopcFile(las::LasHeader header, int span, std::string wkt) : LasFile(header)
+    CopcFile(las::LasHeader header, las::CopcVlr copc, las::WktVlr wkt, las::EbVlr eb)
+        : LasFile(header, eb), copc(copc), wkt(wkt){};
+    CopcFile(las::LasHeader header, int span, std::string wkt, las::EbVlr eb) : LasFile(header, eb)
     {
         this->wkt.wkt = wkt;
         this->copc.span = span;

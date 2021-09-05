@@ -15,8 +15,9 @@ WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcFil
                                std::shared_ptr<Hierarchy> hierarchy)
     : out_stream(out_stream), file(file), hierarchy(hierarchy)
 {
+    OFFSET_TO_POINT_DATA += file->GetExtraBytes().size() + las::VlrHeader().Size;
     // reserve enough space for the header & VLRs in the file
-    char out_arr[FIRST_CHUNK_OFFSET];
+    char out_arr[FIRST_CHUNK_OFFSET()];
     std::memset(out_arr, 0, sizeof(out_arr));
     out_stream.write(out_arr, sizeof(out_arr));
     open = true;
@@ -48,7 +49,6 @@ void WriterInternal::Close()
 void WriterInternal::WriteHeader(las::LasHeader &head14)
 {
     laz_vlr lazVlr(head14.pointFormat(), head14.ebCount(), VARIABLE_CHUNK_SIZE);
-    // eb_vlr ebVlr(head14.ebCount());
 
     // point_format_id and point_record_length  are set on open().
     head14.header_size = head14.sizeFromVersion();
@@ -58,11 +58,10 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     head14.point_offset = OFFSET_TO_POINT_DATA;
     head14.point_count_14 = point_count_14_;
 
-    // if (head14.ebCount())
-    //{
-    //    head14.point_offset += ebVlr.size() + ebVlr.header().Size;
-    //    head14.vlr_count++;
-    //}
+    if (head14.ebCount())
+    {
+        head14.vlr_count++;
+    }
 
     if (head14.point_count_14 > (std::numeric_limits<uint32_t>::max)())
         head14.point_count = 0;
@@ -82,11 +81,12 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     lazVlr.header().write(out_stream);
     lazVlr.write(out_stream);
 
-    // if (head14.ebCount())
-    //{
-    //    ebVlr.header().write(*f);
-    //    ebVlr.write(*f);
-    //}
+    if (head14.ebCount())
+    {
+        auto ebVlr = this->file->GetExtraBytes();
+        ebVlr.header().write(out_stream);
+        ebVlr.write(out_stream);
+    }
 }
 
 void WriterInternal::WriteWkt(las::LasHeader &head14)
@@ -118,7 +118,7 @@ void WriterInternal::WriteChunkTable()
     int64_t chunk_table_offset = static_cast<int64_t>(out_stream.tellp());
 
     // Fixup the chunk table to be relative offsets rather than absolute ones.
-    uint64_t prevOffset = FIRST_CHUNK_OFFSET;
+    uint64_t prevOffset = FIRST_CHUNK_OFFSET();
     for (auto &c : chunks_)
     {
         uint64_t relOffset = c.offset - prevOffset;

@@ -44,6 +44,8 @@ class Writer : public BaseIO
         // default to 0
         uint8_t point_format_id{};
 
+        las::EbVlr extra_bytes;
+
         // xyz scale/offset
         vector3 scale{0.01, 0.01, 0.01};
         vector3 offset{0, 0, 0};
@@ -81,6 +83,8 @@ class Writer : public BaseIO
 
     // Converts the lasconfig object into an actual LasHeader
     las::LasHeader HeaderFromConfig(LasConfig const &config);
+    // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
+    int NumBytesFromExtraBytes(std::vector<las::EbVlr::ebfield> items);
 };
 } // namespace copc
 #endif // COPCLIB_IO_WRITER_H_

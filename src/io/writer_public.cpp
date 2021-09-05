@@ -10,7 +10,7 @@ namespace copc
 Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span, std::string wkt)
 {
     auto header = HeaderFromConfig(config);
-    this->file = std::make_shared<CopcFile>(header, span, wkt);
+    this->file = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
     this->hierarchy = std::make_shared<Internal::Hierarchy>();
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file, this->hierarchy);
 }
@@ -82,6 +82,22 @@ Node Writer::AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const
     return DoAddNode(page, key, compressed, point_count, true);
 }
 
+uint8_t EXTRA_BYTE_DATA_TYPE[31]{0, 1,  1,  2, 2,  4, 4, 8, 8, 4,  8,  2,  2,  4,  4, 8,
+                                 8, 16, 16, 8, 16, 3, 3, 6, 6, 12, 12, 24, 24, 12, 24};
+
+int Writer::NumBytesFromExtraBytes(std::vector<las::EbVlr::ebfield> items)
+{
+    int out = 0;
+    for (auto item : items)
+    {
+        if (item.data_type == 0)
+            out += item.options;
+        else
+            out += EXTRA_BYTE_DATA_TYPE[item.data_type];
+    }
+    return out;
+}
+
 las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
 {
     las::LasHeader h;
@@ -90,7 +106,8 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     h.creation.day = config.creation.day;
     h.creation.year = config.creation.year;
     h.point_format_id = config.point_format_id;
-    h.point_record_length = las::Point::BaseByteSize(config.point_format_id); // +extra_bytes;
+    h.point_record_length =
+        las::Point::BaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
 
     std::strcpy(h.guid, config.guid);
     std::strcpy(h.system_identifier, config.system_identifier);

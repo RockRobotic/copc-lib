@@ -24,8 +24,6 @@ class Reader : public BaseIO
     // Reads node data without decompressing
     std::vector<char> GetPointDataCompressed(Node const &node);
 
-    las::EbVlr GetExtraByteVlr();
-
   private:
     std::istream &in_stream;
 
@@ -34,11 +32,13 @@ class Reader : public BaseIO
     // Constructor helper function, initializes the file and hierarchy
     void InitFile();
     // Reads file VLRs into vlrs_
-    void ReadVlrs();
+    std::map<uint64_t, las::VlrHeader> ReadVlrs();
     // Finds and loads the COPC vlr
-    las::CopcVlr GetCopcData();
+    las::CopcVlr ReadCopcData();
     // Finds and loads the WKT vlr
-    las::WktVlr GetWktData(las::CopcVlr copc_data);
+    las::WktVlr ReadWktData(las::CopcVlr copc_data);
+    // finds and loads EB vlr
+    las::EbVlr ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
 
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override;
 };

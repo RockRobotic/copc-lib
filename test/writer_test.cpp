@@ -3,6 +3,7 @@
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <cstring>
+#include <fstream>
 #include <lazperf/readers.hpp>
 #include <sstream>
 
@@ -456,5 +457,79 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
             auto sub_node_data = reader.GetPointData(sub_node);
             REQUIRE(sub_node_data == std::vector<char>(twenty_pts_prdf3, twenty_pts_prdf3 + sizeof(twenty_pts_prdf3)));
         }
+    }
+}
+
+TEST_CASE("Writer EBs", "[Writer]")
+{
+    SECTION("Data type 0")
+    {
+        stringstream out_stream;
+        Writer::LasConfig config;
+        config.point_format_id = 7;
+        las::EbVlr eb_vlr(1); // Always initialize with the ebCount constructor
+        // don't make ebfields yourself unless you set their names correctly
+        eb_vlr.items[0].data_type = 0;
+        eb_vlr.items[0].options = 4;
+        config.extra_bytes = eb_vlr;
+        Writer writer(out_stream, config);
+
+        REQUIRE(writer.GetLasHeader().point_record_length == 40); // 36 + 4
+
+        writer.Close();
+
+        Reader reader(out_stream);
+        REQUIRE(reader.GetExtraByteVlr().items.size() == 1);
+        REQUIRE(reader.GetExtraByteVlr().items[0].data_type == 0);
+        REQUIRE(reader.GetExtraByteVlr().items[0].options == 4);
+        REQUIRE(reader.GetExtraByteVlr().items[0].name == "FIELD_0");
+        REQUIRE(reader.GetExtraByteVlr().items[0].maxval[2] == 0);
+        REQUIRE(reader.GetExtraByteVlr().items[0].minval[2] == 0);
+        REQUIRE(reader.GetExtraByteVlr().items[0].offset[2] == 0);
+        REQUIRE(reader.GetExtraByteVlr().items[0].scale[2] == 0);
+        REQUIRE(reader.GetLasHeader().point_record_length == 40);
+    }
+
+    SECTION("Data type 29")
+    {
+        stringstream out_stream;
+        Writer::LasConfig config;
+        config.point_format_id = 7;
+        las::EbVlr eb_vlr(1);
+        eb_vlr.items[0].data_type = 29;
+        config.extra_bytes = eb_vlr;
+        Writer writer(out_stream, config);
+
+        REQUIRE(writer.GetLasHeader().point_record_length == 48); // 36 + 12
+
+        writer.Close();
+
+        Reader reader(out_stream);
+        REQUIRE(reader.GetExtraByteVlr().items.size() == 1);
+        REQUIRE(reader.GetLasHeader().point_record_length == 48);
+    }
+
+    SECTION("Copy Vlr")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        Reader reader(in_stream);
+
+        auto in_eb_vlr = reader.GetExtraByteVlr();
+
+        stringstream out_stream;
+        Writer::LasConfig config;
+        config.point_format_id = 3;
+        config.extra_bytes = in_eb_vlr;
+        Writer writer(out_stream, config);
+
+        REQUIRE(writer.GetLasHeader().point_record_length == 36); // 34 + 1 + 1
+
+        writer.Close();
+
+        Reader reader2(out_stream);
+        REQUIRE(reader2.GetExtraByteVlr().items.size() == 2);
+        REQUIRE(reader2.GetLasHeader().point_record_length == reader.GetLasHeader().point_record_length);
+        REQUIRE(reader2.GetExtraByteVlr().items == reader.GetExtraByteVlr().items);
     }
 }
