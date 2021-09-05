@@ -19,6 +19,15 @@ struct vector3
     double x;
     double y;
     double z;
+
+    vector3 &operator=(const lazperf::vector3 &a)
+    {
+        x = a.x;
+        y = a.y;
+        z = a.z;
+
+        return *this; // Return a reference to myself.
+    }
 };
 
 // Provides the public interface for writing COPC files

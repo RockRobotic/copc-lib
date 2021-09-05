@@ -230,3 +230,49 @@ TEST_CASE("Writer EBs", "[Writer]")
         REQUIRE(reader2.GetExtraByteVlr().items == reader.GetExtraByteVlr().items);
     }
 }
+
+TEST_CASE("Writer Copy", "[Writer]")
+{
+    SECTION("Autzen")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        Reader reader(in_stream);
+
+        stringstream out_stream;
+        Writer::LasConfig cfg;
+        cfg.point_format_id = 3;
+        cfg.offset = reader.GetLasHeader().offset;
+        cfg.scale = reader.GetLasHeader().scale;
+        cfg.extra_bytes = reader.GetExtraByteVlr();
+        Writer writer(out_stream, cfg);
+
+        Page root_page = writer.GetRootPage();
+
+        for (auto node : reader.GetAllChildren())
+        {
+            // only write/compare compressed data or otherwise tests take too long
+            writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+        }
+
+        writer.Close();
+
+        Reader new_reader(out_stream);
+
+        for (auto node : reader.GetAllChildren())
+        {
+            REQUIRE(node.IsValid());
+            auto new_node = new_reader.FindNode(node.key);
+            REQUIRE(new_node.IsValid());
+            REQUIRE(new_node.key == node.key);
+            REQUIRE(new_node.point_count == node.point_count);
+            REQUIRE(new_node.size == node.size);
+            //REQUIRE(new_reader.GetPointData(new_node) == reader.GetPointData(node));
+            REQUIRE(new_reader.GetPointDataCompressed(new_node) == reader.GetPointDataCompressed(node));
+        }
+
+        // we can do one uncompressed comparison here
+        REQUIRE(new_reader.GetPointData(new_reader.FindNode(VoxelKey(5, 9, 7, 0))) ==
+                reader.GetPointData(reader.FindNode(VoxelKey(5, 9, 7, 0))));
+    }
+}
