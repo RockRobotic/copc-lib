@@ -102,7 +102,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.GetWkt() == "TEST_WKT");
         }
 
-        SECTION("Copy") 
+        SECTION("Copy")
         {
             fstream in_stream;
             in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
