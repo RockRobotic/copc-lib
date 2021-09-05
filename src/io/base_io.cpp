@@ -33,7 +33,7 @@ void BaseIO::LoadPageHierarchy(std::shared_ptr<Internal::PageInternal> page, std
 {
     if (!page->IsValid())
         return;
-    
+
     if (!page->loaded)
         ReadAndParsePage(page);
 
@@ -47,7 +47,8 @@ void BaseIO::LoadPageHierarchy(std::shared_ptr<Internal::PageInternal> page, std
     }
 }
 
-void BaseIO::ReadAndParsePage(std::shared_ptr<Internal::PageInternal> page) {
+void BaseIO::ReadAndParsePage(std::shared_ptr<Internal::PageInternal> page)
+{
 
     auto children = ReadPage(page);
     for (Entry e : children)

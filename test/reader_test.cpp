@@ -121,7 +121,7 @@ TEST_CASE("GetAllChildren Test", "[Reader] ")
 
         {
             // Get a non-existing key
-            auto nodes = reader.GetAllChildren(VoxelKey(20,20,20,20));
+            auto nodes = reader.GetAllChildren(VoxelKey(20, 20, 20, 20));
             REQUIRE(nodes.size() == 0);
         }
     }
