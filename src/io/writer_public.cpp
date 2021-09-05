@@ -132,4 +132,35 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
 
     return h;
 }
+
+copc::Writer::LasConfig::LasConfig(las::LasHeader config, las::EbVlr extra_bytes_)
+{
+    file_source_id = config.file_source_id;
+    global_encoding = config.global_encoding;
+    creation.day = config.creation.day;
+    creation.year = config.creation.year;
+    point_format_id = config.point_format_id;
+
+    std::strcpy(guid, config.guid);
+    std::strcpy(system_identifier, config.system_identifier);
+    std::strcpy(generating_software, config.generating_software);
+
+    offset.x = config.offset.x;
+    offset.y = config.offset.y;
+    offset.z = config.offset.z;
+
+    scale.x = config.scale.x;
+    scale.y = config.scale.y;
+    scale.z = config.scale.z;
+
+    max.x = config.maxx;
+    min.x = config.minx;
+    max.y = config.maxy;
+    min.y = config.miny;
+    max.z = config.maxz;
+    min.z = config.minz;
+
+    memcpy(points_by_return_14, config.points_by_return_14, sizeof(config.points_by_return_14));
+    extra_bytes = extra_bytes_;
+}
 } // namespace copc

@@ -37,6 +37,10 @@ class Writer : public BaseIO
     // Header config for creating a new file
     struct LasConfig
     {
+        LasConfig(){};
+        // Allow for "copying" a lasheader from one file to another
+        LasConfig(las::LasHeader h, las::EbVlr extra_bytes);
+
         uint16_t file_source_id{};
         uint16_t global_encoding{};
         char guid[16]{};

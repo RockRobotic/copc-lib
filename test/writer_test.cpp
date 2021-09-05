@@ -101,6 +101,30 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Reader reader(out_stream);
             REQUIRE(reader.GetWkt() == "TEST_WKT");
         }
+
+        SECTION("Copy") 
+        {
+            fstream in_stream;
+            in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+            Reader orig(in_stream);
+
+            stringstream out_stream;
+            Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
+            Writer writer(out_stream, cfg);
+            writer.Close();
+
+            Reader reader(out_stream);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
+            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
+            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
+            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
+            REQUIRE(reader.GetLasHeader().point_count == 0);
+            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
+            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
+        }
     }
 }
 
@@ -240,11 +264,7 @@ TEST_CASE("Writer Copy", "[Writer]")
         Reader reader(in_stream);
 
         stringstream out_stream;
-        Writer::LasConfig cfg;
-        cfg.point_format_id = 3;
-        cfg.offset = reader.GetLasHeader().offset;
-        cfg.scale = reader.GetLasHeader().scale;
-        cfg.extra_bytes = reader.GetExtraByteVlr();
+        Writer::LasConfig cfg(reader.GetLasHeader(), reader.GetExtraByteVlr());
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
