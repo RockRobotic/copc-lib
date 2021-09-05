@@ -24,6 +24,12 @@ class Reader : public BaseIO
     // Reads node data without decompressing
     std::vector<char> GetPointDataCompressed(Node const &node);
 
+    // Return all children of a page with a given key 
+    // (or the node itself, if it exists, if there isn't a page with that key)
+    std::vector<Node> GetAllChildren(VoxelKey key);
+    // Helper function to get all nodes from the root
+    std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
+
   private:
     std::istream &in_stream;
 

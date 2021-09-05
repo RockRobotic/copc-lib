@@ -122,6 +122,27 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     return out;
 }
 
+std::vector<Node> Reader::GetAllChildren(VoxelKey key)
+{
+    std::vector<Node> out;
+    if (!key.IsValid())
+        return out;
+
+    // Load all pages upto the current key
+    auto node = FindNode(key);
+    // If a page with this key doesn't exist, check if the node itself exists and return it
+    if (!hierarchy->PageExists(key))
+    {
+        if (node.IsValid())
+            out.push_back(node);
+        return out;
+    }
+
+    // If the page does exist, we need to read all its children and subpages into memory recursively
+    LoadPageHierarchy(hierarchy->seen_pages_[key], out);
+    return out;
+}
+
 las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     for (auto &[offset, vlr_header] : vlrs)

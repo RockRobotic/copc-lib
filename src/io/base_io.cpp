@@ -23,24 +23,47 @@ Node BaseIO::FindNode(VoxelKey key)
         return {};
 
     // Load the page and add the subpages and page nodes
-    auto children = ReadPage(nearest_page);
+    ReadAndParsePage(nearest_page);
+
+    // Try to find the key again
+    return FindNode(key);
+}
+
+void BaseIO::LoadPageHierarchy(std::shared_ptr<Internal::PageInternal> page, std::vector<Node> &loaded_nodes)
+{
+    if (!page->IsValid())
+        return;
+    
+    if (!page->loaded)
+        ReadAndParsePage(page);
+
+    for (auto sub_page : page->sub_pages)
+    {
+        LoadPageHierarchy(sub_page, loaded_nodes);
+    }
+    for (auto node : page->nodes)
+    {
+        loaded_nodes.push_back(*node);
+    }
+}
+
+void BaseIO::ReadAndParsePage(std::shared_ptr<Internal::PageInternal> page) {
+
+    auto children = ReadPage(page);
     for (Entry e : children)
     {
         if (e.IsPage())
         {
             auto subpage = std::make_shared<Internal::PageInternal>(e);
             hierarchy->seen_pages_[e.key] = subpage;
-            nearest_page->sub_pages.push_back(subpage);
+            page->sub_pages.push_back(subpage);
         }
         else
         {
             auto node = std::make_shared<Node>(e);
             hierarchy->loaded_nodes_[e.key] = node;
-            nearest_page->nodes.push_back(node);
+            page->nodes.push_back(node);
         }
     }
-
-    // Try to find the key again
-    return FindNode(key);
 }
 } // namespace copc
