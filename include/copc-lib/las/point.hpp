@@ -291,81 +291,71 @@ class Point
     uint16_t PointSourceId() const { return point_source_id_; }
     void PointSourceId(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
 
-    const uint16_t *Rgb() const
+    void RGB(const uint16_t &red, const uint16_t &green, const uint16_t &blue)
     {
         if (has_rgb_)
         {
-            return rgb_;
+            rgb_[0] = red;
+            rgb_[1] = green;
+            rgb_[2] = blue;
         }
         else
             throw std::runtime_error("This point format does not have RGB.");
     }
 
-    void Rgb(const uint16_t &r, const uint16_t &g, const uint16_t &b)
-    {
-        if (has_rgb_)
-        {
-            rgb_[0] = r;
-            rgb_[1] = g;
-            rgb_[2] = b;
-        }
-        else
-            throw std::runtime_error("This point format does not have RGB.");
-    }
-
-    uint16_t R() const
+    uint16_t Red() const
     {
         if (has_rgb_)
             return rgb_[0];
         else
             throw std::runtime_error("This point format does not have RGB");
     }
-    void R(const uint16_t &r)
+    void Red(const uint16_t &red)
     {
         if (has_rgb_)
-            rgb_[0] = r;
+            rgb_[0] = red;
         else
             throw std::runtime_error("This point format does not have RGB.");
     }
 
-    uint16_t G() const
+    uint16_t Green() const
     {
         if (has_rgb_)
             return rgb_[1];
         else
             throw std::runtime_error("This point format does not have RGB");
     }
-    void G(const uint16_t g)
+    void Green(const uint16_t green)
     {
         if (has_rgb_)
-            rgb_[1] = g;
+            rgb_[1] = green;
         else
             throw std::runtime_error("This point format does not have RGB.");
     }
 
-    uint16_t B() const
+    uint16_t Blue() const
     {
         if (has_rgb_)
             return rgb_[2];
         else
             throw std::runtime_error("This point format does not have RGB");
     }
-    void B(const uint16_t &b)
+    void Blue(const uint16_t &blue)
     {
         if (has_rgb_)
-            rgb_[2] = b;
+            rgb_[2] = blue;
         else
             throw std::runtime_error("This point format does not have RGB.");
     }
 
-    double GpsTime() const
+    double GPSTime() const
     {
         if (has_gps_time_)
             return gps_time_;
         else
             throw std::runtime_error("This point format does not have GPS time.");
     }
-    void GpsTime(const double &gps_time)
+    void GPSTime(const double &gps_time)
     {
         if (has_gps_time_)
             gps_time_ = gps_time;
@@ -373,14 +363,14 @@ class Point
             throw std::runtime_error("This point format does not have GPS time.");
     }
 
-    uint16_t Nir() const
+    uint16_t NIR() const
     {
         if (has_nir_)
             return nir_;
         else
             throw std::runtime_error("This point format does not have NIR.");
     }
-    void Nir(const uint16_t &nir)
+    void NIR(const uint16_t &nir)
     {
         if (has_nir_)
             nir_ = nir;
@@ -390,17 +380,17 @@ class Point
 
     bool HasExtendedPoint() const { return extended_point_type_; }
 
-    bool HasGpsTime() const { return has_gps_time_; }
+    bool HasGPSTime() const { return has_gps_time_; }
 
-    bool HasRgb() const { return has_rgb_; }
+    bool HasRGB() const { return has_rgb_; }
 
-    bool HasNir() const { return has_nir_; }
+    bool HasNIR() const { return has_nir_; }
 
-    uint32_t PointByteSize() const { return point_byte_size_; }
+    uint32_t PointRecordLength() const { return point_record_length_; }
 
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
 
-    static bool FormatHasGpsTime(const uint8_t &point_format_id)
+    static bool FormatHasGPSTime(const uint8_t &point_format_id)
     {
         switch (point_format_id)
         {
@@ -424,7 +414,7 @@ class Point
         }
     }
 
-    static bool FormatHasRgb(const uint8_t &point_format_id)
+    static bool FormatHasRGB(const uint8_t &point_format_id)
     {
         switch (point_format_id)
         {
@@ -452,7 +442,7 @@ class Point
         }
     }
 
-    static bool FormatHasNir(const uint8_t &point_format_id)
+    static bool FormatHasNIR(const uint8_t &point_format_id)
     {
         switch (point_format_id)
         {
@@ -478,8 +468,8 @@ class Point
 
     bool operator==(const Point &other) const
     {
-        if (extended_point_type_ != HasExtendedPoint() || has_gps_time_ != other.HasGpsTime() ||
-            has_rgb_ != other.HasRgb() || has_nir_ != other.HasNir())
+        if (extended_point_type_ != HasExtendedPoint() || has_gps_time_ != other.HasGPSTime() ||
+            has_rgb_ != other.HasRGB() || has_nir_ != other.HasNIR())
             return false;
         if (x_ != other.X() || y_ != other.Y() || z_ != other.Z() || intensity_ != other.Intensity())
             return false;
@@ -498,11 +488,11 @@ class Point
             return false;
         if (extended_point_type_ && (Overlap() != other.Overlap() || ScannerChannel() != other.ScannerChannel()))
             return false;
-        if (has_gps_time_ && (gps_time_ != other.GpsTime()))
+        if (has_gps_time_ && (gps_time_ != other.GPSTime()))
             return false;
-        if (has_rgb_ && (rgb_[0] != other.R() || rgb_[1] != other.G() || rgb_[2] != other.B()))
+        if (has_rgb_ && (rgb_[0] != other.Red() || rgb_[1] != other.Green() || rgb_[2] != other.Blue()))
             return false;
-        if (has_nir_ && (nir_ != other.Nir()))
+        if (has_nir_ && (nir_ != other.NIR()))
             return false;
         return true;
     };
@@ -515,9 +505,9 @@ class Point
         if (&other != this)
         {
             extended_point_type_ = other.HasExtendedPoint();
-            has_gps_time_ = other.HasGpsTime();
-            has_rgb_ = other.HasRgb();
-            has_nir_ = other.HasNir();
+            has_gps_time_ = other.HasGPSTime();
+            has_rgb_ = other.HasRGB();
+            has_nir_ = other.HasNIR();
 
             x_ = other.X();
             y_ = other.Y();
@@ -543,12 +533,12 @@ class Point
                 gps_time_ = other.gps_time_;
             if (has_rgb_)
             {
-                rgb_[0] = other.R();
-                rgb_[1] = other.G();
-                rgb_[2] = other.B();
+                rgb_[0] = other.Red();
+                rgb_[1] = other.Green();
+                rgb_[2] = other.Blue();
             }
             if (has_nir_)
-                nir_ = other.Nir();
+                nir_ = other.NIR();
 
             extra_bytes_ = other.ExtraBytes();
         }
@@ -584,7 +574,7 @@ class Point
 
     std::vector<uint8_t> extra_bytes_;
 
-    uint32_t point_byte_size_;
+    uint32_t point_record_length_;
 };
 
 } // namespace copc::las

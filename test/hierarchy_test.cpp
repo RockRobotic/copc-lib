@@ -133,12 +133,12 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         REQUIRE(points[0].ScanAngle() == 5.0);
         REQUIRE(points[0].UserData() == 124);
         REQUIRE(points[0].PointSourceId() == 7330);
-        REQUIRE(points[0].GpsTime() > 247570);
-        REQUIRE(points[0].GpsTime() < 247570.5);
-        REQUIRE(points[0].R() == 46);
-        REQUIRE(points[0].G() == 60);
-        REQUIRE(points[0].B() == 92);
-        REQUIRE_THROWS(points[0].Nir());
+        REQUIRE(points[0].GPSTime() > 247570);
+        REQUIRE(points[0].GPSTime() < 247570.5);
+        REQUIRE(points[0].Red() == 46);
+        REQUIRE(points[0].Green() == 60);
+        REQUIRE(points[0].Blue() == 92);
+        REQUIRE_THROWS(points[0].NIR());
         REQUIRE_THROWS(points[0].ExtendedFlagsBitFields());
         REQUIRE_THROWS(points[0].ExtendedReturnsBitFields());
         REQUIRE_THROWS(points[0].ScannerChannel());
@@ -157,11 +157,11 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         points[0].ScanAngleRank(90);
         points[0].UserData(UINT8_MAX);
         points[0].PointSourceId(UINT8_MAX);
-        points[0].GpsTime(DBL_MAX);
-        points[0].R(UINT16_MAX);
-        points[0].G(UINT16_MAX);
-        points[0].B(UINT16_MAX);
-        REQUIRE_THROWS(points[0].Nir(UINT16_MAX));
+        points[0].GPSTime(DBL_MAX);
+        points[0].Red(UINT16_MAX);
+        points[0].Green(UINT16_MAX);
+        points[0].Blue(UINT16_MAX);
+        REQUIRE_THROWS(points[0].NIR(UINT16_MAX));
         REQUIRE_THROWS(points[0].ExtendedFlagsBitFields(UINT8_MAX));
         REQUIRE_THROWS(points[0].ExtendedReturnsBitFields(UINT8_MAX));
         REQUIRE_THROWS(points[0].ScannerChannel(3));
@@ -179,10 +179,10 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         REQUIRE(points[0].ScanAngleRank() == 90);
         REQUIRE(points[0].UserData() == UINT8_MAX);
         REQUIRE(points[0].PointSourceId() == UINT8_MAX);
-        REQUIRE(points[0].GpsTime() == DBL_MAX);
-        REQUIRE(points[0].R() == UINT16_MAX);
-        REQUIRE(points[0].G() == UINT16_MAX);
-        REQUIRE(points[0].B() == UINT16_MAX);
+        REQUIRE(points[0].GPSTime() == DBL_MAX);
+        REQUIRE(points[0].Red() == UINT16_MAX);
+        REQUIRE(points[0].Green() == UINT16_MAX);
+        REQUIRE(points[0].Blue() == UINT16_MAX);
     }
 }
 

@@ -34,14 +34,14 @@ void Point::Unpack(std::istream &in_stream, const uint16_t &point_format_id, con
     }
     point_source_id_ = internal::unpack<uint16_t>(in_stream);
 
-    if (FormatHasGpsTime(point_format_id))
+    if (FormatHasGPSTime(point_format_id))
     {
         gps_time_ = internal::unpack<double>(in_stream);
         has_gps_time_ = true;
     }
     else
         has_gps_time_ = false;
-    if (FormatHasRgb(point_format_id))
+    if (FormatHasRGB(point_format_id))
     {
         rgb_[0] = internal::unpack<uint16_t>(in_stream);
         rgb_[1] = internal::unpack<uint16_t>(in_stream);
@@ -50,7 +50,7 @@ void Point::Unpack(std::istream &in_stream, const uint16_t &point_format_id, con
     }
     else
         has_rgb_ = false;
-    if (FormatHasNir(point_format_id))
+    if (FormatHasNIR(point_format_id))
     {
         nir_ = internal::unpack<uint16_t>(in_stream);
         has_nir_ = true;
@@ -58,9 +58,9 @@ void Point::Unpack(std::istream &in_stream, const uint16_t &point_format_id, con
     else
         has_nir_ = false;
 
-    point_byte_size_ = BaseByteSize(point_format_id);
+    point_record_length_ = BaseByteSize(point_format_id);
 
-    for (uint32_t i = 0; i < (point_record_length - point_byte_size_); i++)
+    for (uint32_t i = 0; i < (point_record_length - point_record_length_); i++)
     {
         extra_bytes_.emplace_back(internal::unpack<uint8_t>(in_stream));
     }
@@ -170,10 +170,10 @@ void Point::ToPointFormat(const uint8_t &point_format_id)
 
     // Update flags
     extended_point_type_ = point_format_id > 5;
-    has_gps_time_ = FormatHasGpsTime(point_format_id);
-    has_rgb_ = FormatHasRgb(point_format_id);
-    has_nir_ = FormatHasNir(point_format_id);
-    point_byte_size_ = BaseByteSize(point_format_id);
+    has_gps_time_ = FormatHasGPSTime(point_format_id);
+    has_rgb_ = FormatHasRGB(point_format_id);
+    has_nir_ = FormatHasNIR(point_format_id);
+    point_record_length_ = BaseByteSize(point_format_id);
 }
 
 std::string Point::ToString() const
