@@ -120,7 +120,7 @@ void Point::Pack(std::ostream &out_stream) const
     {
         internal::pack(extended_returns_, out_stream);
         internal::pack(extended_flags_, out_stream);
-        internal::pack(classification_, out_stream);
+        internal::pack(extended_classification_, out_stream);
         internal::pack(user_data_, out_stream);
         internal::pack(extended_scan_angle_, out_stream);
     }
@@ -217,7 +217,7 @@ void Point::ToPointFormat(const int8_t &point_format_id)
     has_gps_time_ = FormatHasGPSTime(point_format_id);
     has_rgb_ = FormatHasRGB(point_format_id);
     has_nir_ = FormatHasNIR(point_format_id);
-    point_record_length_ = BaseByteSize(point_format_id) + extra_bytes_.size() * sizeof(uint8_t);
+    point_record_length_ = BaseByteSize(point_format_id) + extra_bytes_.size();
     point_format_id_ = point_format_id;
 }
 

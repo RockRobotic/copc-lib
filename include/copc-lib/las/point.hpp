@@ -476,8 +476,7 @@ class Point
 
     bool operator==(const Point &other) const
     {
-        if (extended_point_type_ != HasExtendedPoint() || has_gps_time_ != other.HasGPSTime() ||
-            has_rgb_ != other.HasRGB() || has_nir_ != other.HasNIR())
+        if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
             return false;
         if (x_ != other.X() || y_ != other.Y() || z_ != other.Z() || intensity_ != other.Intensity())
             return false;
