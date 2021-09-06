@@ -222,7 +222,8 @@ class Point
         else
         {
             if (classification > 31)
-                throw std::runtime_error("Classification for Point10 must be <= 31");
+                throw std::runtime_error(
+                    "Classification for Point10 must be <= 31. To override this, use ClassificationBitFields.");
             else
                 classification_ = (classification_ & 0xE0) | classification;
         }
