@@ -12,15 +12,15 @@ class Point
   public:
     Point() = default;
 
-    void Unpack(std::istream &in_stream, const uint16_t &point_format_id, const uint16_t &point_record_length);
+    void Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &point_record_length);
 
     void Pack(std::ostream &out_stream) const;
 
-    void ToPointFormat(const uint8_t &point_format_id);
+    void ToPointFormat(const int8_t &point_format_id);
 
     std::string ToString() const;
 
-    static uint8_t BaseByteSize(const uint8_t &point_format_id);
+    static uint8_t BaseByteSize(const int8_t &point_format_id);
 
     // Getters and Setters
     int32_t X() const { return x_; }
@@ -578,6 +578,7 @@ class Point
     std::vector<uint8_t> extra_bytes_;
 
     uint32_t point_record_length_;
+    int8_t point_record_id_;
 };
 
 } // namespace copc::las

@@ -5,7 +5,7 @@
 namespace copc::las
 {
 
-void Point::Unpack(std::istream &in_stream, const uint16_t &point_format_id, const uint16_t &point_record_length)
+void Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &point_record_length)
 {
     if (point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10");
@@ -59,6 +59,7 @@ void Point::Unpack(std::istream &in_stream, const uint16_t &point_format_id, con
         has_nir_ = false;
 
     point_record_length_ = BaseByteSize(point_format_id);
+    point_record_id_ = point_format_id;
 
     for (uint32_t i = 0; i < (point_record_length - point_record_length_); i++)
     {
@@ -106,7 +107,7 @@ void Point::Pack(std::ostream &out_stream) const
         internal::pack(eb, out_stream);
 }
 
-uint8_t Point::BaseByteSize(const uint8_t &point_format_id)
+uint8_t Point::BaseByteSize(const int8_t &point_format_id)
 {
     switch (point_format_id)
     {
@@ -140,7 +141,7 @@ uint8_t Point::BaseByteSize(const uint8_t &point_format_id)
     }
 }
 
-void Point::ToPointFormat(const uint8_t &point_format_id)
+void Point::ToPointFormat(const int8_t &point_format_id)
 {
 
     if (extended_point_type_ && point_format_id < 6)
@@ -176,6 +177,7 @@ void Point::ToPointFormat(const uint8_t &point_format_id)
     has_rgb_ = FormatHasRGB(point_format_id);
     has_nir_ = FormatHasNIR(point_format_id);
     point_record_length_ = BaseByteSize(point_format_id);
+    point_record_id_ = point_format_id;
 }
 
 std::string Point::ToString() const
