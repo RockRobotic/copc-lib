@@ -394,11 +394,13 @@ class Point
     uint16_t NumExtraBytes() const { return point_record_length_ - BaseByteSize(point_format_id_); }
 
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
-    void ExtraBytes(std::vector<uint8_t> in) { 
+    void ExtraBytes(std::vector<uint8_t> in)
+    {
         if (in.size() != NumExtraBytes())
             throw std::runtime_error("Number of input bytes " + std::to_string(in.size()) +
                                      " does not match number of point bytes " + std::to_string(NumExtraBytes()));
-        extra_bytes_ = in; }
+        extra_bytes_ = in;
+    }
 
     static bool FormatHasGPSTime(const uint8_t &point_format_id)
     {

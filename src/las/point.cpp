@@ -3,7 +3,7 @@
 
 namespace copc::las
 {
-Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes) 
+Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
 {
     if (point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10");
