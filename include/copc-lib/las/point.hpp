@@ -12,7 +12,7 @@ class Point
     Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0);
     Point(const Point &other);
 
-    void Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &point_record_length);
+    static Point Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes);
 
     void Pack(std::ostream &out_stream) const;
 

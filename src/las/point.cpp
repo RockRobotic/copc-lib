@@ -61,20 +61,51 @@ Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraB
     extra_bytes_ = other.extra_bytes_;
 };
 
+Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes)
+{
+    Point p(point_format_id, num_extra_bytes);
+
+    p.x_ = internal::unpack<int32_t>(in_stream);
+    p.y_ = internal::unpack<int32_t>(in_stream);
+    p.z_ = internal::unpack<int32_t>(in_stream);
+    p.intensity_ = internal::unpack<uint16_t>(in_stream);
+    if (p.extended_point_type_)
     {
-        nir_ = internal::unpack<uint16_t>(in_stream);
-        has_nir_ = true;
+        p.extended_returns_ = internal::unpack<uint8_t>(in_stream);
+        p.extended_flags_ = internal::unpack<uint8_t>(in_stream);
+        p.extended_classification_ = internal::unpack<uint8_t>(in_stream);
+        p.user_data_ = internal::unpack<uint8_t>(in_stream);
+        p.extended_scan_angle_ = internal::unpack<int16_t>(in_stream);
     }
     else
-        has_nir_ = false;
-
-    point_record_length_ = point_record_length;
-    point_format_id_ = point_format_id;
-
-    for (uint32_t i = 0; i < (point_record_length - BaseByteSize(point_format_id)); i++)
     {
-        extra_bytes_.emplace_back(internal::unpack<uint8_t>(in_stream));
+        p.returns_flags_eof_ = internal::unpack<uint8_t>(in_stream);
+        p.classification_ = internal::unpack<uint8_t>(in_stream);
+        p.scan_angle_rank_ = internal::unpack<int8_t>(in_stream);
+        p.user_data_ = internal::unpack<uint8_t>(in_stream);
     }
+    p.point_source_id_ = internal::unpack<uint16_t>(in_stream);
+
+    if (p.has_gps_time_)
+    {
+        p.gps_time_ = internal::unpack<double>(in_stream);
+    }
+    if (p.has_rgb_)
+    {
+        p.rgb_[0] = internal::unpack<uint16_t>(in_stream);
+        p.rgb_[1] = internal::unpack<uint16_t>(in_stream);
+        p.rgb_[2] = internal::unpack<uint16_t>(in_stream);
+    }
+    if (p.has_nir_)
+    {
+        p.nir_ = internal::unpack<uint16_t>(in_stream);
+    }
+
+    for (uint32_t i = 0; i < num_extra_bytes; i++)
+    {
+        p.extra_bytes_[i] = internal::unpack<uint8_t>(in_stream);
+    }
+    return p;
 }
 
 void Point::Pack(std::ostream &out_stream) const
