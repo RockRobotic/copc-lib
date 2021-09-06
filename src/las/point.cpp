@@ -119,9 +119,10 @@ uint8_t Point::BaseByteSize(const uint8_t &point_format_id)
     case 3:
         return 34;
     case 4:
-        return 28;
+        //        return 28;
     case 5:
-        return 34;
+        //        return 34;
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
     case 6:
         return 30;
     case 7:
@@ -129,9 +130,10 @@ uint8_t Point::BaseByteSize(const uint8_t &point_format_id)
     case 8:
         return 38;
     case 9:
-        return 30;
+        //        return 30;
     case 10:
-        return 38;
+        //        return 38;
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
     default:
         throw std::runtime_error("Point format must be 0-10");
         ;

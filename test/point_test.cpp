@@ -20,7 +20,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.HasRGB() == false);
         REQUIRE(point.HasNIR() == false);
 
-        point.ToPointFormat(5);
+        point.ToPointFormat(3);
         REQUIRE(point.X() == 0);
         REQUIRE(point.Y() == 0);
         REQUIRE(point.Z() == 0);
@@ -47,7 +47,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.HasNIR() == false);
 
         auto point_ext = Point();
-        point_ext.ToPointFormat(10);
+        point_ext.ToPointFormat(8);
 
         REQUIRE(point_ext.X() == 0);
         REQUIRE(point_ext.Y() == 0);
@@ -230,28 +230,28 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point3.NIR());
 
         auto point4 = Point();
-        point4.ToPointFormat(4);
+        REQUIRE_THROWS(point4.ToPointFormat(4));
 
-        REQUIRE_NOTHROW(point4.GPSTime(DBL_MAX));
-        REQUIRE_NOTHROW(point4.GPSTime());
-        REQUIRE_THROWS(point4.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
-        REQUIRE_THROWS(point4.Red());
-        REQUIRE_THROWS(point4.Green());
-        REQUIRE_THROWS(point4.Blue());
-        REQUIRE_THROWS(point4.NIR(UINT16_MAX));
-        REQUIRE_THROWS(point4.NIR());
+        //        REQUIRE_NOTHROW(point4.GPSTime(DBL_MAX));
+        //        REQUIRE_NOTHROW(point4.GPSTime());
+        //        REQUIRE_THROWS(point4.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        //        REQUIRE_THROWS(point4.Red());
+        //        REQUIRE_THROWS(point4.Green());
+        //        REQUIRE_THROWS(point4.Blue());
+        //        REQUIRE_THROWS(point4.NIR(UINT16_MAX));
+        //        REQUIRE_THROWS(point4.NIR());
 
         auto point5 = Point();
-        point5.ToPointFormat(5);
+        REQUIRE_THROWS(point5.ToPointFormat(5));
 
-        REQUIRE_NOTHROW(point5.GPSTime(DBL_MAX));
-        REQUIRE_NOTHROW(point5.GPSTime());
-        REQUIRE_NOTHROW(point5.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
-        REQUIRE_NOTHROW(point5.Red());
-        REQUIRE_NOTHROW(point5.Green());
-        REQUIRE_NOTHROW(point5.Blue());
-        REQUIRE_THROWS(point5.NIR(UINT16_MAX));
-        REQUIRE_THROWS(point5.NIR());
+        //        REQUIRE_NOTHROW(point5.GPSTime(DBL_MAX));
+        //        REQUIRE_NOTHROW(point5.GPSTime());
+        //        REQUIRE_NOTHROW(point5.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        //        REQUIRE_NOTHROW(point5.Red());
+        //        REQUIRE_NOTHROW(point5.Green());
+        //        REQUIRE_NOTHROW(point5.Blue());
+        //        REQUIRE_THROWS(point5.NIR(UINT16_MAX));
+        //        REQUIRE_THROWS(point5.NIR());
     }
 
     SECTION("Point with format LAS 1.4 Test")
@@ -396,16 +396,17 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point8.NIR() == UINT16_MAX);
 
         auto point9 = Point();
-        point9.ToPointFormat(9);
+        REQUIRE_THROWS(point9.ToPointFormat(9));
 
-        REQUIRE_THROWS(point9.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
-        REQUIRE_THROWS(point9.Red());
-        REQUIRE_THROWS(point9.Green());
-        REQUIRE_THROWS(point9.Blue());
-        REQUIRE_THROWS(point9.NIR(UINT16_MAX));
-        REQUIRE_THROWS(point9.NIR());
+        //        REQUIRE_THROWS(point9.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        //        REQUIRE_THROWS(point9.Red());
+        //        REQUIRE_THROWS(point9.Green());
+        //        REQUIRE_THROWS(point9.Blue());
+        //        REQUIRE_THROWS(point9.NIR(UINT16_MAX));
+        //        REQUIRE_THROWS(point9.NIR());
 
-        // No need to test point10, it has all attributes and they have all been tested already
+        auto point10 = Point();
+        REQUIRE_THROWS(point9.ToPointFormat(10));
     }
 
     SECTION("Point conversion Point10")
@@ -426,17 +427,17 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Green() == 0);
         REQUIRE(point.Blue() == 0);
 
-        point.ToPointFormat(4);
-        REQUIRE(point.GPSTime() == 0);
-
-        point.ToPointFormat(5);
-        REQUIRE(point.GPSTime() == 0);
-        REQUIRE(point.Red() == 0);
-        REQUIRE(point.Green() == 0);
-        REQUIRE(point.Blue() == 0);
+        //        point.ToPointFormat(4);
+        //        REQUIRE(point.GPSTime() == 0);
+        //
+        //        point.ToPointFormat(5);
+        //        REQUIRE(point.GPSTime() == 0);
+        //        REQUIRE(point.Red() == 0);
+        //        REQUIRE(point.Green() == 0);
+        //        REQUIRE(point.Blue() == 0);
     }
 
-    SECTION("Point conversion Point10")
+    SECTION("Point conversion Point14")
     {
         auto point = Point();
 
@@ -465,21 +466,21 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Blue() == 0);
         REQUIRE(point.NIR() == 0);
 
-        point.ToPointFormat(9);
-        REQUIRE(point.GPSTime() == 0);
-        REQUIRE(point.ScannerChannel() == 0);
-        REQUIRE(point.Overlap() == 0);
-        REQUIRE(point.GPSTime() == 0);
-
-        point.ToPointFormat(10);
-        REQUIRE(point.GPSTime() == 0);
-        REQUIRE(point.ScannerChannel() == 0);
-        REQUIRE(point.Overlap() == 0);
-        REQUIRE(point.GPSTime() == 0);
-        REQUIRE(point.Red() == 0);
-        REQUIRE(point.Green() == 0);
-        REQUIRE(point.Blue() == 0);
-        REQUIRE(point.NIR() == 0);
+        //        point.ToPointFormat(9);
+        //        REQUIRE(point.GPSTime() == 0);
+        //        REQUIRE(point.ScannerChannel() == 0);
+        //        REQUIRE(point.Overlap() == 0);
+        //        REQUIRE(point.GPSTime() == 0);
+        //
+        //        point.ToPointFormat(10);
+        //        REQUIRE(point.GPSTime() == 0);
+        //        REQUIRE(point.ScannerChannel() == 0);
+        //        REQUIRE(point.Overlap() == 0);
+        //        REQUIRE(point.GPSTime() == 0);
+        //        REQUIRE(point.Red() == 0);
+        //        REQUIRE(point.Green() == 0);
+        //        REQUIRE(point.Blue() == 0);
+        //        REQUIRE(point.NIR() == 0);
     }
 
     SECTION("Point conversion Point10 to Poin14")
@@ -584,16 +585,16 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point == point_other);
 
         // Format 4
-        point_other.ToPointFormat(4);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(4);
-        REQUIRE(point == point_other);
-
-        // Format 5
-        point_other.ToPointFormat(5);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(5);
-        REQUIRE(point == point_other);
+        //        point_other.ToPointFormat(4);
+        //        REQUIRE(point != point_other);
+        //        point.ToPointFormat(4);
+        //        REQUIRE(point == point_other);
+        //
+        //        // Format 5
+        //        point_other.ToPointFormat(5);
+        //        REQUIRE(point != point_other);
+        //        point.ToPointFormat(5);
+        //        REQUIRE(point == point_other);
 
         // Format 6
         point_other.ToPointFormat(6);
@@ -614,16 +615,16 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point == point_other);
 
         // Format 9
-        point_other.ToPointFormat(9);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(9);
-        REQUIRE(point == point_other);
-
-        // Format 10
-        point_other.ToPointFormat(10);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(10);
-        REQUIRE(point == point_other);
+        //        point_other.ToPointFormat(9);
+        //        REQUIRE(point != point_other);
+        //        point.ToPointFormat(9);
+        //        REQUIRE(point == point_other);
+        //
+        //        // Format 10
+        //        point_other.ToPointFormat(10);
+        //        REQUIRE(point != point_other);
+        //        point.ToPointFormat(10);
+        //        REQUIRE(point == point_other);
 
         // Atributes
 
@@ -736,7 +737,7 @@ TEST_CASE("Point tests", "[Point]")
     SECTION("Operator =")
     {
         auto point = Point();
-        point.ToPointFormat(10);
+        point.ToPointFormat(8);
 
         point.X(4);
         point.Y(4);
@@ -784,16 +785,16 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point == point_other);
 
         // Format 4
-        point.ToPointFormat(4);
-        point.Pack(ss);
-        point_other.Unpack(ss, 4, point.PointRecordLength());
-        REQUIRE(point == point_other);
-
-        // Format 5
-        point.ToPointFormat(5);
-        point.Pack(ss);
-        point_other.Unpack(ss, 5, point.PointRecordLength());
-        REQUIRE(point == point_other);
+        //        point.ToPointFormat(4);
+        //        point.Pack(ss);
+        //        point_other.Unpack(ss, 4, point.PointRecordLength());
+        //        REQUIRE(point == point_other);
+        //
+        //        // Format 5
+        //        point.ToPointFormat(5);
+        //        point.Pack(ss);
+        //        point_other.Unpack(ss, 5, point.PointRecordLength());
+        //        REQUIRE(point == point_other);
 
         // Format 6
         point.ToPointFormat(6);
@@ -814,15 +815,15 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point == point_other);
 
         // Format 9
-        point.ToPointFormat(9);
-        point.Pack(ss);
-        point_other.Unpack(ss, 9, point.PointRecordLength());
-        REQUIRE(point == point_other);
-
-        // Format 10
-        point.ToPointFormat(10);
-        point.Pack(ss);
-        point_other.Unpack(ss, 10, point.PointRecordLength());
-        REQUIRE(point == point_other);
+        //        point.ToPointFormat(9);
+        //        point.Pack(ss);
+        //        point_other.Unpack(ss, 9, point.PointRecordLength());
+        //        REQUIRE(point == point_other);
+        //
+        //        // Format 10
+        //        point.ToPointFormat(10);
+        //        point.Pack(ss);
+        //        point_other.Unpack(ss, 10, point.PointRecordLength());
+        //        REQUIRE(point == point_other);
     }
 }

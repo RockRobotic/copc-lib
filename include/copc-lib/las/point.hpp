@@ -401,14 +401,18 @@ class Point
         case 2:
             return false;
         case 3:
+            return true;
         case 4:
         case 5:
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
         case 6:
         case 7:
         case 8:
+            return true;
         case 9:
         case 10:
-            return true;
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
+
         default:
             throw std::runtime_error("Point format must be 0-10");
         }
@@ -425,18 +429,16 @@ class Point
         case 3:
             return true;
         case 4:
-            return false;
         case 5:
-            return true;
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
         case 6:
             return false;
         case 7:
         case 8:
             return true;
         case 9:
-            return false;
         case 10:
-            return true;
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
         default:
             throw std::runtime_error("Point format must be 0-10");
         }
@@ -450,17 +452,18 @@ class Point
         case 1:
         case 2:
         case 3:
+            return false;
         case 4:
         case 5:
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
         case 6:
         case 7:
             return false;
         case 8:
             return true;
         case 9:
-            return false;
         case 10:
-            return true;
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
         default:
             throw std::runtime_error("Point format must be 0-10");
         }
