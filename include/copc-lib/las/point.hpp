@@ -10,6 +10,7 @@ class Point
 {
   public:
     Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0);
+    Point(const Point &other);
 
     void Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &point_record_length);
 
@@ -505,46 +506,6 @@ class Point
     };
 
     bool operator!=(const Point &other) const { return !(*this == other); };
-
-    Point(const Point &other) : Point(other.point_format_id_, other.NumExtraBytes())
-    {
-        x_ = other.x_;
-        y_ = other.y_;
-        z_ = other.z_;
-        intensity_ = other.intensity_;
-        if (other.extended_point_type_)
-        {
-            extended_returns_ = other.extended_returns_;
-            extended_flags_ = other.extended_flags_;
-            extended_classification_ = other.extended_classification_;
-            extended_scan_angle_ = other.extended_scan_angle_;
-        }
-        else
-        {
-            returns_flags_eof_ = other.returns_flags_eof_;
-            classification_ = other.classification_;
-            scan_angle_rank_ = other.scan_angle_rank_;
-        }
-        user_data_ = other.user_data_;
-        point_source_id_ = other.point_source_id_;
-
-        if (other.has_gps_time_)
-        {
-            gps_time_ = other.gps_time_;
-        }
-        if (other.has_rgb_)
-        {
-            rgb_[0] = other.Red();
-            rgb_[1] = other.Green();
-            rgb_[2] = other.Blue();
-        }
-        if (has_nir_)
-        {
-            nir_ = other.nir_;
-        }
-
-        extra_bytes_ = other.extra_bytes_;
-    };
 
   protected:
     int32_t x_{};

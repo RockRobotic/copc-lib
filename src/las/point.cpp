@@ -21,39 +21,46 @@ Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
     extra_bytes_.resize(num_extra_bytes, 0);
 }
 
+Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraBytes())
+{
+    x_ = other.x_;
+    y_ = other.y_;
+    z_ = other.z_;
+    intensity_ = other.intensity_;
+    if (other.extended_point_type_)
     {
-        extended_returns_ = internal::unpack<uint8_t>(in_stream);
-        extended_flags_ = internal::unpack<uint8_t>(in_stream);
-        extended_classification_ = internal::unpack<uint8_t>(in_stream);
-        user_data_ = internal::unpack<uint8_t>(in_stream);
-        extended_scan_angle_ = internal::unpack<int16_t>(in_stream);
+        extended_returns_ = other.extended_returns_;
+        extended_flags_ = other.extended_flags_;
+        extended_classification_ = other.extended_classification_;
+        extended_scan_angle_ = other.extended_scan_angle_;
     }
     else
     {
-        returns_flags_eof_ = internal::unpack<uint8_t>(in_stream);
-        classification_ = internal::unpack<uint8_t>(in_stream);
-        scan_angle_rank_ = internal::unpack<int8_t>(in_stream);
-        user_data_ = internal::unpack<uint8_t>(in_stream);
+        returns_flags_eof_ = other.returns_flags_eof_;
+        classification_ = other.classification_;
+        scan_angle_rank_ = other.scan_angle_rank_;
     }
-    point_source_id_ = internal::unpack<uint16_t>(in_stream);
+    user_data_ = other.user_data_;
+    point_source_id_ = other.point_source_id_;
 
-    if (FormatHasGPSTime(point_format_id))
+    if (other.has_gps_time_)
     {
-        gps_time_ = internal::unpack<double>(in_stream);
-        has_gps_time_ = true;
+        gps_time_ = other.gps_time_;
     }
-    else
-        has_gps_time_ = false;
-    if (FormatHasRGB(point_format_id))
+    if (other.has_rgb_)
     {
-        rgb_[0] = internal::unpack<uint16_t>(in_stream);
-        rgb_[1] = internal::unpack<uint16_t>(in_stream);
-        rgb_[2] = internal::unpack<uint16_t>(in_stream);
-        has_rgb_ = true;
+        rgb_[0] = other.Red();
+        rgb_[1] = other.Green();
+        rgb_[2] = other.Blue();
     }
-    else
-        has_rgb_ = false;
-    if (FormatHasNIR(point_format_id))
+    if (has_nir_)
+    {
+        nir_ = other.nir_;
+    }
+
+    extra_bytes_ = other.extra_bytes_;
+};
+
     {
         nir_ = internal::unpack<uint16_t>(in_stream);
         has_nir_ = true;
