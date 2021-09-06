@@ -5,7 +5,7 @@ repos:
     -   id: end-of-file-fixer
 
 -   repo: git://github.com/pocc/pre-commit-hooks
-    rev: v1.3.2
+    rev: v1.3.3
     hooks:
     -   id: clang-format
         always_run: true
