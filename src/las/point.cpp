@@ -59,7 +59,7 @@ void Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const
         has_nir_ = false;
 
     point_record_length_ = point_record_length;
-    point_record_id_ = point_format_id;
+    point_format_id_ = point_format_id;
 
     for (uint32_t i = 0; i < (point_record_length - BaseByteSize(point_format_id)); i++)
     {
@@ -177,7 +177,7 @@ void Point::ToPointFormat(const int8_t &point_format_id)
     has_rgb_ = FormatHasRGB(point_format_id);
     has_nir_ = FormatHasNIR(point_format_id);
     point_record_length_ = BaseByteSize(point_format_id) + extra_bytes_.size() * sizeof(uint8_t);
-    point_record_id_ = point_format_id;
+    point_format_id_ = point_format_id;
 }
 
 std::string Point::ToString() const

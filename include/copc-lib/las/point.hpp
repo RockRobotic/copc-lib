@@ -389,7 +389,7 @@ class Point
 
     uint32_t PointRecordLength() const { return point_record_length_; }
 
-    int8_t PointRecordID() const { return point_record_id_; }
+    int8_t PointRecordID() const { return point_format_id_; }
 
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
 
@@ -581,7 +581,7 @@ class Point
     std::vector<uint8_t> extra_bytes_;
 
     uint32_t point_record_length_;
-    int8_t point_record_id_;
+    int8_t point_format_id_;
 };
 
 } // namespace copc::las
