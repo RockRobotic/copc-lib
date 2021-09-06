@@ -1,11 +1,9 @@
 #include <copc-lib/las/point.hpp>
-
 #include <copc-lib/las/utils.hpp>
 
 namespace copc::las
 {
-
-void Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &point_record_length)
+Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes) 
 {
     if (point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10");
@@ -13,11 +11,16 @@ void Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const
     if (point_format_id > 5)
         extended_point_type_ = true;
 
-    x_ = internal::unpack<int32_t>(in_stream);
-    y_ = internal::unpack<int32_t>(in_stream);
-    z_ = internal::unpack<int32_t>(in_stream);
-    intensity_ = internal::unpack<uint16_t>(in_stream);
-    if (extended_point_type_)
+    point_format_id_ = point_format_id;
+    point_record_length_ = BaseByteSize(point_format_id) + num_extra_bytes;
+
+    has_gps_time_ = FormatHasGPSTime(point_format_id);
+    has_rgb_ = FormatHasRGB(point_format_id);
+    has_nir_ = FormatHasNIR(point_format_id);
+
+    extra_bytes_.resize(num_extra_bytes, 0);
+}
+
     {
         extended_returns_ = internal::unpack<uint8_t>(in_stream);
         extended_flags_ = internal::unpack<uint8_t>(in_stream);
