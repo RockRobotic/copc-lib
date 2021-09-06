@@ -132,12 +132,15 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         REQUIRE(points[0].ScanAngleRank() == 5);
         REQUIRE(points[0].ScanAngle() == 5.0);
         REQUIRE(points[0].UserData() == 124);
-        REQUIRE(points[0].PointSourceId() == 7330);
+        REQUIRE(points[0].PointSourceID() == 7330);
         REQUIRE(points[0].GPSTime() > 247570);
         REQUIRE(points[0].GPSTime() < 247570.5);
         REQUIRE(points[0].Red() == 46);
         REQUIRE(points[0].Green() == 60);
         REQUIRE(points[0].Blue() == 92);
+        REQUIRE(points[0].PointRecordID() == 3);
+        REQUIRE(points[0].PointRecordLength() == 36);
+        REQUIRE(points[0].ExtraBytes().size() == 2);
         REQUIRE_THROWS(points[0].NIR());
         REQUIRE_THROWS(points[0].ExtendedFlagsBitFields());
         REQUIRE_THROWS(points[0].ExtendedReturnsBitFields());
@@ -156,7 +159,7 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         points[0].Classification(31);
         points[0].ScanAngleRank(90);
         points[0].UserData(UINT8_MAX);
-        points[0].PointSourceId(UINT8_MAX);
+        points[0].PointSourceID(UINT8_MAX);
         points[0].GPSTime(DBL_MAX);
         points[0].Red(UINT16_MAX);
         points[0].Green(UINT16_MAX);
@@ -178,7 +181,7 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         REQUIRE(points[0].Classification() == 31);
         REQUIRE(points[0].ScanAngleRank() == 90);
         REQUIRE(points[0].UserData() == UINT8_MAX);
-        REQUIRE(points[0].PointSourceId() == UINT8_MAX);
+        REQUIRE(points[0].PointSourceID() == UINT8_MAX);
         REQUIRE(points[0].GPSTime() == DBL_MAX);
         REQUIRE(points[0].Red() == UINT16_MAX);
         REQUIRE(points[0].Green() == UINT16_MAX);

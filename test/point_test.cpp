@@ -36,7 +36,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.ScanAngleRank() == 0);
         REQUIRE(point.ScanAngle() == 0.0);
         REQUIRE(point.UserData() == 0);
-        REQUIRE(point.PointSourceId() == 0);
+        REQUIRE(point.PointSourceID() == 0);
         REQUIRE(point.GPSTime() == 0);
         REQUIRE(point.Red() == 0);
         REQUIRE(point.Green() == 0);
@@ -64,7 +64,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point_ext.ExtendedScanAngle() == 0);
         REQUIRE(point_ext.ScanAngle() == 0.0);
         REQUIRE(point_ext.UserData() == 0);
-        REQUIRE(point_ext.PointSourceId() == 0);
+        REQUIRE(point_ext.PointSourceID() == 0);
         REQUIRE(point_ext.GPSTime() == 0);
         REQUIRE(point_ext.Red() == 0);
         REQUIRE(point_ext.Green() == 0);
@@ -79,6 +79,7 @@ TEST_CASE("Point tests", "[Point]")
     SECTION("Point with format LAS 1.0 Test")
     {
         auto point0 = Point();
+        point0.ToPointFormat(0);
         // Position
         point0.X(INT32_MAX);
         point0.Y(INT32_MAX);
@@ -154,8 +155,10 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point0.UserData() == UINT8_MAX);
 
         // Point Source ID
-        point0.PointSourceId(UINT16_MAX);
-        REQUIRE(point0.PointSourceId() == UINT16_MAX);
+        point0.PointSourceID(UINT16_MAX);
+        REQUIRE(point0.PointSourceID() == UINT16_MAX);
+
+        REQUIRE(point0.PointRecordLength() == 20);
 
         // Checks
         REQUIRE_THROWS(point0.ExtendedFlagsBitFields(0));
@@ -187,6 +190,7 @@ TEST_CASE("Point tests", "[Point]")
 
         point1.GPSTime(DBL_MAX);
         REQUIRE(point1.GPSTime() == DBL_MAX);
+        REQUIRE(point1.PointRecordLength() == 28);
 
         REQUIRE_THROWS(point0.Red(UINT16_MAX));
         REQUIRE_THROWS(point0.Red());
@@ -199,6 +203,7 @@ TEST_CASE("Point tests", "[Point]")
 
         auto point2 = Point();
         point2.ToPointFormat(2);
+        REQUIRE(point2.PointRecordLength() == 26);
 
         point2.Red(UINT16_MAX);
         REQUIRE(point2.Red() == UINT16_MAX);
@@ -219,6 +224,7 @@ TEST_CASE("Point tests", "[Point]")
 
         auto point3 = Point();
         point3.ToPointFormat(3);
+        REQUIRE(point3.PointRecordLength() == 34);
 
         REQUIRE_NOTHROW(point3.GPSTime(DBL_MAX));
         REQUIRE_NOTHROW(point3.GPSTime());
@@ -356,12 +362,15 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.UserData() == UINT8_MAX);
 
         // Point Source ID
-        point6.PointSourceId(UINT16_MAX);
-        REQUIRE(point6.PointSourceId() == UINT16_MAX);
+        point6.PointSourceID(UINT16_MAX);
+        REQUIRE(point6.PointSourceID() == UINT16_MAX);
 
         // GPS Time
         point6.GPSTime(DBL_MAX);
         REQUIRE(point6.GPSTime() == DBL_MAX);
+
+        // Point Record Length
+        REQUIRE(point6.PointRecordLength() == 30);
 
         // Checks
         REQUIRE_THROWS(point6.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
@@ -385,6 +394,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point7.Red() == UINT16_MAX);
         REQUIRE(point7.Green() == UINT16_MAX);
         REQUIRE(point7.Blue() == UINT16_MAX);
+        REQUIRE(point7.PointRecordLength() == 36);
 
         REQUIRE_THROWS(point7.NIR(UINT16_MAX));
         REQUIRE_THROWS(point7.NIR());
@@ -394,6 +404,7 @@ TEST_CASE("Point tests", "[Point]")
 
         point8.NIR(UINT16_MAX);
         REQUIRE(point8.NIR() == UINT16_MAX);
+        REQUIRE(point8.PointRecordLength() == 38);
 
         auto point9 = Point();
         REQUIRE_THROWS(point9.ToPointFormat(9));
@@ -703,9 +714,9 @@ TEST_CASE("Point tests", "[Point]")
         point_other.UserData(4);
         REQUIRE(point == point_other);
 
-        point.PointSourceId(4);
+        point.PointSourceID(4);
         REQUIRE(point != point_other);
-        point_other.PointSourceId(4);
+        point_other.PointSourceID(4);
         REQUIRE(point == point_other);
 
         point.GPSTime(4.0);

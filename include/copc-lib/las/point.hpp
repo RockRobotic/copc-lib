@@ -288,8 +288,8 @@ class Point
     uint8_t UserData() const { return user_data_; }
     void UserData(const uint8_t &user_data) { user_data_ = user_data; }
 
-    uint16_t PointSourceId() const { return point_source_id_; }
-    void PointSourceId(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
+    uint16_t PointSourceID() const { return point_source_id_; }
+    void PointSourceID(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
 
     void RGB(const uint16_t &red, const uint16_t &green, const uint16_t &blue)
     {
@@ -388,6 +388,8 @@ class Point
 
     uint32_t PointRecordLength() const { return point_record_length_; }
 
+    int8_t PointRecordID() const { return point_record_id_; }
+
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
 
     static bool FormatHasGPSTime(const uint8_t &point_format_id)
@@ -485,7 +487,7 @@ class Point
         if (Synthetic() != other.Synthetic() || KeyPoint() != other.KeyPoint() || Withheld() != other.Withheld())
             return false;
         if (ScanAngle() != other.ScanAngle() || user_data_ != other.UserData() ||
-            point_source_id_ != other.PointSourceId())
+            point_source_id_ != other.PointSourceID())
             return false;
         if (ExtraBytes() != other.ExtraBytes())
             return false;
@@ -517,7 +519,7 @@ class Point
             z_ = other.Z();
             intensity_ = other.Intensity();
             user_data_ = other.UserData();
-            point_source_id_ = other.PointSourceId();
+            point_source_id_ = other.PointSourceID();
 
             if (extended_point_type_)
             {
