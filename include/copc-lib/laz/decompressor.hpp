@@ -42,8 +42,6 @@ class Decompressor
     static std::vector<char> DecompressBytes(std::vector<char> compressed_data, las::LasHeader &header, int point_count)
     {
         std::istringstream in_stream(std::string(compressed_data.begin(), compressed_data.end()));
-        bool good = in_stream.good();
-        int offset = in_stream.tellg();
         return DecompressBytes(in_stream, header, point_count);
     }
 };

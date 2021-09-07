@@ -46,7 +46,4 @@ void Node::PackPoints(const std::vector<las::Point> &points, std::ostream &out_s
         point.Pack(out_stream);
 }
 
-// this isn't where this goes
-bool operator==(const Page &lhs, const Page &rhs) { return lhs.IsEqual(rhs) && lhs.loaded == rhs.loaded; }
-
 } // namespace copc

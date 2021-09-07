@@ -15,7 +15,10 @@ WriterInternal::WriterInternal(std::ostream &out_stream,const std::shared_ptr<Co
                                std::shared_ptr<Hierarchy> hierarchy)
     : out_stream_(out_stream), file_(file), hierarchy_(hierarchy)
 {
-    OFFSET_TO_POINT_DATA += file_->GetExtraBytes().size() + las::VlrHeader().Size;
+    // are extra bytes allowed to be an EVLR? If so we should just move it to be an EVLR
+    // but I don't know...
+    size_t eb_offset = file_->GetExtraBytes().size();
+    OFFSET_TO_POINT_DATA += eb_offset + las::VlrHeader().Size;
     // reserve enough space for the header & VLRs in the file
     char out_arr[FIRST_CHUNK_OFFSET()];
     std::memset(out_arr, 0, sizeof(out_arr));
@@ -97,7 +100,7 @@ void WriterInternal::WriteWkt(las::LasHeader &head14)
     wkt_vlr vlr(wkt);
 
     out_stream_.seekp(0, std::ios::end);
-    int64_t offset = static_cast<int64_t>(out_stream_.tellp());
+    auto offset = static_cast<uint64_t>(out_stream_.tellp());
     copc_data_.wkt_vlr_offset = offset + evlr_header::Size;
     copc_data_.wkt_vlr_size = vlr.size();
 
@@ -115,7 +118,7 @@ void WriterInternal::WriteChunkTable()
     out_stream_.seekp(0, std::ios::end);
 
     // take note of where we're writing the chunk table, we need this later
-    int64_t chunk_table_offset = static_cast<int64_t>(out_stream_.tellp());
+    auto chunk_table_offset = static_cast<int64_t>(out_stream_.tellp());
 
     // Fixup the chunk table to be relative offsets rather than absolute ones.
     uint64_t prevOffset = FIRST_CHUNK_OFFSET();
@@ -129,7 +132,9 @@ void WriterInternal::WriteChunkTable()
     // write out the chunk table header (version and total chunks)
     uint32_t version = 0;
     out_stream_.write((const char *)&version, sizeof(uint32_t));
-    uint32_t numChunks = (uint32_t)chunks_.size();
+    if (chunks_.size() > (std::numeric_limits<uint32_t>::max)())
+        throw std::runtime_error("You've got way too many chunks!");
+    auto numChunks = static_cast<uint32_t>(chunks_.size());
     out_stream_.write((const char *)&numChunks, sizeof(uint32_t));
 
     // Write the chunk table
@@ -145,7 +150,10 @@ void WriterInternal::WriteChunkTable()
 Entry WriterInternal::WriteNode(std::vector<char> in, uint64_t point_count, bool compressed)
 {
     Entry entry;
-    entry.offset = out_stream_.tellp();
+    auto startpos = out_stream_.tellp();
+    if (startpos < 0)
+        throw std::runtime_error("Error during writing node!");
+    entry.offset = static_cast<uint64_t>(startpos);
 
     if (compressed)
         out_stream_.write(in.data(), in.size());
@@ -154,17 +162,24 @@ Entry WriterInternal::WriteNode(std::vector<char> in, uint64_t point_count, bool
 
     point_count_14_ += point_count;
 
-    uint64_t endpos = (uint64_t)out_stream_.tellp();
-    chunks_.push_back(lazperf::chunk{point_count, endpos});
+    auto endpos = out_stream_.tellp();
+    if (endpos < 0)
+        throw std::runtime_error("Error during writing node!");
+    chunks_.push_back(lazperf::chunk{point_count, static_cast<uint64_t>(endpos)});
 
-    entry.size = endpos - entry.offset;
+    auto size = endpos - startpos;
+    if (size > (std::numeric_limits<int32_t>::max)())
+        throw std::runtime_error("Chunk is too large!");
+    entry.size = static_cast<int32_t>(size);
+    if (point_count > (std::numeric_limits<int32_t>::max)())
+        throw std::runtime_error("Chunk has too many points!");
     entry.point_count = point_count;
     return entry;
 }
 
 void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
 {
-    uint64_t page_size = page->nodes.size() * 32;
+    auto page_size = page->nodes.size() * 32;
     page_size += page->sub_pages.size() * 32;
 
     evlr_header h{0, "entwine", 1000, page_size, page->key.ToString()};
@@ -173,9 +188,11 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     h.write(out_stream_);
 
     // Set the page's offset/size
-    int64_t offset = static_cast<int64_t>(out_stream_.tellp());
+    auto offset = static_cast<uint64_t>(out_stream_.tellp());
     page->offset = offset;
-    page->size = page_size;
+    if (page_size > (std::numeric_limits<int32_t>::max)())
+        throw std::runtime_error("Page is too large!");
+    page->size = static_cast<int32_t>(page_size);
 
     // Set the copc header info if needed
     if (page->key == VoxelKey::BaseKey())

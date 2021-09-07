@@ -55,7 +55,7 @@ class Writer : public BaseIO
         } creation;
 
         // default to 0
-        uint8_t point_format_id{};
+        int8_t point_format_id{};
 
         las::EbVlr extra_bytes;
 

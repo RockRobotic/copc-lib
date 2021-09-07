@@ -7,7 +7,6 @@
 namespace copc::las
 {
 
-using Vlr = lazperf::vlr;
 using WktVlr = lazperf::wkt_vlr;
 using CopcVlr = lazperf::copc_vlr;
 using EbVlr = lazperf::eb_vlr;
