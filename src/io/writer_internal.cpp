@@ -165,7 +165,8 @@ Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool 
     auto endpos = out_stream_.tellp();
     if (endpos <= 0)
         throw std::runtime_error("Error during writing node!");
-    chunks_.push_back(lazperf::chunk{point_count, static_cast<uint64_t>(endpos)});
+
+    chunks_.push_back(lazperf::chunk{static_cast<uint64_t>(point_count), static_cast<uint64_t>(endpos)});
 
     auto size = endpos - startpos;
     if (size > (std::numeric_limits<int32_t>::max)())

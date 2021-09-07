@@ -32,7 +32,7 @@ class WriterInternal
     }
 
     // Writes a chunk to the laz file
-    Entry WriteNode(std::vector<char> in, uint64_t point_count, bool compressed);
+    Entry WriteNode(std::vector<char> in, int32_t point_count, bool compressed);
 
   private:
     bool open_;
