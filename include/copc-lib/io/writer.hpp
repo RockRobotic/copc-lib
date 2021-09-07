@@ -37,7 +37,10 @@ class Writer : public BaseIO
     // Header config for creating a new file
     struct LasConfig
     {
-        LasConfig()= default;
+        // Not sure we should allow default constructor
+        // LasConfig()= default;
+        LasConfig(int8_t point_format_id, vector3 scale = {0.01, 0.01, 0.01}, vector3 offset = {0, 0, 0})
+            : point_format_id(point_format_id), scale(scale), offset(offset){};
         // Allow for "copying" a lasheader from one file to another
         LasConfig(las::LasHeader config, const las::EbVlr &extra_bytes_);
 

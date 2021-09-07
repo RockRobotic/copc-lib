@@ -13,8 +13,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer::LasConfig cfg;
-        cfg.point_format_id = 3;
+        Writer::LasConfig cfg(3);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -42,8 +41,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer::LasConfig cfg;
-        cfg.point_format_id = 3;
+        Writer::LasConfig cfg(3);
         Writer writer(out_stream, cfg, 256, "test_wkt");
 
         Page root_page = writer.GetRootPage();
@@ -90,8 +88,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer::LasConfig cfg;
-        cfg.point_format_id = 3;
+        Writer::LasConfig cfg(3);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -161,8 +158,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer::LasConfig cfg;
-        cfg.point_format_id = 3;
+        Writer::LasConfig cfg(3);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -190,8 +186,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer::LasConfig cfg;
-        cfg.point_format_id = 3;
+        Writer::LasConfig cfg(3);
         Writer writer(out_stream, cfg, 256, "test_wkt");
 
         Page root_page = writer.GetRootPage();
@@ -241,8 +236,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer::LasConfig cfg;
-        cfg.point_format_id = 3;
+        Writer::LasConfig cfg(3);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
