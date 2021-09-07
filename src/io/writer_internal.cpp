@@ -151,7 +151,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, uint64_t point_count, bool
 {
     Entry entry;
     auto startpos = out_stream_.tellp();
-    if (startpos < 0)
+    if (startpos <= 0)
         throw std::runtime_error("Error during writing node!");
     entry.offset = static_cast<uint64_t>(startpos);
 
@@ -163,7 +163,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, uint64_t point_count, bool
     point_count_14_ += point_count;
 
     auto endpos = out_stream_.tellp();
-    if (endpos < 0)
+    if (endpos <= 0)
         throw std::runtime_error("Error during writing node!");
     chunks_.push_back(lazperf::chunk{point_count, static_cast<uint64_t>(endpos)});
 

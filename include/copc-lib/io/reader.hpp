@@ -27,6 +27,7 @@ class Reader : public BaseIO
     std::vector<las::Point> GetPoints(VoxelKey const &key);
     // Reads node data without decompressing
     std::vector<char> GetPointDataCompressed(Node const &node);
+    std::vector<char> GetPointDataCompressed(VoxelKey const &key);
 
     // Return all children of a page with a given key
     // (or the node itself, if it exists, if there isn't a page with that key)
