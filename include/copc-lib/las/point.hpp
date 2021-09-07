@@ -1,597 +1,548 @@
 #ifndef COPCLIB_LAS_POINT_H_
 #define COPCLIB_LAS_POINT_H_
 
-#include <cstdint>
-#include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include <vector>
-
-#include <copc-lib/las/internal/extra_bytes.hpp>
-#include <copc-lib/las/internal/gps_time.hpp>
-#include <copc-lib/las/internal/nir.hpp>
-#include <copc-lib/las/internal/point_10.hpp>
-#include <copc-lib/las/internal/point_14.hpp>
-#include <copc-lib/las/internal/rgb.hpp>
-#include <copc-lib/las/internal/utils.hpp>
 
 namespace copc::las
 {
-
 class Point
 {
   public:
-    Point(const uint8_t &point_format_id)
-    {
-        point_10_ = nullptr;
-        point_14_ = nullptr;
-        rgb_ = nullptr;
-        gps_time_ = nullptr;
-        nir_ = nullptr;
+    Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0);
+    Point(const Point &other);
 
-        switch (point_format_id)
-        {
-        case 0:
-            point_10_ = new internal::Point10();
-            break;
-        case 1:
-            point_10_ = new internal::Point10();
-            gps_time_ = new internal::GpsTime();
-            break;
-        case 2:
-            point_10_ = new internal::Point10();
-            rgb_ = new internal::Rgb();
-            break;
-        case 3:
-            point_10_ = new internal::Point10();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
-            break;
-        case 4:
-            point_10_ = new internal::Point10();
-            gps_time_ = new internal::GpsTime();
-            break;
-        case 5:
-            point_10_ = new internal::Point10();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
-            break;
-        case 6:
-            point_14_ = new internal::Point14();
-            gps_time_ = new internal::GpsTime();
-            break;
-        case 7:
-            point_14_ = new internal::Point14();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
-            break;
-        case 8:
-            point_14_ = new internal::Point14();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
-            nir_ = new internal::Nir();
-            break;
-        case 9:
-            point_14_ = new internal::Point14();
-            gps_time_ = new internal::GpsTime();
-            break;
-        case 10:
-            point_14_ = new internal::Point14();
-            rgb_ = new internal::Rgb();
-            gps_time_ = new internal::GpsTime();
-            nir_ = new internal::Nir();
-            break;
-        default:
-            throw std::runtime_error("Point format must be 0-10");
-        }
+    static Point Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes);
 
-        point_byte_size_ = BaseByteSize(point_format_id);
-    }
+    void Pack(std::ostream &out_stream) const;
 
-    // Copy constructor
-    Point(Point const &point)
-    {
-        point_byte_size_ = point.point_byte_size_;
+    void ToPointFormat(const int8_t &point_format_id);
 
-        if (point.HasPoint10())
-        {
-            point_10_ = new internal::Point10(point.GetPoint10());
-            point_14_ = nullptr;
-        }
-        else
-        {
-            point_10_ = nullptr;
-            point_14_ = new internal::Point14(point.GetPoint14());
-        }
-        if (point.HasGpsTime())
-            gps_time_ = new internal::GpsTime();
-        else
-            gps_time_ = nullptr;
-        if (point.HasRgb())
-            rgb_ = new internal::Rgb(point.GetRgb());
-        else
-            rgb_ = nullptr;
-        if (point.HasNir())
-            nir_ = new internal::Nir(point.GetNir());
-        else
-            nir_ = nullptr;
-    }
+    std::string ToString() const;
 
-    int32_t X() const { return point_10_ ? point_10_->X() : point_14_->X(); }
-    void X(const int32_t &x)
-    {
-        if (point_10_)
-            point_10_->X(x);
-        else
-            point_14_->X(x);
-    }
+    static uint8_t BaseByteSize(const int8_t &point_format_id);
 
-    int32_t Y() const { return point_10_ ? point_10_->Y() : point_14_->Y(); }
-    void Y(const int32_t &y)
-    {
-        if (point_10_)
-            point_10_->Y(y);
-        else
-            point_14_->Y(y);
-    }
+    // Getters and Setters
+    int32_t X() const { return x_; }
+    void X(const int32_t &x) { x_ = x; }
 
-    int32_t Z() const { return point_10_ ? point_10_->Z() : point_14_->Z(); }
-    void Z(const int32_t &z)
-    {
-        if (point_10_)
-            point_10_->Z(z);
-        else
-            point_14_->Z(z);
-    }
+    int32_t Y() const { return y_; }
+    void Y(const int32_t &y) { y_ = y; }
 
-    uint16_t Intensity() const { return point_10_ ? point_10_->Intensity() : point_14_->Intensity(); }
-    void Intensity(const uint16_t &intensity)
-    {
-        if (point_10_)
-            point_10_->Intensity(intensity);
-        else
-            point_14_->Intensity(intensity);
-    }
+    int32_t Z() const { return z_; }
+    void Z(const int32_t &z) { z_ = z; }
+
+    uint16_t Intensity() const { return intensity_; }
+    void Intensity(const uint16_t &intensity) { intensity_ = intensity; }
 
     uint8_t ReturnsScanDirEofBitFields() const
     {
-        if (point_14_)
-            throw std::runtime_error("Point14 does not have ReturnsScanDirEofBitFields, use ReturnsBitFields instead.");
+        if (extended_point_type_)
+            throw std::runtime_error("Point14 does not have ReturnsScanDirEofBitFields, use ExtendedReturnsBitFields "
+                                     "or ExtendedFlagsBitFields instead.");
         else
-            return point_10_->ReturnsScanDirEofBitFields();
+            return returns_flags_eof_;
     }
     void ReturnsScanDirEofBitFields(const uint8_t &returns_bit_fields)
     {
-        if (point_14_)
-            throw std::runtime_error("Point14 does not have ReturnsScanDirEofBitFields, use ReturnsBitFields instead.");
+        if (extended_point_type_)
+            throw std::runtime_error("Point14 does not have ReturnsScanDirEofBitFields, use ExtendedReturnsBitFields "
+                                     "or ExtendedFlagsBitFields instead.");
         else
-            point_10_->ReturnsScanDirEofBitFields(returns_bit_fields);
+            returns_flags_eof_ = returns_bit_fields;
     }
 
-    uint8_t ReturnsBitFields() const
+    uint8_t ExtendedReturnsBitFields() const
     {
-        if (point_10_)
+        if (!extended_point_type_)
             throw std::runtime_error("Point10 does not have ReturnsBitFields, use ReturnsScanDirEofBitFields instead.");
         else
-            return point_14_->ReturnsBitFields();
+            return extended_returns_;
     }
-    void ReturnsBitFields(const uint8_t &returns_bit_fields)
+    void ExtendedReturnsBitFields(const uint8_t &extended_returns)
     {
-        if (point_10_)
+        if (!extended_point_type_)
             throw std::runtime_error("Point10 does not have ReturnsBitFields, use ReturnsScanDirEofBitFields instead.");
         else
-            point_14_->ReturnsBitFields(returns_bit_fields);
+            extended_returns_ = extended_returns;
     }
 
-    uint8_t ReturnNumber() const { return point_10_ ? point_10_->ReturnNumber() : point_14_->ReturnNumber(); }
+    uint8_t ReturnNumber() const { return extended_point_type_ ? extended_returns_ & 0xF : returns_flags_eof_ & 0x7; }
     void ReturnNumber(const uint8_t &return_number)
     {
-        if (point_10_)
-            point_10_->ReturnNumber(return_number);
+        if (extended_point_type_)
+        {
+            if (return_number > 15)
+                throw std::runtime_error("Return Number must be <= 15");
+            else
+                extended_returns_ = return_number | (extended_returns_ & 0xF0);
+        }
         else
-            point_14_->ReturnNumber(return_number);
+        {
+            if (return_number > 7)
+                throw std::runtime_error("Return Number must be <= 7");
+            else
+                returns_flags_eof_ = (returns_flags_eof_ & 0xF8) | return_number;
+        }
     }
 
-    uint8_t NumberOfReturns() const { return point_10_ ? point_10_->NumberOfReturns() : point_14_->NumberOfReturns(); }
+    uint8_t NumberOfReturns() const
+    {
+        return extended_point_type_ ? extended_returns_ >> 4 : (returns_flags_eof_ >> 3) & 0x7;
+    }
     void NumberOfReturns(const uint8_t &number_of_returns)
     {
-        if (point_10_)
-            point_10_->NumberOfReturns(number_of_returns);
+        if (extended_point_type_)
+        {
+            if (number_of_returns > 15)
+                throw std::runtime_error("Number of Returns must be <= 15");
+            else
+                extended_returns_ = (number_of_returns << 4) | (extended_returns_ & 0xF);
+        }
         else
-            point_14_->NumberOfReturns(number_of_returns);
+        {
+            if (number_of_returns > 7)
+                throw std::runtime_error("Number of Return must be <= 7");
+            else
+                returns_flags_eof_ = (returns_flags_eof_ & 0xC7) | (number_of_returns << 3);
+        }
     }
 
-    uint8_t FlagsBitFields() const
+    uint8_t ExtendedFlagsBitFields() const
     {
-        if (point_10_)
-            throw std::runtime_error("Point10 does not have FlagsBitFields.");
+        if (extended_point_type_)
+            return extended_flags_;
         else
-            return point_14_->FlagsBitFields();
+            throw std::runtime_error("Point10 does not have extended flags, use ReturnsScanDirEofBitFields instead.");
     }
-    void FlagsBitFields(const uint8_t &class_flags)
+    void ExtendedFlagsBitFields(const uint8_t &class_flags)
     {
-        if (point_10_)
-            throw std::runtime_error("Point10 does not have FlagsBitFields.");
+        if (extended_point_type_)
+            extended_flags_ = class_flags;
         else
-            point_14_->FlagsBitFields(class_flags);
+            throw std::runtime_error("Point10 does not have FlagsBitFields, use ReturnsScanDirEofBitFields instead.");
     }
 
-    bool Synthetic() const { return point_10_ ? point_10_->Synthetic() : point_14_->Synthetic(); }
+    bool Synthetic() const { return extended_point_type_ ? extended_flags_ & 0x1 : (classification_ >> 5) & 0x1; }
     void Synthetic(const bool &synthetic)
     {
-        point_10_ ? point_10_->Synthetic(synthetic) : point_14_->Synthetic(synthetic);
+        extended_point_type_ ? extended_flags_ = (extended_flags_ & 0xFE) | synthetic
+                             : classification_ = (classification_ & 0xDF) | (synthetic << 5);
     }
 
-    bool KeyPoint() const { return point_10_ ? point_10_->KeyPoint() : point_14_->KeyPoint(); }
+    bool KeyPoint() const { return extended_point_type_ ? (extended_flags_ >> 1) & 0x1 : (classification_ >> 6) & 0x1; }
     void KeyPoint(const bool &key_point)
     {
-        point_10_ ? point_10_->KeyPoint(key_point) : point_14_->KeyPoint(key_point);
+        extended_point_type_ ? extended_flags_ = (extended_flags_ & 0xFD) | (key_point << 1)
+                             : classification_ = (classification_ & 0xBF) | (key_point << 6);
     }
 
-    bool Withheld() const { return point_10_ ? point_10_->Withheld() : point_14_->Withheld(); }
-    void Withheld(const bool &withheld) { point_10_ ? point_10_->Withheld(withheld) : point_14_->Withheld(withheld); }
+    bool Withheld() const { return extended_point_type_ ? (extended_flags_ >> 2) & 0x1 : (classification_ >> 7) & 0x1; }
+    void Withheld(const bool &withheld)
+    {
+        extended_point_type_ ? extended_flags_ = (extended_flags_ & 0xFB) | (withheld << 2)
+                             : classification_ = (classification_ & 0x7F) | (withheld << 7);
+    }
 
     bool Overlap() const
     {
-        if (point_10_)
-            throw std::runtime_error("Point10 does not have Overlap.");
+        if (extended_point_type_)
+            return (extended_flags_ >> 3) & 0x1;
         else
-            return point_14_->Overlap();
+            throw std::runtime_error("Point10 does not have Overlap.");
     }
     void Overlap(const bool &overlap)
     {
-        if (point_10_)
-            throw std::runtime_error("Point10 does not have Overlap.");
+        if (extended_point_type_)
+            extended_flags_ = (extended_flags_ & 0xF7) | (overlap << 3);
         else
-            point_14_->Overlap(overlap);
+            throw std::runtime_error("Point10 does not have Overlap.");
     }
 
     uint8_t ScannerChannel() const
     {
-        if (point_10_)
-            throw std::runtime_error("Point10 does not have Scanner Channel.");
+        if (extended_point_type_)
+            return (extended_flags_ >> 4) & 0x03;
         else
-            return point_14_->ScannerChannel();
+            throw std::runtime_error("Point10 does not have Scanner Channel.");
     }
     void ScannerChannel(const uint8_t &scanner_channel)
     {
-        if (point_10_)
+        if (extended_point_type_)
+            if (scanner_channel > 3)
+                throw std::runtime_error("Scanner channel must be <= 3");
+            else
+                extended_flags_ = (extended_flags_ & 0xCF) | (scanner_channel << 4);
+        else
             throw std::runtime_error("Point10 does not have Scanner Channel.");
-        else
-            point_14_->ScannerChannel(scanner_channel);
     }
 
-    bool ScanDirFlag() const { return point_10_ ? point_10_->ScanDirectionFlag() : point_14_->ScanDirectionFlag(); }
-    void ScanDirFlag(const bool &scan_dir_flag)
+    bool ScanDirectionFlag() const
     {
-        if (point_10_)
-            point_10_->ScanDirectionFlag(scan_dir_flag);
+        return extended_point_type_ ? (extended_flags_ >> 6) & 0x1 : (returns_flags_eof_ >> 6) & 0x1;
+    }
+    void ScanDirectionFlag(const bool &scan_direction_flag)
+    {
+        if (extended_point_type_)
+            extended_flags_ = (extended_flags_ & 0xBF) | (scan_direction_flag << 6);
         else
-            point_14_->ScanDirectionFlag(scan_dir_flag);
+            returns_flags_eof_ = (returns_flags_eof_ & 0xBF) | (scan_direction_flag << 6);
     }
 
-    bool EdgeOfFlightLineFlag() const
+    bool EdgeOfFlightLineFlag() const { return extended_point_type_ ? extended_flags_ >> 7 : returns_flags_eof_ >> 7; }
+    void EdgeOfFlightLineFlag(const bool &edge_of_flight_line)
     {
-        return point_10_ ? point_10_->EdgeOfFlightLineFlag() : point_14_->EdgeOfFlightLineFlag();
-    }
-    void EdgeOfFlightLineFlag(const bool &eofl_flag)
-    {
-        if (point_10_)
-            point_10_->EdgeOfFlightLineFlag(eofl_flag);
+        if (extended_point_type_)
+            extended_flags_ = (extended_flags_ & 0x7F) | (edge_of_flight_line << 7);
         else
-            point_14_->EdgeOfFlightLineFlag(eofl_flag);
+            returns_flags_eof_ = (returns_flags_eof_ & 0x7F) | (edge_of_flight_line << 7);
     }
 
     uint8_t ClassificationBitFields() const
     {
-        if (point_10_)
-            return point_10_->ClassificationBitFields();
-        else
+        if (extended_point_type_)
             throw std::runtime_error("Point14 does not have Classification BitFields.");
+        else
+            return classification_;
     }
 
     void ClassificationBitFields(const uint8_t &classification_bitfields)
     {
-        if (point_10_)
-            point_10_->ClassificationBitFields(classification_bitfields);
-        else
+        if (extended_point_type_)
             throw std::runtime_error("Point14 does not have Classification Bit Fields.");
+        else
+            classification_ = classification_bitfields;
     }
 
-    uint8_t Classification() const { return point_10_ ? point_10_->Classification() : point_14_->Classification(); }
+    uint8_t Classification() const { return extended_point_type_ ? extended_classification_ : classification_ & 0x1F; }
     void Classification(const uint8_t &classification)
     {
-        if (point_10_)
-            point_10_->Classification(classification);
+        if (extended_point_type_)
+            extended_classification_ = classification;
         else
-            point_14_->Classification(classification);
+        {
+            if (classification > 31)
+                throw std::runtime_error(
+                    "Classification for Point10 must be <= 31. To override this, use ClassificationBitFields.");
+            else
+                classification_ = (classification_ & 0xE0) | classification;
+        }
     }
 
     int8_t ScanAngleRank() const
     {
-        if (point_10_)
-            return point_10_->ScanAngleRank();
-        else
+        if (extended_point_type_)
             throw std::runtime_error("Point14 does not have Scan Angle Rank.");
+        else
+            return scan_angle_rank_;
     }
 
-    void ScanAngleRank(const int8_t &scan_angle)
+    void ScanAngleRank(const int8_t &scan_angle_rank)
     {
-        if (point_10_)
-            point_10_->ScanAngleRank(scan_angle);
-        else
+        if (extended_point_type_)
             throw std::runtime_error("Point14 does not have Scan Angle Rank.");
+        else if (scan_angle_rank < -90 || scan_angle_rank > 90)
+            throw std::runtime_error("Scan Angle Rank must be between -90 and 90");
+        else
+            scan_angle_rank_ = scan_angle_rank;
     }
 
-    int16_t ScanAngle() const
+    int16_t ExtendedScanAngle() const
     {
-        if (point_10_)
+        if (extended_point_type_)
+            return extended_scan_angle_;
+        else
             throw std::runtime_error("Point10 does not have Scan Angle.");
-        else
-            return point_14_->ScanAngle();
     }
 
-    void ScanAngle(const int16_t &scan_angle)
+    void ExtendedScanAngle(const int16_t &scan_angle)
     {
-        if (point_10_)
-            throw std::runtime_error("Point10 does not have Scan Angle.");
-        else
-            point_14_->ScanAngle(scan_angle);
-    }
-
-    uint8_t UserData() const { return point_10_ ? point_10_->UserData() : point_14_->UserData(); }
-    void UserData(const uint8_t &user_data)
-    {
-        if (point_10_)
-            point_10_->UserData(user_data);
-        else
-            point_14_->UserData(user_data);
-    }
-
-    uint16_t PointSourceId() const { return point_10_ ? point_10_->PointSourceId() : point_14_->PointSourceId(); }
-    void PointSourceId(const uint16_t &point_source_id)
-    {
-        if (point_10_)
-            point_10_->PointSourceId(point_source_id);
-        else
-            point_14_->PointSourceId(point_source_id);
-    }
-
-    void SetRgb(const uint16_t &r, const uint16_t &g, const uint16_t &b)
-    {
-        if (rgb_)
-            rgb_->SetRgb(r, g, b);
-        else
-            throw std::runtime_error("This point format does not have RGB.");
-    }
-
-    uint16_t R() const
-    {
-        if (rgb_)
-            return rgb_->R();
-        else
-            throw std::runtime_error("This point format does not have RGB");
-    }
-    void R(const uint16_t &r)
-    {
-        if (rgb_)
-            rgb_->R(r);
-        else
-            throw std::runtime_error("This point format does not have RGB.");
-    }
-
-    uint16_t G() const
-    {
-        if (rgb_)
-            return rgb_->G();
-        else
-            throw std::runtime_error("This point format does not have RGB");
-    }
-    void G(const uint16_t g)
-    {
-        if (rgb_)
-            rgb_->G(g);
-        else
-            throw std::runtime_error("This point format does not have RGB.");
-    }
-
-    uint16_t B() const
-    {
-        if (rgb_)
-            return rgb_->B();
-        else
-            throw std::runtime_error("This point format does not have RGB");
-    }
-    void B(const uint16_t &b)
-    {
-        if (rgb_)
-            rgb_->B(b);
-        else
-            throw std::runtime_error("This point format does not have RGB.");
-    }
-
-    double GetGpsTimeVal() const
-    {
-        if (gps_time_)
-            return gps_time_->Value();
-        else
-            throw std::runtime_error("This point format does not have GPS time.");
-    }
-    void SetGpsTimeVal(const double &gps_time)
-    {
-        if (gps_time_)
-            gps_time_->Value(gps_time);
-        else
-            throw std::runtime_error("This point format does not have GPS time.");
-    }
-
-    uint16_t GetNirVal() const
-    {
-        if (nir_)
-            return nir_->Value();
-        else
-            throw std::runtime_error("This point format does not have NIR.");
-    }
-    void SetNirVal(const uint16_t &nir_val)
-    {
-        if (nir_)
-            nir_->Value(nir_val);
-        else
-            throw std::runtime_error("This point format does not have NIR.");
-    }
-
-    bool HasPoint10() const { return point_10_ != nullptr; }
-
-    internal::Point10 GetPoint10() const
-    {
-        if (point_10_)
-            return *point_10_;
-        else
-            throw std::runtime_error("This point format does not have Point10.");
-    }
-
-    bool HasPoint14() const { return point_14_ != nullptr; }
-
-    internal::Point14 GetPoint14() const
-    {
-        if (point_14_)
-            return *point_14_;
-        else
-            throw std::runtime_error("This point format does not have Point14.");
-    }
-
-    bool HasGpsTime() const { return gps_time_ != nullptr; }
-
-    internal::GpsTime GetGpsTime() const
-    {
-        if (gps_time_)
-            return *gps_time_;
-        else
-            throw std::runtime_error("This point format does not have GPS Time.");
-    }
-
-    bool HasRgb() const { return rgb_ != nullptr; }
-
-    internal::Rgb GetRgb() const
-    {
-        if (rgb_)
-            return *rgb_;
-        else
-            throw std::runtime_error("This point format does not have RGB.");
-    }
-
-    bool HasNir() const { return nir_ != nullptr; }
-
-    internal::Nir GetNir() const
-    {
-        if (nir_)
-            return *nir_;
-        else
-            throw std::runtime_error("This point format does not have NIR.");
-    }
-
-    void Unpack(std::istream &in_stream, const uint16_t &point_record_length)
-    {
-        if (point_10_)
-            point_10_->Unpack(in_stream);
-        else
-            point_14_->Unpack(in_stream);
-        if (gps_time_)
-            gps_time_->Unpack(in_stream);
-        if (rgb_)
-            rgb_->Unpack(in_stream);
-        if (nir_)
-            nir_->Unpack(in_stream);
-
-        for (uint16_t i = 0; i < (point_record_length - point_byte_size_); i++)
+        if (extended_point_type_)
         {
-            extra_bytes_.emplace_back(in_stream);
+            if (scan_angle < -30000 || scan_angle > 30000)
+                throw std::runtime_error("Scan Angle must be between -30000 and 30000");
+            else
+                extended_scan_angle_ = scan_angle;
+        }
+        else
+            throw std::runtime_error("Point10 does not have Scan Angle.");
+    }
+
+    float ScanAngle() const
+    {
+        return extended_point_type_ ? 0.006f * float(extended_scan_angle_) : float(scan_angle_rank_);
+    }
+
+    void ScanAngle(const float &scan_angle)
+    {
+        if (extended_point_type_)
+            extended_scan_angle_ = static_cast<int16_t>(scan_angle / 0.006f);
+        else
+        {
+            if (scan_angle < -90 || scan_angle > 90)
+                throw std::runtime_error("Scan Angle Rank must be between -90 and 90");
+            else
+                scan_angle_rank_ = static_cast<int8_t>(scan_angle);
         }
     }
 
-    void Pack(std::ostream &out_stream) const
+    uint8_t UserData() const { return user_data_; }
+    void UserData(const uint8_t &user_data) { user_data_ = user_data; }
+
+    uint16_t PointSourceID() const { return point_source_id_; }
+    void PointSourceID(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
+
+    void RGB(const uint16_t &red, const uint16_t &green, const uint16_t &blue)
     {
-        if (point_10_)
-            point_10_->Pack(out_stream);
+        if (has_rgb_)
+        {
+            rgb_[0] = red;
+            rgb_[1] = green;
+            rgb_[2] = blue;
+        }
         else
-            point_14_->Pack(out_stream);
-        if (gps_time_)
-            gps_time_->Pack(out_stream);
-        if (rgb_)
-            rgb_->Pack(out_stream);
-        if (nir_)
-            nir_->Pack(out_stream);
-        for (auto eb : extra_bytes_)
-            eb.Pack(out_stream);
+            throw std::runtime_error("This point format does not have RGB.");
     }
 
-    static uint8_t BaseByteSize(const uint8_t &point_format_id)
+    uint16_t Red() const
+    {
+        if (has_rgb_)
+            return rgb_[0];
+        else
+            throw std::runtime_error("This point format does not have RGB");
+    }
+    void Red(const uint16_t &red)
+    {
+        if (has_rgb_)
+            rgb_[0] = red;
+        else
+            throw std::runtime_error("This point format does not have RGB.");
+    }
+
+    uint16_t Green() const
+    {
+        if (has_rgb_)
+            return rgb_[1];
+        else
+            throw std::runtime_error("This point format does not have RGB");
+    }
+    void Green(const uint16_t green)
+    {
+        if (has_rgb_)
+            rgb_[1] = green;
+        else
+            throw std::runtime_error("This point format does not have RGB.");
+    }
+
+    uint16_t Blue() const
+    {
+        if (has_rgb_)
+            return rgb_[2];
+        else
+            throw std::runtime_error("This point format does not have RGB");
+    }
+    void Blue(const uint16_t &blue)
+    {
+        if (has_rgb_)
+            rgb_[2] = blue;
+        else
+            throw std::runtime_error("This point format does not have RGB.");
+    }
+
+    double GPSTime() const
+    {
+        if (has_gps_time_)
+            return gps_time_;
+        else
+            throw std::runtime_error("This point format does not have GPS time.");
+    }
+    void GPSTime(const double &gps_time)
+    {
+        if (has_gps_time_)
+            gps_time_ = gps_time;
+        else
+            throw std::runtime_error("This point format does not have GPS time.");
+    }
+
+    uint16_t NIR() const
+    {
+        if (has_nir_)
+            return nir_;
+        else
+            throw std::runtime_error("This point format does not have NIR.");
+    }
+    void NIR(const uint16_t &nir)
+    {
+        if (has_nir_)
+            nir_ = nir;
+        else
+            throw std::runtime_error("This point format does not have NIR.");
+    }
+
+    bool HasExtendedPoint() const { return extended_point_type_; }
+
+    bool HasGPSTime() const { return has_gps_time_; }
+
+    bool HasRGB() const { return has_rgb_; }
+
+    bool HasNIR() const { return has_nir_; }
+
+    uint32_t PointRecordLength() const { return point_record_length_; }
+
+    int8_t PointFormatID() const { return point_format_id_; }
+
+    uint16_t NumExtraBytes() const { return point_record_length_ - BaseByteSize(point_format_id_); }
+
+    std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
+    void ExtraBytes(std::vector<uint8_t> in)
+    {
+        if (in.size() != NumExtraBytes())
+            throw std::runtime_error("Number of input bytes " + std::to_string(in.size()) +
+                                     " does not match number of point bytes " + std::to_string(NumExtraBytes()));
+        extra_bytes_ = in;
+    }
+
+    static bool FormatHasGPSTime(const uint8_t &point_format_id)
     {
         switch (point_format_id)
         {
         case 0:
-            return 20;
+            return false;
         case 1:
-            return 28;
+            return true;
         case 2:
-            return 26;
+            return false;
         case 3:
-            return 34;
+            return true;
         case 4:
-            return 28;
         case 5:
-            return 34;
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
         case 6:
-            return 30;
         case 7:
-            return 36;
         case 8:
-            return 38;
+            return true;
         case 9:
-            return 30;
         case 10:
-            return 38;
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
+
         default:
-            return 0;
+            throw std::runtime_error("Point format must be 0-10");
         }
     }
 
-    std::string ToString() const
+    static bool FormatHasRGB(const uint8_t &point_format_id)
     {
-        std::stringstream ss;
-        if (point_10_)
-            ss << point_10_->ToString();
-        else
-            ss << point_14_->ToString();
-        if (gps_time_)
-            ss << std::endl << gps_time_->ToString();
-        if (rgb_)
-            ss << std::endl << rgb_->ToString();
-        if (nir_)
-            ss << std::endl << nir_->ToString();
-        if (!extra_bytes_.empty())
-            ss << std::endl << "Extra Bytes: " << extra_bytes_.size();
-
-        return ss.str();
+        switch (point_format_id)
+        {
+        case 0:
+        case 1:
+            return false;
+        case 2:
+        case 3:
+            return true;
+        case 4:
+        case 5:
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
+        case 6:
+            return false;
+        case 7:
+        case 8:
+            return true;
+        case 9:
+        case 10:
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
+        default:
+            throw std::runtime_error("Point format must be 0-10");
+        }
     }
 
-    ~Point()
+    static bool FormatHasNIR(const uint8_t &point_format_id)
     {
-        delete point_10_;
-        delete point_14_;
-        delete gps_time_;
-        delete rgb_;
-        delete nir_;
+        switch (point_format_id)
+        {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            return false;
+        case 4:
+        case 5:
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
+        case 6:
+        case 7:
+            return false;
+        case 8:
+            return true;
+        case 9:
+        case 10:
+            throw std::runtime_error("Point formats with Wave Packets not yet supported");
+        default:
+            throw std::runtime_error("Point format must be 0-10");
+        }
     }
+
+    bool operator==(const Point &other) const
+    {
+        if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
+            return false;
+        if (x_ != other.X() || y_ != other.Y() || z_ != other.Z() || intensity_ != other.Intensity())
+            return false;
+        if (ReturnNumber() != other.ReturnNumber() || NumberOfReturns() != other.NumberOfReturns())
+            return false;
+        if (ScanDirectionFlag() != other.ScanDirectionFlag() || EdgeOfFlightLineFlag() != other.EdgeOfFlightLineFlag())
+            return false;
+        if (Classification() != other.Classification())
+            return false;
+        if (Synthetic() != other.Synthetic() || KeyPoint() != other.KeyPoint() || Withheld() != other.Withheld())
+            return false;
+        if (ScanAngle() != other.ScanAngle() || user_data_ != other.UserData() ||
+            point_source_id_ != other.PointSourceID())
+            return false;
+        if (ExtraBytes() != other.ExtraBytes())
+            return false;
+        if (extended_point_type_ && (Overlap() != other.Overlap() || ScannerChannel() != other.ScannerChannel()))
+            return false;
+        if (has_gps_time_ && (gps_time_ != other.GPSTime()))
+            return false;
+        if (has_rgb_ && (rgb_[0] != other.Red() || rgb_[1] != other.Green() || rgb_[2] != other.Blue()))
+            return false;
+        if (has_nir_ && (nir_ != other.NIR()))
+            return false;
+        return true;
+    };
+
+    bool operator!=(const Point &other) const { return !(*this == other); };
 
   protected:
-    internal::Point10 *point_10_;
-    internal::Point14 *point_14_;
-    internal::GpsTime *gps_time_;
-    internal::Rgb *rgb_;
-    internal::Nir *nir_;
-    std::vector<internal::ExtraByte> extra_bytes_;
-    uint16_t point_byte_size_;
+    int32_t x_{};
+    int32_t y_{};
+    int32_t z_{};
+    uint16_t intensity_{};
+    uint8_t returns_flags_eof_{};
+    uint8_t classification_{};
+    int8_t scan_angle_rank_{};
+    uint8_t user_data_{};
+    uint16_t point_source_id_{};
+
+    // LAS 1.4 only
+    bool extended_point_type_{false};
+    uint8_t extended_returns_{};
+    uint8_t extended_flags_{};
+    uint8_t extended_classification_{};
+    int16_t extended_scan_angle_{};
+
+    double gps_time_{};
+    uint16_t rgb_[3]{};
+    uint16_t nir_{};
+
+    bool has_gps_time_{false};
+    bool has_rgb_{false};
+    bool has_nir_{false};
+
+    std::vector<uint8_t> extra_bytes_;
+
+    uint32_t point_record_length_;
+    int8_t point_format_id_;
 };
 
 } // namespace copc::las
