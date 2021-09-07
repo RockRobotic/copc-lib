@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional> // for hash
 #include <sstream>
+#include <vector>
 
 namespace copc
 {
