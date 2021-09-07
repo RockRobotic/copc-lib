@@ -37,7 +37,7 @@ class VoxelKey
     std::vector<VoxelKey> GetParents(bool include_current = false) const;
 
     // Tests whether the current key is a child of a given key
-    bool ChildOf(VoxelKey parent_key);
+    bool ChildOf(VoxelKey parent_key) const;
 
     int32_t d;
     int32_t x;

@@ -10,9 +10,9 @@ namespace copc
 Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span,const  std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
-    this->file = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
-    this->hierarchy = std::make_shared<Internal::Hierarchy>();
-    this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file, this->hierarchy);
+    this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
+    this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
+    this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file_, this->hierarchy_);
 }
 
 void Writer::Close() { this->writer_->Close(); }
@@ -22,9 +22,9 @@ Page Writer::AddSubPage(Page &parent, VoxelKey key)
 {
     if (!key.IsValid())
         throw std::runtime_error("Invalid key!");
-    if (hierarchy->PageExists(key))
+    if (hierarchy_->PageExists(key))
         throw std::runtime_error("Page already exists!");
-    if (!hierarchy->PageExists(parent.key))
+    if (!hierarchy_->PageExists(parent.key))
         throw std::runtime_error("Parent page does not exist!");
     if (!key.ChildOf(parent.key))
         throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
@@ -33,9 +33,9 @@ Page Writer::AddSubPage(Page &parent, VoxelKey key)
     auto child_page = std::make_shared<Internal::PageInternal>(key);
     child_page->loaded = true;
 
-    auto parent_page = hierarchy->seen_pages_[parent.key];
+    auto parent_page = hierarchy_->seen_pages_[parent.key];
     parent_page->sub_pages.push_back(child_page);
-    hierarchy->seen_pages_[key] = child_page;
+    hierarchy_->seen_pages_[key] = child_page;
 
     return *child_page;
 }
@@ -54,8 +54,8 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     e.key = key;
 
     auto node = std::make_shared<Node>(e);
-    hierarchy->loaded_nodes_[key] = node;
-    hierarchy->seen_pages_[page.key]->nodes.push_back(node);
+    hierarchy_->loaded_nodes_[key] = node;
+    hierarchy_->seen_pages_[page.key]->nodes.push_back(node);
     return *node;
 }
 
@@ -67,7 +67,7 @@ Node Writer::AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &po
 
 Node Writer::AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed)
 {
-    int point_size = file->GetLasHeader().point_record_length;
+    int point_size = file_->GetLasHeader().point_record_length;
     if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
         throw std::runtime_error("Invalid point data array!");
 

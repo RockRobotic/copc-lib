@@ -18,7 +18,7 @@ class LasFile
     LasHeader GetLasHeader() const { return header_; }
 
     // Extra bytes
-    las::EbVlr GetExtraBytes() const { return eb; }
+    las::EbVlr GetExtraBytes() const { return eb_; }
 
   protected:
     LasHeader header_;

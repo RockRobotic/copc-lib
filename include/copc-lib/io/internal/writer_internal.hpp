@@ -19,14 +19,15 @@ class WriterInternal
     // 8 bytes for the chunk table offset
     uint64_t FIRST_CHUNK_OFFSET() const { return OFFSET_TO_POINT_DATA + sizeof(uint64_t); };
 
-    WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcFile> file, std::shared_ptr<Hierarchy> hierarchy);
+    WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcFile> &file,
+                   std::shared_ptr<Hierarchy> hierarchy);
 
     // Writes the header and COPC vlrs
     void Close();
     // Call close on destructor if needed
     ~WriterInternal()
     {
-        if (open)
+        if (this->open_)
             Close();
     }
 
@@ -47,10 +48,10 @@ class WriterInternal
     void WriteHeader(las::LasHeader &head14);
     void WriteChunkTable();
     void WriteWkt(las::LasHeader &head14);
-    void WritePage(std::shared_ptr<PageInternal> page);
+    void WritePage(const std::shared_ptr<PageInternal> &page);
 
     // Iterates through a given page in a postorder traversal and writes the pages
-    void WritePageTree(std::shared_ptr<PageInternal> current);
+    void WritePageTree(const std::shared_ptr<PageInternal> &current);
 };
 } // namespace copc::Internal
 #endif // COPCLIB_IO_WRITER_INTERNAL_H_

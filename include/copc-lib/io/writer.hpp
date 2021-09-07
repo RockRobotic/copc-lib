@@ -39,7 +39,7 @@ class Writer : public BaseIO
     {
         LasConfig()= default;
         // Allow for "copying" a lasheader from one file to another
-        LasConfig(las::LasHeader h, las::EbVlr extra_bytes);
+        LasConfig(las::LasHeader config, const las::EbVlr &extra_bytes_);
 
         uint16_t file_source_id{};
         uint16_t global_encoding{};
@@ -70,9 +70,9 @@ class Writer : public BaseIO
         uint64_t points_by_return_14[15]{};
     };
 
-    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, std::string wkt = "");
+    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "");
 
-    Page GetRootPage() { return *hierarchy->seen_pages_[VoxelKey::BaseKey()]; }
+    Page GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
 
     // Writes the file out
     void Close();
@@ -97,7 +97,7 @@ class Writer : public BaseIO
     // Converts the lasconfig object into an actual LasHeader
     static las::LasHeader HeaderFromConfig(LasConfig const &config);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
-    static int NumBytesFromExtraBytes(std::vector<las::EbVlr::ebfield> items);
+    static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
 } // namespace copc
 #endif // COPCLIB_IO_WRITER_H_
