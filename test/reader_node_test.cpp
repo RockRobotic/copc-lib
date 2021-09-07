@@ -1,6 +1,5 @@
 #include <catch2/catch.hpp>
 #include <cfloat>
-#include <copc-lib/copc/file.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <cstring>
 #include <fstream>

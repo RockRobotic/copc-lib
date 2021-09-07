@@ -147,7 +147,7 @@ void WriterInternal::WriteChunkTable()
 }
 
 // Writes a node and returns the node's offset and size in the file
-Entry WriterInternal::WriteNode(std::vector<char> in, uint64_t point_count, bool compressed)
+Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool compressed)
 {
     Entry entry;
     auto startpos = out_stream_.tellp();
