@@ -40,12 +40,13 @@ class Compressor
         return point_count;
     }
 
-    static uint32_t CompressBytes(std::ostream& out_stream, las::LasHeader const& header, std::vector<char>& in) {
+    static uint32_t CompressBytes(std::ostream &out_stream, las::LasHeader const &header, std::vector<char> &in)
+    {
         return CompressBytes(out_stream, header.point_format_id, header.ebCount(), header.point_record_length, in);
-        }
+    }
 
     static std::vector<char> CompressBytes(std::vector<char> &in, uint16_t point_format_id, uint16_t eb_count,
-                                               uint16_t point_record_length)
+                                           uint16_t point_record_length)
     {
         std::ostringstream out_stream;
         CompressBytes(out_stream, point_format_id, eb_count, point_record_length, in);

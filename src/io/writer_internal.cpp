@@ -11,7 +11,7 @@ using namespace lazperf;
 namespace copc::Internal
 {
 
-WriterInternal::WriterInternal(std::ostream &out_stream,const std::shared_ptr<CopcFile> &file,
+WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcFile> &file,
                                std::shared_ptr<Hierarchy> hierarchy)
     : out_stream_(out_stream), file_(file), hierarchy_(hierarchy)
 {

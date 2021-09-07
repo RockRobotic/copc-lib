@@ -23,8 +23,7 @@ class Node : public Entry
     static std::vector<las::Point> UnpackPoints(const std::vector<char> &in, int point_format_id,
                                                 int point_record_length);
 
-    bool operator==(const Node &rhs) { return IsEqual(rhs);
-    }
+    bool operator==(const Node &rhs) { return IsEqual(rhs); }
 };
 
 } // namespace copc
