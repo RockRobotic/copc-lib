@@ -18,9 +18,13 @@ class Reader : public BaseIO
     Reader(std::istream &in_stream);
 
     // Reads the node's data into an uncompressed byte array
+    // Node needs to be valid for this function, it will error
     std::vector<char> GetPointData(Node const &node);
+    // VoxelKey can be invalid, function will return empty arr
+    std::vector<char> GetPointData(VoxelKey const &key);
     // Reads the node's data into Point objects
     std::vector<las::Point> GetPoints(Node const &node);
+    std::vector<las::Point> GetPoints(VoxelKey const &key);
     // Reads node data without decompressing
     std::vector<char> GetPointDataCompressed(Node const &node);
 

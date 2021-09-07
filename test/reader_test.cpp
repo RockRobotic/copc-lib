@@ -126,3 +126,30 @@ TEST_CASE("GetAllChildren Test", "[Reader] ")
         }
     }
 }
+
+TEST_CASE("Point Error Handling Test", "[Reader] ")
+{
+    GIVEN("A valid input stream")
+    {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        Reader reader(in_stream);
+
+        Node invalid_node;
+        REQUIRE_THROWS(reader.GetPointData(invalid_node));
+        Node valid_node = reader.FindNode(VoxelKey(5, 9, 7, 0));
+        REQUIRE_NOTHROW(reader.GetPointData(valid_node));
+
+        REQUIRE(reader.GetPointData(invalid_node.key).empty());
+        REQUIRE(!reader.GetPointData(valid_node.key).empty());
+
+        REQUIRE_THROWS(reader.GetPoints(invalid_node));
+        REQUIRE_NOTHROW(reader.GetPoints(valid_node));
+
+        REQUIRE(reader.GetPoints(invalid_node.key).empty());
+        REQUIRE(!reader.GetPoints(valid_node.key).empty());
+
+        REQUIRE_THROWS(reader.GetPointDataCompressed(invalid_node));
+        REQUIRE_NOTHROW(reader.GetPointDataCompressed(valid_node));
+    }
+}

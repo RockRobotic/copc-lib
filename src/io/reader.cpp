@@ -97,6 +97,15 @@ std::vector<las::Point> Reader::GetPoints(Node const &node)
                               file_->GetLasHeader().point_record_length);
 }
 
+std::vector<las::Point> Reader::GetPoints(VoxelKey const &key)
+{
+    std::vector<char> point_data = GetPointData(key);
+    if (point_data.empty())
+        return {};
+    return Node::UnpackPoints(point_data, file_->GetLasHeader().point_format_id,
+                              file_->GetLasHeader().point_record_length);
+}
+
 std::vector<char> Reader::GetPointData(Node const &node)
 {
     if (!node.IsValid())
@@ -107,6 +116,19 @@ std::vector<char> Reader::GetPointData(Node const &node)
     auto las_header = file_->GetLasHeader();
     std::vector<char> point_data = laz::Decompressor::DecompressBytes(in_stream_, las_header, node.point_count);
     return point_data;
+}
+
+std::vector<char> Reader::GetPointData(VoxelKey const &key)
+{
+    std::vector<char> out;
+    if (!key.IsValid())
+        return out;
+
+    auto node = FindNode(key);
+    if (!node.IsValid())
+        return out;
+
+    return GetPointData(node);
 }
 
 std::vector<char> Reader::GetPointDataCompressed(Node const &node)
