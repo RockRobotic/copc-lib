@@ -1,31 +1,43 @@
 #include <copc-lib/hierarchy/node.hpp>
 
+#include <iterator>
+#include <sstream>
 #include <string>
 
 #include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/laz/decompressor.hpp>
 
-namespace copc::hierarchy
+namespace copc
 {
 
-std::vector<las::Point> Node::GetPoints()
+std::vector<char> Node::PackPoints(const std::vector<las::Point> &points)
 {
-    // Get data from node chunk in laz file
-    reader_->in_stream.seekg(offset_);
-    std::vector<char> point_data = laz::Decompressor::DecompressBytes(reader_, point_count);
+    std::stringstream out;
+    PackPoints(points, out);
+    auto ostr = out.str();
+    return std::vector<char>(ostr.begin(), ostr.end());
+}
+
+std::vector<las::Point> Node::UnpackPoints(const std::vector<char> &point_data, int8_t point_format_id,
+                                           int point_record_length)
+{
+    if (point_data.size() % point_record_length != 0)
+        throw std::runtime_error("Invalid input point array!");
+
+    uint64_t point_count = point_data.size() / point_record_length;
 
     // Make a stream out of the vector of char
     auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
 
     // Go through each Point to unpack the data from the stream
-    std::vector<las::Point> points(point_count, reader_->file->GetLasHeader().point_format_id);
+    std::vector<las::Point> points(point_count, point_format_id);
 
     // Unpack points
     for (auto &point : points)
     {
-        point = las::Point::Unpack(ss, reader_->file->GetLasHeader().point_format_id,
-                                   reader_->file->GetLasHeader().ebCount());
+        point = las::Point::Unpack(ss, point_format_id,
+                                   las::Point::ComputeNumExtraBytes(point_format_id, point_record_length));
     }
 
     return points;
@@ -37,13 +49,4 @@ void Node::PackPoints(const std::vector<las::Point> &points, std::ostream &out_s
         point.Pack(out_stream);
 }
 
-std::vector<char> Node::GetPointData()
-{
-    if (this == nullptr || !this->IsValid())
-        return {};
-
-    reader_->in_stream.seekg(offset_);
-    return laz::Decompressor::DecompressBytes(reader_, point_count);
-}
-
-} // namespace copc::hierarchy
+} // namespace copc

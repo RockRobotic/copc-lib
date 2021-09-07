@@ -1,39 +1,79 @@
 #ifndef COPCLIB_HIERARCHY_ENTRY_H_
 #define COPCLIB_HIERARCHY_ENTRY_H_
 
+#include <ostream>
 #include <vector>
 
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/io/reader.hpp>
 #include <copc-lib/las/point.hpp>
 
-namespace copc::hierarchy
+namespace copc
 {
-
+class Entry;
+// Entry class is a base class for Node and Page objects
 class Entry
 {
   public:
-    Entry() : offset_(-1), size_(-1), key(VoxelKey()), point_count(-1){};
-    Entry(VoxelKey key, int64_t offset, int32_t size, int32_t point_count)
-        : offset_(offset), size_(size), key(key), point_count(point_count){};
+    static const int ENTRY_SIZE = 32;
 
-    bool IsValid() const { return offset_ >= 0 && size_ >= 0 && key.IsValid(); }
+    Entry() : offset(-1), size(-1), key(VoxelKey::InvalidKey()), point_count(-1){};
+    Entry(VoxelKey key, int64_t offset, int32_t size, int32_t point_count)
+        : offset(offset), size(size), key(key), point_count(point_count){};
+
+    virtual bool IsValid() const { return offset >= 0 && size >= 0 && key.IsValid(); }
+    virtual bool IsPage() const { return IsValid() && point_count == -1; }
 
     std::string ToString() const
     {
         std::stringstream ss;
-        ss << "Entry " << key.ToString() << ": off=" << offset_ << ", size=" << size_ << ", count=" << point_count;
+        ss << "Entry " << key.ToString() << ": off=" << offset << ", size=" << size << ", count=" << point_count
+           << ", is_valid=" << IsValid();
         return ss.str();
+    }
+
+    void Pack(std::ostream &out_stream)
+    {
+        out_stream.write(reinterpret_cast<char *>(&key.d), sizeof(key.d));
+        out_stream.write(reinterpret_cast<char *>(&key.x), sizeof(key.x));
+        out_stream.write(reinterpret_cast<char *>(&key.y), sizeof(key.y));
+        out_stream.write(reinterpret_cast<char *>(&key.z), sizeof(key.z));
+
+        out_stream.write(reinterpret_cast<char *>(&offset), sizeof(offset));
+        out_stream.write(reinterpret_cast<char *>(&size), sizeof(size));
+        out_stream.write(reinterpret_cast<char *>(&point_count), sizeof(point_count));
+    }
+
+    static Entry Unpack(std::istream &in_stream)
+    {
+        VoxelKey key;
+        in_stream.read(reinterpret_cast<char *>(&key.d), sizeof(key.d));
+        in_stream.read(reinterpret_cast<char *>(&key.x), sizeof(key.x));
+        in_stream.read(reinterpret_cast<char *>(&key.y), sizeof(key.y));
+        in_stream.read(reinterpret_cast<char *>(&key.z), sizeof(key.z));
+
+        uint64_t offset;
+        in_stream.read(reinterpret_cast<char *>(&offset), sizeof(offset));
+        int32_t size;
+        in_stream.read(reinterpret_cast<char *>(&size), sizeof(size));
+        int32_t point_count;
+        in_stream.read(reinterpret_cast<char *>(&point_count), sizeof(point_count));
+
+        return Entry(key, offset, size, point_count);
     }
 
     int32_t point_count;
     VoxelKey key;
+    uint64_t offset;
+    int32_t size;
 
   protected:
-    int64_t offset_;
-    int32_t size_;
+    // Helper function for the equality comparisons of children classes
+    bool IsEqual(const Entry &rhs) const
+    {
+        return offset == rhs.offset && size == rhs.size && point_count == rhs.point_count && key == rhs.key;
+    }
 };
 
-} // namespace copc::hierarchy
+} // namespace copc
 
 #endif // COPCLIB_HIERARCHY_ENTRY_H_
