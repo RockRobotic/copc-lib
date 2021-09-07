@@ -18,8 +18,8 @@ class Page : public Entry
 
     // If a page is "loaded" it doesn't matter the offset/size
     // (since the writer will default the offset/size to -1)
-    bool IsValid() const { return (loaded || (offset >= 0 && size >= 0)) && key.IsValid(); }
-    bool IsPage() const { return IsValid() && point_count == -1; }
+    bool IsValid() const override { return (loaded || (offset >= 0 && size >= 0)) && key.IsValid(); }
+    bool IsPage() const override { return IsValid() && point_count == -1; }
 
     bool loaded = false;
 

@@ -20,8 +20,8 @@ class Entry
     Entry(VoxelKey key, int64_t offset, int32_t size, int32_t point_count)
         : offset(offset), size(size), key(key), point_count(point_count){};
 
-    bool IsValid() const { return offset >= 0 && size >= 0 && key.IsValid(); }
-    bool IsPage() const { return IsValid() && point_count == -1; }
+    virtual bool IsValid() const { return offset >= 0 && size >= 0 && key.IsValid(); }
+    virtual bool IsPage() const { return IsValid() && point_count == -1; }
 
     std::string ToString() const
     {
