@@ -10,10 +10,10 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 copc-lib depends on laz-perf 2.1.0 or greater. See the [laz-perf repo](https://github.com/hobu/laz-perf) for installation instructions.
 
 ### Build & Install
-With the dependencies installed, we can now build copc-lib:
+With the dependencies installed, we can now build copc-lib. Note that you need to clone this repo with the `--recurse-submodules` flag, so that all dependencies get included.
 
 ```bash
-git clone https://github.com/RockRobotic/copc-lib.git
+git clone --recurse-submodules https://github.com/RockRobotic/copc-lib.git
 cd copc-lib
 mkdir build && cd build
 cmake ..
