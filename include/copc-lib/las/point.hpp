@@ -513,6 +513,11 @@ class Point
 
     bool operator!=(const Point &other) const { return !(*this == other); };
 
+    static int ComputeNumExtraBytes(int point_format_id, int point_format_len) 
+    {
+        return point_format_len - BaseByteSize(point_format_id);
+    }
+
   protected:
     int32_t x_{};
     int32_t y_{};

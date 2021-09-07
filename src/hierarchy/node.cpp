@@ -36,7 +36,7 @@ std::vector<las::Point> Node::UnpackPoints(const std::vector<char> &point_data, 
     // Unpack points
     for (auto &point : points)
     {
-        point = las::Point::Unpack(ss, point_format_id, point_record_length);
+        point = las::Point::Unpack(ss, point_format_id, las::Point::ComputeNumExtraBytes(point_format_id, point_record_length));
     }
 
     return points;
