@@ -19,12 +19,14 @@ std::vector<las::Point> Node::GetPoints()
     auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
 
     // Go through each Point to unpack the data from the stream
-    std::vector<las::Point> points(point_count);
+    std::vector<las::Point> points(point_count, reader_->file->GetLasHeader().point_format_id);
 
     // Unpack points
     for (auto &point : points)
-        point.Unpack(ss, reader_->file->GetLasHeader().point_format_id,
-                     reader_->file->GetLasHeader().point_record_length);
+    {
+        point = las::Point::Unpack(ss, reader_->file->GetLasHeader().point_format_id,
+                                   reader_->file->GetLasHeader().ebCount());
+    }
 
     return points;
 }

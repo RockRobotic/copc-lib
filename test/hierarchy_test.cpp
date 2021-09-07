@@ -138,7 +138,7 @@ TEST_CASE("GetPoints Test", "[Hierarchy] ")
         REQUIRE(points[0].Red() == 46);
         REQUIRE(points[0].Green() == 60);
         REQUIRE(points[0].Blue() == 92);
-        REQUIRE(points[0].PointRecordID() == 3);
+        REQUIRE(points[0].PointFormatID() == 3);
         REQUIRE(points[0].PointRecordLength() == 36);
         REQUIRE(points[0].ExtraBytes().size() == 2);
         REQUIRE_THROWS(points[0].NIR());

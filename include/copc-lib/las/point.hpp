@@ -6,13 +6,13 @@
 
 namespace copc::las
 {
-
 class Point
 {
   public:
-    Point() = default;
+    Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0);
+    Point(const Point &other);
 
-    void Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &point_record_length);
+    static Point Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes);
 
     void Pack(std::ostream &out_stream) const;
 
@@ -389,9 +389,18 @@ class Point
 
     uint32_t PointRecordLength() const { return point_record_length_; }
 
-    int8_t PointRecordID() const { return point_format_id_; }
+    int8_t PointFormatID() const { return point_format_id_; }
+
+    uint16_t NumExtraBytes() const { return point_record_length_ - BaseByteSize(point_format_id_); }
 
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
+    void ExtraBytes(std::vector<uint8_t> in)
+    {
+        if (in.size() != NumExtraBytes())
+            throw std::runtime_error("Number of input bytes " + std::to_string(in.size()) +
+                                     " does not match number of point bytes " + std::to_string(NumExtraBytes()));
+        extra_bytes_ = in;
+    }
 
     static bool FormatHasGPSTime(const uint8_t &point_format_id)
     {
@@ -474,8 +483,7 @@ class Point
 
     bool operator==(const Point &other) const
     {
-        if (extended_point_type_ != HasExtendedPoint() || has_gps_time_ != other.HasGPSTime() ||
-            has_rgb_ != other.HasRGB() || has_nir_ != other.HasNIR())
+        if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
             return false;
         if (x_ != other.X() || y_ != other.Y() || z_ != other.Z() || intensity_ != other.Intensity())
             return false;
@@ -505,78 +513,31 @@ class Point
 
     bool operator!=(const Point &other) const { return !(*this == other); };
 
-    Point &operator=(const Point &other)
-    {
-
-        if (&other != this)
-        {
-            extended_point_type_ = other.HasExtendedPoint();
-            has_gps_time_ = other.HasGPSTime();
-            has_rgb_ = other.HasRGB();
-            has_nir_ = other.HasNIR();
-
-            x_ = other.X();
-            y_ = other.Y();
-            z_ = other.Z();
-            intensity_ = other.Intensity();
-            user_data_ = other.UserData();
-            point_source_id_ = other.PointSourceID();
-
-            if (extended_point_type_)
-            {
-                extended_returns_ = other.ExtendedReturnsBitFields();
-                extended_flags_ = other.ExtendedFlagsBitFields();
-                extended_classification_ = other.Classification();
-                extended_scan_angle_ = other.ExtendedScanAngle();
-            }
-            else
-            {
-                returns_flags_eof_ = other.ReturnsScanDirEofBitFields();
-                classification_ = other.ClassificationBitFields();
-            }
-
-            if (has_gps_time_)
-                gps_time_ = other.gps_time_;
-            if (has_rgb_)
-            {
-                rgb_[0] = other.Red();
-                rgb_[1] = other.Green();
-                rgb_[2] = other.Blue();
-            }
-            if (has_nir_)
-                nir_ = other.NIR();
-
-            extra_bytes_ = other.ExtraBytes();
-        }
-
-        return *this;
-    };
-
   protected:
-    int32_t x_;
-    int32_t y_;
-    int32_t z_;
-    uint16_t intensity_;
-    uint8_t returns_flags_eof_;
-    uint8_t classification_;
-    int8_t scan_angle_rank_;
-    uint8_t user_data_;
-    uint16_t point_source_id_;
+    int32_t x_{};
+    int32_t y_{};
+    int32_t z_{};
+    uint16_t intensity_{};
+    uint8_t returns_flags_eof_{};
+    uint8_t classification_{};
+    int8_t scan_angle_rank_{};
+    uint8_t user_data_{};
+    uint16_t point_source_id_{};
 
     // LAS 1.4 only
-    bool extended_point_type_;
-    uint8_t extended_returns_;
-    uint8_t extended_flags_;
-    uint8_t extended_classification_;
-    int16_t extended_scan_angle_;
+    bool extended_point_type_{false};
+    uint8_t extended_returns_{};
+    uint8_t extended_flags_{};
+    uint8_t extended_classification_{};
+    int16_t extended_scan_angle_{};
 
-    double gps_time_;
-    uint16_t rgb_[3];
-    uint16_t nir_;
+    double gps_time_{};
+    uint16_t rgb_[3]{};
+    uint16_t nir_{};
 
-    bool has_gps_time_;
-    bool has_rgb_;
-    bool has_nir_;
+    bool has_gps_time_{false};
+    bool has_rgb_{false};
+    bool has_nir_{false};
 
     std::vector<uint8_t> extra_bytes_;
 
