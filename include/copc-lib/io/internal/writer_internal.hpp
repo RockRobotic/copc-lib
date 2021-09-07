@@ -17,7 +17,7 @@ class WriterInternal
     // header + COPC vlr + LAZ vlr (max 4 items)
     int OFFSET_TO_POINT_DATA = 375 + (54 + 160) + (54 + (34 + 4 * 6));
     // 8 bytes for the chunk table offset
-    uint64_t FIRST_CHUNK_OFFSET() { return OFFSET_TO_POINT_DATA + sizeof(uint64_t); };
+    uint64_t FIRST_CHUNK_OFFSET() const { return OFFSET_TO_POINT_DATA + sizeof(uint64_t); };
 
     WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcFile> file, std::shared_ptr<Hierarchy> hierarchy);
 
@@ -34,12 +34,12 @@ class WriterInternal
     Entry WriteNode(std::vector<char> in, uint64_t point_count, bool compressed);
 
   private:
-    bool open;
+    bool open_;
 
-    las::CopcVlr copc_data;
-    std::ostream &out_stream;
-    std::shared_ptr<CopcFile> file;
-    std::shared_ptr<Hierarchy> hierarchy;
+    las::CopcVlr copc_data_;
+    std::ostream &out_stream_;
+    std::shared_ptr<CopcFile> file_;
+    std::shared_ptr<Hierarchy> hierarchy_;
 
     std::vector<lazperf::chunk> chunks_;
     uint64_t point_count_14_ = 0;

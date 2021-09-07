@@ -2,7 +2,6 @@
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <cstring>
-#include <fstream>
 #include <lazperf/readers.hpp>
 #include <sstream>
 

@@ -59,7 +59,7 @@ las::CopcVlr Reader::ReadCopcData()
     return copc;
 }
 
-las::WktVlr Reader::ReadWktData(las::CopcVlr copc_data)
+las::WktVlr Reader::ReadWktData(const las::CopcVlr &copc_data)
 {
     this->in_stream.seekg(copc_data.wkt_vlr_offset);
     las::WktVlr wkt = las::WktVlr::create(this->in_stream, copc_data.wkt_vlr_size);

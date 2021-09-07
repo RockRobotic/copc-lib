@@ -63,7 +63,7 @@ int main()
         cout << root_node.ToString() << endl;
 
         // If a key doesn't exist, FindNode will return an "invalid" node
-        VoxelKey keyDoesNotExist(5, 4, 20, 8);
+        VoxelKey key_does_not_exist(5, 4, 20, 8);
         Node invalid_node = reader.FindNode(keyDoesNotExist);
         if (!invalid_node.IsValid())
             cout << endl << "Key " << keyDoesNotExist.ToString() << " does not exist!";
@@ -73,7 +73,7 @@ int main()
 
     {
         // Now, we will load the point data from a node in the hierarchy
-        VoxelKey loadKey(4, 11, 9, 0);
+        VoxelKey load_key(4, 11, 9, 0);
 
         Node node = reader.FindNode(loadKey);
         vector<char> uncompressed_data = reader.GetPointData(node);
@@ -84,10 +84,10 @@ int main()
 
     {
         // We can also load into "Point" objects, which have accessors:
-        VoxelKey loadKey(4, 11, 9, 0);
+        VoxelKey load_key(4, 11, 9, 0);
 
         Node node = reader.FindNode(loadKey);
-        auto nodeData = reader.GetPoints(node);
+        auto node_data = reader.GetPoints(node);
 
         cout << endl << "First 5 points: " << endl;
         for (int i = 0; i < 5; i++)
@@ -102,7 +102,7 @@ int main()
 
     {
         // Note that trying to get an invalid node's data will result in an exception:
-        VoxelKey keyDoesNotExist(5, 4, 20, 8);
+        VoxelKey key_does_not_exist(5, 4, 20, 8);
         Node invalid_node = reader.FindNode(keyDoesNotExist);
 
         try

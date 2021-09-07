@@ -11,7 +11,7 @@ using namespace lazperf;
 namespace copc::Internal
 {
 
-WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcFile> file,
+WriterInternal::WriterInternal(std::ostream &out_stream,const std::shared_ptr<CopcFile> &file,
                                std::shared_ptr<Hierarchy> hierarchy)
     : out_stream(out_stream), file(file), hierarchy(hierarchy)
 {
@@ -162,7 +162,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, uint64_t point_count, bool
     return entry;
 }
 
-void WriterInternal::WritePage(std::shared_ptr<PageInternal> page)
+void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
 {
     uint64_t page_size = page->nodes.size() * 32;
     page_size += page->sub_pages.size() * 32;
@@ -184,21 +184,21 @@ void WriterInternal::WritePage(std::shared_ptr<PageInternal> page)
         copc_data.root_hier_size = page_size;
     }
 
-    for (auto node : page->nodes)
+    for (const auto &node : page->nodes)
         node->Pack(out_stream);
-    for (auto node : page->sub_pages)
+    for (const auto &node : page->sub_pages)
         node->Pack(out_stream);
 }
 
 // https://en.wikipedia.org/wiki/Tree_traversal#Arbitrary_trees
-void WriterInternal::WritePageTree(std::shared_ptr<PageInternal> current)
+void WriterInternal::WritePageTree(const std::shared_ptr<PageInternal> &current)
 {
     // If the current node is empty then return.
     if (current == nullptr)
         return;
 
     // For each i from 1 to the current node's number of subtrees, do:
-    for (auto child : current->sub_pages)
+    for (const auto &child : current->sub_pages)
     {
         WritePageTree(child);
     }

@@ -7,7 +7,7 @@
 namespace copc
 {
 
-Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span, std::string wkt)
+Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span,const  std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
     this->file = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
@@ -50,7 +50,7 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
         throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
                                  page.key.ToString());
 
-    Entry e = writer_->WriteNode(in, point_count, compressed);
+    Entry e = writer_->WriteNode(std::move(in), point_count, compressed);
     e.key = key;
 
     auto node = std::make_shared<Node>(e);
@@ -85,10 +85,10 @@ Node Writer::AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const
 uint8_t EXTRA_BYTE_DATA_TYPE[31]{0, 1,  1,  2, 2,  4, 4, 8, 8, 4,  8,  2,  2,  4,  4, 8,
                                  8, 16, 16, 8, 16, 3, 3, 6, 6, 12, 12, 24, 24, 12, 24};
 
-int Writer::NumBytesFromExtraBytes(std::vector<las::EbVlr::ebfield> items)
+int Writer::NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield>& items)
 {
     int out = 0;
-    for (auto item : items)
+    for (const auto &item : items)
     {
         if (item.data_type == 0)
             out += item.options;
@@ -133,7 +133,7 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     return h;
 }
 
-copc::Writer::LasConfig::LasConfig(las::LasHeader config, las::EbVlr extra_bytes_)
+copc::Writer::LasConfig::LasConfig(las::LasHeader config, const las::EbVlr& extra_bytes_)
 {
     file_source_id = config.file_source_id;
     global_encoding = config.global_encoding;

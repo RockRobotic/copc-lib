@@ -29,7 +29,7 @@ Node BaseIO::FindNode(VoxelKey key)
     return FindNode(key);
 }
 
-void BaseIO::LoadPageHierarchy(std::shared_ptr<Internal::PageInternal> page, std::vector<Node> &loaded_nodes)
+void BaseIO::LoadPageHierarchy(const std::shared_ptr<Internal::PageInternal> &page, std::vector<Node> &loaded_nodes)
 {
     if (!page->IsValid())
         return;
@@ -37,17 +37,17 @@ void BaseIO::LoadPageHierarchy(std::shared_ptr<Internal::PageInternal> page, std
     if (!page->loaded)
         ReadAndParsePage(page);
 
-    for (auto sub_page : page->sub_pages)
+    for (const auto &sub_page : page->sub_pages)
     {
         LoadPageHierarchy(sub_page, loaded_nodes);
     }
-    for (auto node : page->nodes)
+    for (const auto &node : page->nodes)
     {
         loaded_nodes.push_back(*node);
     }
 }
 
-void BaseIO::ReadAndParsePage(std::shared_ptr<Internal::PageInternal> page)
+void BaseIO::ReadAndParsePage(const std::shared_ptr<Internal::PageInternal> &page)
 {
 
     auto children = ReadPage(page);
