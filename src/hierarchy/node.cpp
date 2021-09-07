@@ -20,7 +20,7 @@ std::vector<char> Node::PackPoints(const std::vector<las::Point> &points)
 }
 
 std::vector<las::Point> Node::UnpackPoints(const std::vector<char> &point_data, int point_format_id,
-                                                 int point_record_length)
+                                           int point_record_length)
 {
     if (point_data.size() % point_record_length != 0)
         throw std::runtime_error("Invalid input point array!");
@@ -36,7 +36,8 @@ std::vector<las::Point> Node::UnpackPoints(const std::vector<char> &point_data, 
     // Unpack points
     for (auto &point : points)
     {
-        point = las::Point::Unpack(ss, point_format_id, las::Point::ComputeNumExtraBytes(point_format_id, point_record_length));
+        point = las::Point::Unpack(ss, point_format_id,
+                                   las::Point::ComputeNumExtraBytes(point_format_id, point_record_length));
     }
 
     return points;

@@ -81,7 +81,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
 
         REQUIRE(points.size() == hier_entry.point_count);
 
-       // Getters
+        // Getters
         REQUIRE(points[0].X() == -144147);
         REQUIRE(points[0].Y() == -13541);
         REQUIRE(points[0].Z() == -227681);

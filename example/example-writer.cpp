@@ -42,16 +42,17 @@ void TrimFileExample()
             // it's much faster to write and read compressed data, as then we don't have to decompress/recompress
             writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
 
-            // Alternatively, if we have uncompressed data and want to compress it seperatly, 
-            // (for example, multithread compress the data and write it later), 
+            // Alternatively, if we have uncompressed data and want to compress it seperatly,
+            // (for example, multithread compress the data and write it later),
             // we can use the Compressor class:
             /*
                 #include <copc-lib/laz/compressor.hpp>
                 las::LasHeader header = writer.GetLasHeader();
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
                 std::vector<char> compressed_points = laz::Compressor(uncompressed_points, header.point_format_id,
-                                                                      cfg.extra_bytes.size(), header.point_record_length);
-                writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
+                                                                      cfg.extra_bytes.size(),
+               header.point_record_length); writer.AddNodeCompressed(root_page, node.key, compressed_points,
+               node.point_count);
             */
         }
 
@@ -89,7 +90,8 @@ const int NUM_POINTS = 3000;
 std::random_device rd;  // obtain a random number from hardware
 std::mt19937 gen(rd()); // seed the generator
 
-std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id) {
+std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id)
+{
     // cube size will be the maximum span
     double span = std::max({MAX_BOUNDS.x - MIN_BOUNDS.x, MAX_BOUNDS.y - MIN_BOUNDS.y, MAX_BOUNDS.z - MIN_BOUNDS.z});
     // step size accounts for depth level
@@ -120,7 +122,7 @@ std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id) {
     return points;
 }
 
-// In this example, we'll create our own file from scratch 
+// In this example, we'll create our own file from scratch
 void NewFileExample()
 {
     // We'll write out into this file
@@ -132,9 +134,9 @@ void NewFileExample()
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
     cfg.min = vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-               (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
+                      (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
     cfg.max = vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-               (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
+                      (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
     // Now, we can create our actual writer, with an optional `span` and `wkt`:
     Writer writer(out_stream, cfg, 256, "TEST_WKT");

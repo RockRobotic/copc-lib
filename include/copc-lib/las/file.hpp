@@ -12,7 +12,7 @@ namespace copc::las
 class LasFile
 {
   public:
-    LasFile(const LasHeader &header,const las::EbVlr &eb) : header_(header), eb_(eb){};
+    LasFile(const LasHeader &header, const las::EbVlr &eb) : header_(header), eb_(eb){};
 
     std::map<uint64_t, las::VlrHeader> vlrs; // maps from absolute offsets to VLR entries
     LasHeader GetLasHeader() const { return header_; }
