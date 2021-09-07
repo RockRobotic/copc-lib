@@ -51,7 +51,7 @@ void BaseIO::ReadAndParsePage(const std::shared_ptr<Internal::PageInternal> &pag
 {
 
     auto children = ReadPage(page);
-    for (const Entry& e : children)
+    for (const Entry &e : children)
     {
         if (e.IsPage())
         {
