@@ -41,6 +41,18 @@ void TrimFileExample()
                 continue;
             // it's much faster to write and read compressed data, as then we don't have to decompress/recompress
             writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+
+            // Alternatively, if we have uncompressed data and want to compress it seperatly, 
+            // (for example, multithread compress the data and write it later), 
+            // we can use the Compressor class:
+            /*
+                #include <copc-lib/laz/compressor.hpp>
+                las::LasHeader header = writer.GetLasHeader();
+                std::vector<char> uncompressed_points = reader.GetPointData(node);
+                std::vector<char> compressed_points = laz::Compressor(uncompressed_points, header.point_format_id,
+                                                                      cfg.extra_bytes.size(), header.point_record_length);
+                writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
+            */
         }
 
         // Make sure we call close to finish writing the file!
@@ -56,6 +68,15 @@ void TrimFileExample()
     for (auto node : new_reader.GetAllChildren())
     {
         assert(new_reader.GetPointDataCompressed(node) == reader.GetPointDataCompressed(node.key));
+
+        // Similarly, we could retrieve the compressed node data from the file
+        // and decompress it when we want using the Decompressor
+        /*
+            #include <copc-lib/laz/decompressor.hpp>
+            las::LasHeader header = writer.GetLasHeader();
+            std::vector<char> compressed_points = reader.GetPointDataCompressed(node);
+            std::vector<char> uncompressed_points = laz::Decompressor(uncompressed_points, header, node.point_count);
+        */
     }
 }
 
