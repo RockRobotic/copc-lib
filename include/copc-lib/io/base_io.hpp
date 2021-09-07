@@ -26,8 +26,8 @@ class BaseIO
     las::EbVlr GetExtraByteVlr() const { return this->file->GetExtraBytes(); }
 
   protected:
-    std::shared_ptr<CopcFile> file;
-    std::shared_ptr<Internal::Hierarchy> hierarchy;
+    std::shared_ptr<CopcFile> file_;
+    std::shared_ptr<Internal::Hierarchy> hierarchy_;
     virtual std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) = 0;
     void ReadAndParsePage(std::shared_ptr<Internal::PageInternal> page);
     // Recursively reads all subpages and nodes given a root and returns all the nodes that were loaded

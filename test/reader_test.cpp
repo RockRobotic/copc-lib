@@ -42,7 +42,7 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("WKT")
         {
             auto wkt = reader.GetWkt();
-            REQUIRE(wkt.size() > 0);
+            REQUIRE(!wkt.empty());
             REQUIRE(wkt.rfind("COMPD_CS[", 0) == 0);
         }
     }
@@ -108,7 +108,7 @@ TEST_CASE("GetAllChildren Test", "[Reader] ")
         {
             // Get an invalid key
             auto nodes = reader.GetAllChildren(VoxelKey::InvalidKey());
-            REQUIRE(nodes.size() == 0);
+            REQUIRE(nodes.empty());
         }
 
         {
@@ -122,7 +122,7 @@ TEST_CASE("GetAllChildren Test", "[Reader] ")
         {
             // Get a non-existing key
             auto nodes = reader.GetAllChildren(VoxelKey(20, 20, 20, 20));
-            REQUIRE(nodes.size() == 0);
+            REQUIRE(nodes.empty());
         }
     }
 }

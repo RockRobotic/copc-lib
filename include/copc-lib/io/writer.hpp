@@ -37,7 +37,7 @@ class Writer : public BaseIO
     // Header config for creating a new file
     struct LasConfig
     {
-        LasConfig(){};
+        LasConfig()= default;
         // Allow for "copying" a lasheader from one file to another
         LasConfig(las::LasHeader h, las::EbVlr extra_bytes);
 
@@ -95,9 +95,9 @@ class Writer : public BaseIO
     };
 
     // Converts the lasconfig object into an actual LasHeader
-    las::LasHeader HeaderFromConfig(LasConfig const &config);
+    static las::LasHeader HeaderFromConfig(LasConfig const &config);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
-    int NumBytesFromExtraBytes(std::vector<las::EbVlr::ebfield> items);
+    static int NumBytesFromExtraBytes(std::vector<las::EbVlr::ebfield> items);
 };
 } // namespace copc
 #endif // COPCLIB_IO_WRITER_H_

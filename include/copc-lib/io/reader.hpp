@@ -31,7 +31,7 @@ class Reader : public BaseIO
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 
   private:
-    std::istream &in_stream;
+    std::istream &in_stream_;
 
     std::unique_ptr<lazperf::reader::generic_file> reader_;
 

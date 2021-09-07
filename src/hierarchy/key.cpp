@@ -49,7 +49,7 @@ std::vector<VoxelKey> VoxelKey::GetParents(bool include_current) const
     return out;
 }
 
-bool VoxelKey::ChildOf(VoxelKey parent_key)
+bool VoxelKey::ChildOf(VoxelKey parent_key) const
 {
     for (auto parent : GetParents(true))
     {

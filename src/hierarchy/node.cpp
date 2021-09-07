@@ -19,7 +19,7 @@ std::vector<char> Node::PackPoints(const std::vector<las::Point> &points)
     return std::vector<char>(ostr.begin(), ostr.end());
 }
 
-std::vector<las::Point> copc::Node::UnpackPoints(const std::vector<char> &point_data, int point_format_id,
+std::vector<las::Point> Node::UnpackPoints(const std::vector<char> &point_data, int point_format_id,
                                                  int point_record_length)
 {
     if (point_data.size() % point_record_length != 0)
