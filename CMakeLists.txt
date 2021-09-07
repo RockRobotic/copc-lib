@@ -33,6 +33,11 @@ if (WITH_TESTS OR WITH_EXAMPLES)
     file (DOWNLOAD
     "https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
     "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
+
+    add_executable(example_reader "example/example-reader.cpp")
+    target_link_libraries(example_reader ${COPC_SHARED_LIB})
+    add_executable(example_writer "example/example-writer.cpp")
+    target_link_libraries(example_writer ${COPC_SHARED_LIB})
 endif()
 
 if(WITH_TESTS)
@@ -49,13 +54,9 @@ if(WITH_TESTS)
     include(CTest)
     include(Catch)
     catch_discover_tests(tests)
-endif()
 
-if(WITH_EXAMPLES)
-    add_executable(example_reader "example/example-reader.cpp")
-    target_link_libraries(example_reader ${COPC_SHARED_LIB})
-    add_executable(example_writer "example/example-writer.cpp")
-    target_link_libraries(example_writer ${COPC_SHARED_LIB})
+    add_test(NAME example_reader COMMAND example_reader)
+    add_test(NAME example_writer COMMAND example_writer)
 endif()
 
 # Install
