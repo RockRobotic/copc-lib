@@ -59,7 +59,7 @@ Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraB
     }
 
     extra_bytes_ = other.extra_bytes_;
-};
+}
 
 Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes)
 {
@@ -178,7 +178,6 @@ uint8_t Point::BaseByteSize(const int8_t &point_format_id)
         throw std::runtime_error("Point formats with Wave Packets not yet supported");
     default:
         throw std::runtime_error("Point format must be 0-10");
-        ;
     }
 }
 
