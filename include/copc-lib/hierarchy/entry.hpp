@@ -51,7 +51,7 @@ class Entry
         in_stream.read(reinterpret_cast<char *>(&key.y), sizeof(key.y));
         in_stream.read(reinterpret_cast<char *>(&key.z), sizeof(key.z));
 
-        int64_t offset;
+        uint64_t offset;
         in_stream.read(reinterpret_cast<char *>(&offset), sizeof(offset));
         int32_t size;
         in_stream.read(reinterpret_cast<char *>(&size), sizeof(size));
@@ -63,7 +63,7 @@ class Entry
 
     int32_t point_count;
     VoxelKey key;
-    int64_t offset;
+    uint64_t offset;
     int32_t size;
 
   protected:
