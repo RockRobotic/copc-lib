@@ -127,6 +127,9 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const uint8_t &, const uint16_t &, const uint32_t &>())
         .def(py::init<const uint8_t &, const uint16_t &, const std::vector<las::Point> &>())
         .def("GetPoints", &las::Points::GetPoints)
+        .def("AddPoint", &las::Points::AddPoint)
+        .def("AddPoints", &las::Points::AddPoints)
         .def("PointFormatID", &las::Points::PointFormatID)
+        .def("ToPointFormat", &las::Points::ToPointFormat)
         .def("PointRecordLength", &las::Points::PointRecordLength);
 }
