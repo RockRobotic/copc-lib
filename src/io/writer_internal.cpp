@@ -59,15 +59,17 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
 
     head14.point_format_id |= (1 << 7);
     head14.point_offset = OFFSET_TO_POINT_DATA;
-    head14.point_count_14 = point_count_14_;
 
     if (head14.ebCount())
     {
         head14.vlr_count++;
     }
 
-    if (head14.point_count_14 > (std::numeric_limits<uint32_t>::max)())
+    if (head14.point_format_id > 5)
+    {
         head14.point_count = 0;
+        head14.point_count_14 = point_count_14_;
+    }
     else
         head14.point_count = (uint32_t)head14.point_count_14;
     // Set the WKT bit.
