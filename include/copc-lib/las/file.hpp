@@ -1,34 +1,28 @@
 #ifndef COPCLIB_LAS_FILE_H_
 #define COPCLIB_LAS_FILE_H_
 
-#include <istream>
+#include <iostream>
 #include <map>
 
+#include <copc-lib/las/header.hpp>
 #include <copc-lib/las/vlr.hpp>
-
-#include <lazperf/readers.hpp>
 
 namespace copc::las
 {
-using VlrHeader = lazperf::vlr_header;
-// todo: create our own lasheader class so we can switch between header12/14
-using LasHeader = lazperf::header12;
-
 class LasFile
 {
   public:
-    LasFile(std::istream &in_stream);
+    LasFile(const LasHeader &header, const las::EbVlr &eb) : header_(header), eb_(eb){};
 
-    std::vector<Vlr> vlrs;
-    LasHeader GetLasHeader() { return header_; }
+    std::map<uint64_t, las::VlrHeader> vlrs; // maps from absolute offsets to VLR entries
+    LasHeader GetLasHeader() const { return header_; }
+
+    // Extra bytes
+    las::EbVlr GetExtraBytes() const { return eb_; }
 
   protected:
-    std::unique_ptr<lazperf::reader::generic_file> reader_;
-    std::istream &in_stream_;
-    std::map<uint64_t, VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
     LasHeader header_;
-
-    void ReadVlrs();
+    las::EbVlr eb_;
 };
 } // namespace copc::las
 #endif // COPCLIB_LAS_FILE_H_

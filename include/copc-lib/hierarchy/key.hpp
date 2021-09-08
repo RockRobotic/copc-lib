@@ -4,8 +4,9 @@
 #include <cstdint>
 #include <functional> // for hash
 #include <sstream>
+#include <vector>
 
-namespace copc::hierarchy
+namespace copc
 {
 
 class VoxelKey
@@ -13,6 +14,9 @@ class VoxelKey
   public:
     VoxelKey(int32_t d, int32_t x, int32_t y, int32_t z) : d(d), x(x), y(y), z(z) {}
     VoxelKey() : VoxelKey(-1, -1, -1, -1) {}
+
+    static VoxelKey InvalidKey() { return VoxelKey(); }
+    static VoxelKey BaseKey() { return VoxelKey(0, 0, 0, 0); }
 
     bool IsValid() const { return d >= 0 && x >= 0 && y >= 0 && z >= 0; }
 
@@ -24,54 +28,17 @@ class VoxelKey
     }
 
     // Returns the corresponding key depending on direction [0,7]
-    VoxelKey Bisect(uint64_t direction) const
-    {
-        VoxelKey key(*this);
-        ++key.d;
-
-        auto step([&key, direction](uint8_t i) {
-            key.IdAt(i) *= 2;
-            const bool positive(direction & (((uint64_t)1) << i));
-            if (positive)
-                ++key.IdAt(i);
-        });
-
-        for (uint8_t i(0); i < 3; ++i)
-            step(i);
-
-        return key;
-    }
+    VoxelKey Bisect(uint64_t direction) const;
 
     // The hierarchial parent of this key
-    VoxelKey GetParent() const
-    {
-        // If key is valid, return parent, if not, return invalid key
-        if (IsValid())
-            return {d - 1, x / 2, y / 2, z / 2};
-        else
-            return {};
-    }
+    VoxelKey GetParent() const;
 
     // A list of the key's parents from the key to the root node
     // optionally including the key itself
-    std::vector<VoxelKey> GetParents(bool include_current = false) const
-    {
-        std::vector<VoxelKey> out;
-        if (!IsValid())
-            return out;
+    std::vector<VoxelKey> GetParents(bool include_current = false) const;
 
-        if (include_current)
-            out.push_back(*this);
-
-        auto parentKey = this->GetParent();
-        while (parentKey.IsValid())
-        {
-            out.push_back(parentKey);
-            parentKey = parentKey.GetParent();
-        }
-
-        return out;
-    }
+    // Tests whether the current key is a child of a given key
+    bool ChildOf(VoxelKey parent_key) const;
 
     int32_t d;
     int32_t x;
@@ -96,21 +63,21 @@ class VoxelKey
     }
 };
 
+// Equality operations
 inline bool operator==(const VoxelKey &a, const VoxelKey &b)
 {
     return a.d == b.d && a.x == b.x && a.y == b.y && a.z == b.z;
 }
-
 inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b); }
 
-} // namespace copc::hierarchy
+} // namespace copc
 
+// Hash function to allow VoxelKeys as unordered_map keys
 namespace std
 {
-// Hash function to allow VoxelKeys as unordered_map keys
-template <> struct hash<copc::hierarchy::VoxelKey>
+template <> struct hash<copc::VoxelKey>
 {
-    std::size_t operator()(copc::hierarchy::VoxelKey const &k) const noexcept
+    std::size_t operator()(copc::VoxelKey const &k) const noexcept
     {
         std::hash<uint64_t> h;
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(copc-lib VERSION 1.0)
+project(copc-lib VERSION 1.1)
 
 find_package(lazperf REQUIRED)
 
@@ -12,7 +12,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories(include)
-include_directories(libs/catch2)
 
 file(GLOB_RECURSE SRCS
         src/*.cpp
@@ -35,28 +34,36 @@ set(WITH_PYTHON TRUE CACHE BOOL "Choose if python bindings should be built")
 
 if (WITH_TESTS OR WITH_EXAMPLES)
     file (DOWNLOAD
-    "https://github.com/PDAL/data/raw/master/autzen/autzen-classified.copc.laz"
-    "test/data/autzen-classified.copc.laz")
+    "https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
+    "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
+
+    add_executable(example_reader "example/example-reader.cpp")
+    target_link_libraries(example_reader ${COPC_SHARED_LIB})
+    add_executable(example_writer "example/example-writer.cpp")
+    target_link_libraries(example_writer ${COPC_SHARED_LIB})
 endif()
 
 if(WITH_TESTS)
-    enable_testing()
+    add_subdirectory(lib/Catch2)
 
     file(GLOB TEST_SRCS
             test/*.cpp
             )
 
     add_executable(tests ${TEST_SRCS})
-    target_link_libraries(tests ${COPC_SHARED_LIB})
-endif()
+    target_link_libraries(tests ${COPC_SHARED_LIB} Catch2::Catch2)
 
-if(WITH_EXAMPLES)
-    add_executable(example_lib "example/example-lib.cpp")
-    target_link_libraries(example_lib ${COPC_SHARED_LIB})
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/Catch2/contrib")
+    include(CTest)
+    include(Catch)
+    catch_discover_tests(tests)
+
+    add_test(NAME example_reader COMMAND example_reader)
+    add_test(NAME example_writer COMMAND example_writer)
 endif()
 
 if(WITH_PYTHON)
-    add_subdirectory(libs/pybind11)
+    add_subdirectory(lib/pybind11)
     pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
     target_compile_definitions(${COPC_PYTHON_LIB} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
 endif()
