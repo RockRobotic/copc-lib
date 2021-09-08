@@ -31,7 +31,7 @@ PYBIND11_MODULE(copclib, m)
         .def(py::hash(py::self));
 
     py::class_<las::Point>(m, "Point")
-        .def(py::init<const uint8_t &, const uint16_t &>())
+        .def(py::init<const uint8_t &, const uint16_t &>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const las::Point &>())
         .def("X", static_cast<int32_t (las::Point::*)() const>(&las::Point::X))
         .def("X", static_cast<void (las::Point::*)(const int32_t &)>(&las::Point::X))
@@ -45,6 +45,10 @@ PYBIND11_MODULE(copclib, m)
              static_cast<uint8_t (las::Point::*)() const>(&las::Point::ReturnsScanDirEofBitFields))
         .def("ReturnsScanDirEofBitFields",
              static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ReturnsScanDirEofBitFields))
+        .def("ExtendedReturnsBitFields",
+             static_cast<uint8_t (las::Point::*)() const>(&las::Point::ExtendedReturnsBitFields))
+        .def("ExtendedReturnsBitFields",
+             static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ExtendedReturnsBitFields))
         .def("ReturnNumber", static_cast<uint8_t (las::Point::*)() const>(&las::Point::ReturnNumber))
         .def("ReturnNumber", static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ReturnNumber))
         .def("NumberOfReturns", static_cast<uint8_t (las::Point::*)() const>(&las::Point::NumberOfReturns))
@@ -83,6 +87,8 @@ PYBIND11_MODULE(copclib, m)
         .def("UserData", static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::UserData))
         .def("PointSourceID", static_cast<uint16_t (las::Point::*)() const>(&las::Point::PointSourceID))
         .def("PointSourceID", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::PointSourceID))
+        .def("RGB",
+             static_cast<void (las::Point::*)(const uint16_t &, const uint16_t &, const uint16_t &)>(&las::Point::RGB))
         .def("Red", static_cast<uint16_t (las::Point::*)() const>(&las::Point::Red))
         .def("Red", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::Red))
         .def("Green", static_cast<uint16_t (las::Point::*)() const>(&las::Point::Green))
@@ -98,6 +104,11 @@ PYBIND11_MODULE(copclib, m)
         .def("HasGPSTime", &las::Point::HasGPSTime)
         .def("HasRGB", &las::Point::HasRGB)
         .def("HasNIR", &las::Point::HasNIR)
+
+        .def("Pack", &las::Point::Pack)
+        .def("Unpack", &las::Point::Unpack)
+        .def("ToPointFormat", &las::Point::ToPointFormat)
+        .def("BaseByteSize", &las::Point::BaseByteSize)
 
         .def("PointFormatID", &las::Point::PointFormatID)
         .def("PointRecordLength", &las::Point::PointRecordLength)

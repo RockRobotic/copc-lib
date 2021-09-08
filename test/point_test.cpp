@@ -40,8 +40,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point0.Z() == INT32_MAX);
 
         // Intensity
-        point0.Intensity(INT8_MAX);
-        REQUIRE(point0.Intensity() == INT8_MAX);
+        point0.Intensity(UINT16_MAX);
+        REQUIRE(point0.Intensity() == UINT16_MAX);
 
         // Return Number
         point0.ReturnNumber(7);
@@ -196,8 +196,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.Z() == INT32_MAX);
 
         // Intensity
-        point6.Intensity(INT8_MAX);
-        REQUIRE(point6.Intensity() == INT8_MAX);
+        point6.Intensity(UINT16_MAX);
+        REQUIRE(point6.Intensity() == UINT16_MAX);
 
         // Return BitField
         point6.ExtendedReturnsBitFields(UINT8_MAX);
