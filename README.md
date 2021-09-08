@@ -21,6 +21,12 @@ make
 sudo make install
 ```
 
+### Python
+Python bindings are supported using Pybind11 through a git submodule. 
+```bash
+pip install ./copc-lib
+```
+
 ## Usage
 
 The `Reader` and `Writer` objects provide the primary means of interfacing with your COPC files. For more complex use cases, we also provide additional objects such as LAZ Compressors and Decompressors (see [example/example-writer.cpp](example/example-writer.cpp)).
@@ -35,6 +41,10 @@ find_package(lazperf REQUIRED)
 
 add_executable(funfile fun-main.cpp)
 target_link_libraries(funfile copc-lib LAZPERF::lazperf)
+```
+### Python
+```python
+import copclib
 ```
 
 If other library functionality is needed, feel free to open an issue to see about getting it added.
