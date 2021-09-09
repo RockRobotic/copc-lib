@@ -11,3 +11,8 @@ repos:
         always_run: true
         args: ["-i"]
         additional_dependencies: ["clang-format"]
+-   repo: https://github.com/ambv/black
+    rev: 21.8b0
+    hooks:
+    -   id: black
+        language_version: python

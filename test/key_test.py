@@ -25,7 +25,7 @@ def test_get_parent():
     assert copclib.VoxelKey(4, 5, 6, 13).GetParent() == copclib.VoxelKey(3, 2, 3, 6)
     assert copclib.VoxelKey(3, 2, 3, 6).GetParent() == copclib.VoxelKey(2, 1, 1, 3)
 
-    #TODO[Leo]: Check if there is a way to avoid self in function definition
+    # TODO[Leo]: Check if there is a way to avoid self in function definition
     assert not copclib.VoxelKey(3, 2, 3, 6).GetParent() == copclib.VoxelKey.BaseKey()
 
     assert copclib.VoxelKey(1, 1, 1, 1).GetParent() == copclib.VoxelKey.BaseKey()
@@ -51,12 +51,13 @@ def test_get_parents():
     assert len(copclib.VoxelKey(-1, -1, -1, -1).GetParents(True)) == 0
     assert len(copclib.VoxelKey(-1, -1, -1, -1).GetParents(False)) == 0
 
-    test_keys = [copclib.VoxelKey(4, 4, 6, 12),
-                 copclib.VoxelKey(3, 2, 3, 6),
-                 copclib.VoxelKey(2, 1, 1, 3),
-                 copclib.VoxelKey(1, 0, 0, 1),
-                 copclib.VoxelKey(0, 0, 0, 0)
-                 ]
+    test_keys = [
+        copclib.VoxelKey(4, 4, 6, 12),
+        copclib.VoxelKey(3, 2, 3, 6),
+        copclib.VoxelKey(2, 1, 1, 3),
+        copclib.VoxelKey(1, 0, 0, 1),
+        copclib.VoxelKey(0, 0, 0, 0),
+    ]
     #
     get_parents_inclusive = test_keys[0].GetParents(True)
     assert len(get_parents_inclusive) == len(test_keys)
