@@ -14,14 +14,14 @@ void PrintPoints(vector<char> point_vec, int point_record_length)
     auto point_buff = point_vec.data();
     for (int i = 0; i < 5; i++)
     {
-        int pointOffset = i * point_record_length;
+        int point_offset = i * point_record_length;
 
         int32_t x, y, z;
 
         size_t point_size = sizeof(x);
-        memcpy(&x, point_buff + pointOffset, point_size);
-        memcpy(&y, point_buff + pointOffset + point_size, point_size);
-        memcpy(&z, point_buff + pointOffset + point_size * 2, point_size);
+        memcpy(&x, point_buff + point_offset, point_size);
+        memcpy(&y, point_buff + point_offset + point_size, point_size);
+        memcpy(&z, point_buff + point_offset + point_size * 2, point_size);
         cout << "Point " << i << ": X=" << x << ", Y=" << y << ", Z=" << z << endl;
     }
 }
