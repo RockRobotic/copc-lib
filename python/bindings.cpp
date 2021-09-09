@@ -1,8 +1,14 @@
+#include <iostream>
+#include <vector>
+
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 #include <copc-lib/hierarchy/key.hpp>
+#include <copc-lib/hierarchy/node.hpp>
+#include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/file.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
@@ -29,6 +35,7 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &VoxelKey::ToString)
         .def(py::hash(py::self));
 
+    // TODO[Leo]: Update getters and setters to pybind template
     py::class_<las::Point>(m, "Point")
         .def(py::init<const uint8_t &, const uint16_t &>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const las::Point &>())
@@ -131,4 +138,29 @@ PYBIND11_MODULE(copclib, m)
         .def("PointFormatID", &las::Points::PointFormatID)
         .def("ToPointFormat", &las::Points::ToPointFormat)
         .def("PointRecordLength", &las::Points::PointRecordLength);
+
+    py::class_<Node>(m, "Node").def(py::init<>()).def(py::init<Entry>());
+
+    py::class_<Reader>(m, "Reader")
+        .def(py::init<std::istream &>())
+        .def("GetPointData", static_cast<std::vector<char> (Reader::*)(const Node &)>(&Reader::GetPointData))
+        .def("GetPointData", static_cast<std::vector<char> (Reader::*)(const VoxelKey &)>(&Reader::GetPointData))
+        .def("GetPoints", static_cast<std::vector<las::Point> (Reader::*)(const Node &)>(&Reader::GetPoints))
+        .def("GetPoints", static_cast<std::vector<las::Point> (Reader::*)(const VoxelKey &)>(&Reader::GetPoints))
+        .def("GetPointDataCompressed",
+             static_cast<std::vector<char> (Reader::*)(const Node &)>(&Reader::GetPointDataCompressed))
+        .def("GetPointDataCompressed",
+             static_cast<std::vector<char> (Reader::*)(const VoxelKey &)>(&Reader::GetPointDataCompressed))
+        .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)(const VoxelKey &)>(&Reader::GetAllChildren))
+        .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)()>(&Reader::GetAllChildren));
+
+    py::class_<Writer>(m, "Writer")
+        .def(py::init<std::ostream &, Writer::LasConfig const &, int, const std::string &>())
+        .def("GetRootPage", &Writer::GetRootPage)
+        .def("Close", &Writer::Close)
+        .def("AddNode",
+             static_cast<Node (Writer::*)(Page &, VoxelKey, std::vector<las::Point> const &)>(&Writer::AddNode))
+        .def("AddNodeCompressed", &Writer::AddNodeCompressed)
+        .def("AddNode", static_cast<Node (Writer::*)(Page &, VoxelKey, std::vector<char> const &)>(&Writer::AddNode))
+        .def("AddSubPage", &Writer::AddSubPage);
 }
