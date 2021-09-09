@@ -9,6 +9,7 @@
 #include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/io/base_io.hpp>
 #include <copc-lib/las/vlr.hpp>
+#include <copc-lib/las/points.hpp>
 
 namespace copc
 {
@@ -23,8 +24,8 @@ class Reader : public BaseIO
     // VoxelKey can be invalid, function will return empty arr
     std::vector<char> GetPointData(VoxelKey const &key);
     // Reads the node's data into Point objects
-    std::vector<las::Point> GetPoints(Node const &node);
-    std::vector<las::Point> GetPoints(VoxelKey const &key);
+    las::Points GetPoints(Node const &node);
+    las::Points GetPoints(VoxelKey const &key);
     // Reads node data without decompressing
     std::vector<char> GetPointDataCompressed(Node const &node);
     std::vector<char> GetPointDataCompressed(VoxelKey const &key);

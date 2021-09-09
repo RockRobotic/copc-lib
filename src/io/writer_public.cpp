@@ -59,9 +59,9 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     return *node;
 }
 
-Node Writer::AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &points)
+Node Writer::AddNode(Page &page, VoxelKey key, las::Points &points)
 {
-    std::vector<char> uncompressed = Node::PackPoints(points);
+    std::vector<char> uncompressed = points.Pack();
     return AddNode(page, key, uncompressed);
 }
 
