@@ -6,12 +6,13 @@
 
 namespace copc
 {
-Reader::Reader(std::istream &in_stream) : in_stream_(in_stream)
+
+Reader::Reader(std::istream *in_stream) : in_stream_(in_stream)
 {
-    if (!this->in_stream_.good())
+    if (!this->in_stream_->good())
         throw std::runtime_error("Invalid input stream!");
 
-    this->reader_ = std::make_unique<lazperf::reader::generic_file>(this->in_stream_);
+    this->reader_ = std::make_unique<lazperf::reader::generic_file>(*this->in_stream_);
 
     InitFile();
 }
@@ -36,17 +37,17 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrs()
     std::map<uint64_t, las::VlrHeader> out;
 
     // Move stream to beginning of VLRs
-    this->in_stream_.seekg(this->reader_->header().header_size);
+    this->in_stream_->seekg(this->reader_->header().header_size);
 
     // Iterate through all vlr's and add them to the `vlrs` list
     size_t count = 0;
-    while (count < this->reader_->header().vlr_count && this->in_stream_.good() && !this->in_stream_.eof())
+    while (count < this->reader_->header().vlr_count && this->in_stream_->good() && !this->in_stream_->eof())
     {
-        uint64_t cur_pos = this->in_stream_.tellg();
-        las::VlrHeader h = las::VlrHeader::create(this->in_stream_);
+        uint64_t cur_pos = this->in_stream_->tellg();
+        las::VlrHeader h = las::VlrHeader::create(*this->in_stream_);
         out[cur_pos] = h;
 
-        this->in_stream_.seekg(h.data_length, std::ios::cur); // jump foward
+        this->in_stream_->seekg(h.data_length, std::ios::cur); // jump foward
         count++;
     }
     return out;
@@ -54,15 +55,15 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrs()
 
 las::CopcVlr Reader::ReadCopcData()
 {
-    this->in_stream_.seekg(COPC_OFFSET);
-    las::CopcVlr copc = las::CopcVlr::create(this->in_stream_);
+    this->in_stream_->seekg(COPC_OFFSET);
+    las::CopcVlr copc = las::CopcVlr::create(*this->in_stream_);
     return copc;
 }
 
 las::WktVlr Reader::ReadWktData(const las::CopcVlr &copc_data)
 {
-    this->in_stream_.seekg(copc_data.wkt_vlr_offset);
-    las::WktVlr wkt = las::WktVlr::create(this->in_stream_, copc_data.wkt_vlr_size);
+    this->in_stream_->seekg(copc_data.wkt_vlr_offset);
+    las::WktVlr wkt = las::WktVlr::create(*this->in_stream_, copc_data.wkt_vlr_size);
     return wkt;
 }
 
@@ -73,13 +74,13 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
         throw std::runtime_error("Cannot load an invalid page.");
 
     // reset the stream to the page's offset
-    in_stream_.seekg(page->offset);
+    in_stream_->seekg(page->offset);
 
     // Iterate through each Entry in the page
     int num_entries = int(page->size / Entry::ENTRY_SIZE);
     for (int i = 0; i < num_entries; i++)
     {
-        Entry e = Entry::Unpack(in_stream_);
+        Entry e = Entry::Unpack(*in_stream_);
         if (!e.IsValid())
             throw std::runtime_error("Entry is invalid! " + e.ToString());
 
@@ -111,10 +112,10 @@ std::vector<char> Reader::GetPointData(Node const &node)
     if (!node.IsValid())
         throw std::runtime_error("Cannot load an invalid node.");
 
-    in_stream_.seekg(node.offset);
+    in_stream_->seekg(node.offset);
 
     auto las_header = file_->GetLasHeader();
-    std::vector<char> point_data = laz::Decompressor::DecompressBytes(in_stream_, las_header, node.point_count);
+    std::vector<char> point_data = laz::Decompressor::DecompressBytes(*in_stream_, las_header, node.point_count);
     return point_data;
 }
 
@@ -136,11 +137,11 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     if (!node.IsValid())
         throw std::runtime_error("Cannot load an invalid node.");
 
-    in_stream_.seekg(node.offset);
+    in_stream_->seekg(node.offset);
 
     std::vector<char> out;
     out.resize(node.size);
-    in_stream_.read(&out[0], node.size);
+    in_stream_->read(&out[0], node.size);
     return out;
 }
 
@@ -184,8 +185,8 @@ las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
     {
         if (vlr_header.user_id == "LASF_Spec" && vlr_header.record_id == 4)
         {
-            in_stream_.seekg(offset + vlr_header.Size);
-            return las::EbVlr::create(in_stream_, vlr_header.data_length);
+            in_stream_->seekg(offset + vlr_header.Size);
+            return las::EbVlr::create(*in_stream_, vlr_header.data_length);
         }
     }
     return {};

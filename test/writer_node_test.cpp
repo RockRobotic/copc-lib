@@ -26,7 +26,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
 
@@ -58,7 +58,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         writer.Close();
 
         std::string ostr = out_stream.str();
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
@@ -121,7 +121,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
                     Node 2-2-2-2
         */
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
@@ -171,7 +171,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
 
@@ -206,7 +206,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         writer.Close();
 
         std::string ostr = out_stream.str();
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
@@ -272,7 +272,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
                     Node 2-2-2-2
         */
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 

@@ -2,6 +2,7 @@
 #define COPCLIB_IO_READER_H_
 
 #include <istream>
+#include <string>
 
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/hierarchy/internal/hierarchy.hpp>
@@ -15,7 +16,7 @@ namespace copc
 class Reader : public BaseIO
 {
   public:
-    Reader(std::istream &in_stream);
+    Reader(std::istream *in_stream);
 
     // Reads the node's data into an uncompressed byte array
     // Node needs to be valid for this function, it will error
@@ -36,7 +37,7 @@ class Reader : public BaseIO
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 
   private:
-    std::istream &in_stream_;
+    std::istream *in_stream_{};
 
     std::unique_ptr<lazperf::reader::generic_file> reader_;
 
@@ -53,5 +54,26 @@ class Reader : public BaseIO
 
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override;
 };
+
+class FileReader : private Reader
+{
+  public:
+    FileReader(const std::string &file_path)
+    {
+        auto fstream = new std::fstream;
+        fstream->open(file_path.c_str(), std::ios::in | std::ios::binary);
+        in_stream_ = fstream;
+
+        if (!this->in_stream_->good())
+            throw std::runtime_error("Invalid input stream!");
+
+        this->reader_ = std::make_unique<lazperf::reader::generic_file>(*this->in_stream_);
+
+        InitFile();
+    }
+
+    ~FileReader() { delete in_stream_; }
+};
+
 } // namespace copc
 #endif // COPCLIB_IO_READER_H_
