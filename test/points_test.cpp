@@ -17,11 +17,6 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.PointRecordLength() == 38);
         REQUIRE(points.Get().empty());
 
-        points = Points(3, 4, 10);
-        REQUIRE(points.PointFormatID() == 3);
-        REQUIRE(points.PointRecordLength() == 38);
-        REQUIRE(points.Get().size() == 0);
-
         auto point_vec = std::vector<Point>();
         auto point1 = Point(3, 4);
         point1.X(11);
@@ -35,7 +30,7 @@ TEST_CASE("Points tests", "[Point]")
         auto point3 = Point(3, 4);
         point_vec.push_back(point3);
 
-        points = Points(3, 4, point_vec);
+        points = Points(point_vec);
         REQUIRE(points.PointFormatID() == 3);
         REQUIRE(points.PointRecordLength() == 38);
         for (const auto &point : points.Get())
@@ -44,19 +39,9 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get()[0].X() == 11);
         REQUIRE(points.Get()[0].Y() == 11);
         REQUIRE(points.Get()[0].Z() == 11);
-
-        // Test check on constant point format
-        auto point4 = Point(6, 4);
-        point_vec.push_back(point4);
-        REQUIRE_THROWS(Points(3, 4, point_vec));
-
-        point_vec.pop_back();
-        auto point5 = Point(3, 2);
-        point_vec.push_back(point5);
-        REQUIRE_THROWS(Points(3, 4, point_vec));
     }
 
-    SECTION("Addind Point to Points")
+    SECTION("Adding Point to Points")
     {
         auto points = Points(3, 0);
         auto point = Point(3, 0);
@@ -91,28 +76,27 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.AddPoint(point));
     }
 
-    SECTION("Addind Points to Points")
+    SECTION("Adding Points to Points")
     {
-
-        auto points = Points(3, 4, std::vector<Point>(10, Point(3, 4)));
-        auto points_other = Points(3, 4, std::vector<Point>(10, Point(3, 4)));
+        auto points = Points(std::vector<Point>(10, Point(3, 4)));
+        auto points_other = Points(std::vector<Point>(10, Point(3, 4)));
 
         points.AddPoints(points_other);
 
         REQUIRE(points.Get().size() == 20);
 
         // Test check on point format
-        points_other = Points(6, 4, std::vector<Point>(10, Point(6, 4)));
+        points_other = Points(std::vector<Point>(10, Point(6, 4)));
         REQUIRE_THROWS(points.AddPoints(points_other));
 
         // Test check on extra bytes
-        points_other = Points(3, 1, std::vector<Point>(10, Point(3, 1)));
+        points_other = Points(std::vector<Point>(10, Point(3, 1)));
         REQUIRE_THROWS(points.AddPoints(points_other));
     }
 
     SECTION("Points format conversion")
     {
-        auto points = Points(3, 4, std::vector<Point>(10, Point(3, 4)));
+        auto points = Points(std::vector<Point>(10, Point(3, 4)));
         points.ToPointFormat(6);
 
         REQUIRE(points.PointFormatID() == 6);

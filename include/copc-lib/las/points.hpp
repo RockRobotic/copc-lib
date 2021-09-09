@@ -10,29 +10,35 @@ namespace copc::las
 class Points
 {
   public:
-    Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes);
-    Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes, const uint32_t &number_of_points);
-    Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes, const std::vector<Point> &points);
+    Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0);
+    // Will create Points object given a points vector
+    Points(const std::vector<Point> &points);
 
-    std::vector<Point> Get() { return points_; }
 
     int8_t PointFormatID() const { return point_format_id_; }
     uint32_t PointRecordLength() const { return point_record_length_; }
-    size_t Size() const { return points_.size(); }
 
+    std::vector<Point> Get() { return points_; }
+    size_t Size() const { return points_.size(); }
+    void Reserve(size_t num) { points_.reserve(num); }
+
+    // Creates a new point in the correct format
+    las::Point NewPoint() { return las::Point(point_format_id_, NumExtraBytes()); }
     // Add a Point to points_
     void AddPoint(const Point &point);
     // Add points from other Points to points_
     void AddPoints(Points points);
+    void AddPoints(std::vector<las::Point> points);
     // Converts all Point objects to a different format
     void ToPointFormat(const int8_t &point_format_id);
 
     // Provides helper functions for handling lists of Point objects
     std::vector<char> Pack();
     void Pack(std::ostream &out_stream);
-    static Points Unpack(const std::vector<char> &point_data, int8_t point_format_id,
-                                                int point_record_length);
+    static Points Unpack(const std::vector<char> &point_data, int8_t point_format_id, int point_record_length);
 
+    uint32_t PointRecordLength() { return point_record_length_; }
+    uint32_t NumExtraBytes() { return Point::ComputeNumExtraBytes(point_format_id_, point_record_length_); }
   private:
     std::vector<Point> points_;
     int8_t point_format_id_;
