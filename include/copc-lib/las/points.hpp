@@ -31,7 +31,7 @@ class Points
     void AddPoint(const Point &point);
     void AddPoints(Points points);
     void AddPoints(std::vector<las::Point> points);
-       
+
     // Point functions
     las::Point NewPoint() { return las::Point(point_format_id_, NumExtraBytes()); }
     void ToPointFormat(const int8_t &point_format_id);

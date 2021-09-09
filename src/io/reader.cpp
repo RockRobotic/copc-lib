@@ -94,7 +94,7 @@ las::Points Reader::GetPoints(Node const &node)
 {
     std::vector<char> point_data = GetPointData(node);
     return las::Points::Unpack(point_data, file_->GetLasHeader().point_format_id,
-                              file_->GetLasHeader().point_record_length);
+                               file_->GetLasHeader().point_record_length);
 }
 
 las::Points Reader::GetPoints(VoxelKey const &key)
