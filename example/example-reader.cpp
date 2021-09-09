@@ -87,7 +87,7 @@ int main()
         VoxelKey load_key(4, 11, 9, 0);
 
         Node node = reader.FindNode(load_key);
-        auto node_data = reader.GetPoints(node);
+        auto node_data = reader.GetPoints(node).Get();
 
         cout << endl << "First 5 points: " << endl;
         for (int i = 0; i < 5; i++)

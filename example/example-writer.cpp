@@ -90,7 +90,7 @@ const int NUM_POINTS = 3000;
 std::random_device rd;  // obtain a random number from hardware
 std::mt19937 gen(rd()); // seed the generator
 
-std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id)
+las::Points RandomPoints(VoxelKey key, int point_format_id)
 {
     // cube size will be the maximum span
     double span = std::max({MAX_BOUNDS.x - MIN_BOUNDS.x, MAX_BOUNDS.y - MIN_BOUNDS.y, MAX_BOUNDS.z - MIN_BOUNDS.z});
@@ -105,7 +105,7 @@ std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id)
     std::uniform_int_distribution<> rand_y((int)std::min(miny, MAX_BOUNDS.y), (int)std::min(miny + step, MAX_BOUNDS.y));
     std::uniform_int_distribution<> rand_z((int)std::min(minz, MAX_BOUNDS.z), (int)std::min(minz + step, MAX_BOUNDS.z));
 
-    std::vector<las::Point> points;
+    las::Points points(point_format_id, 0);
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Create a point with a given point format
@@ -117,7 +117,7 @@ std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id)
         // For visualization purposes
         point.PointSourceID(key.d + key.x + key.y + key.d);
 
-        points.push_back(point);
+        points.AddPoint(point);
     }
     return points;
 }

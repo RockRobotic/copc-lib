@@ -18,7 +18,7 @@ class Points
 
     int8_t PointFormatID() const { return point_format_id_; }
     uint32_t PointRecordLength() const { return point_record_length_; }
-    size_t Size() const { points_.size(); }
+    size_t Size() const { return points_.size(); }
 
     // Add a Point to points_
     void AddPoint(const Point &point);
