@@ -2,11 +2,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <copc-lib/copc/file.hpp>
-#include <copc-lib/hierarchy/entry.hpp>
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/hierarchy/node.hpp>
-#include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/las/file.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
@@ -23,9 +19,12 @@ PYBIND11_MODULE(copclib, m)
         .def(py::self == py::self)
         .def(py::self != py::self)
         .def("IsValid", &VoxelKey::IsValid)
+        .def("BaseKey", &VoxelKey::BaseKey)
+        .def("InvalidKey", &VoxelKey::InvalidKey)
         .def("Bisect", &VoxelKey::Bisect)
         .def("GetParent", &VoxelKey::GetParent)
         .def("GetParents", &VoxelKey::GetParents)
+        .def("ChildOf", &VoxelKey::ChildOf)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString)
         .def(py::hash(py::self));
