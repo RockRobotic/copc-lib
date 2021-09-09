@@ -61,6 +61,10 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
 
 Node Writer::AddNode(Page &page, VoxelKey key, las::Points &points)
 {
+    auto header = file_->GetLasHeader();
+    if (points.PointFormatID() != header.point_format_id || points.PointRecordLength() != header.point_record_length)
+        throw std::runtime_error("New points must be of same format and size.");
+
     std::vector<char> uncompressed = points.Pack();
     return AddNode(page, key, uncompressed);
 }

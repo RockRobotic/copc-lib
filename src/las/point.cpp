@@ -110,7 +110,6 @@ Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, cons
 
 void Point::Pack(std::ostream &out_stream) const
 {
-
     // Point
     internal::pack(x_, out_stream);
     internal::pack(y_, out_stream);

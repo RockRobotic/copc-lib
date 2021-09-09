@@ -105,7 +105,7 @@ las::Points RandomPoints(VoxelKey key, int point_format_id)
     std::uniform_int_distribution<> rand_y((int)std::min(miny, MAX_BOUNDS.y), (int)std::min(miny + step, MAX_BOUNDS.y));
     std::uniform_int_distribution<> rand_z((int)std::min(minz, MAX_BOUNDS.z), (int)std::min(minz + step, MAX_BOUNDS.z));
 
-    las::Points points(point_format_id, 0);
+    las::Points points(point_format_id);
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Create a point with a given point format
