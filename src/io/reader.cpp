@@ -90,14 +90,14 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
     return out;
 }
 
-std::vector<las::Point> Reader::GetPoints(Node const &node)
+std::vector<las::Point> Reader::GetPoints(const Node &node)
 {
     std::vector<char> point_data = GetPointData(node);
     return Node::UnpackPoints(point_data, file_->GetLasHeader().point_format_id,
                               file_->GetLasHeader().point_record_length);
 }
 
-std::vector<las::Point> Reader::GetPoints(VoxelKey const &key)
+std::vector<las::Point> Reader::GetPoints(const VoxelKey &key)
 {
     std::vector<char> point_data = GetPointData(key);
     if (point_data.empty())
@@ -106,7 +106,7 @@ std::vector<las::Point> Reader::GetPoints(VoxelKey const &key)
                               file_->GetLasHeader().point_record_length);
 }
 
-std::vector<char> Reader::GetPointData(Node const &node)
+std::vector<char> Reader::GetPointData(const Node &node)
 {
     if (!node.IsValid())
         throw std::runtime_error("Cannot load an invalid node.");
@@ -118,7 +118,7 @@ std::vector<char> Reader::GetPointData(Node const &node)
     return point_data;
 }
 
-std::vector<char> Reader::GetPointData(VoxelKey const &key)
+std::vector<char> Reader::GetPointData(const VoxelKey &key)
 {
     std::vector<char> out;
     if (!key.IsValid())
@@ -131,7 +131,7 @@ std::vector<char> Reader::GetPointData(VoxelKey const &key)
     return GetPointData(node);
 }
 
-std::vector<char> Reader::GetPointDataCompressed(Node const &node)
+std::vector<char> Reader::GetPointDataCompressed(const Node &node)
 {
     if (!node.IsValid())
         throw std::runtime_error("Cannot load an invalid node.");
@@ -144,7 +144,7 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     return out;
 }
 
-std::vector<char> Reader::GetPointDataCompressed(VoxelKey const &key)
+std::vector<char> Reader::GetPointDataCompressed(const VoxelKey &key)
 {
     std::vector<char> out;
     if (!key.IsValid())
@@ -157,7 +157,7 @@ std::vector<char> Reader::GetPointDataCompressed(VoxelKey const &key)
     return GetPointDataCompressed(node);
 }
 
-std::vector<Node> Reader::GetAllChildren(VoxelKey key)
+std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
 {
     std::vector<Node> out;
     if (!key.IsValid())

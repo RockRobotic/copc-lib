@@ -19,19 +19,19 @@ class Reader : public BaseIO
 
     // Reads the node's data into an uncompressed byte array
     // Node needs to be valid for this function, it will error
-    std::vector<char> GetPointData(Node const &node);
+    std::vector<char> GetPointData(const Node &node);
     // VoxelKey can be invalid, function will return empty arr
-    std::vector<char> GetPointData(VoxelKey const &key);
+    std::vector<char> GetPointData(const VoxelKey &key);
     // Reads the node's data into Point objects
-    std::vector<las::Point> GetPoints(Node const &node);
-    std::vector<las::Point> GetPoints(VoxelKey const &key);
+    std::vector<las::Point> GetPoints(const Node &node);
+    std::vector<las::Point> GetPoints(const VoxelKey &key);
     // Reads node data without decompressing
-    std::vector<char> GetPointDataCompressed(Node const &node);
-    std::vector<char> GetPointDataCompressed(VoxelKey const &key);
+    std::vector<char> GetPointDataCompressed(const Node &node);
+    std::vector<char> GetPointDataCompressed(const VoxelKey &key);
 
     // Return all children of a page with a given key
     // (or the node itself, if it exists, if there isn't a page with that key)
-    std::vector<Node> GetAllChildren(VoxelKey key);
+    std::vector<Node> GetAllChildren(const VoxelKey &key);
     // Helper function to get all nodes from the root
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 
