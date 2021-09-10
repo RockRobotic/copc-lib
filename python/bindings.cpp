@@ -141,8 +141,8 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<Node>(m, "Node").def(py::init<>()).def(py::init<Entry>());
 
-    py::class_<Reader>(m, "Reader")
-        .def(py::init<std::istream &>())
+    py::class_<FileReader>(m, "FileReader")
+        .def(py::init<std::string &>())
         .def("GetPointData", static_cast<std::vector<char> (Reader::*)(const Node &)>(&Reader::GetPointData))
         .def("GetPointData", static_cast<std::vector<char> (Reader::*)(const VoxelKey &)>(&Reader::GetPointData))
         .def("GetPoints", static_cast<std::vector<las::Point> (Reader::*)(const Node &)>(&Reader::GetPoints))
@@ -155,7 +155,7 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)()>(&Reader::GetAllChildren));
 
     py::class_<Writer>(m, "Writer")
-        .def(py::init<std::ostream &, Writer::LasConfig const &, int, const std::string &>())
+        .def(py::init<std::string &, Writer::LasConfig const &, int, const std::string &>())
         .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &Writer::Close)
         .def("AddNode",

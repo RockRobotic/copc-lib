@@ -44,8 +44,8 @@ int main()
     // Get the Las Header
     auto las_header = reader.GetLasHeader();
     cout << endl << "Las Header:" << endl;
-    cout << "\tPoint format: " << (int)las_header.point_format_id << endl
-         << "\tPoint count: " << (int)las_header.point_count << endl;
+    cout << "\tPoint Format: " << (int)las_header.point_format_id << endl
+         << "\tPoint Count: " << (int)las_header.point_count << endl;
 
     // Get the WKT string
     auto wkt = reader.GetWkt();
