@@ -90,7 +90,7 @@ const int NUM_POINTS = 3000;
 std::random_device rd;  // obtain a random number from hardware
 std::mt19937 gen(rd()); // seed the generator
 
-las::Points RandomPoints(VoxelKey key, int point_format_id)
+las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
 {
     // cube size will be the maximum span
     double span = std::max({MAX_BOUNDS.x - MIN_BOUNDS.x, MAX_BOUNDS.y - MIN_BOUNDS.y, MAX_BOUNDS.z - MIN_BOUNDS.z});

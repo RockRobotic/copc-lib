@@ -20,7 +20,7 @@ class Points
     // Getters
     int8_t PointFormatID() const { return point_format_id_; }
     uint32_t PointRecordLength() const { return point_record_length_; }
-    uint32_t NumExtraBytes() { return Point::ComputeNumExtraBytes(point_format_id_, point_record_length_); }
+    uint32_t NumExtraBytes() const { return Point::ComputeNumExtraBytes(point_format_id_, point_record_length_); }
 
     // Vector functions
     std::vector<Point> Get() { return points_; }

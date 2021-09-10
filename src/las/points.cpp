@@ -1,5 +1,4 @@
 #include <copc-lib/las/points.hpp>
-#include <iterator>
 #include <sstream>
 #include <string>
 
@@ -12,7 +11,7 @@ Points::Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes) :
         throw std::runtime_error("Point format must be 0-10.");
 
     point_record_length_ = Point::ComputePointBytes(point_format_id, num_extra_bytes);
-};
+}
 
 Points::Points(const std::vector<Point> &points)
 {
