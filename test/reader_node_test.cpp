@@ -13,7 +13,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
     {
         fstream in_stream;
         in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(in_stream);
+        Reader reader(&in_stream);
 
         int record_length = reader.GetLasHeader().point_record_length;
 
@@ -55,7 +55,7 @@ TEST_CASE("GetPointDataCompressed Test", "[Reader] ")
     {
         fstream in_stream;
         in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(in_stream);
+        Reader reader(&in_stream);
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
@@ -71,7 +71,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
     {
         fstream in_stream;
         in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(in_stream);
+        Reader reader(&in_stream);
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);

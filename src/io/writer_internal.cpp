@@ -11,7 +11,7 @@ using namespace lazperf;
 namespace copc::Internal
 {
 
-WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcFile> &file,
+WriterInternal::WriterInternal(std::ostream *out_stream, const std::shared_ptr<CopcFile> &file,
                                std::shared_ptr<Hierarchy> hierarchy)
     : out_stream_(out_stream), file_(file), hierarchy_(hierarchy)
 {
@@ -22,7 +22,17 @@ WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<C
     // reserve enough space for the header & VLRs in the file
     char out_arr[FIRST_CHUNK_OFFSET()];
     std::memset(out_arr, 0, sizeof(out_arr));
-    out_stream_.write(out_arr, sizeof(out_arr));
+    out_stream_->write(out_arr, sizeof(out_arr));
+    open_ = true;
+}
+
+WriterInternal::WriterInternal(const std::shared_ptr<CopcFile> &file, std::shared_ptr<Hierarchy> hierarchy)
+    : file_(file), hierarchy_(hierarchy)
+{
+    // are extra bytes allowed to be an EVLR? If so we should just move it to be an EVLR
+    // but I don't know...
+    size_t eb_offset = file_->GetExtraBytes().size();
+    OFFSET_TO_POINT_DATA += eb_offset + las::VlrHeader().Size;
     open_ = true;
 }
 
@@ -73,22 +83,22 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     // Set the WKT bit.
     head14.global_encoding |= (1 << 4);
 
-    out_stream_.seekp(0);
-    head14.write(out_stream_);
+    out_stream_->seekp(0);
+    head14.write(*out_stream_);
 
     // Write the VLR.
     copc_data_.span = file_->GetCopc().span;
-    copc_data_.header().write(out_stream_);
-    copc_data_.write(out_stream_);
+    copc_data_.header().write(*out_stream_);
+    copc_data_.write(*out_stream_);
 
-    lazVlr.header().write(out_stream_);
-    lazVlr.write(out_stream_);
+    lazVlr.header().write(*out_stream_);
+    lazVlr.write(*out_stream_);
 
     if (head14.ebCount())
     {
         auto ebVlr = this->file_->GetExtraBytes();
-        ebVlr.header().write(out_stream_);
-        ebVlr.write(out_stream_);
+        ebVlr.header().write(*out_stream_);
+        ebVlr.write(*out_stream_);
     }
 }
 
@@ -99,13 +109,13 @@ void WriterInternal::WriteWkt(las::LasHeader &head14)
 
     wkt_vlr vlr(wkt);
 
-    out_stream_.seekp(0, std::ios::end);
-    auto offset = static_cast<uint64_t>(out_stream_.tellp());
+    out_stream_->seekp(0, std::ios::end);
+    auto offset = static_cast<uint64_t>(out_stream_->tellp());
     copc_data_.wkt_vlr_offset = offset + evlr_header::Size;
     copc_data_.wkt_vlr_size = vlr.size();
 
-    h.write(out_stream_);
-    vlr.write(out_stream_);
+    h.write(*out_stream_);
+    vlr.write(*out_stream_);
 
     // TODO: Let the Page writer set the evlr offset if no wkt exists
     head14.evlr_offset = offset;
@@ -115,10 +125,10 @@ void WriterInternal::WriteWkt(las::LasHeader &head14)
 void WriterInternal::WriteChunkTable()
 {
     // move to the end of the file to start emitting our compresed table
-    out_stream_.seekp(0, std::ios::end);
+    out_stream_->seekp(0, std::ios::end);
 
     // take note of where we're writing the chunk table, we need this later
-    auto chunk_table_offset = static_cast<int64_t>(out_stream_.tellp());
+    auto chunk_table_offset = static_cast<int64_t>(out_stream_->tellp());
 
     // Fixup the chunk table to be relative offsets rather than absolute ones.
     uint64_t prevOffset = FIRST_CHUNK_OFFSET();
@@ -131,38 +141,38 @@ void WriterInternal::WriteChunkTable()
 
     // write out the chunk table header (version and total chunks)
     uint32_t version = 0;
-    out_stream_.write((const char *)&version, sizeof(uint32_t));
+    out_stream_->write((const char *)&version, sizeof(uint32_t));
     if (chunks_.size() > (std::numeric_limits<uint32_t>::max)())
         throw std::runtime_error("You've got way too many chunks!");
     auto numChunks = static_cast<uint32_t>(chunks_.size());
-    out_stream_.write((const char *)&numChunks, sizeof(uint32_t));
+    out_stream_->write((const char *)&numChunks, sizeof(uint32_t));
 
     // Write the chunk table
-    OutFileStream w(out_stream_);
+    OutFileStream w(*out_stream_);
 
     compress_chunk_table(w.cb(), chunks_, true);
     // go back to where we're supposed to write chunk table offset
-    out_stream_.seekp(OFFSET_TO_POINT_DATA);
-    out_stream_.write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(chunk_table_offset));
+    out_stream_->seekp(OFFSET_TO_POINT_DATA);
+    out_stream_->write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(chunk_table_offset));
 }
 
 // Writes a node and returns the node's offset and size in the file
 Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool compressed)
 {
     Entry entry;
-    auto startpos = out_stream_.tellp();
+    auto startpos = out_stream_->tellp();
     if (startpos <= 0)
         throw std::runtime_error("Error during writing node!");
     entry.offset = static_cast<uint64_t>(startpos);
 
     if (compressed)
-        out_stream_.write(in.data(), in.size());
+        out_stream_->write(in.data(), in.size());
     else
-        point_count = laz::Compressor::CompressBytes(out_stream_, file_->GetLasHeader(), in);
+        point_count = laz::Compressor::CompressBytes(*out_stream_, file_->GetLasHeader(), in);
 
     point_count_14_ += point_count;
 
-    auto endpos = out_stream_.tellp();
+    auto endpos = out_stream_->tellp();
     if (endpos <= 0)
         throw std::runtime_error("Error during writing node!");
 
@@ -185,11 +195,11 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
 
     evlr_header h{0, "entwine", 1000, page_size, page->key.ToString()};
 
-    out_stream_.seekp(0, std::ios::end);
-    h.write(out_stream_);
+    out_stream_->seekp(0, std::ios::end);
+    h.write(*out_stream_);
 
     // Set the page's offset/size
-    auto offset = static_cast<uint64_t>(out_stream_.tellp());
+    auto offset = static_cast<uint64_t>(out_stream_->tellp());
     page->offset = offset;
     if (page_size > (std::numeric_limits<int32_t>::max)())
         throw std::runtime_error("Page is too large!");
@@ -203,9 +213,9 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     }
 
     for (const auto &node : page->nodes)
-        node->Pack(out_stream_);
+        node->Pack(*out_stream_);
     for (const auto &node : page->sub_pages)
-        node->Pack(out_stream_);
+        node->Pack(*out_stream_);
 }
 
 // https://en.wikipedia.org/wiki/Tree_traversal#Arbitrary_trees

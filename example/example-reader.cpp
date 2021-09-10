@@ -32,7 +32,7 @@ int main()
     in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
 
     // Create a reader object
-    Reader reader(in_stream);
+    Reader reader(&in_stream);
 
     // We can get the CopcData struct
     auto copc_vlr = reader.GetCopcHeader();

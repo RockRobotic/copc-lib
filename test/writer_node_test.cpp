@@ -14,7 +14,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(out_stream, cfg);
+        Writer writer(&out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
 
@@ -26,7 +26,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
 
@@ -42,7 +42,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(out_stream, cfg, 256, "test_wkt");
+        Writer writer(&out_stream, cfg, 256, "test_wkt");
 
         Page root_page = writer.GetRootPage();
 
@@ -58,7 +58,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         writer.Close();
 
         std::string ostr = out_stream.str();
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
@@ -89,7 +89,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(out_stream, cfg);
+        Writer writer(&out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
         Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
@@ -121,7 +121,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
                     Node 2-2-2-2
         */
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
@@ -159,7 +159,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(out_stream, cfg);
+        Writer writer(&out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
 
@@ -171,7 +171,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
 
@@ -187,7 +187,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(out_stream, cfg, 256, "test_wkt");
+        Writer writer(&out_stream, cfg, 256, "test_wkt");
 
         Page root_page = writer.GetRootPage();
 
@@ -206,7 +206,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         writer.Close();
 
         std::string ostr = out_stream.str();
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 
@@ -237,7 +237,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(out_stream, cfg);
+        Writer writer(&out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
         Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
@@ -272,7 +272,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
                     Node 2-2-2-2
         */
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
 

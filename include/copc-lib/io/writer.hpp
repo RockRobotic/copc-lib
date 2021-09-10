@@ -73,7 +73,9 @@ class Writer : public BaseIO
         uint64_t points_by_return_14[15]{};
     };
 
-    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "");
+    Writer(std::ostream *out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "");
+
+    Writer(const std::string &file_path, LasConfig const &config, int span = 0, const std::string &wkt = "");
 
     Page GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
 
@@ -87,6 +89,12 @@ class Writer : public BaseIO
 
     // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
+
+    ~Writer()
+    {
+        if (writer_->IsOpen())
+            this->Close();
+    }
 
   private:
     std::unique_ptr<Internal::WriterInternal> writer_;
