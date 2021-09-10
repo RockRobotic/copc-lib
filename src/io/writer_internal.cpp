@@ -29,7 +29,6 @@ WriterInternal::WriterInternal(std::ostream *out_stream, const std::shared_ptr<C
 WriterInternal::WriterInternal(const std::shared_ptr<CopcFile> &file, std::shared_ptr<Hierarchy> hierarchy)
     : file_(file), hierarchy_(hierarchy)
 {
-
     // are extra bytes allowed to be an EVLR? If so we should just move it to be an EVLR
     // but I don't know...
     size_t eb_offset = file_->GetExtraBytes().size();

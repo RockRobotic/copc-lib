@@ -62,14 +62,17 @@ class FileReader : public Reader
   public:
     FileReader(const std::string &file_path)
     {
-        auto fstream = new std::fstream;
-        fstream->open(file_path.c_str(), std::ios::in | std::ios::binary);
-        in_stream_ = fstream;
+        in_stream_ = new std::fstream;
+        dynamic_cast<std::fstream *>(in_stream_)->open(file_path.c_str(), std::ios::in | std::ios::binary);
 
         InitFile();
     }
 
-    ~FileReader() { delete in_stream_; }
+    ~FileReader()
+    {
+        dynamic_cast<std::fstream *>(in_stream_)->close();
+        delete in_stream_;
+    }
 };
 
 } // namespace copc

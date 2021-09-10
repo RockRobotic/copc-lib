@@ -90,6 +90,12 @@ class Writer : public BaseIO
     // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
 
+    ~Writer()
+    {
+        if (writer_->IsOpen())
+            this->Close();
+    }
+
   private:
     std::unique_ptr<Internal::WriterInternal> writer_;
 

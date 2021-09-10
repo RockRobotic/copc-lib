@@ -25,11 +25,13 @@ class WriterInternal
     // Writes the header and COPC vlrs
     void Close();
     // Call close on destructor if needed
-    ~WriterInternal()
+    virtual ~WriterInternal()
     {
         if (this->open_)
             Close();
     }
+
+    bool IsOpen() const { return open_; }
 
     // Writes a chunk to the laz file
     Entry WriteNode(std::vector<char> in, int32_t point_count, bool compressed);
@@ -62,18 +64,22 @@ class FileWriterInternal : public WriterInternal
                        std::shared_ptr<Hierarchy> hierarchy)
         : WriterInternal(file, hierarchy)
     {
-
         // Create out_stream from file_path
-        auto fstream = new std::fstream;
-        fstream->open(file_path.c_str(), std::ios::out | std::ios::binary);
-        out_stream_ = fstream;
+        out_stream_ = new std::fstream;
+        dynamic_cast<std::fstream *>(out_stream_)->open(file_path.c_str(), std::ios::out | std::ios::binary);
         // reserve enough space for the header & VLRs in the file
         char out_arr[FIRST_CHUNK_OFFSET()];
         std::memset(out_arr, 0, sizeof(out_arr));
         out_stream_->write(out_arr, sizeof(out_arr));
     }
 
-    ~FileWriterInternal() { delete out_stream_; }
+    ~FileWriterInternal() override
+    {
+        if (this->open_)
+            Close();
+        dynamic_cast<std::fstream *>(out_stream_)->close();
+        delete out_stream_;
+    }
 };
 
 } // namespace copc::Internal
