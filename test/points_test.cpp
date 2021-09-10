@@ -24,7 +24,7 @@ TEST_CASE("Points tests", "[Point]")
         point1.Z(11);
         point_vec.push_back(point1);
 
-        auto point2 = Point(3, 4);
+        auto point2 = points.NewPoint();
         point_vec.push_back(point2);
 
         auto point3 = Point(3, 4);
