@@ -17,7 +17,7 @@ void TrimFileExample()
     // We'll get our point data from this file
     fstream in_stream;
     in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-    Reader reader(in_stream);
+    Reader reader(&in_stream);
     auto old_header = reader.GetLasHeader();
 
     {
@@ -29,7 +29,7 @@ void TrimFileExample()
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
-        Writer writer(out_stream, cfg, reader.GetCopcHeader().span, reader.GetWkt());
+        Writer writer(&out_stream, cfg, reader.GetCopcHeader().span, reader.GetWkt());
 
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
@@ -63,7 +63,7 @@ void TrimFileExample()
     // Now, let's test our new file
     fstream test_stream;
     test_stream.open("test/data/autzen-trimmed.copc.laz", ios::in | ios::binary);
-    Reader new_reader(test_stream);
+    Reader new_reader(&test_stream);
 
     // Make sure all the point data we just wrote gets copied over
     for (auto node : new_reader.GetAllChildren())
@@ -139,7 +139,7 @@ void NewFileExample()
                       (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
     // Now, we can create our actual writer, with an optional `span` and `wkt`:
-    Writer writer(out_stream, cfg, 256, "TEST_WKT");
+    Writer writer(&out_stream, cfg, 256, "TEST_WKT");
 
     // The root page is automatically created and added for us
     Page root_page = writer.GetRootPage();
