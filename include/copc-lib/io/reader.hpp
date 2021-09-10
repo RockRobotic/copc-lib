@@ -66,11 +66,6 @@ class FileReader : public Reader
         fstream->open(file_path.c_str(), std::ios::in | std::ios::binary);
         in_stream_ = fstream;
 
-        if (!this->in_stream_->good())
-            throw std::runtime_error("Invalid input stream!");
-
-        this->reader_ = std::make_unique<lazperf::reader::generic_file>(*this->in_stream_);
-
         InitFile();
     }
 

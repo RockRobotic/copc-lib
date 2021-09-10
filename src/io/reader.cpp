@@ -7,18 +7,16 @@
 namespace copc
 {
 
-Reader::Reader(std::istream *in_stream) : in_stream_(in_stream)
+Reader::Reader(std::istream *in_stream) : in_stream_(in_stream) { InitFile(); }
+
+void Reader::InitFile()
 {
+
     if (!this->in_stream_->good())
         throw std::runtime_error("Invalid input stream!");
 
     this->reader_ = std::make_unique<lazperf::reader::generic_file>(*this->in_stream_);
 
-    InitFile();
-}
-
-void Reader::InitFile()
-{
     auto header = this->reader_->header();
 
     std::map<uint64_t, las::VlrHeader> vlrs = ReadVlrs();
