@@ -36,7 +36,9 @@ class Reader : public BaseIO
     // Helper function to get all nodes from the root
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 
-  private:
+  protected:
+    Reader() = default;
+
     std::istream *in_stream_{};
 
     std::unique_ptr<lazperf::reader::generic_file> reader_;
@@ -55,7 +57,7 @@ class Reader : public BaseIO
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override;
 };
 
-class FileReader : private Reader
+class FileReader : public Reader
 {
   public:
     FileReader(const std::string &file_path)
