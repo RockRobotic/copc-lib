@@ -20,8 +20,6 @@ void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, int s
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file_, this->hierarchy_);
 }
 
-void Writer::Close() { this->writer_->Close(); }
-
 // Create a page, add it to the hierarchy and reference it as a subpage in the parent
 Page Writer::AddSubPage(Page &parent, VoxelKey key)
 {

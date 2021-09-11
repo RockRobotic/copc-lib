@@ -162,60 +162,60 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             writer.Close();
         }
 
-        //        SECTION("COPC Span")
-        //        {
-        //            string file_path = "test/data/writer_test.copc.laz";
-        //
-        //            Writer::LasConfig cfg(0);
-        //            FileWriter writer(file_path, cfg, 256);
-        //
-        //            // todo: use Reader to check all of these
-        //            auto span = writer.GetCopcHeader().span;
-        //            REQUIRE(span == 256);
-        //
-        //            writer.Close();
-        //
-        //            FileReader reader(file_path);
-        //            REQUIRE(reader.GetCopcHeader().span == 256);
-        //        }
+        SECTION("COPC Span")
+        {
+            string file_path = "test/data/writer_test.copc.laz";
 
-        //        SECTION("WKT")
-        //        {
-        //            string file_path = "test/data/writer_test.copc.laz";
-        //
-        //            Writer::LasConfig cfg(0);
-        //            Writer writer(file_path, cfg, 256, "TEST_WKT");
-        //
-        //            // todo: use Reader to check all of these
-        //            REQUIRE(writer.GetWkt() == "TEST_WKT");
-        //
-        //            writer.Close();
-        //
-        ////            FileReader reader(file_path);
-        ////            REQUIRE(reader.GetWkt() == "TEST_WKT");
-        //        }
-        //
-        //        SECTION("Copy")
-        //        {
-        //            FileReader orig("test/data/autzen-classified.copc.laz");
-        //
-        //            string file_path = "test/data/writer_test.copc.laz";
-        //            Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
-        //            Writer writer(file_path, cfg);
-        //            writer.Close();
+            Writer::LasConfig cfg(0);
+            FileWriter writer(file_path, cfg, 256);
 
-        //            FileReader reader(file_path);
-        //            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-        //            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-        //            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
-        //            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
-        //            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-        //            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
-        //            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
-        //            REQUIRE(reader.GetLasHeader().point_count == 0);
-        //            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
-        //            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
-        //        }
+            // todo: use Reader to check all of these
+            auto span = writer.GetCopcHeader().span;
+            REQUIRE(span == 256);
+
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetCopcHeader().span == 256);
+        }
+
+        SECTION("WKT")
+        {
+            string file_path = "test/data/writer_test.copc.laz";
+
+            Writer::LasConfig cfg(0);
+            FileWriter writer(file_path, cfg, 256, "TEST_WKT");
+
+            // todo: use Reader to check all of these
+            REQUIRE(writer.GetWkt() == "TEST_WKT");
+
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetWkt() == "TEST_WKT");
+        }
+
+        SECTION("Copy")
+        {
+            FileReader orig("test/data/autzen-classified.copc.laz");
+
+            string file_path = "test/data/writer_test.copc.laz";
+            Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
+            FileWriter writer(file_path, cfg);
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
+            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
+            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
+            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
+            REQUIRE(reader.GetLasHeader().point_count == 0);
+            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
+            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
+        }
     }
 }
 

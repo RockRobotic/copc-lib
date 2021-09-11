@@ -78,7 +78,11 @@ class Writer : public BaseIO
     Page GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
 
     // Writes the file out
-    void Close();
+    virtual void Close()
+    {
+        if (writer_->IsOpen())
+            writer_->Close();
+    }
 
     // Adds a node to a given page
     Node AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &points);
@@ -91,7 +95,7 @@ class Writer : public BaseIO
     virtual ~Writer()
     {
         if (writer_->IsOpen())
-            this->Close();
+            writer_->Close();
     }
 
   protected:
@@ -122,12 +126,14 @@ class FileWriter : public Writer
         InitWriter(f_stream_, config, span, wkt);
     }
 
-    ~FileWriter() override
+    void Close() override
     {
         if (writer_->IsOpen())
-            this->Close();
+            writer_->Close();
         f_stream_.close();
     }
+
+    ~FileWriter() override { f_stream_.close(); }
 
   private:
     std::fstream f_stream_;
