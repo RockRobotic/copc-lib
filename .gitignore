@@ -34,3 +34,4 @@ build/*
 *.app
 
 /CMakeSettings.json
+/test/data/autzen-classified.copc.laz

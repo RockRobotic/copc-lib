@@ -7,7 +7,7 @@
 namespace copc
 {
 
-Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt)
+Writer::Writer(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt)
 {
     InitWriter(out_stream, config, span, wkt);
 }

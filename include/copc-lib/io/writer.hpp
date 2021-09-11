@@ -73,7 +73,7 @@ class Writer : public BaseIO
         uint64_t points_by_return_14[15]{};
     };
 
-    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "");
+    Writer(std::ostream &out_stream, LasConfig const &config, const int &span = 0, const std::string &wkt = "");
 
     Page GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
 

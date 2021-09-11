@@ -128,6 +128,7 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &las::Point::ToString)
         .def("__repr__", &las::Point::ToString);
 
+    // TODO[Leo]: Update functions after merging PR29
     py::class_<las::Points>(m, "Points")
         .def(py::init<const uint8_t &, const uint16_t &>())
         .def(py::init<const uint8_t &, const uint16_t &, const uint32_t &>())
@@ -154,8 +155,8 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)(const VoxelKey &)>(&Reader::GetAllChildren))
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)()>(&Reader::GetAllChildren));
 
-    py::class_<Writer>(m, "Writer")
-        .def(py::init<std::string &, Writer::LasConfig const &, int, const std::string &>())
+    py::class_<FileWriter>(m, "FileWriter")
+        .def(py::init<std::string &, Writer::LasConfig const &, const int &, const std::string &>())
         .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &Writer::Close)
         .def("AddNode",
