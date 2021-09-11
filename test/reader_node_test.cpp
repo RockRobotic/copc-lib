@@ -76,7 +76,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
 
-        auto points = reader.GetPoints(hier_entry);
+        auto points = reader.GetPoints(hier_entry).Get();
 
         REQUIRE(points.size() == hier_entry.point_count);
 

@@ -24,7 +24,7 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
 
         // Pack loaded points into stream
         ostringstream oss;
-        Node::PackPoints(points, oss);
+        points.Pack(oss);
 
         // Write stream into vector<char> to compare with point_data
         vector<char> point_data_write;

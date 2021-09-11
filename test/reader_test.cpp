@@ -144,8 +144,8 @@ TEST_CASE("Point Error Handling Test", "[Reader] ")
         REQUIRE_THROWS(reader.GetPoints(invalid_node));
         REQUIRE_NOTHROW(reader.GetPoints(valid_node));
 
-        REQUIRE(reader.GetPoints(invalid_node.key).empty());
-        REQUIRE(!reader.GetPoints(valid_node.key).empty());
+        REQUIRE(reader.GetPoints(invalid_node.key).Get().empty());
+        REQUIRE(!reader.GetPoints(valid_node.key).Get().empty());
 
         REQUIRE_THROWS(reader.GetPointDataCompressed(invalid_node));
         REQUIRE_NOTHROW(reader.GetPointDataCompressed(valid_node));

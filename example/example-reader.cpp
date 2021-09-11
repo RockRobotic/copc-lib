@@ -9,23 +9,6 @@
 using namespace copc;
 using namespace std;
 
-void PrintPoints(vector<char> point_vec, int point_record_length)
-{
-    auto point_buff = point_vec.data();
-    for (int i = 0; i < 5; i++)
-    {
-        int pointOffset = i * point_record_length;
-
-        int32_t x, y, z;
-
-        size_t point_size = sizeof(x);
-        memcpy(&x, point_buff + pointOffset, point_size);
-        memcpy(&y, point_buff + pointOffset + point_size, point_size);
-        memcpy(&z, point_buff + pointOffset + point_size * 2, point_size);
-        cout << "Point " << i << ": X=" << x << ", Y=" << y << ", Z=" << z << endl;
-    }
-}
-
 int main()
 {
     fstream in_stream;
@@ -54,79 +37,45 @@ int main()
     cout << endl;
 
     {
-        // Create a new root key (0-0-0-0)
-        VoxelKey key(0, 0, 0, 0);
+        VoxelKey load_key(4, 11, 9, 0);
 
         // FindNode will automatically load the minimum pages needed
         // to find the key you request
-        Node root_node = reader.FindNode(key);
-        cout << root_node.ToString() << endl;
-
-        // If a key doesn't exist, FindNode will return an "invalid" node
-        VoxelKey key_does_not_exist(5, 4, 20, 8);
-        Node invalid_node = reader.FindNode(key_does_not_exist);
-        if (!invalid_node.IsValid())
-            cout << endl << "Key " << key_does_not_exist.ToString() << " does not exist!";
-    }
-
-    cout << endl;
-
-    {
-        // Now, we will load the point data from a node in the hierarchy
-        VoxelKey load_key(4, 11, 9, 0);
-
         Node node = reader.FindNode(load_key);
-        vector<char> uncompressed_data = reader.GetPointData(node);
+        // If FindNode can't find the node, it will return an "invalid" node:
+        if (!node.IsValid())
+            exit(123);
 
-        cout << endl << "First 5 points: " << endl;
-        PrintPoints(uncompressed_data, las_header.point_record_length);
-    }
+        // GetPoints returns a Points object, which provides helper functions
+        // as well as a Get() function to access the underlying point vector
+        las::Points node_points = reader.GetPoints(node);
 
-    {
-        // We can also load into "Point" objects, which have accessors:
-        VoxelKey load_key(4, 11, 9, 0);
-
-        Node node = reader.FindNode(load_key);
-        auto node_data = reader.GetPoints(node);
+        cout << node_points.ToString() << endl;
 
         cout << endl << "First 5 points: " << endl;
         for (int i = 0; i < 5; i++)
         {
-            cout << "Point " << i << ": " << endl
-                 << "{" << endl
-                 << node_data[i].ToString() << endl
-                 << "}" << endl
-                 << endl;
+            cout << node_points.Get(i).ToString() << endl;
         }
     }
 
+    // We can also get the raw compressed data if we want to decompress it ourselves:
     {
-        // Note that trying to get an invalid node's data will result in an exception:
-        VoxelKey key_does_not_exist(5, 4, 20, 8);
-        Node invalid_node = reader.FindNode(key_does_not_exist);
-
-        try
-        {
-            auto node_data = reader.GetPointData(invalid_node);
-        }
-        catch (std::runtime_error)
-        {
-            cout << "Can't get point data of an invalid node!" << endl;
-        }
-    }
-
-    {
-        // We can also get the raw compressed data if we want to decompress it ourselves:
         VoxelKey loadKey(4, 11, 9, 0);
 
         Node node = reader.FindNode(loadKey);
+        if (!node.IsValid())
+            exit(123);
         vector<char> compressed_data = reader.GetPointDataCompressed(node);
 
-        // only decompress the first 5 points
-        // or we can decompress the entire node by passing node.point_count
-        auto uncompressed_data = copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, 5);
+        // We can decompress `n` number of points, or we can decompress the entire node
+        // by setting n=node.point_count
+        int num_points_to_decompress = 5;
+        vector<char> uncompressed_data =
+            copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, num_points_to_decompress);
 
-        cout << endl << "5 decompressed points: " << endl;
-        PrintPoints(uncompressed_data, las_header.point_record_length);
+        cout << endl
+             << "Successfully decompressed " << uncompressed_data.size() / las_header.point_record_length << " points!"
+             << endl;
     }
 }
