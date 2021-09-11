@@ -9,6 +9,7 @@
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/hierarchy/page.hpp>
 #include <copc-lib/io/base_io.hpp>
+#include <copc-lib/las/points.hpp>
 #include <copc-lib/las/vlr.hpp>
 
 namespace copc
@@ -16,23 +17,23 @@ namespace copc
 class Reader : public BaseIO
 {
   public:
-    Reader(std::istream *in_stream);
+    Reader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
 
     // Reads the node's data into an uncompressed byte array
     // Node needs to be valid for this function, it will error
-    std::vector<char> GetPointData(const Node &node);
+    std::vector<char> GetPointData(Node const &node);
     // VoxelKey can be invalid, function will return empty arr
-    std::vector<char> GetPointData(const VoxelKey &key);
+    std::vector<char> GetPointData(VoxelKey const &key);
     // Reads the node's data into Point objects
-    std::vector<las::Point> GetPoints(const Node &node);
-    std::vector<las::Point> GetPoints(const VoxelKey &key);
+    las::Points GetPoints(Node const &node);
+    las::Points GetPoints(VoxelKey const &key);
     // Reads node data without decompressing
-    std::vector<char> GetPointDataCompressed(const Node &node);
-    std::vector<char> GetPointDataCompressed(const VoxelKey &key);
+    std::vector<char> GetPointDataCompressed(Node const &node);
+    std::vector<char> GetPointDataCompressed(VoxelKey const &key);
 
     // Return all children of a page with a given key
     // (or the node itself, if it exists, if there isn't a page with that key)
-    std::vector<Node> GetAllChildren(const VoxelKey &key);
+    std::vector<Node> GetAllChildren(VoxelKey key);
     // Helper function to get all nodes from the root
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 

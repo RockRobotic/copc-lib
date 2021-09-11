@@ -7,11 +7,6 @@
 namespace copc
 {
 
-Writer::Writer(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt)
-{
-    InitWriter(out_stream, config, span, wkt);
-}
-
 void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
@@ -62,9 +57,13 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     return *node;
 }
 
-Node Writer::AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &points)
+Node Writer::AddNode(Page &page, VoxelKey key, las::Points &points)
 {
-    std::vector<char> uncompressed = Node::PackPoints(points);
+    auto header = file_->GetLasHeader();
+    if (points.PointFormatID() != header.point_format_id || points.PointRecordLength() != header.point_record_length)
+        throw std::runtime_error("New points must be of same format and size.");
+
+    std::vector<char> uncompressed = points.Pack();
     return AddNode(page, key, uncompressed);
 }
 

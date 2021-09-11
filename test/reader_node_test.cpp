@@ -11,9 +11,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         int record_length = reader.GetLasHeader().point_record_length;
 
@@ -53,9 +51,7 @@ TEST_CASE("GetPointDataCompressed Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
@@ -69,14 +65,12 @@ TEST_CASE("GetPoints Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
 
-        auto points = reader.GetPoints(hier_entry);
+        auto points = reader.GetPoints(hier_entry).Get();
 
         REQUIRE(points.size() == hier_entry.point_count);
 

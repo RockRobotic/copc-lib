@@ -11,7 +11,7 @@
 using namespace copc;
 using namespace std;
 
-// In this example, we filter the autzen dataset to only contain depth levels 0-3.
+// In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
 void TrimFileExample()
 {
     // We'll get our point data from this file
@@ -28,25 +28,27 @@ void TrimFileExample()
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
 
-        for (auto node : reader.GetAllChildren())
+        // GetAllChildren will load the entire hierarchy under a given key
+        for (auto node : reader.GetAllChildren(root_page.key))
         {
             // In this example, we'll only save up to depth level 3.
             if (node.key.d > 3)
                 continue;
-            // it's much faster to write and read compressed data, as then we don't have to decompress/recompress
+
+            // It's much faster to write and read compressed data, to avoid compression and decompression
             writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
 
-            // Alternatively, if we have uncompressed data and want to compress it seperatly,
-            // (for example, multithread compress the data and write it later),
+            // Alternatively, if we have uncompressed data and want to compress it without writing it to the file,
+            // (for example, compress multiple nodes in parallel and have one thread writing the data),
             // we can use the Compressor class:
             /*
                 #include <copc-lib/laz/compressor.hpp>
                 las::LasHeader header = writer.GetLasHeader();
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
-                std::vector<char> compressed_points = laz::Compressor(uncompressed_points, header.point_format_id,
-                                                                      cfg.extra_bytes.size(),
-               header.point_record_length); writer.AddNodeCompressed(root_page, node.key, compressed_points,
-               node.point_count);
+                std::vector<char> compressed_points =
+                                                    laz::Compressor(uncompressed_points, header.point_format_id,
+                                                                cfg.extra_bytes.size(), header.point_record_length);
+                writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
             */
         }
 
@@ -57,13 +59,13 @@ void TrimFileExample()
     // Now, let's test our new file
     FileReader new_reader("test/data/autzen-trimmed.copc.laz");
 
-    // Make sure all the point data we just wrote gets copied over
+    // Let's go through each node we've written and make sure it matches the original
     for (auto node : new_reader.GetAllChildren())
     {
         assert(new_reader.GetPointDataCompressed(node) == reader.GetPointDataCompressed(node.key));
 
         // Similarly, we could retrieve the compressed node data from the file
-        // and decompress it when we want using the Decompressor
+        // and decompress it later using the Decompressor class
         /*
             #include <copc-lib/laz/decompressor.hpp>
             las::LasHeader header = writer.GetLasHeader();
@@ -82,22 +84,24 @@ const int NUM_POINTS = 3000;
 std::random_device rd;  // obtain a random number from hardware
 std::mt19937 gen(rd()); // seed the generator
 
-std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id)
+// This function will generate `NUM_POINTS` random points within the voxel bounds
+las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
 {
-    // cube size will be the maximum span
+    // Voxel cube dimensions will be calculated from the maximum span of the file
     double span = std::max({MAX_BOUNDS.x - MIN_BOUNDS.x, MAX_BOUNDS.y - MIN_BOUNDS.y, MAX_BOUNDS.z - MIN_BOUNDS.z});
-    // step size accounts for depth level
+    // Step size accounts for depth level
     double step = span / std::pow(2, key.d);
 
     double minx = MIN_BOUNDS.x + (step * key.x);
     double miny = MIN_BOUNDS.y + (step * key.y);
     double minz = MIN_BOUNDS.z + (step * key.z);
 
+    // Random num generators between the min and max spatial bounds of the voxel
     std::uniform_int_distribution<> rand_x((int)std::min(minx, MAX_BOUNDS.x), (int)std::min(minx + step, MAX_BOUNDS.x));
     std::uniform_int_distribution<> rand_y((int)std::min(miny, MAX_BOUNDS.y), (int)std::min(miny + step, MAX_BOUNDS.y));
     std::uniform_int_distribution<> rand_z((int)std::min(minz, MAX_BOUNDS.z), (int)std::min(minz + step, MAX_BOUNDS.z));
 
-    std::vector<las::Point> points;
+    las::Points points(point_format_id);
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Create a point with a given point format
@@ -109,7 +113,7 @@ std::vector<las::Point> RandomPoints(VoxelKey key, int point_format_id)
         // For visualization purposes
         point.PointSourceID(key.d + key.x + key.y + key.d);
 
-        points.push_back(point);
+        points.AddPoint(point);
     }
     return points;
 }
@@ -126,10 +130,10 @@ void NewFileExample()
     cfg.max = vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
                       (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
-    // Now, we can create our actual writer, with an optional `span` and `wkt`:
+    // Now, we can create our COPC writer, with an optional `span` and `wkt`:
     FileWriter writer("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT");
 
-    // The root page is automatically created and added for us
+    // The root page is automatically created
     Page root_page = writer.GetRootPage();
 
     // First we'll add a root node

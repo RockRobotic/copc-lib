@@ -25,11 +25,7 @@ class WriterInternal
     // Writes the header and COPC vlrs
     void Close();
     // Call close on destructor if needed
-    ~WriterInternal()
-    {
-        if (this->open_)
-            Close();
-    }
+    ~WriterInternal() { Close(); }
 
     bool IsOpen() const { return open_; }
 

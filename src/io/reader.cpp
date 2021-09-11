@@ -7,8 +7,6 @@
 namespace copc
 {
 
-Reader::Reader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
-
 void Reader::InitReader()
 {
 
@@ -89,23 +87,26 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
     return out;
 }
 
-std::vector<las::Point> Reader::GetPoints(const Node &node)
+las::Points Reader::GetPoints(Node const &node)
 {
     std::vector<char> point_data = GetPointData(node);
-    return Node::UnpackPoints(point_data, file_->GetLasHeader().point_format_id,
-                              file_->GetLasHeader().point_record_length);
+    return las::Points::Unpack(point_data, file_->GetLasHeader().point_format_id,
+                               file_->GetLasHeader().point_record_length);
 }
 
-std::vector<las::Point> Reader::GetPoints(const VoxelKey &key)
+las::Points Reader::GetPoints(VoxelKey const &key)
 {
     std::vector<char> point_data = GetPointData(key);
+
+    auto point_format_id = file_->GetLasHeader().point_format_id;
+    auto point_record_length = file_->GetLasHeader().point_record_length;
+    auto eb_count = las::Point::ComputeNumExtraBytes(point_format_id, point_record_length);
     if (point_data.empty())
-        return {};
-    return Node::UnpackPoints(point_data, file_->GetLasHeader().point_format_id,
-                              file_->GetLasHeader().point_record_length);
+        return las::Points(point_format_id, eb_count);
+    return las::Points::Unpack(point_data, point_format_id, point_record_length);
 }
 
-std::vector<char> Reader::GetPointData(const Node &node)
+std::vector<char> Reader::GetPointData(Node const &node)
 {
     if (!node.IsValid())
         throw std::runtime_error("Cannot load an invalid node.");
@@ -117,7 +118,7 @@ std::vector<char> Reader::GetPointData(const Node &node)
     return point_data;
 }
 
-std::vector<char> Reader::GetPointData(const VoxelKey &key)
+std::vector<char> Reader::GetPointData(VoxelKey const &key)
 {
     std::vector<char> out;
     if (!key.IsValid())
@@ -130,7 +131,7 @@ std::vector<char> Reader::GetPointData(const VoxelKey &key)
     return GetPointData(node);
 }
 
-std::vector<char> Reader::GetPointDataCompressed(const Node &node)
+std::vector<char> Reader::GetPointDataCompressed(Node const &node)
 {
     if (!node.IsValid())
         throw std::runtime_error("Cannot load an invalid node.");
@@ -143,7 +144,7 @@ std::vector<char> Reader::GetPointDataCompressed(const Node &node)
     return out;
 }
 
-std::vector<char> Reader::GetPointDataCompressed(const VoxelKey &key)
+std::vector<char> Reader::GetPointDataCompressed(VoxelKey const &key)
 {
     std::vector<char> out;
     if (!key.IsValid())
@@ -156,7 +157,7 @@ std::vector<char> Reader::GetPointDataCompressed(const VoxelKey &key)
     return GetPointDataCompressed(node);
 }
 
-std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
+std::vector<Node> Reader::GetAllChildren(VoxelKey key)
 {
     std::vector<Node> out;
     if (!key.IsValid())
