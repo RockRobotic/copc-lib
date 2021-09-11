@@ -1,4 +1,3 @@
-#include <cfloat>
 #include <limits>
 
 #include <catch2/catch.hpp>
@@ -39,6 +38,9 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get()[0].X() == 11);
         REQUIRE(points.Get()[0].Y() == 11);
         REQUIRE(points.Get()[0].Z() == 11);
+
+        points.ToStringSummary();
+        points.ToString();
     }
 
     SECTION("Adding Point to Points")
