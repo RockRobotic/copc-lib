@@ -41,6 +41,9 @@ class Points
     void Pack(std::ostream &out_stream);
     static Points Unpack(const std::vector<char> &point_data, int8_t point_format_id, int point_record_length);
 
+    std::string ToStringSummary() const;
+    std::string ToString() const;
+
   private:
     std::vector<Point> points_;
     int8_t point_format_id_;

@@ -99,4 +99,23 @@ std::vector<char> Points::Pack()
     return std::vector<char>(ostr.begin(), ostr.end());
 }
 
+std::string Points::ToStringSummary() const
+{
+    std::stringstream ss;
+    ss << "Points: " << std::endl;
+    ss << "Point Format: " << static_cast<int>(point_format_id_) << std::endl;
+    ss << "Point Record Length: " << point_record_length_ << std::endl;
+    ss << "Number of Points: " << points_.size() << std::endl;
+    return ss.str();
+}
+
+std::string Points::ToString() const
+{
+    std::stringstream ss;
+    ss << ToStringSummary();
+    for (const auto &point : points_)
+        ss << point.ToString();
+    return ss.str();
+}
+
 } // namespace copc::las
