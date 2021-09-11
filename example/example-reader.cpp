@@ -11,11 +11,8 @@ using namespace std;
 
 int main()
 {
-    fstream in_stream;
-    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-
     // Create a reader object
-    Reader reader(in_stream);
+    FileReader reader("test/data/autzen-classified.copc.laz");
 
     // We can get the CopcData struct
     auto copc_vlr = reader.GetCopcHeader();

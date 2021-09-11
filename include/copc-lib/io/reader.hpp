@@ -2,6 +2,7 @@
 #define COPCLIB_IO_READER_H_
 
 #include <istream>
+#include <string>
 
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/hierarchy/internal/hierarchy.hpp>
@@ -16,7 +17,7 @@ namespace copc
 class Reader : public BaseIO
 {
   public:
-    Reader(std::istream &in_stream);
+    Reader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
 
     // Reads the node's data into an uncompressed byte array
     // Node needs to be valid for this function, it will error
@@ -36,13 +37,15 @@ class Reader : public BaseIO
     // Helper function to get all nodes from the root
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 
-  private:
-    std::istream &in_stream_;
+  protected:
+    Reader() = default;
+
+    std::istream *in_stream_;
 
     std::unique_ptr<lazperf::reader::generic_file> reader_;
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitFile();
+    void InitReader();
     // Reads file VLRs into vlrs_
     std::map<uint64_t, las::VlrHeader> ReadVlrs();
     // Finds and loads the COPC vlr
@@ -54,5 +57,25 @@ class Reader : public BaseIO
 
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override;
 };
+
+class FileReader : public Reader
+{
+  public:
+    FileReader(const std::string &file_path)
+    {
+        auto f_stream = new std::fstream;
+        f_stream->open(file_path.c_str(), std::ios::in | std::ios::binary);
+        in_stream_ = f_stream;
+
+        InitReader();
+    }
+
+    ~FileReader()
+    {
+        dynamic_cast<std::fstream *>(in_stream_)->close();
+        delete in_stream_;
+    }
+};
+
 } // namespace copc
 #endif // COPCLIB_IO_READER_H_

@@ -74,12 +74,15 @@ class Writer : public BaseIO
         uint64_t points_by_return_14[15]{};
     };
 
-    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "");
+    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "")
+    {
+        InitWriter(out_stream, config, span, wkt);
+    }
 
     Page GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
 
     // Writes the file out
-    void Close();
+    virtual void Close() { writer_->Close(); }
 
     // Adds a node to a given page
     Node AddNode(Page &page, VoxelKey key, las::Points &points);
@@ -89,7 +92,11 @@ class Writer : public BaseIO
     // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
 
-  private:
+    virtual ~Writer() { writer_->Close(); }
+
+  protected:
+    Writer() = default;
+
     std::unique_ptr<Internal::WriterInternal> writer_;
 
     Node DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
@@ -98,10 +105,34 @@ class Writer : public BaseIO
         throw std::runtime_error("No pages should be unloaded!");
     };
 
+    // Constructor helper function, initializes the file and hierarchy
+    void InitWriter(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt);
     // Converts the lasconfig object into an actual LasHeader
     static las::LasHeader HeaderFromConfig(LasConfig const &config);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
     static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
+
+class FileWriter : public Writer
+{
+  public:
+    FileWriter(const std::string &file_path, LasConfig const &config, int span = 0, const std::string &wkt = "")
+    {
+        f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
+        InitWriter(f_stream_, config, span, wkt);
+    }
+
+    void Close() override
+    {
+        writer_->Close();
+        f_stream_.close();
+    }
+
+    ~FileWriter() override { f_stream_.close(); }
+
+  private:
+    std::fstream f_stream_;
+};
+
 } // namespace copc
 #endif // COPCLIB_IO_WRITER_H_

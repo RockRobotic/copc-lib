@@ -4,12 +4,106 @@
 #include <cstring>
 #include <lazperf/readers.hpp>
 #include <sstream>
+#include <string>
 
 using namespace copc;
 using namespace std;
 
 TEST_CASE("Writer Config Tests", "[Writer]")
 {
+    GIVEN("A valid file_path")
+    {
+        SECTION("Default Config")
+        {
+            string file_path = "test/data/writer_test.copc.laz";
+
+            Writer::LasConfig cfg(0);
+            FileWriter writer(file_path, cfg);
+
+            auto las_header = writer.GetLasHeader();
+            REQUIRE(las_header.scale.z == 0.01);
+            REQUIRE(las_header.offset.z == 0);
+            REQUIRE(las_header.point_format_id == 0);
+
+            writer.Close();
+        }
+
+        SECTION("Custom Config")
+        {
+            string file_path = "test/data/writer_test.copc.laz";
+
+            Writer::LasConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
+            cfg.file_source_id = 200;
+            FileWriter writer(file_path, cfg);
+
+            auto las_header = writer.GetLasHeader();
+            REQUIRE(las_header.file_source_id == 200);
+            REQUIRE(las_header.point_format_id == 8);
+            REQUIRE(las_header.scale.x == 2);
+            REQUIRE(las_header.offset.x == -0.02);
+            REQUIRE(las_header.scale.y == 3);
+            REQUIRE(las_header.offset.y == -0.03);
+            REQUIRE(las_header.scale.z == 4);
+            REQUIRE(las_header.offset.z == -40.8);
+
+            writer.Close();
+        }
+
+        SECTION("COPC Span")
+        {
+            string file_path = "test/data/writer_test.copc.laz";
+
+            Writer::LasConfig cfg(0);
+            FileWriter writer(file_path, cfg, 256);
+
+            // todo: use Reader to check all of these
+            auto span = writer.GetCopcHeader().span;
+            REQUIRE(span == 256);
+
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetCopcHeader().span == 256);
+        }
+
+        SECTION("WKT")
+        {
+            string file_path = "test/data/writer_test.copc.laz";
+
+            Writer::LasConfig cfg(0);
+            FileWriter writer(file_path, cfg, 256, "TEST_WKT");
+
+            // todo: use Reader to check all of these
+            REQUIRE(writer.GetWkt() == "TEST_WKT");
+
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetWkt() == "TEST_WKT");
+        }
+
+        SECTION("Copy")
+        {
+            FileReader orig("test/data/autzen-classified.copc.laz");
+
+            string file_path = "test/data/writer_test.copc.laz";
+            Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
+            FileWriter writer(file_path, cfg);
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
+            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
+            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
+            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
+            REQUIRE(reader.GetLasHeader().point_count == 0);
+            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
+            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
+        }
+    }
     GIVEN("A valid output stream")
     {
         SECTION("Default Config")
@@ -78,7 +172,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             writer.Close();
 
-            Reader reader(out_stream);
+            Reader reader(&out_stream);
             REQUIRE(reader.GetCopcHeader().span == 256);
         }
 
@@ -94,7 +188,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             writer.Close();
 
-            Reader reader(out_stream);
+            Reader reader(&out_stream);
             REQUIRE(reader.GetWkt() == "TEST_WKT");
         }
 
@@ -102,14 +196,14 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             fstream in_stream;
             in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-            Reader orig(in_stream);
+            Reader orig(&in_stream);
 
             stringstream out_stream;
             Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
             Writer writer(out_stream, cfg);
             writer.Close();
 
-            Reader reader(out_stream);
+            Reader reader(&out_stream);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
             REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
@@ -146,7 +240,7 @@ TEST_CASE("Writer Pages", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 0);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
@@ -170,7 +264,7 @@ TEST_CASE("Writer Pages", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
         REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
@@ -194,7 +288,7 @@ TEST_CASE("Writer EBs", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetExtraByteVlr().items.size() == 1);
         REQUIRE(reader.GetExtraByteVlr().items[0].data_type == 0);
         REQUIRE(reader.GetExtraByteVlr().items[0].options == 4);
@@ -219,16 +313,14 @@ TEST_CASE("Writer EBs", "[Writer]")
 
         writer.Close();
 
-        Reader reader(out_stream);
+        Reader reader(&out_stream);
         REQUIRE(reader.GetExtraByteVlr().items.size() == 1);
         REQUIRE(reader.GetLasHeader().point_record_length == 48);
     }
 
     SECTION("Copy Vlr")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         auto in_eb_vlr = reader.GetExtraByteVlr();
 
@@ -241,7 +333,7 @@ TEST_CASE("Writer EBs", "[Writer]")
 
         writer.Close();
 
-        Reader reader2(out_stream);
+        Reader reader2(&out_stream);
         REQUIRE(reader2.GetExtraByteVlr().items.size() == 2);
         REQUIRE(reader2.GetLasHeader().point_record_length == reader.GetLasHeader().point_record_length);
         REQUIRE(reader2.GetExtraByteVlr().items == reader.GetExtraByteVlr().items);
@@ -252,9 +344,7 @@ TEST_CASE("Writer Copy", "[Writer]")
 {
     SECTION("Autzen")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         stringstream out_stream;
         Writer::LasConfig cfg(reader.GetLasHeader(), reader.GetExtraByteVlr());
@@ -270,7 +360,7 @@ TEST_CASE("Writer Copy", "[Writer]")
 
         writer.Close();
 
-        Reader new_reader(out_stream);
+        Reader new_reader(&out_stream);
 
         for (auto node : reader.GetAllChildren())
         {

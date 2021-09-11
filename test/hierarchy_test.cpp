@@ -14,7 +14,7 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
     {
         fstream in_stream;
         in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(in_stream);
+        Reader reader(&in_stream);
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
