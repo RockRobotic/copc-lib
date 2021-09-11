@@ -39,7 +39,6 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get()[0].Y() == 11);
         REQUIRE(points.Get()[0].Z() == 11);
 
-        points.ToStringSummary();
         points.ToString();
     }
 
