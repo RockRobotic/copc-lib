@@ -46,7 +46,7 @@ int main()
         if (!node.IsValid())
             exit(123);
 
-        // GetPoints returns a Points object, which provides helper functions 
+        // GetPoints returns a Points object, which provides helper functions
         // as well as a Get() function to access the underlying point vector
         las::Points node_points = reader.GetPoints(node);
 
@@ -75,6 +75,7 @@ int main()
             copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, num_points_to_decompress);
 
         cout << endl
-             << "Successfully decompressed " << uncompressed_data.size() / las_header.point_record_length << " points!" << endl;
+             << "Successfully decompressed " << uncompressed_data.size() / las_header.point_record_length << " points!"
+             << endl;
     }
 }

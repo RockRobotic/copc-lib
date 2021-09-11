@@ -51,9 +51,9 @@ void TrimFileExample()
                 #include <copc-lib/laz/compressor.hpp>
                 las::LasHeader header = writer.GetLasHeader();
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
-                std::vector<char> compressed_points = 
+                std::vector<char> compressed_points =
                                                     laz::Compressor(uncompressed_points, header.point_format_id,
-                                                                cfg.extra_bytes.size(), header.point_record_length); 
+                                                                cfg.extra_bytes.size(), header.point_record_length);
                 writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
             */
         }
