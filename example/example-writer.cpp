@@ -15,21 +15,15 @@ using namespace std;
 void TrimFileExample()
 {
     // We'll get our point data from this file
-    fstream in_stream;
-    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-    Reader reader(in_stream);
+    FileReader reader("test/data/autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
 
     {
-        // We'll write out into this file
-        fstream out_stream;
-        out_stream.open("test/data/autzen-trimmed.copc.laz", ios::out | ios::binary);
-
         // Copy the header to the new file
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
-        Writer writer(out_stream, cfg, reader.GetCopcHeader().span, reader.GetWkt());
+        FileWriter writer("test/data/autzen-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
 
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
@@ -63,9 +57,7 @@ void TrimFileExample()
     }
 
     // Now, let's test our new file
-    fstream test_stream;
-    test_stream.open("test/data/autzen-trimmed.copc.laz", ios::in | ios::binary);
-    Reader new_reader(test_stream);
+    FileReader new_reader("test/data/autzen-trimmed.copc.laz");
 
     // Let's go through each node we've written and make sure it matches the original
     for (auto node : new_reader.GetAllChildren())
@@ -129,10 +121,6 @@ las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
 // In this example, we'll create our own file from scratch
 void NewFileExample()
 {
-    // We'll write out into this file
-    fstream out_stream;
-    out_stream.open("test/data/new-copc.copc.laz", ios::out | ios::binary);
-
     // Create our new file with the specified format, scale, and offset
     Writer::LasConfig cfg(8, {1, 1, 1}, {0, 0, 0});
     // As of now, the library will not automatically compute the min/max of added points
@@ -143,7 +131,7 @@ void NewFileExample()
                       (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:
-    Writer writer(out_stream, cfg, 256, "TEST_WKT");
+    FileWriter writer("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT");
 
     // The root page is automatically created
     Page root_page = writer.GetRootPage();
