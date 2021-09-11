@@ -7,6 +7,7 @@
 #include <copc-lib/io/base_io.hpp>
 #include <copc-lib/io/internal/writer_internal.hpp>
 #include <copc-lib/las/header.hpp>
+#include <copc-lib/las/points.hpp>
 
 namespace copc
 {
@@ -84,7 +85,7 @@ class Writer : public BaseIO
     virtual void Close() { writer_->Close(); }
 
     // Adds a node to a given page
-    Node AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &points);
+    Node AddNode(Page &page, VoxelKey key, las::Points &points);
     Node AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count);
     Node AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed);
 
