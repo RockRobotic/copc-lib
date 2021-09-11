@@ -35,9 +35,9 @@ TEST_CASE("Points tests", "[Point]")
         for (const auto &point : points.Get())
             REQUIRE(point.PointFormatID() == 3);
         REQUIRE(points.PointRecordLength() == 38);
-        REQUIRE(points.Get()[0].X() == 11);
-        REQUIRE(points.Get()[0].Y() == 11);
-        REQUIRE(points.Get()[0].Z() == 11);
+        REQUIRE(points.Get(0).X() == 11);
+        REQUIRE(points.Get(0).Y() == 11);
+        REQUIRE(points.Get(0).Z() == 11);
 
         points.ToString();
     }
@@ -53,9 +53,9 @@ TEST_CASE("Points tests", "[Point]")
         points.AddPoint(point);
 
         REQUIRE(points.Get().size() == 1);
-        REQUIRE(points.Get()[0].X() == 11);
-        REQUIRE(points.Get()[0].Y() == 11);
-        REQUIRE(points.Get()[0].Z() == 11);
+        REQUIRE(points.Get(0).X() == 11);
+        REQUIRE(points.Get(0).Y() == 11);
+        REQUIRE(points.Get(0).Z() == 11);
 
         point = Point(3, 0);
         point.X(22);
@@ -64,9 +64,9 @@ TEST_CASE("Points tests", "[Point]")
 
         points.AddPoint(point);
         REQUIRE(points.Get().size() == 2);
-        REQUIRE(points.Get()[1].X() == 22);
-        REQUIRE(points.Get()[1].Y() == 22);
-        REQUIRE(points.Get()[1].Z() == 22);
+        REQUIRE(points.Get(1).X() == 22);
+        REQUIRE(points.Get(1).Y() == 22);
+        REQUIRE(points.Get(1).Z() == 22);
 
         // Test check on point format
         point = Point(6, 0);
@@ -102,8 +102,8 @@ TEST_CASE("Points tests", "[Point]")
 
         REQUIRE(points.PointFormatID() == 6);
         REQUIRE(points.PointRecordLength() == 38);
-        REQUIRE(points.Get()[0].PointFormatID() == 6);
-        REQUIRE(points.Get()[0].PointRecordLength() == 34);
+        REQUIRE(points.Get(1).PointFormatID() == 6);
+        REQUIRE(points.Get(1).PointRecordLength() == 34);
 
         REQUIRE_THROWS(points.ToPointFormat(-1));
         REQUIRE_THROWS(points.ToPointFormat(11));
