@@ -73,16 +73,15 @@ class Writer : public BaseIO
         uint64_t points_by_return_14[15]{};
     };
 
-    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "");
+    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "")
+    {
+        InitWriter(out_stream, config, span, wkt);
+    }
 
     Page GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
 
     // Writes the file out
-    virtual void Close()
-    {
-        if (writer_->IsOpen())
-            writer_->Close();
-    }
+    virtual void Close() { writer_->Close(); }
 
     // Adds a node to a given page
     Node AddNode(Page &page, VoxelKey key, std::vector<las::Point> const &points);
@@ -92,13 +91,11 @@ class Writer : public BaseIO
     // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
 
-    virtual ~Writer()
-    {
-        if (writer_->IsOpen())
-            writer_->Close();
-    }
+    virtual ~Writer() { writer_->Close(); }
 
   protected:
+    Writer() = default;
+
     std::unique_ptr<Internal::WriterInternal> writer_;
 
     Node DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
@@ -106,8 +103,6 @@ class Writer : public BaseIO
     {
         throw std::runtime_error("No pages should be unloaded!");
     };
-
-    Writer() = default;
 
     // Constructor helper function, initializes the file and hierarchy
     void InitWriter(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt);
@@ -128,8 +123,7 @@ class FileWriter : public Writer
 
     void Close() override
     {
-        if (writer_->IsOpen())
-            writer_->Close();
+        writer_->Close();
         f_stream_.close();
     }
 

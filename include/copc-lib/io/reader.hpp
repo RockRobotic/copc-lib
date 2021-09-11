@@ -16,7 +16,7 @@ namespace copc
 class Reader : public BaseIO
 {
   public:
-    Reader(std::istream *in_stream);
+    Reader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
 
     // Reads the node's data into an uncompressed byte array
     // Node needs to be valid for this function, it will error

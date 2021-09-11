@@ -7,8 +7,6 @@
 namespace copc
 {
 
-Reader::Reader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
-
 void Reader::InitReader()
 {
 

@@ -8,12 +8,10 @@ using namespace std;
 
 TEST_CASE("Reader tests", "[Reader]")
 {
-    GIVEN("A valid input stream")
+    GIVEN("A valid file path")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
 
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         SECTION("GetCopc Test")
         {
@@ -45,10 +43,12 @@ TEST_CASE("Reader tests", "[Reader]")
         }
     }
 
-    GIVEN("A valid filepath")
+    GIVEN("A valid input stream")
     {
+        fstream in_stream;
+        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
 
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        Reader reader(&in_stream);
 
         SECTION("GetCopc Test")
         {
@@ -85,9 +85,7 @@ TEST_CASE("FindKey Check", "[Reader]")
 {
     GIVEN("A valid input stream")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
@@ -107,11 +105,9 @@ TEST_CASE("FindKey Check", "[Reader]")
 
 TEST_CASE("GetExtraByteVlrs Test", "[Reader] ")
 {
-    GIVEN("A valid input stream")
+    GIVEN("A valid file path")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         auto eb_vlr = reader.GetExtraByteVlr();
         REQUIRE(eb_vlr.items.size() == 2);
@@ -126,11 +122,9 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader] ")
 
 TEST_CASE("GetAllChildren Test", "[Reader] ")
 {
-    GIVEN("A valid input stream")
+    GIVEN("A valid file path")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         {
             // Get root key
@@ -162,11 +156,9 @@ TEST_CASE("GetAllChildren Test", "[Reader] ")
 
 TEST_CASE("Point Error Handling Test", "[Reader] ")
 {
-    GIVEN("A valid input stream")
+    GIVEN("A valid file path")
     {
-        fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
-        Reader reader(&in_stream);
+        FileReader reader("test/data/autzen-classified.copc.laz");
 
         Node invalid_node;
         REQUIRE_THROWS(reader.GetPointData(invalid_node));

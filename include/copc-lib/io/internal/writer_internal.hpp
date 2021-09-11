@@ -25,13 +25,7 @@ class WriterInternal
     // Writes the header and COPC vlrs
     void Close();
     // Call close on destructor if needed
-    ~WriterInternal()
-    {
-        if (this->open_)
-            Close();
-    }
-
-    bool IsOpen() const { return open_; }
+    ~WriterInternal() { Close(); }
 
     // Writes a chunk to the laz file
     Entry WriteNode(std::vector<char> in, int32_t point_count, bool compressed);
