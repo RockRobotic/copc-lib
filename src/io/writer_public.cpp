@@ -7,20 +7,17 @@
 namespace copc
 {
 
-Writer::Writer(std::ostream *out_stream, LasConfig const &config, int span, const std::string &wkt)
+Writer::Writer(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt)
+{
+    InitWriter(out_stream, config, span, wkt);
+}
+
+void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
     this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
     this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file_, this->hierarchy_);
-}
-
-Writer::Writer(const std::string &file_path, LasConfig const &config, int span, const std::string &wkt)
-{
-    auto header = HeaderFromConfig(config);
-    this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
-    this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
-    this->writer_ = std::make_unique<Internal::FileWriterInternal>(file_path, this->file_, this->hierarchy_);
 }
 
 void Writer::Close() { this->writer_->Close(); }

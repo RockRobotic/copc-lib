@@ -39,12 +39,12 @@ class Reader : public BaseIO
   protected:
     Reader() = default;
 
-    std::istream *in_stream_{};
+    std::istream *in_stream_;
 
     std::unique_ptr<lazperf::reader::generic_file> reader_;
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitFile();
+    void InitReader();
     // Reads file VLRs into vlrs_
     std::map<uint64_t, las::VlrHeader> ReadVlrs();
     // Finds and loads the COPC vlr
@@ -62,10 +62,11 @@ class FileReader : public Reader
   public:
     FileReader(const std::string &file_path)
     {
-        in_stream_ = new std::fstream;
-        dynamic_cast<std::fstream *>(in_stream_)->open(file_path.c_str(), std::ios::in | std::ios::binary);
+        auto f_stream = new std::fstream;
+        f_stream->open(file_path.c_str(), std::ios::in | std::ios::binary);
+        in_stream_ = f_stream;
 
-        InitFile();
+        InitReader();
     }
 
     ~FileReader()

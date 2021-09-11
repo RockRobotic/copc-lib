@@ -14,7 +14,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(&out_stream, cfg);
+        Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
 
@@ -42,7 +42,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(&out_stream, cfg, 256, "test_wkt");
+        Writer writer(out_stream, cfg, 256, "test_wkt");
 
         Page root_page = writer.GetRootPage();
 
@@ -89,7 +89,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(&out_stream, cfg);
+        Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
         Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
@@ -159,7 +159,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(&out_stream, cfg);
+        Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
 
@@ -187,7 +187,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(&out_stream, cfg, 256, "test_wkt");
+        Writer writer(out_stream, cfg, 256, "test_wkt");
 
         Page root_page = writer.GetRootPage();
 
@@ -237,7 +237,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         stringstream out_stream;
 
         Writer::LasConfig cfg(3);
-        Writer writer(&out_stream, cfg);
+        Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
         Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
