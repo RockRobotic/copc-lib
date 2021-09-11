@@ -259,7 +259,7 @@ std::string Point::ToString() const
     if (has_gps_time_)
         ss << "\tGPS Time: " << gps_time_ << std::endl;
     if (has_rgb_)
-        ss << "\tRGB: [" << rgb_[0] << "," << rgb_[1] << "," << rgb_[2] << "]" << std::endl;
+        ss << "\tRGB: [ " << rgb_[0] << ", " << rgb_[1] << ", " << rgb_[2] << " ]" << std::endl;
     if (has_nir_)
         ss << "\tNIR: " << nir_ << std::endl;
     if (!extra_bytes_.empty())

@@ -24,6 +24,7 @@ class Points
 
     // Vector functions
     std::vector<Point> Get() { return points_; }
+    Point Get(size_t idx) { return points_[idx]; }
     size_t Size() const { return points_.size(); }
     void Reserve(size_t num) { points_.reserve(num); }
 
