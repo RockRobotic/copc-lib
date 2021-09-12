@@ -21,9 +21,9 @@ def test_points_constructor():
     for point in points.Get():
         assert point.PointFormatID() == 3
     assert points.PointRecordLength() == 38
-    assert points.Get()[0].X() == 11
-    assert points.Get()[0].Y() == 11
-    assert points.Get()[0].Z() == 11
+    assert points.Get(0).X() == 11
+    assert points.Get(0).Y() == 11
+    assert points.Get(0).Z() == 12
 
     str(points)
 
@@ -38,9 +38,9 @@ def test_adding_point_to_points():
     points.AddPoint(point)
 
     assert len(points.Get()) == 1
-    assert points.Get()[0].X() == 11
-    assert points.Get()[0].Y() == 11
-    assert points.Get()[0].Z() == 11
+    assert points.Get(0).X() == 11
+    assert points.Get(0).Y() == 11
+    assert points.Get(0).Z() == 11
 
     point = copclib.Point(3, 0)
     point.X(22)
@@ -49,9 +49,9 @@ def test_adding_point_to_points():
 
     points.AddPoint(point)
     assert len(points.Get()) == 2
-    assert points.Get()[1].X() == 22
-    assert points.Get()[1].Y() == 22
-    assert points.Get()[1].Z() == 22
+    assert points.Get(1).X() == 22
+    assert points.Get(1).Y() == 22
+    assert points.Get(1).Z() == 22
 
     # Test check on point format
     point = copclib.Point(6, 0)
@@ -89,8 +89,8 @@ def test_points_format_conversion():
 
     assert points.PointFormatID() == 6
     assert points.PointRecordLength() == 38
-    assert points.Get()[0].PointFormatID() == 6
-    assert points.Get()[0].PointRecordLength() == 34
+    assert points.Get(0).PointFormatID() == 6
+    assert points.Get(0).PointRecordLength() == 34
 
     with pytest.raises(RuntimeError):
         points.ToPointFormat(-1)

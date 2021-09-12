@@ -25,6 +25,10 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<int32_t, int32_t, int32_t, int32_t>())
         .def(py::self == py::self)
         .def(py::self != py::self)
+        .def_readwrite("d", &VoxelKey::d)
+        .def_readwrite("x", &VoxelKey::x)
+        .def_readwrite("y", &VoxelKey::y)
+        .def_readwrite("z", &VoxelKey::z)
         .def("IsValid", &VoxelKey::IsValid)
         .def("BaseKey", &VoxelKey::BaseKey)
         .def("InvalidKey", &VoxelKey::InvalidKey)
@@ -168,12 +172,30 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)(const VoxelKey &)>(&Reader::GetAllChildren))
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)()>(&Reader::GetAllChildren));
 
-    py::class_<vector3>(m, "vector3").def(py::init<>()).def(py::init<const double &, const double &, const double &>());
-    // TODO[Leo]: Operator =
+    py::class_<vector3>(m, "vector3")
+        .def(py::init<>())
+        .def(py::init<const double &, const double &, const double &>())
+        .def_readwrite("x", &vector3::x)
+        .def_readwrite("y", &vector3::y)
+        .def_readwrite("z", &vector3::z);
 
+    // TODO[Leo]: Finish commented attributes
     py::class_<Writer::LasConfig>(m, "LasConfig")
         .def(py::init<const int8_t &, const vector3 &, const vector3 &>())
-        .def(py::init<const las::LasHeader &, const las::EbVlr &>());
+        .def(py::init<const las::LasHeader &, const las::EbVlr &>())
+        .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
+        .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
+        //        .def_readwrite("guid", &Writer::LasConfig::guid)
+        //        .def_readwrite("system_identifier", &Writer::LasConfig::system_identifier)
+        //        .def_readwrite("generating_software", &Writer::LasConfig::generating_software)
+        .def_readwrite("creation", &Writer::LasConfig::creation)
+        .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
+        .def_readwrite("extra_bytes", &Writer::LasConfig::extra_bytes)
+        .def_readwrite("scale", &Writer::LasConfig::scale)
+        .def_readwrite("offset", &Writer::LasConfig::offset)
+        .def_readwrite("max", &Writer::LasConfig::max)
+        .def_readwrite("min", &Writer::LasConfig::min);
+    //        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14);
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>())
@@ -196,6 +218,12 @@ PYBIND11_MODULE(copclib, m)
         .def("IsPage", &Node::IsPage)
         .def("__str__", &Node::ToString)
         .def("__repr__", &Node::ToString);
+
+    py::class_<Page>(m, "Page")
+        .def("IsValid", &Page::IsValid)
+        .def("IsPage", &Page::IsPage)
+        .def("__str__", &Page::ToString)
+        .def("__repr__", &Page::ToString);
 
     py::class_<las::CopcVlr>(m, "CopcVlr")
         .def_readwrite("span", &las::CopcVlr::span)
