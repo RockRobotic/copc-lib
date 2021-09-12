@@ -15,7 +15,7 @@ namespace copc
 struct vector3
 {
     vector3() : x(0), y(0), z(0) {}
-    vector3(double x, double y, double z) : x(x), y(y), z(z) {}
+    vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
 
     double x;
     double y;
@@ -40,10 +40,11 @@ class Writer : public BaseIO
     {
         // Not sure we should allow default constructor
         // LasConfig()= default;
-        LasConfig(int8_t point_format_id, vector3 scale = {0.01, 0.01, 0.01}, vector3 offset = {0, 0, 0})
+        LasConfig(const int8_t &point_format_id, const vector3 &scale = {0.01, 0.01, 0.01},
+                  const vector3 &offset = {0, 0, 0})
             : point_format_id(point_format_id), scale(scale), offset(offset){};
         // Allow for "copying" a lasheader from one file to another
-        LasConfig(las::LasHeader config, const las::EbVlr &extra_bytes_);
+        LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_);
 
         uint16_t file_source_id{};
         uint16_t global_encoding{};
@@ -85,9 +86,10 @@ class Writer : public BaseIO
     virtual void Close() { writer_->Close(); }
 
     // Adds a node to a given page
-    Node AddNode(Page &page, VoxelKey key, las::Points &points);
-    Node AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count);
-    Node AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed);
+    Node AddNode(Page &page, const VoxelKey &key, las::Points &points); // TODO[Leo]: Add this to tests
+    Node AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed,
+                           uint64_t point_count); // TODO[Leo]: Add this to tests
+    Node AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed);
 
     // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
@@ -106,7 +108,7 @@ class Writer : public BaseIO
     };
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitWriter(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt);
+    void InitWriter(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt);
     // Converts the lasconfig object into an actual LasHeader
     static las::LasHeader HeaderFromConfig(LasConfig const &config);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
@@ -116,7 +118,7 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, LasConfig const &config, int span = 0, const std::string &wkt = "")
+    FileWriter(const std::string &file_path, LasConfig const &config, const int &span = 0, const std::string &wkt = "")
     {
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
         InitWriter(f_stream_, config, span, wkt);

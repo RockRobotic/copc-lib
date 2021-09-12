@@ -7,7 +7,7 @@
 namespace copc
 {
 
-void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt)
+void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
     this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
@@ -57,7 +57,7 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     return *node;
 }
 
-Node Writer::AddNode(Page &page, VoxelKey key, las::Points &points)
+Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 {
     auto header = file_->GetLasHeader();
     if (points.PointFormatID() != header.point_format_id || points.PointRecordLength() != header.point_record_length)
@@ -67,7 +67,7 @@ Node Writer::AddNode(Page &page, VoxelKey key, las::Points &points)
     return AddNode(page, key, uncompressed);
 }
 
-Node Writer::AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed)
+Node Writer::AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed)
 {
     int point_size = file_->GetLasHeader().point_record_length;
     if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
@@ -76,7 +76,8 @@ Node Writer::AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompre
     return DoAddNode(page, key, uncompressed, 0, false);
 }
 
-Node Writer::AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count)
+Node Writer::AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed,
+                               uint64_t point_count)
 {
     if (point_count == 0)
         throw std::runtime_error("Point count must be >0!");
@@ -135,7 +136,7 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     return h;
 }
 
-copc::Writer::LasConfig::LasConfig(las::LasHeader config, const las::EbVlr &extra_bytes_)
+copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_)
 {
     file_source_id = config.file_source_id;
     global_encoding = config.global_encoding;

@@ -24,13 +24,14 @@ class Points
 
     // Vector functions
     std::vector<Point> Get() { return points_; }
-    Point Get(size_t idx) { return points_[idx]; }
+    Point Get(const size_t &idx) { return points_[idx]; }
     size_t Size() const { return points_.size(); }
-    void Reserve(size_t num) { points_.reserve(num); }
+    void Reserve(const size_t &num) { points_.reserve(num); }
 
     // Add points functions
     void AddPoint(const Point &point);
     void AddPoints(Points points);
+    // TODO[Leo]: Add this to tests
     void AddPoints(std::vector<las::Point> points);
 
     // Point functions

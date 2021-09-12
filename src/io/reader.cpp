@@ -157,7 +157,7 @@ std::vector<char> Reader::GetPointDataCompressed(VoxelKey const &key)
     return GetPointDataCompressed(node);
 }
 
-std::vector<Node> Reader::GetAllChildren(VoxelKey key)
+std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
 {
     std::vector<Node> out;
     if (!key.IsValid())
