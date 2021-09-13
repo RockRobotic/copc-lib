@@ -31,7 +31,7 @@ set(WITH_TESTS TRUE CACHE BOOL "Choose if unit tests should be built")
 set(WITH_EXAMPLES TRUE CACHE BOOL "Choose if examples should be built")
 set(WITH_PYTHON TRUE CACHE BOOL "Choose if python bindings should be built")
 
-if (WITH_TESTS OR WITH_EXAMPLES)
+if (WITH_TESTS OR WITH_EXAMPLES OR WITH_PYTHON)
     file (DOWNLOAD
     "https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
     "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
@@ -62,6 +62,9 @@ if(WITH_TESTS)
 endif()
 
 if(WITH_PYTHON)
+    file(COPY "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz" 
+        DESTINATION "${CMAKE_SOURCE_DIR}/test/data")
+
     add_subdirectory(lib/pybind11)
     pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
     target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${COPC_STATIC_LIB})
