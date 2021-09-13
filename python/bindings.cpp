@@ -134,7 +134,7 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &las::Point::ToString);
 
     py::class_<las::Points>(m, "Points")
-        .def(py::init<const uint8_t &, const uint16_t &>())
+        .def(py::init<const uint8_t &, const uint16_t &>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const std::vector<las::Point> &>())
         .def("PointFormatID", &las::Points::PointFormatID)
         .def("PointRecordLength", &las::Points::PointRecordLength)

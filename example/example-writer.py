@@ -28,7 +28,7 @@ def TrimFileExample():
     for node in reader.GetAllChildren(root_page.key):
         # In this example, we'll only save up to depth level 3.
         if node.key.d > 3:
-            pass  # TODO[Leo]
+            break
 
         # It's much faster to write and read compressed data, to avoid compression and decompression
         writer.AddNodeCompressed(
@@ -50,7 +50,7 @@ def TrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copclib.FileReader("test/data/autzen-trimmed.copc.laz")
+    new_reader = copclib.FileReader("../build/test/data/autzen-trimmed.copc.laz")
 
     # Let's go through each node we've written and make sure it matches the original
     for node in new_reader.GetAllChildren():
@@ -97,9 +97,15 @@ def RandomPoints(key, point_format_id):
         # Create a point with a given point format
         point = copclib.Point(point_format_id)
         # point has getters/setters for all attributes
-        point.X(random.uniform(min(minx, MAX_BOUNDS.x), min(minx + step, MAX_BOUNDS.x)))
-        point.Y(random.uniform(min(miny, MAX_BOUNDS.y), min(miny + step, MAX_BOUNDS.y)))
-        point.Z(random.uniform(min(minz, MAX_BOUNDS.z), min(minz + step, MAX_BOUNDS.z)))
+        point.X(
+            int(random.uniform(min(minx, MAX_BOUNDS.x), min(minx + step, MAX_BOUNDS.x)))
+        )
+        point.Y(
+            int(random.uniform(min(miny, MAX_BOUNDS.y), min(miny + step, MAX_BOUNDS.y)))
+        )
+        point.Z(
+            int(random.uniform(min(minz, MAX_BOUNDS.z), min(minz + step, MAX_BOUNDS.z)))
+        )
         # For visualization purposes
         point.PointSourceID(key.d + key.x + key.y + key.d)
 
@@ -111,7 +117,7 @@ def RandomPoints(key, point_format_id):
 def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
-    cfg = copclib.LasConfig(8, (1, 1, 1), (0, 0, 0))
+    cfg = copclib.LasConfig(8, copclib.vector3(1, 1, 1), copclib.vector3(0, 0, 0))
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
     cfg.min = copclib.vector3(
@@ -126,7 +132,9 @@ def NewFileExample():
     )
 
     # Now, we can create our COPC writer, with an optional `span` and `wkt`:
-    writer = copclib.FileWriter("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT")
+    writer = copclib.FileWriter(
+        "../build/test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT"
+    )
 
     # The root page is automatically created
     root_page = writer.GetRootPage()
