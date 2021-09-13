@@ -11,7 +11,7 @@ class PageInternal : public Page
 {
   public:
     PageInternal(Entry e) : Page(e){};
-    PageInternal(VoxelKey key, int64_t offset, int32_t size) : Page(key, offset, size){};
+    PageInternal(VoxelKey key, int64_t offset, int32_t byte_size) : Page(key, offset, byte_size){};
     PageInternal(VoxelKey key) : Page(key, -1, -1){};
 
     std::vector<std::shared_ptr<PageInternal>> sub_pages;

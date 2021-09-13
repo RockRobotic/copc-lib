@@ -73,7 +73,7 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
     in_stream_->seekg(page->offset);
 
     // Iterate through each Entry in the page
-    int num_entries = int(page->size / Entry::ENTRY_SIZE);
+    int num_entries = int(page->byte_size / Entry::ENTRY_SIZE);
     for (int i = 0; i < num_entries; i++)
     {
         Entry e = Entry::Unpack(*in_stream_);
@@ -139,8 +139,8 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     in_stream_->seekg(node.offset);
 
     std::vector<char> out;
-    out.resize(node.size);
-    in_stream_->read(&out[0], node.size);
+    out.resize(node.byte_size);
+    in_stream_->read(&out[0], node.byte_size);
     return out;
 }
 

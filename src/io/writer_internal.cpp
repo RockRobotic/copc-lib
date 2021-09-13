@@ -171,7 +171,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool 
     auto size = endpos - startpos;
     if (size > (std::numeric_limits<int32_t>::max)())
         throw std::runtime_error("Chunk is too large!");
-    entry.size = static_cast<int32_t>(size);
+    entry.byte_size = static_cast<int32_t>(size);
     if (point_count > (std::numeric_limits<int32_t>::max)())
         throw std::runtime_error("Chunk has too many points!");
     entry.point_count = point_count;
@@ -193,7 +193,7 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     page->offset = offset;
     if (page_size > (std::numeric_limits<int32_t>::max)())
         throw std::runtime_error("Page is too large!");
-    page->size = static_cast<int32_t>(page_size);
+    page->byte_size = static_cast<int32_t>(page_size);
 
     // Set the copc header info if needed
     if (page->key == VoxelKey::BaseKey())

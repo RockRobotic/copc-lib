@@ -38,13 +38,13 @@ void Points::AddPoint(const Point &point)
     if (point.PointFormatID() == point_format_id_ && point.PointRecordLength() == point_record_length_)
         points_.push_back(point);
     else
-        throw std::runtime_error("New point must be of same format and size.");
+        throw std::runtime_error("New point must be of same format and byte_size.");
 }
 
 void Points::AddPoints(Points points)
 {
     if (points.PointFormatID() != point_format_id_ || points.PointRecordLength() != point_record_length_)
-        throw std::runtime_error("New points must be of same format and size.");
+        throw std::runtime_error("New points must be of same format and byte_size.");
 
     auto point_vec = points.Get();
     points_.insert(points_.end(), point_vec.begin(), point_vec.end());
@@ -55,7 +55,7 @@ void Points::AddPoints(std::vector<las::Point> points)
     for (const auto &point : points)
     {
         if (point.PointFormatID() != point_format_id_ || point.PointRecordLength() != point_record_length_)
-            throw std::runtime_error("New points must be of same format and size.");
+            throw std::runtime_error("New points must be of same format and byte_size.");
     }
 
     points_.insert(points_.end(), points.begin(), points.end());

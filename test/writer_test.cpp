@@ -369,7 +369,7 @@ TEST_CASE("Writer Copy", "[Writer]")
             REQUIRE(new_node.IsValid());
             REQUIRE(new_node.key == node.key);
             REQUIRE(new_node.point_count == node.point_count);
-            REQUIRE(new_node.size == node.size);
+            REQUIRE(new_node.byte_size == node.byte_size);
             // REQUIRE(new_reader.GetPointData(new_node) == reader.GetPointData(node));
             REQUIRE(new_reader.GetPointDataCompressed(new_node) == reader.GetPointDataCompressed(node));
         }
