@@ -32,9 +32,14 @@ set(WITH_EXAMPLES TRUE CACHE BOOL "Choose if examples should be built")
 set(WITH_PYTHON TRUE CACHE BOOL "Choose if python bindings should be built")
 
 if (WITH_TESTS OR WITH_EXAMPLES OR WITH_PYTHON)
-    file (DOWNLOAD
-    "https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
-    "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
+    set(AutzenFilePath "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
+    if(NOT EXISTS ${AutzenFilePath})
+        message(STATUS "Downloading test files")
+        file (DOWNLOAD
+        "https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
+        ${AutzenFilePath}
+        )
+    endif()
 
     add_executable(example_reader "example/example-reader.cpp")
     target_link_libraries(example_reader ${COPC_SHARED_LIB})
@@ -62,8 +67,11 @@ if(WITH_TESTS)
 endif()
 
 if(WITH_PYTHON)
-    file(COPY "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz" 
-        DESTINATION "${CMAKE_SOURCE_DIR}/test/data")
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/test/data/autzen-classified.copc.laz")
+        message(STATUS "Copying test files")
+        file(COPY "${AutzenFilePath}" 
+            DESTINATION "${CMAKE_SOURCE_DIR}/test/data")
+    endif()
 
     add_subdirectory(lib/pybind11)
     pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
