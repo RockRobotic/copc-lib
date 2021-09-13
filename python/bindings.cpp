@@ -182,7 +182,8 @@ PYBIND11_MODULE(copclib, m)
 
     // TODO[Leo]: Finish commented attributes
     py::class_<Writer::LasConfig>(m, "LasConfig")
-        .def(py::init<const int8_t &, const vector3 &, const vector3 &>())
+        .def(py::init<const int8_t &, const vector3 &, const vector3 &>(), py::arg("point_format_id"),
+             py::arg("scale") = vector3(0.01, 0.01, 0.01), py::arg("offset") = vector3(0, 0, 0))
         .def(py::init<const las::LasHeader &, const las::EbVlr &>())
         .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
         .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
@@ -199,7 +200,8 @@ PYBIND11_MODULE(copclib, m)
     //        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14);
 
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>())
+        .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),
+             py::arg("file_path"), py::arg("config"), py::arg("span") = 0, py::arg("wkt") = "")
         .def("FindNode", &FileReader::FindNode)
         .def("GetWkt", &FileWriter::GetWkt)
         .def("GetCopcHeader", &FileWriter::GetCopcHeader)
@@ -231,6 +233,7 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("key", &Page::key)
         .def_readwrite("offset", &Page::offset)
         .def_readwrite("byte_size", &Page::byte_size)
+        .def_readwrite("loaded", &Page::loaded)
         .def("IsValid", &Page::IsValid)
         .def("IsPage", &Page::IsPage)
         .def("__str__", &Page::ToString)
@@ -247,12 +250,23 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("eb_vlr_offset", &las::CopcVlr::eb_vlr_offset)
         .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
 
+    // TODO[Leo]: Update this after making our own lazperf headers
     py::class_<las::LasHeader>(m, "LasHeader")
+        //        .def_readwrite("magic", &las::LasHeader::magic)
+        .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
+        .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
+        //        .def_readwrite("guid", &las::LasHeader::guid)
+        .def_readwrite("version", &las::LasHeader::version)
+        //        .def_readwrite("system_identifier", &las::LasHeader::system_identifier)
+        //        .def_readwrite("generating_software", &las::LasHeader::generating_software)
+        .def_readwrite("scale", &las::LasHeader::scale)
+        .def_readwrite("offset", &las::LasHeader::offset)
         .def_readwrite("header_size", &las::LasHeader::header_size)
         .def_readwrite("point_format_id", &las::LasHeader::point_format_id)
+        .def_readwrite("point_record_length", &las::LasHeader::point_record_length)
         .def_readwrite("point_count", &las::LasHeader::point_count);
 
-    py::class_<las::EbVlr>(m, "EbVlr").def_readwrite("items", &las::EbVlr::items);
+    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
 
     py::class_<las::EbVlr::ebfield>(m, "EbField")
         //    .def_readwrite("reserved",&las::EbVlr::ebfield::reserved)
@@ -265,5 +279,6 @@ PYBIND11_MODULE(copclib, m)
         //    .def_readwrite("maxval",&las::EbVlr::ebfield::maxval)
         //    .def_readwrite("scale",&las::EbVlr::ebfield::scale)
         //    .def_readwrite("offset",&las::EbVlr::ebfield::offset)
-        .def_readwrite("description", &las::EbVlr::ebfield::description);
+        .def_readwrite("description", &las::EbVlr::ebfield::description)
+        .def(py::self == py::self);
 }
