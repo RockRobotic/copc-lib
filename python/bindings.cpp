@@ -14,6 +14,7 @@
 #include <copc-lib/las/file.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
+#include <copc-lib/laz/compressor.hpp>
 
 namespace py = pybind11;
 using namespace copc;
@@ -173,17 +174,19 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)(const VoxelKey &)>(&Reader::GetAllChildren))
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)()>(&Reader::GetAllChildren));
 
-    py::class_<vector3>(m, "vector3")
+    //    py::class_<laz::Compressor>(m, "LazCompressor")
+
+    py::class_<copc::vector3>(m, "copc::vector3")
         .def(py::init<>())
         .def(py::init<const double &, const double &, const double &>())
-        .def_readwrite("x", &vector3::x)
-        .def_readwrite("y", &vector3::y)
-        .def_readwrite("z", &vector3::z);
+        .def_readwrite("x", &copc::vector3::x)
+        .def_readwrite("y", &copc::vector3::y)
+        .def_readwrite("z", &copc::vector3::z);
 
     // TODO[Leo]: Finish commented attributes
     py::class_<Writer::LasConfig>(m, "LasConfig")
-        .def(py::init<const int8_t &, const vector3 &, const vector3 &>(), py::arg("point_format_id"),
-             py::arg("scale") = vector3(0.01, 0.01, 0.01), py::arg("offset") = vector3(0, 0, 0))
+        .def(py::init<const int8_t &, const copc::vector3 &, const copc::vector3 &>(), py::arg("point_format_id"),
+             py::arg("scale") = copc::vector3(0.01, 0.01, 0.01), py::arg("offset") = copc::vector3(0, 0, 0))
         .def(py::init<const las::LasHeader &, const las::EbVlr &>())
         .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
         .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)

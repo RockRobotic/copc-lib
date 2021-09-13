@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-namespace copc::las::internal
+namespace copc::las
 {
 template <typename T> T unpack(std::istream &in_stream)
 {
@@ -17,5 +17,9 @@ template <typename T> void pack(const T &value, std::ostream &out_stream)
     out_stream.write(reinterpret_cast<const char *>(&value), sizeof(T));
 };
 
-} // namespace copc::las::internal
+uint8_t PointBaseByteSize(const int8_t &point_format_id);
+uint16_t ComputeNumExtraBytes(const int8_t &point_format_id, const uint32_t &point_record_length);
+uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &num_extra_bytes_);
+
+} // namespace copc::las
 #endif // COPCLIB_LAS_UTILS_H_

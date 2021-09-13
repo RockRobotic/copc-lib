@@ -110,7 +110,7 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     h.creation.year = config.creation.year;
     h.point_format_id = config.point_format_id;
     h.point_record_length =
-        las::Point::BaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
+        las::PointBaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
 
     std::strcpy(h.guid, config.guid);
     std::strcpy(h.system_identifier, config.system_identifier);

@@ -39,9 +39,9 @@ def TrimFileExample():
         # (for example, compress multiple nodes in parallel and have one thread writing the data),
         # we can use the Compressor class:
 
-        # las::LasHeader header = writer.GetLasHeader()
-        # std::vector<char> uncompressed_points = reader.GetPointData(node)
-        # std::vector<char> compressed_points =
+        # header = writer.GetLasHeader()
+        # uncompressed_points = reader.GetPointData(node)
+        # compressed_points =
         # laz::Compressor(uncompressed_points, header.point_format_id,
         #                 cfg.extra_bytes.size(), header.point_record_length)
         # writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count)
@@ -61,9 +61,9 @@ def TrimFileExample():
         # Similarly, we could retrieve the compressed node data from the file
         # and decompress it later using the Decompressor class
 
-        # las::LasHeader header = writer.GetLasHeader()
-        # std::vector<char> compressed_points = reader.GetPointDataCompressed(node)
-        # std::vector<char> uncompressed_points = laz::Decompressor(uncompressed_points, header, node.point_count)
+        # header = writer.GetLasHeader()
+        # compressed_points = reader.GetPointDataCompressed(node)
+        # uncompressed_points = laz::Decompressor(uncompressed_points, header, node.point_count)
 
 
 # constants

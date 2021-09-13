@@ -100,7 +100,7 @@ las::Points Reader::GetPoints(VoxelKey const &key)
 
     auto point_format_id = file_->GetLasHeader().point_format_id;
     auto point_record_length = file_->GetLasHeader().point_record_length;
-    auto eb_count = las::Point::ComputeNumExtraBytes(point_format_id, point_record_length);
+    auto eb_count = las::ComputeNumExtraBytes(point_format_id, point_record_length);
     if (point_data.empty())
         return las::Points(point_format_id, eb_count);
     return las::Points::Unpack(point_data, point_format_id, point_record_length);

@@ -2,6 +2,8 @@
 #include <sstream>
 #include <string>
 
+#include <copc-lib/las/utils.hpp>
+
 namespace copc::las
 {
 
@@ -10,7 +12,7 @@ Points::Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes) :
     if (point_format_id < 0 || point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10.");
 
-    point_record_length_ = Point::ComputePointBytes(point_format_id, num_extra_bytes);
+    point_record_length_ = ComputePointBytes(point_format_id, num_extra_bytes);
 }
 
 Points::Points(const std::vector<Point> &points)
@@ -66,7 +68,7 @@ Points Points::Unpack(const std::vector<char> &point_data, int8_t point_format_i
     if (point_data.size() % point_record_length != 0)
         throw std::runtime_error("Invalid input point array!");
 
-    auto num_extra_bytes = las::Point::ComputeNumExtraBytes(point_format_id, point_record_length);
+    auto num_extra_bytes = ComputeNumExtraBytes(point_format_id, point_record_length);
     uint64_t point_count = point_data.size() / point_record_length;
 
     // Make a stream out of the vector of char

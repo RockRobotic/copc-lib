@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 
+#include <copc-lib/las/utils.hpp>
+
 namespace copc::las
 {
 class Point
@@ -19,8 +21,6 @@ class Point
     void ToPointFormat(const int8_t &point_format_id);
 
     std::string ToString() const;
-
-    static uint8_t BaseByteSize(const int8_t &point_format_id);
 
     // Getters and Setters
     int32_t X() const { return x_; }
@@ -391,7 +391,7 @@ class Point
 
     int8_t PointFormatID() const { return point_format_id_; }
 
-    uint16_t NumExtraBytes() const { return point_record_length_ - BaseByteSize(point_format_id_); }
+    uint16_t NumExtraBytes() const;
 
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
     void ExtraBytes(const std::vector<uint8_t> &in)
@@ -512,15 +512,6 @@ class Point
     };
 
     bool operator!=(const Point &other) const { return !(*this == other); };
-
-    static uint16_t ComputeNumExtraBytes(int8_t point_format_id, uint32_t point_record_length)
-    {
-        return point_record_length - BaseByteSize(point_format_id);
-    }
-    static uint16_t ComputePointBytes(int8_t point_format_id, uint16_t num_extra_bytes_)
-    {
-        return BaseByteSize(point_format_id) + num_extra_bytes_;
-    }
 
   protected:
     int32_t x_{};
