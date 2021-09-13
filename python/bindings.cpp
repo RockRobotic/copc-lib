@@ -6,6 +6,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "lazperf/vlr.hpp"
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/io/reader.hpp>
@@ -214,6 +215,8 @@ PYBIND11_MODULE(copclib, m)
         .def("AddSubPage", &Writer::AddSubPage);
 
     py::class_<Node>(m, "Node")
+        .def(py::init<>())
+        .def(py::init<Entry>())
         .def_readwrite("point_count", &Node::point_count)
         .def_readwrite("key", &Node::key)
         .def_readwrite("offset", &Node::offset)
@@ -236,11 +239,31 @@ PYBIND11_MODULE(copclib, m)
     py::class_<las::CopcVlr>(m, "CopcVlr")
         .def_readwrite("span", &las::CopcVlr::span)
         .def_readwrite("root_hier_offset", &las::CopcVlr::root_hier_offset)
-        .def_readwrite("root_hier_size", &las::CopcVlr::root_hier_size);
+        .def_readwrite("root_hier_size", &las::CopcVlr::root_hier_size)
+        .def_readwrite("laz_vlr_offset", &las::CopcVlr::laz_vlr_offset)
+        .def_readwrite("laz_vlr_size", &las::CopcVlr::laz_vlr_size)
+        .def_readwrite("wkt_vlr_offset", &las::CopcVlr::wkt_vlr_offset)
+        .def_readwrite("wkt_vlr_size", &las::CopcVlr::wkt_vlr_size)
+        .def_readwrite("eb_vlr_offset", &las::CopcVlr::eb_vlr_offset)
+        .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
 
     py::class_<las::LasHeader>(m, "LasHeader")
+        .def_readwrite("header_size", &las::LasHeader::header_size)
         .def_readwrite("point_format_id", &las::LasHeader::point_format_id)
         .def_readwrite("point_count", &las::LasHeader::point_count);
 
     py::class_<las::EbVlr>(m, "EbVlr").def_readwrite("items", &las::EbVlr::items);
+
+    py::class_<las::EbVlr::ebfield>(m, "EbField")
+        //    .def_readwrite("reserved",&las::EbVlr::ebfield::reserved)
+        .def_readwrite("data_type", &las::EbVlr::ebfield::data_type)
+        .def_readwrite("options", &las::EbVlr::ebfield::options)
+        .def_readwrite("name", &las::EbVlr::ebfield::name)
+        //    .def_readwrite("unused",&las::EbVlr::ebfield::unused)
+        //    .def_readwrite("no_data",&las::EbVlr::ebfield::no_data)
+        //    .def_readwrite("minval",&las::EbVlr::ebfield::minval)
+        //    .def_readwrite("maxval",&las::EbVlr::ebfield::maxval)
+        //    .def_readwrite("scale",&las::EbVlr::ebfield::scale)
+        //    .def_readwrite("offset",&las::EbVlr::ebfield::offset)
+        .def_readwrite("description", &las::EbVlr::ebfield::description);
 }

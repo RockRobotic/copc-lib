@@ -31,8 +31,7 @@ if __name__ == "__main__":
     node = reader.FindNode(load_key)
     # If FindNode can't find the node, it will return an "invalid" node:
     if not node.IsValid():
-        pass  # TODO[Leo]
-
+        quit()
     # GetPoints returns a Points object, which provides helper functions
     # as well as a Get() function to access the underlying point vector
     node_points = reader.GetPoints(node)
@@ -49,7 +48,7 @@ if __name__ == "__main__":
 
     node = reader.FindNode(loadKey)
     if not node.IsValid():
-        pass  # TODO[Leo]
+        quit()
     compressed_data = reader.GetPointDataCompressed(node)
 
     # # We can decompress `n` number of points, or we can decompress the entire node
