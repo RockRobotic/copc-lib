@@ -7,7 +7,7 @@ import copclib
 def TrimFileExample():
 
     # We'll get our point data from this file
-    reader = copclib.FileReader("test/data/autzen-classified.copc.laz")
+    reader = copclib.FileReader("../build/test/data/autzen-classified.copc.laz")
     old_header = reader.GetLasHeader()
 
     # Copy the header to the new file
@@ -15,7 +15,7 @@ def TrimFileExample():
 
     # Now, we can create our actual writer, with an optional `span` and `wkt`:
     writer = copclib.FileWriter(
-        "test/data/autzen-trimmed.copc.laz",
+        "../build/test/data/autzen-trimmed.copc.laz",
         cfg,
         reader.GetCopcHeader().span,
         reader.GetWkt(),

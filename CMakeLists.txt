@@ -5,7 +5,7 @@ find_package(lazperf REQUIRED)
 
 set (COPC_SHARED_LIB copc-lib)
 set (COPC_STATIC_LIB copc-lib-s)
-set (COPC_PYTHON_LIB copc-lib-bindings)
+set (COPC_PYTHON_LIB copclib)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

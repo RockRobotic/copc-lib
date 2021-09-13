@@ -214,12 +214,20 @@ PYBIND11_MODULE(copclib, m)
         .def("AddSubPage", &Writer::AddSubPage);
 
     py::class_<Node>(m, "Node")
+        .def_readwrite("point_count", &Node::point_count)
+        .def_readwrite("key", &Node::key)
+        .def_readwrite("offset", &Node::offset)
+        .def_readwrite("byte_size", &Node::byte_size)
         .def("IsValid", &Node::IsValid)
         .def("IsPage", &Node::IsPage)
         .def("__str__", &Node::ToString)
         .def("__repr__", &Node::ToString);
 
     py::class_<Page>(m, "Page")
+        .def_readwrite("point_count", &Page::point_count)
+        .def_readwrite("key", &Page::key)
+        .def_readwrite("offset", &Page::offset)
+        .def_readwrite("byte_size", &Page::byte_size)
         .def("IsValid", &Page::IsValid)
         .def("IsPage", &Page::IsPage)
         .def("__str__", &Page::ToString)
