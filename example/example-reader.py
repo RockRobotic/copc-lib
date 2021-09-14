@@ -1,8 +1,7 @@
 import copclib
 
 
-if __name__ == "__main__":
-
+def reader_example():
     # Create a reader object
     reader = copclib.FileReader("../build/test/data/autzen-classified.copc.laz")
 
@@ -31,7 +30,7 @@ if __name__ == "__main__":
     node = reader.FindNode(load_key)
     # If FindNode can't find the node, it will return an "invalid" node:
     if not node.IsValid():
-        quit()
+        return
     # GetPoints returns a Points object, which provides helper functions
     # as well as a Get() function to access the underlying point vector
     node_points = reader.GetPoints(node)
@@ -48,12 +47,21 @@ if __name__ == "__main__":
 
     node = reader.FindNode(loadKey)
     if not node.IsValid():
-        quit()
+        return
     compressed_data = reader.GetPointDataCompressed(node)
 
     # # We can decompress `n` number of points, or we can decompress the entire node
     # # by setting n=node.point_count
-    # num_points_to_decompress = 5
-    # uncompressed_data =copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, num_points_to_decompress)
-    #
-    # print("Successfully decompressed %d points!" % uncompressed_data.size() / las_header.point_record_length)
+    num_points_to_decompress = 5
+    uncompressed_data = copclib.DecompressBytes(
+        compressed_data, las_header, num_points_to_decompress
+    )
+
+    print(
+        "Successfully decompressed %d points!"
+        % (len(uncompressed_data) / las_header.point_record_length)
+    )
+
+
+if __name__ == "__main__":
+    reader_example()

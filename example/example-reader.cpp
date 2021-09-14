@@ -9,7 +9,7 @@
 using namespace copc;
 using namespace std;
 
-int main()
+void ReaderExample()
 {
     // Create a reader object
     FileReader reader("test/data/autzen-classified.copc.laz");
@@ -76,3 +76,5 @@ int main()
              << endl;
     }
 }
+
+int main() { ReaderExample(); }

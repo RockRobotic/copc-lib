@@ -38,7 +38,7 @@ void TrimFileExample()
         {
             // In this example, we'll only save up to depth level 3.
             if (node.key.d > 3)
-                continue;
+                break;
 
             // It's much faster to write and read compressed data, to avoid compression and decompression
             if (!compressor_example_flag)
