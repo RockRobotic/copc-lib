@@ -1,5 +1,5 @@
-#ifndef COPCLIB_LAZ_DECOMPRESS_H_
-#define COPCLIB_LAZ_DECOMPRESS_H_
+#ifndef COPCLIB_LAZ_COMPRESS_H_
+#define COPCLIB_LAZ_COMPRESS_H_
 
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/utils.hpp>
@@ -56,4 +56,4 @@ class Compressor
 };
 } // namespace copc::laz
 
-#endif // COPCLIB_LAZ_DECOMPRESS_H_
+#endif // COPCLIB_LAZ_COMPRESS_H_
