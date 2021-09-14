@@ -124,10 +124,10 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="copclib",
-    version="1.0.0",
-    author="Rock Robotic",
-    author_email="info@rockrobotic.com",
-    description="An interface to Cloud-Optimized Point Clouds (COPC)",
+    version="1.2",
+    author="Rock Robotic Inc.",
+    author_email="support@rockrobotic.com",
+    description="A python interface to Cloud-Optimized Point Clouds (COPC)",
     long_description="",
     ext_modules=[CMakeExtension("copclib")],
     cmdclass={"build_ext": CMakeBuild},

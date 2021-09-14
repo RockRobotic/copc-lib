@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(copc-lib VERSION 1.1)
+project(copc-lib VERSION 1.2)
 
 find_package(lazperf REQUIRED)
 
@@ -77,12 +77,6 @@ if(WITH_PYTHON)
     pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
     target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${COPC_STATIC_LIB})
     target_compile_definitions(${COPC_PYTHON_LIB} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-    IF(WITH_TEST)
-        file(GLOB PYTHON_TEST_SRCS
-                test/*.py
-                )
-        add_test(NAME points_test COMMAND python test/points_test.py)
-    endif()
 endif()
 
 # Install
