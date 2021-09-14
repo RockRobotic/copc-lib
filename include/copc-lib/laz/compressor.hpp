@@ -54,8 +54,6 @@ class Compressor
         auto ostr = out_stream.str();
         return std::vector<char>(ostr.begin(), ostr.end());
     }
-
-    static int test_function(const double &arg1) { return 0; }
 };
 } // namespace copc::laz
 

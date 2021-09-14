@@ -19,7 +19,8 @@ class Decompressor
 {
   public:
     // Decompresses bytes from the instream and returns them
-    static std::vector<char> DecompressBytes(std::istream &in_stream, las::LasHeader &header, int point_count)
+    static std::vector<char> DecompressBytes(std::istream &in_stream, const las::LasHeader &header,
+                                             const int &point_count)
     {
         std::vector<char> out;
 
@@ -39,7 +40,8 @@ class Decompressor
         return out;
     }
 
-    static std::vector<char> DecompressBytes(std::vector<char> compressed_data, las::LasHeader &header, int point_count)
+    static std::vector<char> DecompressBytes(const std::vector<char> &compressed_data, const las::LasHeader &header,
+                                             const int &point_count)
     {
         std::istringstream in_stream(std::string(compressed_data.begin(), compressed_data.end()));
         return DecompressBytes(in_stream, header, point_count);

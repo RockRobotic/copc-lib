@@ -15,6 +15,7 @@
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
 #include <copc-lib/laz/compressor.hpp>
+#include <copc-lib/laz/decompressor.hpp>
 
 namespace py = pybind11;
 using namespace copc;
@@ -121,7 +122,6 @@ PYBIND11_MODULE(copclib, m)
         .def("Pack", &las::Point::Pack)
         .def("Unpack", &las::Point::Unpack)
         .def("ToPointFormat", &las::Point::ToPointFormat)
-        .def("BaseByteSize", &las::Point::BaseByteSize)
 
         .def("PointFormatID", &las::Point::PointFormatID)
         .def("PointRecordLength", &las::Point::PointRecordLength)
@@ -174,9 +174,13 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)(const VoxelKey &)>(&Reader::GetAllChildren))
         .def("GetAllChildren", static_cast<std::vector<Node> (Reader::*)()>(&Reader::GetAllChildren));
 
-    //    py::class_<laz::Compressor>(m, "LazCompressor")
+    m.def("CompressBytes",
+          py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes));
 
-    py::class_<copc::vector3>(m, "copc::vector3")
+    m.def("DecompressBytes", py::overload_cast<const std::vector<char> &, const las::LasHeader &, const int &>(
+                                 &laz::Decompressor::DecompressBytes));
+
+    py::class_<copc::vector3>(m, "vector3")
         .def(py::init<>())
         .def(py::init<const double &, const double &, const double &>())
         .def_readwrite("x", &copc::vector3::x)

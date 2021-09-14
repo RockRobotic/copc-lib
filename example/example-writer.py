@@ -10,6 +10,8 @@ def TrimFileExample():
     reader = copclib.FileReader("../build/test/data/autzen-classified.copc.laz")
     old_header = reader.GetLasHeader()
 
+    compressor_example_flag = False
+
     # Copy the header to the new file
     cfg = copclib.LasConfig(old_header, reader.GetExtraByteVlr())
 
@@ -31,21 +33,26 @@ def TrimFileExample():
             break
 
         # It's much faster to write and read compressed data, to avoid compression and decompression
-        writer.AddNodeCompressed(
-            root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
-        )
+        if not compressor_example_flag:
+            writer.AddNodeCompressed(
+                root_page,
+                node.key,
+                reader.GetPointDataCompressed(node),
+                node.point_count,
+            )
 
         # Alternatively, if we have uncompressed data and want to compress it without writing it to the file,
         # (for example, compress multiple nodes in parallel and have one thread writing the data),
         # we can use the Compressor class:
-
-        # header = writer.GetLasHeader()
-        # uncompressed_points = reader.GetPointData(node)
-        # compressed_points =
-        # laz::Compressor(uncompressed_points, header.point_format_id,
-        #                 cfg.extra_bytes.size(), header.point_record_length)
-        # writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count)
-
+        else:
+            header = writer.GetLasHeader()
+            uncompressed_points = reader.GetPointData(node)
+            compressed_points = copclib.CompressBytes(
+                uncompressed_points, header.point_format_id, len(cfg.extra_bytes.items)
+            )
+            writer.AddNodeCompressed(
+                root_page, node.key, compressed_points, node.point_count
+            )
     # Make sure we call close to finish writing the file!
     writer.Close()
 
@@ -60,10 +67,12 @@ def TrimFileExample():
 
         # Similarly, we could retrieve the compressed node data from the file
         # and decompress it later using the Decompressor class
-
-        # header = writer.GetLasHeader()
-        # compressed_points = reader.GetPointDataCompressed(node)
-        # uncompressed_points = laz::Decompressor(uncompressed_points, header, node.point_count)
+        if compressor_example_flag:
+            header = writer.GetLasHeader()
+            compressed_points = reader.GetPointDataCompressed(node.key)
+            uncompressed_points = copclib.DecompressBytes(
+                compressed_points, header, node.point_count
+            )
 
 
 # constants
