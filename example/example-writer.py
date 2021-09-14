@@ -7,7 +7,7 @@ import copclib as copc
 def TrimFileExample():
 
     # We'll get our point data from this file
-    reader = copc.FileReader("../build/test/data/autzen-classified.copc.laz")
+    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
     old_header = reader.GetLasHeader()
 
     compressor_example_flag = False
@@ -17,7 +17,7 @@ def TrimFileExample():
 
     # Now, we can create our actual writer, with an optional `span` and `wkt`:
     writer = copc.FileWriter(
-        "../build/test/data/autzen-trimmed.copc.laz",
+        "../test/data/autzen-trimmed.copc.laz",
         cfg,
         reader.GetCopcHeader().span,
         reader.GetWkt(),
@@ -57,7 +57,7 @@ def TrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader("../build/test/data/autzen-trimmed.copc.laz")
+    new_reader = copc.FileReader("../test/data/autzen-trimmed.copc.laz")
 
     # Let's go through each node we've written and make sure it matches the original
     for node in new_reader.GetAllChildren():
@@ -141,9 +141,7 @@ def NewFileExample():
     )
 
     # Now, we can create our COPC writer, with an optional `span` and `wkt`:
-    writer = copc.FileWriter(
-        "../build/test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT"
-    )
+    writer = copc.FileWriter("../test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT")
 
     # The root page is automatically created
     root_page = writer.GetRootPage()

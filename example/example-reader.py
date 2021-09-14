@@ -3,7 +3,7 @@ import copclib as copc
 
 def reader_example():
     # Create a reader object
-    reader = copc.FileReader("../build/test/data/autzen-classified.copc.laz")
+    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
 
     # We can get the CopcData struct
     copc_vlr = reader.GetCopcHeader()
