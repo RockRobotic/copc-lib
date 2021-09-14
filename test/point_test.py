@@ -1,18 +1,18 @@
 import sys
 
-import copclib
+import copclib as copc
 import pytest
 
 
 def test_constructor():
-    point = copclib.Point(0)
+    point = copc.Point(0)
 
     assert point.HasExtendedPoint() is False
     assert point.HasGPSTime() is False
     assert point.HasRGB() is False
     assert point.HasNIR() is False
 
-    point_ext = copclib.Point(8, 0)
+    point_ext = copc.Point(8, 0)
 
     assert point_ext.HasExtendedPoint() is True
     assert point_ext.HasGPSTime() is True
@@ -21,7 +21,7 @@ def test_constructor():
 
 
 def test_point_format10():
-    point0 = copclib.Point(0)
+    point0 = copc.Point(0)
     # Position
     point0.X(2147483647)
     point0.Y(2147483647)
@@ -133,7 +133,7 @@ def test_point_format10():
 
     str(point0)
 
-    point1 = copclib.Point(1)
+    point1 = copc.Point(1)
 
     point1.GPSTime(sys.float_info.max)
     assert point1.GPSTime() == sys.float_info.max
@@ -148,7 +148,7 @@ def test_point_format10():
         point0.NIR(65535)
         point0.NIR()
 
-    point2 = copclib.Point(2)
+    point2 = copc.Point(2)
     assert point2.PointRecordLength() == 26
 
     point2.Red(65535)
@@ -169,7 +169,7 @@ def test_point_format10():
         point2.NIR(65535)
         point2.NIR()
 
-    point3 = copclib.Point(3)
+    point3 = copc.Point(3)
     assert point3.PointRecordLength() == 34
 
     point3.GPSTime(sys.float_info.max)
@@ -184,7 +184,7 @@ def test_point_format10():
 
 
 def test_point_format14():
-    point6 = copclib.Point(6)
+    point6 = copc.Point(6)
     # Position
     point6.X(2147483647)
     point6.Y(2147483647)
@@ -316,7 +316,7 @@ def test_point_format14():
     # ToString
     str(point6)
 
-    point7 = copclib.Point(7)
+    point7 = copc.Point(7)
 
     point7.RGB(65535, 65535, 65535)
     assert point7.Red() == 65535
@@ -328,7 +328,7 @@ def test_point_format14():
         point7.NIR(65535)
         point7.NIR()
 
-    point8 = copclib.Point(8)
+    point8 = copc.Point(8)
 
     point8.NIR(65535)
     assert point8.NIR() == 65535
@@ -336,7 +336,7 @@ def test_point_format14():
 
 
 def test_point_conversion_10():
-    point = copclib.Point(1)
+    point = copc.Point(1)
 
     assert point.GPSTime() == 0
 
@@ -353,7 +353,7 @@ def test_point_conversion_10():
 
 
 def test_point_conversion_14():
-    point = copclib.Point(6)
+    point = copc.Point(6)
 
     assert point.GPSTime() == 0
     assert point.ScannerChannel() == 0
@@ -381,7 +381,7 @@ def test_point_conversion_14():
 
 
 def test_point_conversion_10_to_14():
-    point = copclib.Point(0)
+    point = copc.Point(0)
 
     point.ReturnNumber(5)
     point.NumberOfReturns(6)
@@ -456,8 +456,8 @@ def test_point_conversion_10_to_14():
 
 def test_operators_equal():
     # Format 0
-    point = copclib.Point(0)
-    point_other = copclib.Point(0)
+    point = copc.Point(0)
+    point_other = copc.Point(0)
 
     assert point == point_other
 
@@ -606,7 +606,7 @@ def test_operators_equal():
 
 
 def test_extra_byte():
-    point = copclib.Point(0)
+    point = copc.Point(0)
     assert point.PointFormatID() == 0
     assert point.PointRecordLength() == 20
     with pytest.raises(RuntimeError):
@@ -614,7 +614,7 @@ def test_extra_byte():
     assert len(point.ExtraBytes()) == 0
     assert point.NumExtraBytes() == 0
 
-    point = copclib.Point(0, 5)
+    point = copc.Point(0, 5)
     assert point.PointFormatID() == 0
     assert point.PointRecordLength() == 20 + 5
     assert point.NumExtraBytes() == 5
@@ -635,7 +635,7 @@ def test_extra_byte():
 
 
 def test_operator_copy():
-    point = copclib.Point(8, 2)
+    point = copc.Point(8, 2)
 
     point.X(4)
     point.Y(4)

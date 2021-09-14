@@ -1,7 +1,5 @@
 #include <cassert>
 #include <cstdint>
-#include <cstring>
-#include <fstream>
 #include <random>
 
 #include <copc-lib/io/reader.hpp>

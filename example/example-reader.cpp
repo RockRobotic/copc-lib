@@ -1,8 +1,3 @@
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/laz/decompressor.hpp>
 

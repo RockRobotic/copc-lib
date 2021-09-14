@@ -1,9 +1,9 @@
-import copclib
+import copclib as copc
 
 
 def reader_example():
     # Create a reader object
-    reader = copclib.FileReader("../build/test/data/autzen-classified.copc.laz")
+    reader = copc.FileReader("../build/test/data/autzen-classified.copc.laz")
 
     # We can get the CopcData struct
     copc_vlr = reader.GetCopcHeader()
@@ -23,7 +23,7 @@ def reader_example():
     # Get the WKT string
     print("WKT: %s\n" % reader.GetWkt())
 
-    load_key = copclib.VoxelKey(4, 11, 9, 0)
+    load_key = copc.VoxelKey(4, 11, 9, 0)
 
     # FindNode will automatically load the minimum pages needed
     # to find the key you request
@@ -43,7 +43,7 @@ def reader_example():
 
     # We can also get the raw compressed data if we want to decompress it ourselves:
 
-    loadKey = copclib.VoxelKey(4, 11, 9, 0)
+    loadKey = copc.VoxelKey(4, 11, 9, 0)
 
     node = reader.FindNode(loadKey)
     if not node.IsValid():
@@ -53,7 +53,7 @@ def reader_example():
     # # We can decompress `n` number of points, or we can decompress the entire node
     # # by setting n=node.point_count
     num_points_to_decompress = 5
-    uncompressed_data = copclib.DecompressBytes(
+    uncompressed_data = copc.DecompressBytes(
         compressed_data, las_header, num_points_to_decompress
     )
 
