@@ -42,9 +42,9 @@ uint16_t ComputeNumExtraBytes(const int8_t &point_format_id, const uint32_t &poi
     return point_record_length - PointBaseByteSize(point_format_id);
 }
 
-uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &num_extra_bytes_)
+uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
 {
-    return PointBaseByteSize(point_format_id) + num_extra_bytes_;
+    return PointBaseByteSize(point_format_id) + num_extra_bytes;
 }
 
 } // namespace copc::las

@@ -19,7 +19,7 @@ template <typename T> void pack(const T &value, std::ostream &out_stream)
 
 uint8_t PointBaseByteSize(const int8_t &point_format_id);
 uint16_t ComputeNumExtraBytes(const int8_t &point_format_id, const uint32_t &point_record_length);
-uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &num_extra_bytes_);
+uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &num_extra_bytes);
 
 } // namespace copc::las
 #endif // COPCLIB_LAS_UTILS_H_

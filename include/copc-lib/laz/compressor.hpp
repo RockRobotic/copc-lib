@@ -18,14 +18,14 @@ class Compressor
 {
   public:
     // Compresses bytes and writes them to the out stream
-    static uint32_t CompressBytes(std::ostream &out_stream, int8_t point_format_id, uint16_t eb_count,
-                                  std::vector<char> &in)
+    static uint32_t CompressBytes(std::ostream &out_stream, const int8_t &point_format_id,
+                                  const uint16_t &num_extra_bytes, std::vector<char> &in)
     {
         OutFileStream stream(out_stream);
 
-        las_compressor::ptr compressor = build_las_compressor(stream.cb(), point_format_id, eb_count);
+        las_compressor::ptr compressor = build_las_compressor(stream.cb(), point_format_id, num_extra_bytes);
 
-        int point_size = copc::las::ComputePointBytes(point_format_id, eb_count);
+        int point_size = copc::las::ComputePointBytes(point_format_id, num_extra_bytes);
         if (in.size() % point_size != 0)
             throw std::runtime_error("Invalid input stream for compression!");
 
@@ -46,13 +46,16 @@ class Compressor
         return CompressBytes(out_stream, header.point_format_id, header.ebCount(), in);
     }
 
-    static std::vector<char> CompressBytes(std::vector<char> &in, int8_t point_format_id, uint16_t eb_count)
+    static std::vector<char> CompressBytes(std::vector<char> &in, const int8_t &point_format_id,
+                                           const uint16_t &eb_count)
     {
         std::ostringstream out_stream;
         CompressBytes(out_stream, point_format_id, eb_count, in);
         auto ostr = out_stream.str();
         return std::vector<char>(ostr.begin(), ostr.end());
     }
+
+    static int test_function(const double &arg1) { return 0; }
 };
 } // namespace copc::laz
 
