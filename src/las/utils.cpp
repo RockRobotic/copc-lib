@@ -1,9 +1,10 @@
 #include <copc-lib/las/utils.hpp>
 
-#include <iostream>
+#include <cmath>
 
 namespace copc::las
 {
+
 uint8_t PointBaseByteSize(const int8_t &point_format_id)
 {
     switch (point_format_id)
@@ -124,6 +125,12 @@ uint16_t ComputeNumExtraBytes(const int8_t &point_format_id, const uint32_t &poi
 uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
 {
     return PointBaseByteSize(point_format_id) + num_extra_bytes;
+}
+
+template <typename T> double ApplyScale(T value, double scale, double offset) { return (value * scale) + offset; }
+template <typename T> T RemoveScale(const double value, double scale, double offset)
+{
+    return static_cast<T>(std::round((value - offset) / scale));
 }
 
 } // namespace copc::las

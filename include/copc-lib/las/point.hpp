@@ -5,18 +5,30 @@
 #include <vector>
 
 #include <copc-lib/las/utils.hpp>
+#include <copc-lib/utils.hpp>
 
 namespace copc::las
 {
 class Point
 {
   public:
-    Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0);
+    Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0, const vector3 &scale = {1, 1, 1},
+          const vector3 &offset = {0, 0, 0});
     Point(const Point &other);
 
     // Getters and Setters
 
 #pragma region XYZ
+    // XYZ Scaled
+    double X() const { return ApplyScale(x_, scale_.x, offset_.x); }
+    void X(const double &x) { x_ = RemoveScale<int32_t>(x, scale_.x, offset_.x); }
+
+    double Y() const { return ApplyScale(y_, scale_.y, offset_.y); }
+    void Y(const double &y) { y_ = RemoveScale<int32_t>(y, scale_.y, offset_.y); }
+
+    double Z() const { return ApplyScale(z_, scale_.z, offset_.z); }
+    void Z(const double &z) { z_ = RemoveScale<int32_t>(z, scale_.z, offset_.z); }
+
     // XYZ Unscaled
     int32_t UnscaledX() const { return x_; }
     void UnscaledX(const int32_t &x) { x_ = x; }
