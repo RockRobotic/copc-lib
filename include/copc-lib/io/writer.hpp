@@ -1,7 +1,9 @@
 #ifndef COPCLIB_IO_WRITER_H_
 #define COPCLIB_IO_WRITER_H_
 
+#include <array>
 #include <ostream>
+#include <stdexcept>
 
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/io/base_io.hpp>
@@ -16,6 +18,14 @@ struct vector3
 {
     vector3() : x(0), y(0), z(0) {}
     vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
+    vector3(const std::vector<double> &vec)
+    {
+        if (vec.size() != 3)
+            throw std::runtime_error("Vector must be of size 3.");
+        x = vec[0];
+        y = vec[1];
+        z = vec[2];
+    }
 
     double x;
     double y;
@@ -73,6 +83,28 @@ class Writer : public BaseIO
 
         // # of points per return 0-14
         uint64_t points_by_return_14[15]{};
+        //    private:
+        //        // Getter/Setters for python bindings
+        //        void CreationDay(const uint16_t& day){
+        //            creation.day = day;
+        //        }
+        //        uint16_t CreationDay() const{
+        //            return creation.day;
+        //        }
+        //        void CreationYear(const uint16_t& year){
+        //            creation.year = year;
+        //        }
+        //        uint16_t CreationYear() const{
+        //            return creation.year;
+        //        }
+        //        void Scale(const std::vector<double> &scale){
+        //            this->scale.x = scale[0];
+        //            this->scale.y = scale[1];
+        //            this->scale.z = scale[2];
+        //        }
+        //        std::vector<double> Scale() const{
+        //            return std::vector<double>(){scale.x,scale.y,scale.z};
+        //        }
     };
 
     Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "")

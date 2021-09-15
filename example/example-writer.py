@@ -129,7 +129,7 @@ def RandomPoints(key, point_format_id):
 def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
-    cfg = copc.LasConfig(8, copc.vector3(1, 1, 1), copc.vector3(0, 0, 0))
+    cfg = copc.LasConfig(8, [1, 1, 1], [0, 0, 0])
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
     cfg.min = copc.vector3(

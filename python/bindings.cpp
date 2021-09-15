@@ -173,11 +173,13 @@ PYBIND11_MODULE(copclib, m)
                                  &laz::Decompressor::DecompressBytes));
 
     py::class_<copc::vector3>(m, "vector3")
-        .def(py::init<>())
         .def(py::init<const double &, const double &, const double &>())
+        .def(py::init<const std::vector<double> &>())
         .def_readwrite("x", &copc::vector3::x)
         .def_readwrite("y", &copc::vector3::y)
         .def_readwrite("z", &copc::vector3::z);
+
+    py::implicitly_convertible<py::list, copc::vector3>();
 
     // TODO[Leo]: Finish commented attributes
     py::class_<Writer::LasConfig>(m, "LasConfig")
