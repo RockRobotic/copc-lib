@@ -11,7 +11,7 @@ TEST_CASE("Points tests", "[Point]")
 {
     SECTION("Points constructors")
     {
-        auto points = Points(3, 4);
+        auto points = Points(3, {1, 1, 1}, {0, 0, 0}, 4);
         REQUIRE(points.PointFormatID() == 3);
         REQUIRE(points.PointRecordLength() == 38);
         REQUIRE(points.Get().empty());
@@ -44,7 +44,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Adding Point to Points")
     {
-        auto points = Points(3, 0);
+        auto points = Points(3, {1, 1, 1}, {0, 0, 0}, 0);
         auto point = Point(3, 0);
         point.UnscaledX(11);
         point.UnscaledY(11);

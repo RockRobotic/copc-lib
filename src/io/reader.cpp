@@ -91,7 +91,8 @@ las::Points Reader::GetPoints(Node const &node)
 {
     std::vector<char> point_data = GetPointData(node);
     return las::Points::Unpack(point_data, file_->GetLasHeader().point_format_id,
-                               file_->GetLasHeader().point_record_length);
+                               file_->GetLasHeader().point_record_length, file_->GetLasHeader().scale,
+                               file_->GetLasHeader().offset);
 }
 
 las::Points Reader::GetPoints(VoxelKey const &key)
@@ -102,8 +103,9 @@ las::Points Reader::GetPoints(VoxelKey const &key)
     auto point_record_length = file_->GetLasHeader().point_record_length;
     auto eb_count = las::ComputeNumExtraBytes(point_format_id, point_record_length);
     if (point_data.empty())
-        return las::Points(point_format_id, eb_count);
-    return las::Points::Unpack(point_data, point_format_id, point_record_length);
+        return las::Points(point_format_id, file_->GetLasHeader().scale, file_->GetLasHeader().offset, eb_count);
+    return las::Points::Unpack(point_data, point_format_id, point_record_length, file_->GetLasHeader().scale,
+                               file_->GetLasHeader().offset);
 }
 
 std::vector<char> Reader::GetPointData(Node const &node)

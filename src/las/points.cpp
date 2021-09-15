@@ -7,7 +7,9 @@
 namespace copc::las
 {
 
-Points::Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes) : point_format_id_(point_format_id)
+Points::Points(const int8_t &point_format_id, const lazperf::vector3 &scale, const lazperf::vector3 &offset,
+               const uint16_t &num_extra_bytes)
+    : point_format_id_(point_format_id), scale_(scale), offset_(offset)
 {
     if (point_format_id < 0 || point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10.");
@@ -22,6 +24,8 @@ Points::Points(const std::vector<Point> &points)
 
     point_record_length_ = points[0].PointRecordLength();
     point_format_id_ = points[0].PointFormatID();
+    scale_ = points[0].Scale();
+    offset_ = points[0].Offset();
 
     AddPoints(points);
 }
@@ -63,7 +67,8 @@ void Points::AddPoints(std::vector<las::Point> points)
     points_.insert(points_.end(), points.begin(), points.end());
 }
 
-Points Points::Unpack(const std::vector<char> &point_data, int8_t point_format_id, int point_record_length)
+Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
+                      const int32_t &point_record_length, const lazperf::vector3 &scale, const lazperf::vector3 &offset)
 {
     if (point_data.size() % point_record_length != 0)
         throw std::runtime_error("Invalid input point array!");
@@ -75,7 +80,7 @@ Points Points::Unpack(const std::vector<char> &point_data, int8_t point_format_i
     auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
 
     // Go through each Point to unpack the data from the stream
-    Points points(point_format_id, num_extra_bytes);
+    Points points(point_format_id, scale, offset, num_extra_bytes);
     points.Reserve(point_count);
 
     // Unpack points
