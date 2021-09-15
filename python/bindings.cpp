@@ -40,10 +40,8 @@ PYBIND11_MODULE(copclib, m)
         .def("GetParents", &VoxelKey::GetParents)
         .def("ChildOf", &VoxelKey::ChildOf)
         .def("__str__", &VoxelKey::ToString)
-        .def("__repr__", &VoxelKey::ToString)
-        .def(py::hash(py::self));
+        .def("__repr__", &VoxelKey::ToString);
 
-    // TODO[Leo]: Update getters and setters to pybind template
     py::class_<las::Point>(m, "Point")
         .def(py::init<const uint8_t &, const uint16_t &>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const las::Point &>())
