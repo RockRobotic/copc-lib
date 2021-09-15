@@ -106,17 +106,20 @@ def RandomPoints(key, point_format_id):
         # Create a point with a given point format
         point = copc.Point(point_format_id)
         # point has getters/setters for all attributes
-        point.X(
-            int(random.uniform(min(minx, MAX_BOUNDS.x), min(minx + step, MAX_BOUNDS.x)))
+        point.X = int(
+            random.uniform(min(minx, MAX_BOUNDS.x), min(minx + step, MAX_BOUNDS.x))
         )
-        point.Y(
-            int(random.uniform(min(miny, MAX_BOUNDS.y), min(miny + step, MAX_BOUNDS.y)))
+
+        point.Y = int(
+            random.uniform(min(miny, MAX_BOUNDS.y), min(miny + step, MAX_BOUNDS.y))
         )
-        point.Z(
-            int(random.uniform(min(minz, MAX_BOUNDS.z), min(minz + step, MAX_BOUNDS.z)))
+
+        point.Z = int(
+            random.uniform(min(minz, MAX_BOUNDS.z), min(minz + step, MAX_BOUNDS.z))
         )
+
         # For visualization purposes
-        point.PointSourceID(key.d + key.x + key.y + key.d)
+        point.PointSourceID = key.d + key.x + key.y + key.d
 
         points.AddPoint(point)
     return points

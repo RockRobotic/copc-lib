@@ -47,88 +47,82 @@ PYBIND11_MODULE(copclib, m)
     py::class_<las::Point>(m, "Point")
         .def(py::init<const uint8_t &, const uint16_t &>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const las::Point &>())
-        .def("X", static_cast<int32_t (las::Point::*)() const>(&las::Point::X))
-        .def("X", static_cast<void (las::Point::*)(const int32_t &)>(&las::Point::X))
-        .def("Y", static_cast<int32_t (las::Point::*)() const>(&las::Point::Y))
-        .def("Y", static_cast<void (las::Point::*)(const int32_t &)>(&las::Point::Y))
-        .def("Z", static_cast<int32_t (las::Point::*)() const>(&las::Point::Z))
-        .def("Z", static_cast<void (las::Point::*)(const int32_t &)>(&las::Point::Z))
-        .def("Intensity", static_cast<uint16_t (las::Point::*)() const>(&las::Point::Intensity))
-        .def("Intensity", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::Intensity))
-        .def("ReturnsScanDirEofBitFields",
-             static_cast<uint8_t (las::Point::*)() const>(&las::Point::ReturnsScanDirEofBitFields))
-        .def("ReturnsScanDirEofBitFields",
-             static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ReturnsScanDirEofBitFields))
-        .def("ExtendedReturnsBitFields",
-             static_cast<uint8_t (las::Point::*)() const>(&las::Point::ExtendedReturnsBitFields))
-        .def("ExtendedReturnsBitFields",
-             static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ExtendedReturnsBitFields))
-        .def("ReturnNumber", static_cast<uint8_t (las::Point::*)() const>(&las::Point::ReturnNumber))
-        .def("ReturnNumber", static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ReturnNumber))
-        .def("NumberOfReturns", static_cast<uint8_t (las::Point::*)() const>(&las::Point::NumberOfReturns))
-        .def("NumberOfReturns", static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::NumberOfReturns))
-        .def("ExtendedFlagsBitFields",
-             static_cast<uint8_t (las::Point::*)() const>(&las::Point::ExtendedFlagsBitFields))
-        .def("ExtendedFlagsBitFields",
-             static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ExtendedFlagsBitFields))
-        .def("Synthetic", static_cast<bool (las::Point::*)() const>(&las::Point::Synthetic))
-        .def("Synthetic", static_cast<void (las::Point::*)(const bool &)>(&las::Point::Synthetic))
-        .def("KeyPoint", static_cast<bool (las::Point::*)() const>(&las::Point::KeyPoint))
-        .def("KeyPoint", static_cast<void (las::Point::*)(const bool &)>(&las::Point::KeyPoint))
-        .def("Withheld", static_cast<bool (las::Point::*)() const>(&las::Point::Withheld))
-        .def("Withheld", static_cast<void (las::Point::*)(const bool &)>(&las::Point::Withheld))
-        .def("Overlap", static_cast<bool (las::Point::*)() const>(&las::Point::Overlap))
-        .def("Overlap", static_cast<void (las::Point::*)(const bool &)>(&las::Point::Overlap))
-        .def("ScannerChannel", static_cast<uint8_t (las::Point::*)() const>(&las::Point::ScannerChannel))
-        .def("ScannerChannel", static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ScannerChannel))
-        .def("ScanDirectionFlag", static_cast<bool (las::Point::*)() const>(&las::Point::ScanDirectionFlag))
-        .def("ScanDirectionFlag", static_cast<void (las::Point::*)(const bool &)>(&las::Point::ScanDirectionFlag))
-        .def("EdgeOfFlightLineFlag", static_cast<bool (las::Point::*)() const>(&las::Point::EdgeOfFlightLineFlag))
-        .def("EdgeOfFlightLineFlag", static_cast<void (las::Point::*)(const bool &)>(&las::Point::EdgeOfFlightLineFlag))
-        .def("ClassificationBitFields",
-             static_cast<uint8_t (las::Point::*)() const>(&las::Point::ClassificationBitFields))
-        .def("ClassificationBitFields",
-             static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::ClassificationBitFields))
-        .def("Classification", static_cast<uint8_t (las::Point::*)() const>(&las::Point::Classification))
-        .def("Classification", static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::Classification))
-        .def("ScanAngleRank", static_cast<int8_t (las::Point::*)() const>(&las::Point::ScanAngleRank))
-        .def("ScanAngleRank", static_cast<void (las::Point::*)(const int8_t &)>(&las::Point::ScanAngleRank))
-        .def("ExtendedScanAngle", static_cast<int16_t (las::Point::*)() const>(&las::Point::ExtendedScanAngle))
-        .def("ExtendedScanAngle", static_cast<void (las::Point::*)(const int16_t &)>(&las::Point::ExtendedScanAngle))
-        .def("ScanAngle", static_cast<float (las::Point::*)() const>(&las::Point::ScanAngle))
-        .def("ScanAngle", static_cast<void (las::Point::*)(const float &)>(&las::Point::ScanAngle))
-        .def("UserData", static_cast<uint8_t (las::Point::*)() const>(&las::Point::UserData))
-        .def("UserData", static_cast<void (las::Point::*)(const uint8_t &)>(&las::Point::UserData))
-        .def("PointSourceID", static_cast<uint16_t (las::Point::*)() const>(&las::Point::PointSourceID))
-        .def("PointSourceID", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::PointSourceID))
-        .def("RGB",
-             static_cast<void (las::Point::*)(const uint16_t &, const uint16_t &, const uint16_t &)>(&las::Point::RGB))
-        .def("Red", static_cast<uint16_t (las::Point::*)() const>(&las::Point::Red))
-        .def("Red", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::Red))
-        .def("Green", static_cast<uint16_t (las::Point::*)() const>(&las::Point::Green))
-        .def("Green", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::Green))
-        .def("Blue", static_cast<uint16_t (las::Point::*)() const>(&las::Point::Blue))
-        .def("Blue", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::Blue))
-        .def("GPSTime", static_cast<double (las::Point::*)() const>(&las::Point::GPSTime))
-        .def("GPSTime", static_cast<void (las::Point::*)(const double &)>(&las::Point::GPSTime))
-        .def("NIR", static_cast<uint16_t (las::Point::*)() const>(&las::Point::NIR))
-        .def("NIR", static_cast<void (las::Point::*)(const uint16_t &)>(&las::Point::NIR))
+        .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
+                      py::overload_cast<const int32_t &>(&las::Point::X))
+        .def_property("Y", py::overload_cast<>(&las::Point::Y, py::const_),
+                      py::overload_cast<const int32_t &>(&las::Point::Y))
+        .def_property("Z", py::overload_cast<>(&las::Point::Z, py::const_),
+                      py::overload_cast<const int32_t &>(&las::Point::Z))
+        .def_property("Intensity", py::overload_cast<>(&las::Point::Intensity, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::Intensity))
+        .def_property("ReturnsScanDirEofBitFields",
+                      py::overload_cast<>(&las::Point::ReturnsScanDirEofBitFields, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::ReturnsScanDirEofBitFields))
+        .def_property("ExtendedReturnsBitFields",
+                      py::overload_cast<>(&las::Point::ExtendedReturnsBitFields, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::ExtendedReturnsBitFields))
+        .def_property("ReturnNumber", py::overload_cast<>(&las::Point::ReturnNumber, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::ReturnNumber))
+        .def_property("NumberOfReturns", py::overload_cast<>(&las::Point::NumberOfReturns, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::NumberOfReturns))
+        .def_property("ExtendedFlagsBitFields", py::overload_cast<>(&las::Point::ExtendedFlagsBitFields, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::ExtendedFlagsBitFields))
+        .def_property("Synthetic", py::overload_cast<>(&las::Point::Synthetic, py::const_),
+                      py::overload_cast<const bool &>(&las::Point::Synthetic))
+        .def_property("KeyPoint", py::overload_cast<>(&las::Point::KeyPoint, py::const_),
+                      py::overload_cast<const bool &>(&las::Point::KeyPoint))
+        .def_property("Withheld", py::overload_cast<>(&las::Point::Withheld, py::const_),
+                      py::overload_cast<const bool &>(&las::Point::Withheld))
+        .def_property("Overlap", py::overload_cast<>(&las::Point::Overlap, py::const_),
+                      py::overload_cast<const bool &>(&las::Point::Overlap))
+        .def_property("ScannerChannel", py::overload_cast<>(&las::Point::ScannerChannel, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::ScannerChannel))
+        .def_property("ScanDirectionFlag", py::overload_cast<>(&las::Point::ScanDirectionFlag, py::const_),
+                      py::overload_cast<const bool &>(&las::Point::ScanDirectionFlag))
+        .def_property("EdgeOfFlightLineFlag", py::overload_cast<>(&las::Point::EdgeOfFlightLineFlag, py::const_),
+                      py::overload_cast<const bool &>(&las::Point::EdgeOfFlightLineFlag))
+        .def_property("ClassificationBitFields", py::overload_cast<>(&las::Point::ClassificationBitFields, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::ClassificationBitFields))
+        .def_property("Classification", py::overload_cast<>(&las::Point::Classification, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::Classification))
+        .def_property("ScanAngleRank", py::overload_cast<>(&las::Point::ScanAngleRank, py::const_),
+                      py::overload_cast<const int8_t &>(&las::Point::ScanAngleRank))
+        .def_property("ExtendedScanAngle", py::overload_cast<>(&las::Point::ExtendedScanAngle, py::const_),
+                      py::overload_cast<const int16_t &>(&las::Point::ExtendedScanAngle))
+        .def_property("ScanAngle", py::overload_cast<>(&las::Point::ScanAngle, py::const_),
+                      py::overload_cast<const float &>(&las::Point::ScanAngle))
+        .def_property("UserData", py::overload_cast<>(&las::Point::UserData, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::UserData))
+        .def_property("PointSourceID", py::overload_cast<>(&las::Point::PointSourceID, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::PointSourceID))
+        .def_property("RGB", nullptr, py::overload_cast<const std::vector<uint16_t> &>(&las::Point::RGB))
+        .def_property("Red", py::overload_cast<>(&las::Point::Red, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::Red))
+        .def_property("Green", py::overload_cast<>(&las::Point::Green, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::Green))
+        .def_property("Blue", py::overload_cast<>(&las::Point::Blue, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::Blue))
+        .def_property("GPSTime", py::overload_cast<>(&las::Point::GPSTime, py::const_),
+                      py::overload_cast<const double &>(&las::Point::GPSTime))
+        .def_property("NIR", py::overload_cast<>(&las::Point::NIR, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::NIR))
 
-        .def("HasExtendedPoint", &las::Point::HasExtendedPoint)
-        .def("HasGPSTime", &las::Point::HasGPSTime)
-        .def("HasRGB", &las::Point::HasRGB)
-        .def("HasNIR", &las::Point::HasNIR)
+        .def_property_readonly("HasExtendedPoint", &las::Point::HasExtendedPoint)
+        .def_property_readonly("HasGPSTime", &las::Point::HasGPSTime)
+        .def_property_readonly("HasRGB", &las::Point::HasRGB)
+        .def_property_readonly("HasRGB", &las::Point::HasRGB)
+        .def_property_readonly("HasNIR", &las::Point::HasNIR)
 
         .def("Pack", &las::Point::Pack)
         .def("Unpack", &las::Point::Unpack)
         .def("ToPointFormat", &las::Point::ToPointFormat)
 
-        .def("PointFormatID", &las::Point::PointFormatID)
-        .def("PointRecordLength", &las::Point::PointRecordLength)
-        .def("NumExtraBytes", &las::Point::NumExtraBytes)
+        .def_property_readonly("PointFormatID", &las::Point::PointFormatID)
+        .def_property_readonly("PointRecordLength", &las::Point::PointRecordLength)
+        .def_property_readonly("NumExtraBytes", &las::Point::NumExtraBytes)
 
-        .def("ExtraBytes", static_cast<std::vector<uint8_t> (las::Point::*)() const>(&las::Point::ExtraBytes))
-        .def("ExtraBytes", static_cast<void (las::Point::*)(const std::vector<uint8_t> &)>(&las::Point::ExtraBytes))
+        .def_property("ExtraBytes", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
+                      py::overload_cast<const std::vector<uint8_t> &>(&las::Point::ExtraBytes))
 
         .def(py::self == py::self)
         .def(py::self != py::self)
@@ -138,12 +132,12 @@ PYBIND11_MODULE(copclib, m)
     py::class_<las::Points>(m, "Points")
         .def(py::init<const uint8_t &, const uint16_t &>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const std::vector<las::Point> &>())
-        .def("PointFormatID", &las::Points::PointFormatID)
-        .def("PointRecordLength", &las::Points::PointRecordLength)
-        .def("NumExtraBytes", &las::Points::NumExtraBytes)
+        .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
+        .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
+        .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
         .def("Get", static_cast<std::vector<las::Point> (las::Points::*)()>(&las::Points::Get))
         .def("Get", static_cast<las::Point (las::Points::*)(const size_t &)>(&las::Points::Get))
-        .def("Size", &las::Points::Size)
+        .def_property_readonly("Size", &las::Points::Size)
         .def("Reserve", &las::Points::Reserve)
         .def("AddPoint", &las::Points::AddPoint)
         .def("AddPoints", static_cast<void (las::Points::*)(las::Points)>(&las::Points::AddPoints))

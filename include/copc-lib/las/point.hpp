@@ -292,6 +292,20 @@ class Point
     uint16_t PointSourceID() const { return point_source_id_; }
     void PointSourceID(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
 
+    void RGB(const std::vector<uint16_t> &rgb)
+    {
+        if (has_rgb_)
+        {
+            if (rgb.size() != 3)
+                throw std::runtime_error("RGB vector must be of size 3.");
+            rgb_[0] = rgb[0];
+            rgb_[1] = rgb[1];
+            rgb_[2] = rgb[2];
+        }
+        else
+            throw std::runtime_error("This point format does not have RGB.");
+    }
+
     void RGB(const uint16_t &red, const uint16_t &green, const uint16_t &blue)
     {
         if (has_rgb_)
