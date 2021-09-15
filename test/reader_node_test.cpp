@@ -75,9 +75,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points.size() == hier_entry.point_count);
 
         // Getters
-        REQUIRE(points[0].X() == -144147);
-        REQUIRE(points[0].Y() == -13541);
-        REQUIRE(points[0].Z() == -227681);
+        REQUIRE(points[0].UnscaledX() == -144147);
+        REQUIRE(points[0].UnscaledY() == -13541);
+        REQUIRE(points[0].UnscaledZ() == -227681);
         REQUIRE(points[0].Intensity() == 11);
         REQUIRE(points[0].NumberOfReturns() == 3);
         REQUIRE(points[0].ReturnNumber() == 1);
@@ -103,9 +103,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE_THROWS(points[0].ExtendedScanAngle());
 
         // Setters
-        points[0].X(INT32_MAX);
-        points[0].Y(INT32_MAX);
-        points[0].Z(INT32_MAX);
+        points[0].UnscaledX(INT32_MAX);
+        points[0].UnscaledY(INT32_MAX);
+        points[0].UnscaledZ(INT32_MAX);
         points[0].Intensity(UINT16_MAX);
         points[0].NumberOfReturns(7);
         points[0].ReturnNumber(7);
@@ -125,9 +125,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE_THROWS(points[0].ScannerChannel(3));
         REQUIRE_THROWS(points[0].ScanAngle(INT16_MAX));
 
-        REQUIRE(points[0].X() == INT32_MAX);
-        REQUIRE(points[0].Y() == INT32_MAX);
-        REQUIRE(points[0].Z() == INT32_MAX);
+        REQUIRE(points[0].UnscaledX() == INT32_MAX);
+        REQUIRE(points[0].UnscaledY() == INT32_MAX);
+        REQUIRE(points[0].UnscaledZ() == INT32_MAX);
         REQUIRE(points[0].Intensity() == UINT16_MAX);
         REQUIRE(points[0].NumberOfReturns() == 7);
         REQUIRE(points[0].ReturnNumber() == 7);

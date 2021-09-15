@@ -23,12 +23,12 @@ def test_constructor():
 def test_point_format10():
     point0 = copc.Point(0)
     # Position
-    point0.X = 2147483647
-    point0.Y = 2147483647
-    point0.Z = 2147483647
-    assert point0.X == 2147483647
-    assert point0.Y == 2147483647
-    assert point0.Z == 2147483647
+    point0.UnscaledX = 2147483647
+    point0.UnscaledY = 2147483647
+    point0.UnscaledZ = 2147483647
+    assert point0.UnscaledX == 2147483647
+    assert point0.UnscaledY == 2147483647
+    assert point0.UnscaledZ == 2147483647
 
     # Intensity
     point0.Intensity = 65535
@@ -186,12 +186,12 @@ def test_point_format10():
 def test_point_format14():
     point6 = copc.Point(6)
     # Position
-    point6.X = 2147483647
-    point6.Y = 2147483647
-    point6.Z = 2147483647
-    assert point6.X == 2147483647
-    assert point6.Y == 2147483647
-    assert point6.Z == 2147483647
+    point6.UnscaledX = 2147483647
+    point6.UnscaledY = 2147483647
+    point6.UnscaledZ = 2147483647
+    assert point6.UnscaledX == 2147483647
+    assert point6.UnscaledY == 2147483647
+    assert point6.UnscaledZ == 2147483647
 
     # Intensity
     point6.Intensity = 65535
@@ -499,19 +499,19 @@ def test_operators_equal():
 
     # Atributes
 
-    point.X = 4
+    point.UnscaledX = 4
     assert point != point_other
-    point_other.X = 4
+    point_other.UnscaledX = 4
     assert point == point_other
 
-    point.Y = 4
+    point.UnscaledY = 4
     assert point != point_other
-    point_other.Y = 4
+    point_other.UnscaledY = 4
     assert point == point_other
 
-    point.Z = 4
+    point.UnscaledZ = 4
     assert point != point_other
-    point_other.Z = 4
+    point_other.UnscaledZ = 4
     assert point == point_other
 
     point.Intensity = 4
@@ -637,9 +637,9 @@ def test_extra_byte():
 def test_operator_copy():
     point = copc.Point(8, 2)
 
-    point.X = 4
-    point.Y = 4
-    point.Z = 4
+    point.UnscaledX = 4
+    point.UnscaledY = 4
+    point.UnscaledZ = 4
 
     point.GPSTime = 4.0
     point.Red = 4

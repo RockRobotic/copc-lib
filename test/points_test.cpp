@@ -18,12 +18,12 @@ TEST_CASE("Points tests", "[Point]")
 
         auto point_vec = std::vector<Point>();
         auto point1 = Point(3, 4);
-        point1.X(11);
-        point1.Y(11);
-        point1.Z(11);
+        point1.UnscaledX(11);
+        point1.UnscaledY(11);
+        point1.UnscaledZ(11);
         point_vec.push_back(point1);
 
-        auto point2 = points.NewPoint();
+        auto point2 = points.CreatePoint();
         point_vec.push_back(point2);
 
         auto point3 = Point(3, 4);
@@ -35,9 +35,9 @@ TEST_CASE("Points tests", "[Point]")
         for (const auto &point : points.Get())
             REQUIRE(point.PointFormatID() == 3);
         REQUIRE(points.PointRecordLength() == 38);
-        REQUIRE(points.Get(0).X() == 11);
-        REQUIRE(points.Get(0).Y() == 11);
-        REQUIRE(points.Get(0).Z() == 11);
+        REQUIRE(points.Get(0).UnscaledX() == 11);
+        REQUIRE(points.Get(0).UnscaledY() == 11);
+        REQUIRE(points.Get(0).UnscaledZ() == 11);
 
         points.ToString();
     }
@@ -46,27 +46,27 @@ TEST_CASE("Points tests", "[Point]")
     {
         auto points = Points(3, 0);
         auto point = Point(3, 0);
-        point.X(11);
-        point.Y(11);
-        point.Z(11);
+        point.UnscaledX(11);
+        point.UnscaledY(11);
+        point.UnscaledZ(11);
 
         points.AddPoint(point);
 
         REQUIRE(points.Get().size() == 1);
-        REQUIRE(points.Get(0).X() == 11);
-        REQUIRE(points.Get(0).Y() == 11);
-        REQUIRE(points.Get(0).Z() == 11);
+        REQUIRE(points.Get(0).UnscaledX() == 11);
+        REQUIRE(points.Get(0).UnscaledY() == 11);
+        REQUIRE(points.Get(0).UnscaledZ() == 11);
 
         point = Point(3, 0);
-        point.X(22);
-        point.Y(22);
-        point.Z(22);
+        point.UnscaledX(22);
+        point.UnscaledY(22);
+        point.UnscaledZ(22);
 
         points.AddPoint(point);
         REQUIRE(points.Get().size() == 2);
-        REQUIRE(points.Get(1).X() == 22);
-        REQUIRE(points.Get(1).Y() == 22);
-        REQUIRE(points.Get(1).Z() == 22);
+        REQUIRE(points.Get(1).UnscaledX() == 22);
+        REQUIRE(points.Get(1).UnscaledY() == 22);
+        REQUIRE(points.Get(1).UnscaledZ() == 22);
 
         // Test check on point format
         point = Point(6, 0);

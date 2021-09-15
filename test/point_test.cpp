@@ -32,12 +32,12 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point0 = Point(0);
         // Position
-        point0.X(INT32_MAX);
-        point0.Y(INT32_MAX);
-        point0.Z(INT32_MAX);
-        REQUIRE(point0.X() == INT32_MAX);
-        REQUIRE(point0.Y() == INT32_MAX);
-        REQUIRE(point0.Z() == INT32_MAX);
+        point0.UnscaledX(INT32_MAX);
+        point0.UnscaledY(INT32_MAX);
+        point0.UnscaledZ(INT32_MAX);
+        REQUIRE(point0.UnscaledX() == INT32_MAX);
+        REQUIRE(point0.UnscaledY() == INT32_MAX);
+        REQUIRE(point0.UnscaledZ() == INT32_MAX);
 
         // Intensity
         point0.Intensity(UINT16_MAX);
@@ -188,12 +188,12 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point6 = Point(6);
         // Position
-        point6.X(INT32_MAX);
-        point6.Y(INT32_MAX);
-        point6.Z(INT32_MAX);
-        REQUIRE(point6.X() == INT32_MAX);
-        REQUIRE(point6.Y() == INT32_MAX);
-        REQUIRE(point6.Z() == INT32_MAX);
+        point6.UnscaledX(INT32_MAX);
+        point6.UnscaledY(INT32_MAX);
+        point6.UnscaledZ(INT32_MAX);
+        REQUIRE(point6.UnscaledX() == INT32_MAX);
+        REQUIRE(point6.UnscaledY() == INT32_MAX);
+        REQUIRE(point6.UnscaledZ() == INT32_MAX);
 
         // Intensity
         point6.Intensity(UINT16_MAX);
@@ -495,19 +495,19 @@ TEST_CASE("Point tests", "[Point]")
 
         // Atributes
 
-        point.X(4);
+        point.UnscaledX(4);
         REQUIRE(point != point_other);
-        point_other.X(4);
+        point_other.UnscaledX(4);
         REQUIRE(point == point_other);
 
-        point.Y(4);
+        point.UnscaledY(4);
         REQUIRE(point != point_other);
-        point_other.Y(4);
+        point_other.UnscaledY(4);
         REQUIRE(point == point_other);
 
-        point.Z(4);
+        point.UnscaledZ(4);
         REQUIRE(point != point_other);
-        point_other.Z(4);
+        point_other.UnscaledZ(4);
         REQUIRE(point == point_other);
 
         point.Intensity(4);
@@ -632,9 +632,9 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point = Point(8, 2);
 
-        point.X(4);
-        point.Y(4);
-        point.Z(4);
+        point.UnscaledX(4);
+        point.UnscaledY(4);
+        point.UnscaledZ(4);
 
         point.GPSTime(4.0);
         point.Red(4.0);
@@ -653,9 +653,9 @@ TEST_CASE("Point tests", "[Point]")
 
         std::stringstream ss;
         auto orig_point = Point(0, 2); // use two extra bytes
-        orig_point.X(20);
-        orig_point.Y(-20);
-        orig_point.Z(100000);
+        orig_point.UnscaledX(20);
+        orig_point.UnscaledY(-20);
+        orig_point.UnscaledZ(100000);
         orig_point.ScanAngleRank(90);
         orig_point.ClassificationBitFields(124);
 

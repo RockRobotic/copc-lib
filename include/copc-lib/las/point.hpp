@@ -23,14 +23,14 @@ class Point
     std::string ToString() const;
 
     // Getters and Setters
-    int32_t X() const { return x_; }
-    void X(const int32_t &x) { x_ = x; }
+    int32_t UnscaledX() const { return x_; }
+    void UnscaledX(const int32_t &x) { x_ = x; }
 
-    int32_t Y() const { return y_; }
-    void Y(const int32_t &y) { y_ = y; }
+    int32_t UnscaledY() const { return y_; }
+    void UnscaledY(const int32_t &y) { y_ = y; }
 
-    int32_t Z() const { return z_; }
-    void Z(const int32_t &z) { z_ = z; }
+    int32_t UnscaledZ() const { return z_; }
+    void UnscaledZ(const int32_t &z) { z_ = z; }
 
     uint16_t Intensity() const { return intensity_; }
     void Intensity(const uint16_t &intensity) { intensity_ = intensity; }
@@ -499,7 +499,8 @@ class Point
     {
         if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
             return false;
-        if (x_ != other.X() || y_ != other.Y() || z_ != other.Z() || intensity_ != other.Intensity())
+        if (x_ != other.UnscaledX() || y_ != other.UnscaledY() || z_ != other.UnscaledZ() ||
+            intensity_ != other.Intensity())
             return false;
         if (ReturnNumber() != other.ReturnNumber() || NumberOfReturns() != other.NumberOfReturns())
             return false;

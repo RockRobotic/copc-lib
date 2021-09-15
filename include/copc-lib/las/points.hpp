@@ -10,7 +10,7 @@
 namespace copc::las
 {
 // The Points class provides a wrapper around a vector of copc::las::Point objects
-// It is recommended to use this class over a vector, and to use the NewPoint function
+// It is recommended to use this class over a vector, and to use the CreatePoint function
 // rather than calling the point constructor directly.
 class Points
 {
@@ -37,7 +37,7 @@ class Points
     void AddPoints(std::vector<las::Point> points);
 
     // Point functions
-    las::Point NewPoint() { return las::Point(point_format_id_, NumExtraBytes()); }
+    las::Point CreatePoint() { return las::Point(point_format_id_, NumExtraBytes()); }
     void ToPointFormat(const int8_t &point_format_id);
 
     // Pack/unpack

@@ -7,6 +7,7 @@
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/laz/compressor.hpp>
 #include <copc-lib/laz/decompressor.hpp>
+#include <copc-lib/utils.hpp>
 
 using namespace copc;
 using namespace std;
@@ -109,11 +110,11 @@ las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Create a point with a given point format
-        las::Point point(point_format_id);
+        las::Point point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point.X(rand_x(gen));
-        point.Y(rand_y(gen));
-        point.Z(rand_z(gen));
+        point.UnscaledX(rand_x(gen));
+        point.UnscaledY(rand_y(gen));
+        point.UnscaledZ(rand_z(gen));
         // For visualization purposes
         point.PointSourceID(key.d + key.x + key.y + key.d);
 
