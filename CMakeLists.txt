@@ -77,6 +77,20 @@ if(WITH_PYTHON)
     pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
     target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${COPC_STATIC_LIB})
     target_compile_definitions(${COPC_PYTHON_LIB} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
+    if(WITH_TESTS)
+        add_test(NAME python-tests
+                COMMAND ${PYTHON_EXECUTABLE} -m pytest "${CMAKE_SOURCE_DIR}/test"
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
+                )
+        add_test(NAME example_reader_py
+                COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/example/example-reader.py"
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/example"
+                )
+        add_test(NAME example_writer_py
+                COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/example/example-writer.py"
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/example"
+                )
+    endif()
 endif()
 
 # Install
