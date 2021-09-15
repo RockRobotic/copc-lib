@@ -24,7 +24,7 @@ jobs:
       with:
         path: lazperf
         repository: hobu/laz-perf
-        
+
     - name: Build lazperf
       shell: bash
       working-directory: lazperf
@@ -34,11 +34,33 @@ jobs:
         cmake ..
         make
         sudo make install
-    
+
     - name: Checkout Copclib
       uses: actions/checkout@v2
       with:
         submodules: true
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Build Copclib Python Bindings
+      run: |
+        pip install .
+
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -54,4 +76,3 @@ jobs:
       # Execute tests defined by the CMake configuration.  
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
-      
