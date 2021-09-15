@@ -63,6 +63,36 @@ Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraB
 
 uint16_t Point::NumExtraBytes() const { return point_record_length_ - PointBaseByteSize(point_format_id_); }
 
+bool Point::operator==(const Point &other) const
+{
+    if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
+        return false;
+    if (x_ != other.UnscaledX() || y_ != other.UnscaledY() || z_ != other.UnscaledZ() ||
+        intensity_ != other.Intensity())
+        return false;
+    if (ReturnNumber() != other.ReturnNumber() || NumberOfReturns() != other.NumberOfReturns())
+        return false;
+    if (ScanDirectionFlag() != other.ScanDirectionFlag() || EdgeOfFlightLineFlag() != other.EdgeOfFlightLineFlag())
+        return false;
+    if (Classification() != other.Classification())
+        return false;
+    if (Synthetic() != other.Synthetic() || KeyPoint() != other.KeyPoint() || Withheld() != other.Withheld())
+        return false;
+    if (ScanAngle() != other.ScanAngle() || user_data_ != other.UserData() || point_source_id_ != other.PointSourceID())
+        return false;
+    if (ExtraBytes() != other.ExtraBytes())
+        return false;
+    if (extended_point_type_ && (Overlap() != other.Overlap() || ScannerChannel() != other.ScannerChannel()))
+        return false;
+    if (has_gps_time_ && (gps_time_ != other.GPSTime()))
+        return false;
+    if (has_rgb_ && (rgb_[0] != other.Red() || rgb_[1] != other.Green() || rgb_[2] != other.Blue()))
+        return false;
+    if (has_nir_ && (nir_ != other.NIR()))
+        return false;
+    return true;
+}
+
 Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes)
 {
     Point p(point_format_id, num_extra_bytes);
