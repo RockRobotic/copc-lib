@@ -8,28 +8,10 @@
 #include <copc-lib/io/internal/writer_internal.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/points.hpp>
+#include <copc-lib/utils.hpp>
 
 namespace copc
 {
-
-struct vector3
-{
-    vector3() : x(0), y(0), z(0) {}
-    vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
-
-    double x;
-    double y;
-    double z;
-
-    vector3 &operator=(const lazperf::vector3 &a)
-    {
-        x = a.x;
-        y = a.y;
-        z = a.z;
-
-        return *this; // Return a reference to myself.
-    }
-};
 
 // Provides the public interface for writing COPC files
 class Writer : public BaseIO
