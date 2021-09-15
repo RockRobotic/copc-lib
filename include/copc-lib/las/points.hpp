@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/utils.hpp>
@@ -46,6 +47,43 @@ class Points
     static Points Unpack(const std::vector<char> &point_data, int8_t point_format_id, int point_record_length);
 
     std::string ToString() const;
+
+    // Getters and setters
+    std::vector<double> X()
+    {
+        std::vector<double> out;
+        std::transform(points_.begin(), points_.end(), out.begin(), [](Point p) { return p.X(); });
+        return out;
+    }
+    void X(std::vector<double> in)
+    {
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i].X(in[i]);
+    }
+
+    std::vector<double> Y()
+    {
+        std::vector<double> out;
+        std::transform(points_.begin(), points_.end(), out.begin(), [](Point p) { return p.Y(); });
+        return out;
+    }
+    void Y(std::vector<double> in)
+    {
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i].Y(in[i]);
+    }
+
+    std::vector<double> Z()
+    {
+        std::vector<double> out;
+        std::transform(points_.begin(), points_.end(), out.begin(), [](Point p) { return p.Z(); });
+        return out;
+    }
+    void Z(std::vector<double> in)
+    {
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i].Z(in[i]);
+    }
 
   private:
     std::vector<Point> points_;
