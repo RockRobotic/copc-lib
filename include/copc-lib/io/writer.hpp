@@ -15,35 +15,6 @@
 namespace copc
 {
 
-struct vector3
-{
-    vector3() : x(0), y(0), z(0) {}
-    vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
-    vector3(const std::vector<double> &vec)
-    {
-        if (vec.size() != 3)
-            throw std::runtime_error("Vector must be of size 3.");
-        x = vec[0];
-        y = vec[1];
-        z = vec[2];
-    }
-
-    double x;
-    double y;
-    double z;
-
-    vector3 &operator=(const lazperf::vector3 &a)
-    {
-        x = a.x;
-        y = a.y;
-        z = a.z;
-
-        return *this; // Return a reference to myself.
-    }
-
-    bool operator==(vector3 a) const { return x == a.x && y == a.y && z == a.z; }
-};
-
 // Provides the public interface for writing COPC files
 class Writer : public BaseIO
 {

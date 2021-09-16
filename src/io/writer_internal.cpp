@@ -51,17 +51,17 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader(las::LasHeader &head14)
 {
-    laz_vlr lazVlr(head14.pointFormat(), head14.ebCount(), VARIABLE_CHUNK_SIZE);
+    laz_vlr lazVlr(head14.point_format_id, head14.NumExtraBytes(), VARIABLE_CHUNK_SIZE);
 
     // point_format_id and point_record_length  are set on open().
-    head14.header_size = head14.sizeFromVersion();
+    head14.header_size = head14.size;
     head14.vlr_count = 2; // copc + laz
 
     head14.point_format_id |= (1 << 7);
     head14.point_offset = OFFSET_TO_POINT_DATA;
     head14.point_count_14 = point_count_14_;
 
-    if (head14.ebCount())
+    if (head14.NumExtraBytes())
     {
         head14.vlr_count++;
     }
@@ -74,7 +74,10 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     head14.global_encoding |= (1 << 4);
 
     out_stream_.seekp(0);
-    head14.write(out_stream_);
+
+    // Convert back to lazperf header for writing
+    auto laz_header = head14.ToLazPerf();
+    laz_header.write(out_stream_);
 
     // Write the VLR.
     copc_data_.span = file_->GetCopc().span;
@@ -84,7 +87,7 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
 
-    if (head14.ebCount())
+    if (head14.NumExtraBytes())
     {
         auto ebVlr = this->file_->GetExtraBytes();
         ebVlr.header().write(out_stream_);
