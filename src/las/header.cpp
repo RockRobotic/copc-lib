@@ -12,86 +12,6 @@ namespace las
 
 uint16_t LasHeader::NumExtraBytes() const { return ComputeNumExtraBytes(point_format_id, point_record_length); }
 
-void LasHeader::Unpack(std::istream &in)
-{
-    //    in.read(reinterpret_cast<const char *>(&magic), 4);
-    //    las::pack(file_source_id,in);
-    //    las::pack(global_encoding,in);
-    //    in.read(reinterpret_cast<const char *>(&guid_), 16);
-    //    las::pack(version.major,in);
-    //    las::pack(version.minor,in);
-    //    in.read(reinterpret_cast<const char *>(&system_identifier_), 32);
-    //    in.read(reinterpret_cast<const char *>(&generating_software_), 32);
-    //    las::pack(creation.day,in);
-    //    las::pack(creation.year,in);
-    //    las::pack(header_size,in);
-    //    las::pack(point_offset,in);
-    //    las::pack(vlr_count,in);
-    //    las::pack(point_format_id,in);
-    //    las::pack(point_record_length,in);
-    //    las::pack(point_count,in);
-    //    for (int i = 0; i < 5; ++i)
-    //        las::pack(points_by_return[i],in);
-    //    las::pack(scale.x,in);
-    //    las::pack(scale.y,in);
-    //    las::pack(scale.z,in);
-    //    las::pack(offset.x,in);
-    //    las::pack(offset.y,in);
-    //    las::pack(offset.z,in);
-    //    las::pack(max.x,in);
-    //    las::pack(min.x,in);
-    //    las::pack(max.y,in);
-    //    las::pack(min.y,in);
-    //    las::pack(max.z,in);
-    //    las::pack(min.z,in);
-    //    las::pack(wave_offset,in);
-    //    las::pack(evlr_offset,in);
-    //    las::pack(evlr_count,in);
-    //    las::pack(point_count_14,in);
-    //    for (int i = 0; i < 15; ++i)
-    //        las::pack(points_by_return_14[i],in);
-}
-
-void LasHeader::Pack(std::ostream &out) const
-{
-    out.write(reinterpret_cast<const char *>(&magic), 4);
-    las::pack(file_source_id, out);
-    las::pack(global_encoding, out);
-    out.write(reinterpret_cast<const char *>(&guid_), 16);
-    las::pack(version_major, out);
-    las::pack(version_minor, out);
-    out.write(reinterpret_cast<const char *>(&system_identifier_), 32);
-    out.write(reinterpret_cast<const char *>(&generating_software_), 32);
-    las::pack(creation_day, out);
-    las::pack(creation_year, out);
-    las::pack(header_size, out);
-    las::pack(point_offset, out);
-    las::pack(vlr_count, out);
-    las::pack(point_format_id, out);
-    las::pack(point_record_length, out);
-    las::pack(point_count, out);
-    for (int i = 0; i < 5; ++i)
-        las::pack(points_by_return[i], out);
-    las::pack(scale.x, out);
-    las::pack(scale.y, out);
-    las::pack(scale.z, out);
-    las::pack(offset.x, out);
-    las::pack(offset.y, out);
-    las::pack(offset.z, out);
-    las::pack(max.x, out);
-    las::pack(min.x, out);
-    las::pack(max.y, out);
-    las::pack(min.y, out);
-    las::pack(max.z, out);
-    las::pack(min.z, out);
-    las::pack(wave_offset, out);
-    las::pack(evlr_offset, out);
-    las::pack(evlr_count, out);
-    las::pack(point_count_14, out);
-    for (int i = 0; i < 15; ++i)
-        las::pack(points_by_return_14[i], out);
-}
-
 void LasHeader::FromLazPerf(const lazperf::header14 &header)
 {
     magic = header.magic;
@@ -107,7 +27,7 @@ void LasHeader::FromLazPerf(const lazperf::header14 &header)
     header_size = header.header_size;
     point_offset = header.point_offset;
     vlr_count = header.vlr_count;
-    point_format_id = header.point_format_id;
+    point_format_id = static_cast<int8_t>(header.point_format_id);
     point_record_length = header.point_record_length;
     point_count = header.point_count;
     std::copy(std::begin(header.points_by_return), std::end(header.points_by_return), std::begin(points_by_return));

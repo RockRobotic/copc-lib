@@ -51,32 +51,34 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader(las::LasHeader &head14)
 {
-    laz_vlr lazVlr(head14.point_format_id, head14.NumExtraBytes(), VARIABLE_CHUNK_SIZE);
-
-    // point_format_id and point_record_length  are set on open().
-    head14.header_size = head14.size;
-    head14.vlr_count = 2; // copc + laz
-
-    head14.point_format_id |= (1 << 7);
-    head14.point_offset = OFFSET_TO_POINT_DATA;
-    head14.point_count_14 = point_count_14_;
-
-    if (head14.NumExtraBytes())
-    {
-        head14.vlr_count++;
-    }
-
-    if (head14.point_count_14 > (std::numeric_limits<uint32_t>::max)())
-        head14.point_count = 0;
-    else
-        head14.point_count = (uint32_t)head14.point_count_14;
-    // Set the WKT bit.
-    head14.global_encoding |= (1 << 4);
-
-    out_stream_.seekp(0);
 
     // Convert back to lazperf header for writing
     auto laz_header = head14.ToLazPerf();
+
+    laz_vlr lazVlr(laz_header.point_format_id, laz_header.ebCount(), VARIABLE_CHUNK_SIZE);
+
+    // point_format_id and point_record_length  are set on open().
+    laz_header.header_size = laz_header.sizeFromVersion();
+    laz_header.vlr_count = 2; // copc + laz
+
+    laz_header.point_format_id |= (1 << 7);
+    laz_header.point_offset = OFFSET_TO_POINT_DATA;
+    laz_header.point_count_14 = point_count_14_;
+
+    if (laz_header.ebCount())
+    {
+        laz_header.vlr_count++;
+    }
+
+    if (laz_header.point_count_14 > (std::numeric_limits<uint32_t>::max)())
+        laz_header.point_count = 0;
+    else
+        laz_header.point_count = (uint32_t)laz_header.point_count_14;
+    // Set the WKT bit.
+    laz_header.global_encoding |= (1 << 4);
+
+    out_stream_.seekp(0);
+
     laz_header.write(out_stream_);
 
     // Write the VLR.

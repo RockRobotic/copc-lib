@@ -51,9 +51,6 @@ class LasHeader
     LasHeader(const lazperf::header14 &header) { FromLazPerf(header); }
     uint16_t NumExtraBytes() const;
 
-    void Unpack(std::istream &in);
-    void Pack(std::ostream &out) const;
-
     void FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf() const;
 
@@ -96,7 +93,7 @@ class LasHeader
     uint32_t point_offset{};
     uint32_t vlr_count{};
 
-    uint8_t point_format_id{};
+    int8_t point_format_id{};
     uint16_t point_record_length{};
 
     uint32_t point_count{};
