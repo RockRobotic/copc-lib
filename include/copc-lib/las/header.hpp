@@ -16,6 +16,9 @@ struct Vector3
 {
     Vector3() : x(0), y(0), z(0) {}
     Vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
+    static Vector3 DefaultScale() { return Vector3(DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE); }
+    static Vector3 DefaultOffset() { return Vector3{}; }
+
     Vector3(const std::vector<double> &vec)
     {
         if (vec.size() != 3)
@@ -25,9 +28,9 @@ struct Vector3
         z = vec[2];
     }
 
-    double x;
-    double y;
-    double z;
+    double x{};
+    double y{};
+    double z{};
 
     Vector3 &operator=(const lazperf::vector3 &a)
     {
@@ -49,10 +52,9 @@ class LasHeader
 {
   public:
     LasHeader(){};
-    LasHeader(const lazperf::header14 &header) { FromLazPerf(header); }
     uint16_t NumExtraBytes() const;
 
-    void FromLazPerf(const lazperf::header14 &header);
+    static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf() const;
 
     // Getters/Setters for string attributes
@@ -99,13 +101,11 @@ class LasHeader
     uint32_t point_count{};
     std::array<uint32_t, 5> points_by_return{};
 
-    Vector3 scale{DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE};
-    Vector3 offset{0.0, 0.0, 0.0};
+    Vector3 scale{Vector3::DefaultScale()};
+    Vector3 offset{Vector3::DefaultOffset()};
     // xyz min/max for las header
-    Vector3 max{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(),
-                std::numeric_limits<double>::lowest()};
-    Vector3 min{(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)(),
-                (std::numeric_limits<double>::max)()};
+    Vector3 max{};
+    Vector3 min{};
 
     uint64_t wave_offset{0};
 
