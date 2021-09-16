@@ -4,6 +4,7 @@
 
 #include <catch2/catch.hpp>
 #include <copc-lib/las/point.hpp>
+#include <copc-lib/las/header.hpp>
 
 using namespace copc::las;
 using namespace std;
@@ -610,7 +611,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.ExtraBytes().size() == 0);
         REQUIRE(point.NumExtraBytes() == 0);
 
-        point = Point(0, 5);
+        point = Point(0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 5);
         REQUIRE(point.PointFormatID() == 0);
         REQUIRE(point.PointRecordLength() == 20 + 5);
         REQUIRE(point.NumExtraBytes() == 5);
@@ -630,7 +631,7 @@ TEST_CASE("Point tests", "[Point]")
 
     SECTION("Operator =")
     {
-        auto point = Point(8, 2);
+        auto point = Point(8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2);
 
         point.UnscaledX(4);
         point.UnscaledY(4);
@@ -652,7 +653,8 @@ TEST_CASE("Point tests", "[Point]")
     {
 
         std::stringstream ss;
-        auto orig_point = Point(0, 2); // use two extra bytes
+        auto orig_point =
+            Point(0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2); // use two extra bytes
         orig_point.UnscaledX(20);
         orig_point.UnscaledY(-20);
         orig_point.UnscaledZ(100000);
@@ -662,43 +664,50 @@ TEST_CASE("Point tests", "[Point]")
         // Format 0
         auto point = orig_point;
         point.Pack(ss);
-        auto point_other = Point::Unpack(ss, 0, point.NumExtraBytes());
+        auto point_other =
+            Point::Unpack(ss, 0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 1
         point.ToPointFormat(1);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 1, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 1, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 2
         point.ToPointFormat(2);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 2, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 2, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 3
         point.ToPointFormat(3);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 3, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 6
         point.ToPointFormat(6);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 6, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 7
         point.ToPointFormat(7);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 7, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 8
         point.ToPointFormat(8);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 8, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         point.ToPointFormat(0);

@@ -41,7 +41,7 @@ class Points
     void AddPoints(std::vector<las::Point> points);
 
     // Point functions
-    las::Point CreatePoint() { return las::Point(point_format_id_, NumExtraBytes()); }
+    las::Point CreatePoint() { return las::Point(point_format_id_, scale_, offset_, NumExtraBytes()); }
     void ToPointFormat(const int8_t &point_format_id);
 
     // Pack/unpack

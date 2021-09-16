@@ -12,8 +12,8 @@ namespace copc::las
 class Point
 {
   public:
-    Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0, const Vector3 &scale = {1, 1, 1},
-          const Vector3 &offset = {0, 0, 0});
+    Point(const int8_t &point_format_id, const Vector3 &scale = {1, 1, 1}, const Vector3 &offset = {0, 0, 0},
+          const uint16_t &num_extra_bytes = 0);
     Point(const LasHeader &header);
     Point(const Point &other);
 
@@ -436,7 +436,9 @@ class Point
     bool operator!=(const Point &other) const { return !(*this == other); };
     std::string ToString() const;
 
-    static Point Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes);
+    static Point Unpack(std::istream &in_stream, const int8_t &point_format_id, 
+                        const Vector3 &scale,
+                        const Vector3 &offset, const uint16_t &num_extra_bytes);
     void Pack(std::ostream &out_stream) const;
     void ToPointFormat(const int8_t &point_format_id);
 

@@ -17,7 +17,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get().empty());
 
         auto point_vec = std::vector<Point>();
-        auto point1 = Point(3, 4);
+        auto point1 = points.CreatePoint();
         point1.UnscaledX(11);
         point1.UnscaledY(11);
         point1.UnscaledZ(11);
@@ -26,7 +26,7 @@ TEST_CASE("Points tests", "[Point]")
         auto point2 = points.CreatePoint();
         point_vec.push_back(point2);
 
-        auto point3 = Point(3, 4);
+        auto point3 = points.CreatePoint();
         point_vec.push_back(point3);
 
         points = Points(point_vec);
@@ -45,7 +45,7 @@ TEST_CASE("Points tests", "[Point]")
     SECTION("Adding Point to Points")
     {
         auto points = Points(3, {1, 1, 1}, {0, 0, 0}, 0);
-        auto point = Point(3, 0);
+        auto point = points.CreatePoint();
         point.UnscaledX(11);
         point.UnscaledY(11);
         point.UnscaledZ(11);
@@ -57,7 +57,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get(0).UnscaledY() == 11);
         REQUIRE(points.Get(0).UnscaledZ() == 11);
 
-        point = Point(3, 0);
+        point = points.CreatePoint();
         point.UnscaledX(22);
         point.UnscaledY(22);
         point.UnscaledZ(22);
@@ -69,35 +69,40 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get(1).UnscaledZ() == 22);
 
         // Test check on point format
-        point = Point(6, 0);
+        point = Point(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 0);
         REQUIRE_THROWS(points.AddPoint(point));
 
         // Test check on extra bytes
-        point = Point(3, 1);
+        point = Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1);
         REQUIRE_THROWS(points.AddPoint(point));
     }
 
     SECTION("Adding Points to Points")
     {
-        auto points = Points(std::vector<Point>(10, Point(3, 4)));
-        auto points_other = Points(std::vector<Point>(10, Point(3, 4)));
+        auto points =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+        auto points_other =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
 
         points.AddPoints(points_other);
 
         REQUIRE(points.Get().size() == 20);
 
         // Test check on point format
-        points_other = Points(std::vector<Point>(10, Point(6, 4)));
+        points_other =
+            Points(std::vector<Point>(10, Point(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
         REQUIRE_THROWS(points.AddPoints(points_other));
 
         // Test check on extra bytes
-        points_other = Points(std::vector<Point>(10, Point(3, 1)));
+        points_other =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1)));
         REQUIRE_THROWS(points.AddPoints(points_other));
     }
 
     SECTION("Points format conversion")
     {
-        auto points = Points(std::vector<Point>(10, Point(3, 4)));
+        auto points =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset() ,4)));
         points.ToPointFormat(6);
 
         REQUIRE(points.PointFormatID() == 6);

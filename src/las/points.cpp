@@ -94,7 +94,7 @@ Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_f
     // Unpack points
     for (int i = 0; i < point_count; i++)
     {
-        points.AddPoint(las::Point::Unpack(ss, point_format_id, num_extra_bytes));
+        points.AddPoint(las::Point::Unpack(ss, point_format_id, scale, offset, num_extra_bytes));
     }
 
     return points;

@@ -3,8 +3,8 @@
 
 namespace copc::las
 {
-Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes, const Vector3 &scale,
-             const Vector3 &offset)
+Point::Point(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
+             const uint16_t &num_extra_bytes)
     : scale_(scale), offset_(offset), point_format_id_(point_format_id)
 {
     if (point_format_id > 10)
@@ -23,9 +23,9 @@ Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes, con
 }
 
 Point::Point(const LasHeader &header)
-    : Point(header.point_format_id, header.NumExtraBytes(), header.scale, header.offset){};
+    : Point(header.point_format_id, header.scale, header.offset, header.NumExtraBytes()){};
 
-Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraBytes())
+Point::Point(const Point &other) : Point(other.point_format_id_, other.scale_, other.offset_, other.NumExtraBytes())
 {
     x_ = other.x_;
     y_ = other.y_;
@@ -97,9 +97,11 @@ bool Point::operator==(const Point &other) const
     return true;
 }
 
-Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes)
+Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, 
+                    const Vector3 &scale, const Vector3 &offset,
+                    const uint16_t &num_extra_bytes)
 {
-    Point p(point_format_id, num_extra_bytes);
+    Point p(point_format_id, scale, offset, num_extra_bytes);
 
     p.x_ = unpack<int32_t>(in_stream);
     p.y_ = unpack<int32_t>(in_stream);
