@@ -102,7 +102,7 @@ TEST_CASE("Points tests", "[Point]")
     SECTION("Points format conversion")
     {
         auto points =
-            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset() ,4)));
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
         points.ToPointFormat(6);
 
         REQUIRE(points.PointFormatID() == 6);
@@ -112,5 +112,79 @@ TEST_CASE("Points tests", "[Point]")
 
         REQUIRE_THROWS(points.ToPointFormat(-1));
         REQUIRE_THROWS(points.ToPointFormat(11));
+    }
+
+    SECTION("Points Accessors")
+    {
+        auto points =
+            Points(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
+
+        // generate points
+        int num_points = 2000;
+        for (int i = 0; i < num_points; i++)
+        {
+            auto p = points.CreatePoint();
+            p.X(i);
+            p.Y(i * 3);
+            p.Z(i - 80);
+            points.AddPoint(p);
+        }
+
+        REQUIRE(points.Size() == num_points);
+
+        // test that the getters work
+        auto X = points.X();
+        auto Y = points.Y();
+        auto Z = points.Z();
+        for (int i = 0; i < num_points; i++)
+        {
+            REQUIRE(X[i] == i);
+            REQUIRE(Y[i] == i * 3);
+            REQUIRE(Z[i] == i - 80);
+        }
+
+        // generate vector of coordinates
+        std::vector<double> Xn;
+        std::vector<double> Yn;
+        std::vector<double> Zn;
+
+        REQUIRE_THROWS(points.X(Xn));
+        REQUIRE_THROWS(points.Y(Yn));
+        REQUIRE_THROWS(points.Z(Zn));
+
+        for (int i = 0; i < num_points - 1; i++)
+        {
+            Xn.push_back(i * 50 + 8);
+            Yn.push_back(i + 800);
+            Zn.push_back(i * 4);
+        }
+
+        REQUIRE_THROWS(points.X(Xn));
+        REQUIRE_THROWS(points.Y(Yn));
+        REQUIRE_THROWS(points.Z(Zn));
+
+        // add the last point
+        Xn.push_back(1);
+        Yn.push_back(2);
+        Zn.push_back(3);
+
+        // test setters
+        REQUIRE_NOTHROW(points.X(Xn));
+        REQUIRE_NOTHROW(points.Y(Yn));
+        REQUIRE_NOTHROW(points.Z(Zn));
+
+        for (int i = 0; i < num_points - 1; i++)
+        {
+            auto p = points.Get(i);
+            REQUIRE(p.X() == i * 50 + 8);
+            REQUIRE(p.Y() == i + 800);
+            REQUIRE(p.Z() == i * 4);
+        }
+
+        // test last point
+        auto last_point = points.Get(points.Size() - 1);
+        REQUIRE(last_point.X() == 1);
+        REQUIRE(last_point.Y() == 2);
+        REQUIRE(last_point.Z() == 3);
     }
 }
