@@ -76,11 +76,11 @@ def test_point_error_handling():
 
     invalid_node = copc.Node()
     with pytest.raises(RuntimeError):
-        reader.GetPointData(invalid_node)
+        reader.GetPointData(node=invalid_node)
     valid_node = reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
     reader.GetPointData(valid_node)
 
-    assert len(reader.GetPointData(invalid_node.key)) == 0
+    assert len(reader.GetPointData(key=invalid_node.key)) == 0
     assert not len(reader.GetPointData(valid_node.key)) == 0
 
     with pytest.raises(RuntimeError):

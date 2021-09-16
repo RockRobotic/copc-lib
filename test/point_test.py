@@ -340,7 +340,7 @@ def test_point_conversion_10():
 
     assert point.GPSTime == 0
 
-    point.ToPointFormat(2)
+    point.ToPointFormat(point_format_id=2)
     assert point.Red == 0
     assert point.Green == 0
     assert point.Blue == 0
