@@ -1,9 +1,9 @@
 #ifndef COPCLIB_LAS_POINTS_H_
 #define COPCLIB_LAS_POINTS_H_
 
+#include <algorithm>
 #include <utility>
 #include <vector>
-#include <algorithm>
 
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/utils.hpp>
@@ -16,7 +16,8 @@ namespace copc::las
 class Points
 {
   public:
-    Points(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0);
+    Points(const int8_t &point_format_id, const lazperf::vector3 &scale, const lazperf::vector3 &offset,
+           const uint16_t &num_extra_bytes = 0);
     // Will create Points object given a points vector
     Points(const std::vector<Point> &points);
 
@@ -44,7 +45,9 @@ class Points
     // Pack/unpack
     std::vector<char> Pack();
     void Pack(std::ostream &out_stream);
-    static Points Unpack(const std::vector<char> &point_data, int8_t point_format_id, int point_record_length);
+    static Points Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
+                         const int32_t &point_record_length, const lazperf::vector3 &scale,
+                         const lazperf::vector3 &offset);
 
     std::string ToString() const;
 
@@ -64,7 +67,7 @@ class Points
     std::vector<double> Y()
     {
         std::vector<double> out;
-        std::transform(points_.begin(), points_.end(), out.begin(), [](Point p) { return p.Y(); });
+        std::transform(points_.begin(), points_.end(), out.begin(), [](const Point &p) { return p.Y(); });
         return out;
     }
     void Y(std::vector<double> in)
@@ -76,7 +79,7 @@ class Points
     std::vector<double> Z()
     {
         std::vector<double> out;
-        std::transform(points_.begin(), points_.end(), out.begin(), [](Point p) { return p.Z(); });
+        std::transform(points_.begin(), points_.end(), out.begin(), [](const Point &p) { return p.Z(); });
         return out;
     }
     void Z(std::vector<double> in)
@@ -89,6 +92,8 @@ class Points
     std::vector<Point> points_;
     int8_t point_format_id_;
     uint32_t point_record_length_;
+    lazperf::vector3 scale_;
+    lazperf::vector3 offset_;
 };
 } // namespace copc::las
 #endif // COPCLIB_LAS_POINTS_H_
