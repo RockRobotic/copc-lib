@@ -198,7 +198,7 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<Writer::LasConfig>(m, "LasConfig")
         .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
-             py::arg("scale") = Vector3(0.01, 0.01, 0.01), py::arg("offset") = Vector3(0, 0, 0))
+             py::arg("scale") = Vector3::DefaultScale(), py::arg("offset") = Vector3::DefaultOffset())
         .def(py::init<const las::LasHeader &, const las::EbVlr &>())
         .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
         .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
@@ -219,21 +219,20 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware));
 
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, FileWriter::LasConfig const &, const int &, const std::string &>(),
+        .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),
              py::arg("file_path"), py::arg("config"), py::arg("span") = 0, py::arg("wkt") = "")
-        .def("FindNode", &FileReader::FindNode)
-        .def("GetWkt", &FileWriter::GetWkt)
-        .def("GetCopcHeader", &FileWriter::GetCopcHeader)
-        .def("GetLasHeader", &FileWriter::GetLasHeader)
-        .def("GetExtraByteVlr", &FileWriter::GetExtraByteVlr)
-        .def(py::init<std::string &, FileWriter::LasConfig const &, const int &, const std::string &>())
-        .def("GetRootPage", &FileWriter::GetRootPage)
+        .def("FindNode", &Writer::FindNode)
+        .def("GetWkt", &Writer::GetWkt)
+        .def("GetCopcHeader", &Writer::GetCopcHeader)
+        .def("GetLasHeader", &Writer::GetLasHeader)
+        .def("GetExtraByteVlr", &Writer::GetExtraByteVlr)
+        .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &FileWriter::Close)
-        .def("AddNode", static_cast<Node (FileWriter::*)(Page &, const VoxelKey &, las::Points &)>(&Writer::AddNode))
-        .def("AddNodeCompressed", &FileWriter::AddNodeCompressed)
+        .def("AddNode", static_cast<Node (Writer::*)(Page &, const VoxelKey &, las::Points &)>(&Writer::AddNode))
+        .def("AddNodeCompressed", &Writer::AddNodeCompressed)
         .def("AddNode",
-             static_cast<Node (FileWriter::*)(Page &, const VoxelKey &, std::vector<char> const &)>(&Writer::AddNode))
-        .def("AddSubPage", &FileWriter::AddSubPage);
+             static_cast<Node (Writer::*)(Page &, const VoxelKey &, std::vector<char> const &)>(&Writer::AddNode))
+        .def("AddSubPage", &Writer::AddSubPage);
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -270,7 +269,6 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
 
     py::class_<las::LasHeader>(m, "LasHeader")
-        .def_readwrite("magic", &las::LasHeader::magic)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
@@ -299,21 +297,5 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
         .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14);
 
-    //TODO[Leo]: Make our own EbVlr
-    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
-
-    //TODO[Leo]: Make our own ebfields
-    py::class_<las::EbVlr::ebfield>(m, "EbField")
-        //    .def_readwrite("reserved",&las::EbVlr::ebfield::reserved)
-        .def_readwrite("data_type", &las::EbVlr::ebfield::data_type)
-        .def_readwrite("options", &las::EbVlr::ebfield::options)
-        .def_readwrite("name", &las::EbVlr::ebfield::name)
-        //    .def_readwrite("unused",&las::EbVlr::ebfield::unused)
-        //    .def_readwrite("no_data",&las::EbVlr::ebfield::no_data)
-        //    .def_readwrite("minval",&las::EbVlr::ebfield::minval)
-        //    .def_readwrite("maxval",&las::EbVlr::ebfield::maxval)
-        //    .def_readwrite("scale",&las::EbVlr::ebfield::scale)
-        //    .def_readwrite("offset",&las::EbVlr::ebfield::offset)
-        .def_readwrite("description", &las::EbVlr::ebfield::description)
-        .def(py::self == py::self);
+    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>());
 }

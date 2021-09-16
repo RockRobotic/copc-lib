@@ -24,7 +24,7 @@ class Writer : public BaseIO
     {
         // Not sure we should allow default constructor
         // LasConfig()= default;
-        LasConfig(const int8_t &point_format_id, const Vector3 &scale = {0.01, 0.01, 0.01},
+        LasConfig(const int8_t &point_format_id, const Vector3 &scale = {DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE},
                   const Vector3 &offset = {0, 0, 0})
             : point_format_id(point_format_id), scale(scale), offset(offset){};
         // Allow for "copying" a lasheader from one file to another

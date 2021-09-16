@@ -6,7 +6,6 @@ def test_las_header():
     reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
     las_header = reader.GetLasHeader()
 
-    assert las_header.magic == las_header.magic
     assert las_header.file_source_id == las_header.file_source_id
     assert las_header.global_encoding == las_header.global_encoding
     assert las_header.guid == las_header.guid
