@@ -721,9 +721,7 @@ TEST_CASE("Point tests", "[Point]")
 
         SECTION("No scale and offset")
         {
-            copc::Vector3 scale = {1, 1, 1};
-            copc::Vector3 offset = {0, 0, 0};
-            auto point = Point(pfid, scale, offset);
+            auto point = Point(pfid, {1, 1, 1}, {0, 0, 0});
 
             point.UnscaledX(4);
             point.UnscaledY(4);

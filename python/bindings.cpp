@@ -59,12 +59,12 @@ PYBIND11_MODULE(copclib, m)
              py::arg("offset") = Vector3::DefaultOffset(), py::arg("num_extra_bytes") = 0)
         .def(py::init<const las::LasHeader &>())
         .def(py::init<const las::Point &>())
-        //        .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
-        //                      py::overload_cast<const double &>(&las::Point::X))
-        //        .def_property("Y", py::overload_cast<>(&las::Point::Y, py::const_),
-        //                      py::overload_cast<const double &>(&las::Point::Y))
-        //        .def_property("Z", py::overload_cast<>(&las::Point::Z, py::const_),
-        //                      py::overload_cast<const double &>(&las::Point::Z))
+        .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
+                      py::overload_cast<const double &>(&las::Point::X))
+        .def_property("Y", py::overload_cast<>(&las::Point::Y, py::const_),
+                      py::overload_cast<const double &>(&las::Point::Y))
+        .def_property("Z", py::overload_cast<>(&las::Point::Z, py::const_),
+                      py::overload_cast<const double &>(&las::Point::Z))
         .def_property("UnscaledX", py::overload_cast<>(&las::Point::UnscaledX, py::const_),
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledX))
         .def_property("UnscaledY", py::overload_cast<>(&las::Point::UnscaledY, py::const_),
