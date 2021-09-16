@@ -4,13 +4,11 @@ import copclib as copc
 
 
 # In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
-def TrimFileExample():
+def TrimFileExample(compressor_example_flag):
 
     # We'll get our point data from this file
     reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
     old_header = reader.GetLasHeader()
-
-    compressor_example_flag = False
 
     # Copy the header to the new file
     cfg = copc.LasConfig(old_header, reader.GetExtraByteVlr())
@@ -179,5 +177,6 @@ def NewFileExample():
 
 
 if __name__ == "__main__":
-    TrimFileExample()
+    TrimFileExample(False)
+    TrimFileExample(True)
     NewFileExample()

@@ -13,14 +13,11 @@ using namespace copc;
 using namespace std;
 
 // In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
-void TrimFileExample()
+void TrimFileExample(bool compressor_example_flag)
 {
     // We'll get our point data from this file
     FileReader reader("test/data/autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
-
-    // Change this flag to test laz::Compressor and laz::Decompressor
-    bool compressor_example_flag = false;
 
     {
         // Copy the header to the new file
@@ -171,6 +168,7 @@ void NewFileExample()
 
 int main()
 {
-    TrimFileExample();
+    TrimFileExample(false);
+    TrimFileExample(true);
     NewFileExample();
 }
