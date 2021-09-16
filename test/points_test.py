@@ -3,7 +3,9 @@ import pytest
 
 
 def test_points_constructor():
-    points = copc.Points(3, 4)
+    points = copc.Points(
+        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+    )
     assert points.PointFormatID == 3
     assert points.PointRecordLength == 38
     assert len(points.Get()) == 0
@@ -29,7 +31,9 @@ def test_points_constructor():
 
 
 def test_adding_point_to_points():
-    points = copc.Points(3, 0)
+    points = copc.Points(
+        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 0
+    )
     point = copc.Point(3, 0)
     point.UnscaledX = 11
     point.UnscaledY = 11
