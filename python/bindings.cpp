@@ -47,6 +47,8 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("x", &Vector3::x)
         .def_readwrite("y", &Vector3::y)
         .def_readwrite("z", &Vector3::z)
+        .def("DefaultScale", &Vector3::DefaultScale)
+        .def("DefaultOffset", &Vector3::DefaultOffset)
         .def(py::self == py::self);
 
     py::implicitly_convertible<py::list, Vector3>();
@@ -205,7 +207,6 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("creation_day", &Writer::LasConfig::creation_day)
         .def_readwrite("creation_year", &Writer::LasConfig::creation_year)
         .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
-        .def_readwrite("extra_bytes", &Writer::LasConfig::extra_bytes)
         .def_readwrite("scale", &Writer::LasConfig::scale)
         .def_readwrite("offset", &Writer::LasConfig::offset)
         .def_readwrite("max", &Writer::LasConfig::max)
@@ -216,7 +217,8 @@ PYBIND11_MODULE(copclib, m)
         .def_property("system_identifier", py::overload_cast<>(&Writer::LasConfig::SystemIdentifier, py::const_),
                       py::overload_cast<const std::string &>(&Writer::LasConfig::SystemIdentifier))
         .def_property("generating_software", py::overload_cast<>(&Writer::LasConfig::GeneratingSoftware, py::const_),
-                      py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware));
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware))
+        .def("NumExtraBytes", &Writer::LasConfig::NumExtraBytes);
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),

@@ -55,6 +55,8 @@ class Writer : public BaseIO
         }
         std::string GeneratingSoftware() const { return generating_software_; }
 
+        uint16_t NumExtraBytes() const { return extra_bytes.items.size(); }
+
         uint16_t file_source_id{};
         uint16_t global_encoding{};
 
