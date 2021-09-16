@@ -57,11 +57,15 @@ class Points
     std::vector<double> X()
     {
         std::vector<double> out;
+        out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(), [](Point p) { return p.X(); });
         return out;
     }
     void X(std::vector<double> in)
     {
+        if (in.size() != Size())
+            throw std::runtime_error("X setter array must be same size as Points array!");
+
         for (unsigned i = 0; i < points_.size(); ++i)
             points_[i].X(in[i]);
     }
@@ -69,11 +73,15 @@ class Points
     std::vector<double> Y()
     {
         std::vector<double> out;
+        out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(), [](const Point &p) { return p.Y(); });
         return out;
     }
     void Y(std::vector<double> in)
     {
+        if (in.size() != Size())
+            throw std::runtime_error("Y setter array must be same size as Points array!");
+
         for (unsigned i = 0; i < points_.size(); ++i)
             points_[i].Y(in[i]);
     }
@@ -81,11 +89,15 @@ class Points
     std::vector<double> Z()
     {
         std::vector<double> out;
+        out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(), [](const Point &p) { return p.Z(); });
         return out;
     }
     void Z(std::vector<double> in)
     {
+        if (in.size() != Size())
+            throw std::runtime_error("Z setter array must be same size as Points array!");
+
         for (unsigned i = 0; i < points_.size(); ++i)
             points_[i].Z(in[i]);
     }
