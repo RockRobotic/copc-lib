@@ -46,7 +46,7 @@ def TrimFileExample(compressor_example_flag):
             header = writer.GetLasHeader()
             uncompressed_points = reader.GetPointData(node)
             compressed_points = copc.CompressBytes(
-                uncompressed_points, header.point_format_id, len(cfg.extra_bytes.items)
+                uncompressed_points, header.point_format_id, cfg.NumExtraBytes()
             )
             writer.AddNodeCompressed(
                 root_page, node.key, compressed_points, node.point_count
@@ -99,20 +99,24 @@ def RandomPoints(key, point_format_id):
 
     random.seed(0)
 
-    points = copc.Points(point_format_id)
+    points = copc.Points(
+        point_format_id,
+        copc.Vector3.DefaultScale(),
+        copc.Vector3.DefaultOffset(),
+    )
     for i in range(NUM_POINTS):
         # Create a point with a given point format
         point = copc.Point(point_format_id)
         # point has getters/setters for all attributes
-        point.X = int(
+        point.UnscaledX = int(
             random.uniform(min(minx, MAX_BOUNDS.x), min(minx + step, MAX_BOUNDS.x))
         )
 
-        point.Y = int(
+        point.UnscaledY = int(
             random.uniform(min(miny, MAX_BOUNDS.y), min(miny + step, MAX_BOUNDS.y))
         )
 
-        point.Z = int(
+        point.UnscaledZ = int(
             random.uniform(min(minz, MAX_BOUNDS.z), min(minz + step, MAX_BOUNDS.z))
         )
 
