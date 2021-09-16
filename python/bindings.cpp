@@ -255,7 +255,6 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
 
     py::class_<las::LasHeader>(m, "LasHeader")
-        .def_readwrite("magic", &las::LasHeader::magic)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
@@ -284,21 +283,5 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
         .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14);
 
-    //TODO[Leo]: Make our own EbVlr
-    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
-
-    //TODO[Leo]: Make our own ebfields
-    py::class_<las::EbVlr::ebfield>(m, "EbField")
-        //    .def_readwrite("reserved",&las::EbVlr::ebfield::reserved)
-        .def_readwrite("data_type", &las::EbVlr::ebfield::data_type)
-        .def_readwrite("options", &las::EbVlr::ebfield::options)
-        .def_readwrite("name", &las::EbVlr::ebfield::name)
-        //    .def_readwrite("unused",&las::EbVlr::ebfield::unused)
-        //    .def_readwrite("no_data",&las::EbVlr::ebfield::no_data)
-        //    .def_readwrite("minval",&las::EbVlr::ebfield::minval)
-        //    .def_readwrite("maxval",&las::EbVlr::ebfield::maxval)
-        //    .def_readwrite("scale",&las::EbVlr::ebfield::scale)
-        //    .def_readwrite("offset",&las::EbVlr::ebfield::offset)
-        .def_readwrite("description", &las::EbVlr::ebfield::description)
-        .def(py::self == py::self);
+    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>());
 }

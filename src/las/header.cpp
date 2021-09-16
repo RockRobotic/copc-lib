@@ -5,16 +5,13 @@
 #include <copc-lib/las/utils.hpp>
 #include <lazperf/header.hpp>
 
-namespace copc
-{
-namespace las
+namespace copc::las
 {
 
 uint16_t LasHeader::NumExtraBytes() const { return ComputeNumExtraBytes(point_format_id, point_record_length); }
 
 void LasHeader::FromLazPerf(const lazperf::header14 &header)
 {
-    magic = header.magic;
     file_source_id = header.file_source_id;
     global_encoding = header.global_encoding;
     guid_ = header.guid;
@@ -52,14 +49,13 @@ void LasHeader::FromLazPerf(const lazperf::header14 &header)
 lazperf::header14 LasHeader::ToLazPerf() const
 {
     lazperf::header14 h;
-    std::strcpy(h.magic, magic.c_str());
     h.file_source_id = file_source_id;
     h.global_encoding = global_encoding;
-    std::strcpy(h.guid, guid_.c_str());
+    std::strncpy(h.guid, guid_.c_str(), 16);
     h.version.major = version_major;
     h.version.minor = version_minor;
-    std::strcpy(h.system_identifier, system_identifier_.c_str());
-    std::strcpy(h.generating_software, generating_software_.c_str());
+    std::strncpy(h.system_identifier, system_identifier_.c_str(), 32);
+    std::strncpy(h.generating_software, generating_software_.c_str(), 32);
     h.creation.day = creation_day;
     h.creation.year = creation_year;
     h.header_size = header_size;
@@ -93,5 +89,4 @@ lazperf::header14 LasHeader::ToLazPerf() const
     return h;
 }
 
-} // namespace las
-} // namespace copc
+} // namespace copc::las

@@ -79,7 +79,6 @@ class LasHeader
     }
     std::string GeneratingSoftware() const { return generating_software_; }
 
-    std::string magic{"LASF"};
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
@@ -99,8 +98,8 @@ class LasHeader
     uint32_t point_count{};
     std::array<uint32_t, 5> points_by_return{};
 
-    Vector3 scale;
-    Vector3 offset;
+    Vector3 scale{0.01, 0.01, 0.01};
+    Vector3 offset{0.0, 0.0, 0.0};
     // xyz min/max for las header
     Vector3 max{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(),
                 std::numeric_limits<double>::lowest()};

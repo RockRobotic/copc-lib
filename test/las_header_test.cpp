@@ -13,7 +13,6 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
         auto lazperf_header = las_header.ToLazPerf();
         auto las_header_orig = las::LasHeader(lazperf_header);
 
-        REQUIRE(las_header_orig.magic == las_header.magic);
         REQUIRE(las_header_orig.file_source_id == las_header.file_source_id);
         REQUIRE(las_header_orig.global_encoding == las_header.global_encoding);
         REQUIRE(las_header_orig.GUID() == las_header.GUID());
