@@ -41,8 +41,21 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
 
+    py::class_<Vector3>(m, "Vector3")
+        .def(py::init<const double &, const double &, const double &>())
+        .def(py::init<const std::vector<double> &>())
+        .def_readwrite("x", &Vector3::x)
+        .def_readwrite("y", &Vector3::y)
+        .def_readwrite("z", &Vector3::z)
+        .def(py::self == py::self);
+
+    py::implicitly_convertible<py::list, Vector3>();
+
     py::class_<las::Point>(m, "Point")
-        .def(py::init<const uint8_t &, const uint16_t &>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
+        .def(py::init<const uint8_t &, const uint16_t &, const Vector3 &, const Vector3 &>(),
+             py::arg("point_format_id"), py::arg("num_extra_bytes") = 0, py::arg("scale") = Vector3(0.01, 0.01, 0.01),
+             py::arg("offset") = Vector3(0, 0, 0))
+        .def(py::init<const las::LasHeader &>())
         .def(py::init<const las::Point &>())
         //        .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
         //                      py::overload_cast<const double &>(&las::Point::X))
@@ -136,6 +149,7 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const uint8_t &, const Vector3 &, const Vector3 &, const uint16_t &>(),
              py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const std::vector<las::Point> &>())
+        .def(py::init<const las::LasHeader &>())
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
         .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
@@ -150,7 +164,9 @@ PYBIND11_MODULE(copclib, m)
         .def("ToPointFormat", &las::Points::ToPointFormat)
         .def("Pack", static_cast<std::vector<char> (las::Points::*)()>(&las::Points::Pack))
         .def("Pack", static_cast<void (las::Points::*)(std::ostream &)>(&las::Points::Pack))
-        .def("Unpack", &las::Points::Unpack)
+        .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
+                                         const Vector3 &>(&las::Points::Unpack))
+        .def("Unpack", py::overload_cast<const std::vector<char> &, const las::LasHeader &>(&las::Points::Unpack))
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
 
@@ -174,19 +190,11 @@ PYBIND11_MODULE(copclib, m)
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes));
+    m.def("CompressBytes",
+          py::overload_cast<std::vector<char> &, const las::LasHeader &>(&laz::Compressor::CompressBytes));
 
     m.def("DecompressBytes", py::overload_cast<const std::vector<char> &, const las::LasHeader &, const int &>(
                                  &laz::Decompressor::DecompressBytes));
-
-    py::class_<Vector3>(m, "Vector3")
-        .def(py::init<const double &, const double &, const double &>())
-        .def(py::init<const std::vector<double> &>())
-        .def_readwrite("x", &Vector3::x)
-        .def_readwrite("y", &Vector3::y)
-        .def_readwrite("z", &Vector3::z)
-        .def(py::self == py::self);
-
-    py::implicitly_convertible<py::list, Vector3>();
 
     py::class_<Writer::LasConfig>(m, "LasConfig")
         .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
