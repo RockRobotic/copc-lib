@@ -47,10 +47,10 @@ class Compressor
     }
 
     static std::vector<char> CompressBytes(std::vector<char> &in, const int8_t &point_format_id,
-                                           const uint16_t &eb_count)
+                                           const uint16_t &num_extra_bytes)
     {
         std::ostringstream out_stream;
-        CompressBytes(out_stream, point_format_id, eb_count, in);
+        CompressBytes(out_stream, point_format_id, num_extra_bytes, in);
         auto ostr = out_stream.str();
         return std::vector<char>(ostr.begin(), ostr.end());
     }

@@ -3,7 +3,7 @@ import copclib as copc
 
 def test_key_validity():
     assert copc.VoxelKey().IsValid() is False
-    assert copc.VoxelKey(-1, -1, -1, -1).IsValid() is False
+    assert copc.VoxelKey(d=-1, x=-1, y=-1, z=-1).IsValid() is False
     assert copc.VoxelKey(-1, 0, 0, 0).IsValid() is False
     assert copc.VoxelKey(0, -1, 0, 0).IsValid() is False
     assert copc.VoxelKey(0, 0, -1, 0).IsValid() is False
@@ -36,7 +36,10 @@ def test_get_parent():
 
 
 def test_is_child():
-    assert copc.VoxelKey(-1, -1, -1, -1).ChildOf(copc.VoxelKey.BaseKey()) is False
+    assert (
+        copc.VoxelKey(-1, -1, -1, -1).ChildOf(parent_key=copc.VoxelKey.BaseKey())
+        is False
+    )
     assert copc.VoxelKey.BaseKey().ChildOf(copc.VoxelKey.InvalidKey()) is False
 
     assert copc.VoxelKey(4, 4, 6, 12).ChildOf(copc.VoxelKey(3, 2, 3, 6))
@@ -59,7 +62,7 @@ def test_get_parents():
         copc.VoxelKey(0, 0, 0, 0),
     ]
     #
-    get_parents_inclusive = test_keys[0].GetParents(True)
+    get_parents_inclusive = test_keys[0].GetParents(include_current=True)
     assert len(get_parents_inclusive) == len(test_keys)
     assert get_parents_inclusive == test_keys
 

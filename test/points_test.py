@@ -21,7 +21,7 @@ def test_points_constructor():
     for point in points.Get():
         assert point.PointFormatID == 3
     assert points.PointRecordLength == 38
-    assert points.Get(0).X == 11
+    assert points.Get(idx=0).X == 11
     assert points.Get(0).Y == 11
     assert points.Get(0).Z == 11
 
