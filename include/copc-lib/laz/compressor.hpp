@@ -54,6 +54,11 @@ class Compressor
         auto ostr = out_stream.str();
         return std::vector<char>(ostr.begin(), ostr.end());
     }
+
+    static std::vector<char> CompressBytes(std::vector<char> &in, const las::LasHeader &header)
+    {
+        return CompressBytes(in, header.point_format_id, header.NumExtraBytes());
+    }
 };
 } // namespace copc::laz
 

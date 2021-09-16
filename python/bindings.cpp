@@ -133,7 +133,7 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &las::Point::ToString);
 
     py::class_<las::Points>(m, "Points")
-        .def(py::init<const uint8_t &, const lazperf::vector3 &, const lazperf::vector3 &, const uint16_t &>(),
+        .def(py::init<const uint8_t &, const Vector3 &, const Vector3 &, const uint16_t &>(),
              py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const std::vector<las::Point> &>())
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)

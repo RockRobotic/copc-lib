@@ -5,15 +5,16 @@
 #include <vector>
 
 #include <copc-lib/las/utils.hpp>
-#include <copc-lib/utils.hpp>
+#include <copc-lib/las/header.hpp>
 
 namespace copc::las
 {
 class Point
 {
   public:
-    Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0, const lazperf::vector3 &scale = {1, 1, 1},
-          const lazperf::vector3 &offset = {0, 0, 0});
+    Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes = 0, const Vector3 &scale = {1, 1, 1},
+          const Vector3 &offset = {0, 0, 0});
+    Point(const LasHeader &header);
     Point(const Point &other);
 
     // Getters and Setters
@@ -428,8 +429,8 @@ class Point
     int8_t PointFormatID() const { return point_format_id_; }
     uint16_t NumExtraBytes() const;
 
-    lazperf::vector3 Scale() const { return scale_; }
-    lazperf::vector3 Offset() const { return offset_; }
+    Vector3 Scale() const { return scale_; }
+    Vector3 Offset() const { return offset_; }
 
     bool operator==(const Point &other) const;
     bool operator!=(const Point &other) const { return !(*this == other); };
@@ -470,8 +471,8 @@ class Point
   private:
     uint32_t point_record_length_;
     int8_t point_format_id_;
-    lazperf::vector3 scale_;
-    lazperf::vector3 offset_;
+    Vector3 scale_;
+    Vector3 offset_;
 };
 
 } // namespace copc::las

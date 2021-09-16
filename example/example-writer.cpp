@@ -8,7 +8,6 @@
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/laz/compressor.hpp>
 #include <copc-lib/laz/decompressor.hpp>
-#include <copc-lib/utils.hpp>
 
 using namespace copc;
 using namespace std;
@@ -49,10 +48,8 @@ void TrimFileExample()
                 // (for example, compress multiple nodes in parallel and have one thread writing the data),
                 // we can use the Compressor class:
 
-                las::LasHeader header = writer.GetLasHeader();
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
-                std::vector<char> compressed_points = laz::Compressor::CompressBytes(
-                    uncompressed_points, header.point_format_id, cfg.extra_bytes.items.size());
+                std::vector<char> compressed_points = laz::Compressor::CompressBytes(uncompressed_points, writer.GetLasHeader());
                 writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
             }
         }

@@ -3,8 +3,8 @@
 
 namespace copc::las
 {
-Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes, const lazperf::vector3 &scale,
-             const lazperf::vector3 &offset)
+Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes, const Vector3 &scale,
+             const Vector3 &offset)
     : scale_(scale), offset_(offset), point_format_id_(point_format_id)
 {
     if (point_format_id > 10)
@@ -21,6 +21,9 @@ Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes, con
 
     extra_bytes_.resize(num_extra_bytes, 0);
 }
+
+Point::Point(const LasHeader &header)
+    : Point(header.point_format_id, header.NumExtraBytes(), header.scale, header.offset){};
 
 Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraBytes())
 {

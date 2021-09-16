@@ -7,7 +7,7 @@
 namespace copc::las
 {
 
-Points::Points(const int8_t &point_format_id, const lazperf::vector3 &scale, const lazperf::vector3 &offset,
+Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
                const uint16_t &num_extra_bytes)
     : point_format_id_(point_format_id), scale_(scale), offset_(offset)
 {
@@ -16,6 +16,9 @@ Points::Points(const int8_t &point_format_id, const lazperf::vector3 &scale, con
 
     point_record_length_ = ComputePointBytes(point_format_id, num_extra_bytes);
 }
+
+Points::Points(const LasHeader &header)
+    : Points(header.point_format_id, header.scale, header.offset, header.NumExtraBytes()){};
 
 Points::Points(const std::vector<Point> &points)
 {
@@ -67,13 +70,18 @@ void Points::AddPoints(std::vector<las::Point> points)
     points_.insert(points_.end(), points.begin(), points.end());
 }
 
-Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
-                      const int32_t &point_record_length, const lazperf::vector3 &scale, const lazperf::vector3 &offset)
+Points Points::Unpack(const std::vector<char> &point_data, const LasHeader &header)
 {
+    return Unpack(point_data, header.point_format_id, header.NumExtraBytes(), header.scale, header.offset);
+}
+
+Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
+                      const uint16_t &num_extra_bytes, const Vector3 &scale, const Vector3 &offset)
+{
+    auto point_record_length = ComputePointBytes(point_format_id, num_extra_bytes);
     if (point_data.size() % point_record_length != 0)
         throw std::runtime_error("Invalid input point array!");
 
-    auto num_extra_bytes = ComputeNumExtraBytes(point_format_id, point_record_length);
     uint64_t point_count = point_data.size() / point_record_length;
 
     // Make a stream out of the vector of char

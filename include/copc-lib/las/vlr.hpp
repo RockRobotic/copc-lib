@@ -24,8 +24,6 @@ inline bool operator==(const eb_vlr::ebfield &a, const eb_vlr::ebfield &b)
            std::memcmp(a.maxval, b.maxval, 3) == 0 && std::memcmp(a.scale, b.scale, 3) == 0 &&
            std::memcmp(a.offset, b.offset, 3) == 0 && a.description == b.description;
 }
-
-inline bool operator==(const vector3 &a, const vector3 &b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
 } // namespace lazperf
 
 #endif // COPCLIB_LAS_VLR_H_

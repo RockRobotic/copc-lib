@@ -7,6 +7,7 @@
 
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/utils.hpp>
+#include <copc-lib/las/header.hpp>
 
 namespace copc::las
 {
@@ -16,8 +17,9 @@ namespace copc::las
 class Points
 {
   public:
-    Points(const int8_t &point_format_id, const lazperf::vector3 &scale, const lazperf::vector3 &offset,
+    Points(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
            const uint16_t &num_extra_bytes = 0);
+    Points(const LasHeader &header);
     // Will create Points object given a points vector
     Points(const std::vector<Point> &points);
 
@@ -46,8 +48,8 @@ class Points
     std::vector<char> Pack();
     void Pack(std::ostream &out_stream);
     static Points Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
-                         const int32_t &point_record_length, const lazperf::vector3 &scale,
-                         const lazperf::vector3 &offset);
+                         const uint16_t &num_extra_bytes, const Vector3 &scale, const Vector3 &offset);
+    static Points Unpack(const std::vector<char> &point_data, const LasHeader &header);
 
     std::string ToString() const;
 
@@ -92,8 +94,8 @@ class Points
     std::vector<Point> points_;
     int8_t point_format_id_;
     uint32_t point_record_length_;
-    lazperf::vector3 scale_;
-    lazperf::vector3 offset_;
+    Vector3 scale_;
+    Vector3 offset_;
 };
 } // namespace copc::las
 #endif // COPCLIB_LAS_POINTS_H_

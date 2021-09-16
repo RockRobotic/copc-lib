@@ -11,7 +11,6 @@
 #include <copc-lib/io/internal/writer_internal.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/points.hpp>
-#include <copc-lib/utils.hpp>
 
 namespace copc
 {
