@@ -161,6 +161,8 @@ def test_writer_copy():
 
     root_page = writer.GetRootPage()
 
+    # TODO[Leo]: Find out why this test is so slow
+    #
     # for node in reader.GetAllChildren():
     #     # only write/compare compressed data or otherwise tests take too long
     #     writer.AddNodeCompressed(

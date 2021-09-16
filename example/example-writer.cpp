@@ -4,8 +4,8 @@
 
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
-#include <copc-lib/las/point.hpp>
 #include <copc-lib/las/header.hpp>
+#include <copc-lib/las/point.hpp>
 #include <copc-lib/laz/compressor.hpp>
 #include <copc-lib/laz/decompressor.hpp>
 
@@ -131,9 +131,9 @@ void NewFileExample()
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
     cfg.min = Vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-                            (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
+                      (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
     cfg.max = Vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-                            (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
+                      (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:
     FileWriter writer("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT");
