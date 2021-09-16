@@ -10,6 +10,7 @@
 
 namespace copc
 {
+const double DEFAULT_SCALE = 0.01;
 
 struct Vector3
 {
@@ -98,7 +99,7 @@ class LasHeader
     uint32_t point_count{};
     std::array<uint32_t, 5> points_by_return{};
 
-    Vector3 scale{0.01, 0.01, 0.01};
+    Vector3 scale{DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE};
     Vector3 offset{0.0, 0.0, 0.0};
     // xyz min/max for las header
     Vector3 max{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(),

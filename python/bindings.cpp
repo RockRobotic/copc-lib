@@ -183,7 +183,8 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<Writer::LasConfig>(m, "LasConfig")
         .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
-             py::arg("scale") = Vector3(0.01, 0.01, 0.01), py::arg("offset") = Vector3(0, 0, 0))
+             py::arg("scale") = Vector3(DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE),
+             py::arg("offset") = Vector3(0, 0, 0))
         .def(py::init<const las::LasHeader &, const las::EbVlr &>())
         .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
         .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
