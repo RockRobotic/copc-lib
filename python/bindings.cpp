@@ -177,7 +177,8 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const std::vector<double> &>())
         .def_readwrite("x", &copc::vector3::x)
         .def_readwrite("y", &copc::vector3::y)
-        .def_readwrite("z", &copc::vector3::z);
+        .def_readwrite("z", &copc::vector3::z)
+        .def(py::self == py::self);
 
     py::implicitly_convertible<py::list, copc::vector3>();
 
@@ -188,17 +189,23 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const las::LasHeader &, const las::EbVlr &>())
         .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
         .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
-        //        .def_readwrite("guid", &Writer::LasConfig::guid)
-        //        .def_readwrite("system_identifier", &Writer::LasConfig::system_identifier)
-        //        .def_readwrite("generating_software", &Writer::LasConfig::generating_software)
-        .def_readwrite("creation", &Writer::LasConfig::creation)
+        .def_property("guid", py::overload_cast<>(&Writer::LasConfig::GUID, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::GUID))
+        .def_property("system_identifier", py::overload_cast<>(&Writer::LasConfig::SystemIdentifier, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::SystemIdentifier))
+        .def_property("generating_software", py::overload_cast<>(&Writer::LasConfig::GeneratingSoftware, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware))
+        .def_property("creation_day", py::overload_cast<>(&Writer::LasConfig::CreationDay, py::const_),
+                      py::overload_cast<const uint16_t &>(&Writer::LasConfig::CreationDay))
+        .def_property("creation_year", py::overload_cast<>(&Writer::LasConfig::CreationYear, py::const_),
+                      py::overload_cast<const uint16_t &>(&Writer::LasConfig::CreationYear))
         .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
         .def_readwrite("extra_bytes", &Writer::LasConfig::extra_bytes)
         .def_readwrite("scale", &Writer::LasConfig::scale)
         .def_readwrite("offset", &Writer::LasConfig::offset)
         .def_readwrite("max", &Writer::LasConfig::max)
-        .def_readwrite("min", &Writer::LasConfig::min);
-    //        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14);
+        .def_readwrite("min", &Writer::LasConfig::min)
+        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14);
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),

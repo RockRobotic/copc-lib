@@ -34,6 +34,15 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             Writer::LasConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
             cfg.file_source_id = 200;
+
+            // Test checks on string attributes
+            cfg.SystemIdentifier("test_string");
+            REQUIRE(cfg.SystemIdentifier() == "test_string");
+            REQUIRE_THROWS(cfg.SystemIdentifier(std::string(33, 'a')));
+            cfg.GeneratingSoftware("test_string");
+            REQUIRE(cfg.GeneratingSoftware() == "test_string");
+            REQUIRE_THROWS(cfg.GeneratingSoftware(std::string(33, 'a')));
+
             FileWriter writer(file_path, cfg);
 
             auto las_header = writer.GetLasHeader();

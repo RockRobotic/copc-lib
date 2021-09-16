@@ -112,9 +112,9 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     h.point_record_length =
         las::PointBaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
 
-    std::strcpy(h.guid, config.guid);
-    std::strcpy(h.system_identifier, config.system_identifier);
-    std::strcpy(h.generating_software, config.generating_software);
+    std::strcpy(h.guid, config.GUID().c_str());
+    std::strcpy(h.system_identifier, config.SystemIdentifier().c_str());
+    std::strcpy(h.generating_software, config.GeneratingSoftware().c_str());
 
     h.offset.x = config.offset.x;
     h.offset.y = config.offset.y;
@@ -131,8 +131,8 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     h.maxz = config.max.z;
     h.minz = config.min.z;
 
-    memcpy(h.points_by_return_14, config.points_by_return_14, sizeof(config.points_by_return_14));
-
+    std::copy(std::begin(config.points_by_return_14), std::end(config.points_by_return_14),
+              std::begin(h.points_by_return_14));
     return h;
 }
 
@@ -144,9 +144,9 @@ copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVl
     creation.year = config.creation.year;
     point_format_id = config.point_format_id;
 
-    std::strcpy(guid, config.guid);
-    std::strcpy(system_identifier, config.system_identifier);
-    std::strcpy(generating_software, config.generating_software);
+    guid_ = config.guid;
+    system_identifier_ = config.system_identifier;
+    generating_software_ = config.generating_software;
 
     offset.x = config.offset.x;
     offset.y = config.offset.y;
@@ -163,7 +163,8 @@ copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVl
     max.z = config.maxz;
     min.z = config.minz;
 
-    memcpy(points_by_return_14, config.points_by_return_14, sizeof(config.points_by_return_14));
+    std::copy(std::begin(config.points_by_return_14), std::end(config.points_by_return_14),
+              std::begin(points_by_return_14));
     extra_bytes = extra_bytes_;
 }
 } // namespace copc

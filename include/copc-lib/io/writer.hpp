@@ -4,6 +4,7 @@
 #include <array>
 #include <ostream>
 #include <stdexcept>
+#include <string>
 
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/io/base_io.hpp>
@@ -39,6 +40,8 @@ struct vector3
 
         return *this; // Return a reference to myself.
     }
+
+    bool operator==(vector3 a) const { return x == a.x && y == a.y && z == a.z; }
 };
 
 // Provides the public interface for writing COPC files
@@ -56,12 +59,39 @@ class Writer : public BaseIO
         // Allow for "copying" a lasheader from one file to another
         LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_);
 
+        // Getters/Setters for string attributes
+        void GUID(const std::string &guid)
+        {
+            if (guid.size() > 16)
+                throw std::runtime_error("GUID length must be <= 16.");
+            guid_ = guid;
+        }
+        std::string GUID() const { return guid_; }
+
+        void SystemIdentifier(const std::string &system_identifier)
+        {
+            if (system_identifier.size() > 32)
+                throw std::runtime_error("System Identifier length must be <= 32.");
+            system_identifier_ = system_identifier;
+        }
+        std::string SystemIdentifier() const { return system_identifier_; }
+
+        void GeneratingSoftware(const std::string &generating_software)
+        {
+            if (generating_software.size() > 32)
+                throw std::runtime_error("System Identifier length must be <= 32.");
+            generating_software_ = generating_software;
+        }
+        std::string GeneratingSoftware() const { return generating_software_; }
+
+        // Getter/Setters for python bindings
+        void CreationDay(const uint16_t &day) { creation.day = day; }
+        uint16_t CreationDay() const { return creation.day; }
+        void CreationYear(const uint16_t &year) { creation.year = year; }
+        uint16_t CreationYear() const { return creation.year; }
+
         uint16_t file_source_id{};
         uint16_t global_encoding{};
-        char guid[16]{};
-
-        char system_identifier[32]{};
-        char generating_software[32]{};
 
         struct
         {
@@ -82,29 +112,12 @@ class Writer : public BaseIO
         vector3 min{0, 0, 0};
 
         // # of points per return 0-14
-        uint64_t points_by_return_14[15]{};
-        //    private:
-        //        // Getter/Setters for python bindings
-        //        void CreationDay(const uint16_t& day){
-        //            creation.day = day;
-        //        }
-        //        uint16_t CreationDay() const{
-        //            return creation.day;
-        //        }
-        //        void CreationYear(const uint16_t& year){
-        //            creation.year = year;
-        //        }
-        //        uint16_t CreationYear() const{
-        //            return creation.year;
-        //        }
-        //        void Scale(const std::vector<double> &scale){
-        //            this->scale.x = scale[0];
-        //            this->scale.y = scale[1];
-        //            this->scale.z = scale[2];
-        //        }
-        //        std::vector<double> Scale() const{
-        //            return std::vector<double>(){scale.x,scale.y,scale.z};
-        //        }
+        std::array<uint64_t, 15> points_by_return_14{};
+
+      private:
+        std::string guid_{};
+        std::string system_identifier_{};
+        std::string generating_software_{};
     };
 
     Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "")

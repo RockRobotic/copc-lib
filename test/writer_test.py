@@ -22,6 +22,35 @@ def test_writer_config():
 
     cfg = copc.LasConfig(8, copc.vector3(2, 3, 4), copc.vector3(-0.02, -0.03, -40.8))
     cfg.file_source_id = 200
+
+    # Test LasConfig attributes
+    cfg.scale = [1, 1, 1]
+    assert cfg.scale == [1, 1, 1]
+    assert cfg.scale != [1, 1, 2]
+    cfg.offset = [1, 1, 1]
+    assert cfg.offset == [1, 1, 1]
+
+    cfg.creation_day = 18
+    assert cfg.creation_day == 18
+    cfg.creation_year = 11
+    assert cfg.creation_year == 11
+
+    # Test checks on string attributes
+    cfg.guid = "test_string"
+    assert cfg.guid == "test_string"
+    with pytest.raises(RuntimeError):
+        cfg.guid = "a" * 17
+
+    cfg.system_identifier = "test_string"
+    assert cfg.system_identifier == "test_string"
+    with pytest.raises(RuntimeError):
+        cfg.system_identifier = "a" * 33
+
+    cfg.generating_software = "test_string"
+    assert cfg.generating_software == "test_string"
+    with pytest.raises(RuntimeError):
+        cfg.generating_software = "a" * 33
+
     writer = copc.FileWriter(file_path, cfg)
 
     las_header = writer.GetLasHeader()
