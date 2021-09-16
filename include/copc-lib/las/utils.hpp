@@ -2,6 +2,7 @@
 #define COPCLIB_LAS_UTILS_H_
 
 #include <iostream>
+#include <cmath>
 
 namespace copc::las
 {
@@ -13,8 +14,16 @@ bool FormatHasGPSTime(const uint8_t &point_format_id);
 bool FormatHasRGB(const uint8_t &point_format_id);
 bool FormatHasNIR(const uint8_t &point_format_id);
 
-template <typename T> double ApplyScale(T value, double scale, double offset);
-template <typename T> T RemoveScale(double value, double scale, double offset);
+template <typename T> double ApplyScale(T value, double scale, double offset) { return (value * scale) + offset; }
+template <typename T> T RemoveScale(double value, double scale, double offset)
+{
+    double val = std::round((value - offset) / scale);
+
+    if (val < std::numeric_limits<T>::min() || val > std::numeric_limits<T>::max())
+        throw std::runtime_error("The value " + std::to_string(value) + " is too large to save into the requested format." + " Your scale and/or offset may be incorrect.");
+
+    return static_cast<T>(val);
+}
 
 template <typename T> T unpack(std::istream &in_stream)
 {

@@ -8,6 +8,7 @@
 
 using namespace copc::las;
 using namespace std;
+using Catch::Matchers::WithinAbs;
 
 TEST_CASE("Point tests", "[Point]")
 {
@@ -712,5 +713,127 @@ TEST_CASE("Point tests", "[Point]")
 
         point.ToPointFormat(0);
         REQUIRE(point == orig_point);
+    }
+
+    SECTION("Scaled XYZ")
+    {
+        int8_t pfid = 8;
+
+        SECTION("No scale and offset")
+        {
+            copc::Vector3 scale = {1, 1, 1};
+            copc::Vector3 offset = {0, 0, 0};
+            auto point = Point(pfid, scale, offset);
+
+            point.UnscaledX(4);
+            point.UnscaledY(4);
+            point.UnscaledZ(4);
+
+            REQUIRE(point.X() == 4);
+            REQUIRE(point.Y() == 4);
+            REQUIRE(point.Z() == 4);
+
+            point.X(5);
+            point.Y(6);
+            point.Z(7);
+
+            REQUIRE(point.UnscaledX() == 5);
+            REQUIRE(point.UnscaledY() == 6);
+            REQUIRE(point.UnscaledZ() == 7);
+        }
+        SECTION("Scale test")
+        {
+            copc::Vector3 scale = {0.01, 0.01, 0.01};
+            copc::Vector3 offset = {0, 0, 0};
+            auto point = Point(pfid, scale, offset);
+
+            point.UnscaledX(1);
+            point.UnscaledY(2);
+            point.UnscaledZ(3);
+
+            REQUIRE(point.X() == 0.01);
+            REQUIRE(point.Y() == 0.02);
+            REQUIRE(point.Z() == 0.03);
+
+            point.X(200);
+            point.Y(300);
+            point.Z(400);
+
+            REQUIRE(point.UnscaledX() == 200 * 100);
+            REQUIRE(point.UnscaledY() == 300 * 100);
+            REQUIRE(point.UnscaledZ() == 400 * 100);
+        }
+        SECTION("Offset test")
+        {
+            copc::Vector3 scale = {1, 1, 1};
+            copc::Vector3 offset = {50001.456, 4443.123, -255.001};
+            auto point = Point(pfid, scale, offset);
+
+            point.UnscaledX(0);
+            point.UnscaledY(-800);
+            point.UnscaledZ(3);
+
+            REQUIRE(point.X() == 0 + offset.x);
+            REQUIRE(point.Y() == -800 + offset.y);
+            REQUIRE(point.Z() == 3 + offset.z);
+
+            point.X(50502.888);
+            point.Y(4002.111);
+            point.Z(-80.5);
+
+            // static_cast<T>(std::round((value - offset) / scale));
+            REQUIRE(point.UnscaledX() == 501); // 50502.888 - 50001.456 = 501.432
+            REQUIRE(point.UnscaledY() == -441);
+            REQUIRE(point.UnscaledZ() == 175); // -80.5 - -255.001 = 255.001 - 80.5 = 175
+
+            // (value * scale) + offset
+            REQUIRE_THAT(point.X(), WithinAbs(50502.456, 0.000001));
+            REQUIRE_THAT(point.Y(), WithinAbs(4002.123, 0.000001));
+            REQUIRE_THAT(point.Z(), WithinAbs(-80.001, 0.000001));
+        }
+        SECTION("Scale and Offset test")
+        {
+            copc::Vector3 scale = {0.001, 0.001, 0.001};
+            copc::Vector3 offset = {50001.456, 4443.123, -255.001};
+            auto point = Point(pfid, scale, offset);
+
+            point.UnscaledX(0);
+            point.UnscaledY(-800);
+            point.UnscaledZ(300532);
+
+            REQUIRE_THAT(point.X(), WithinAbs(50001.456, 0.000001));
+            REQUIRE_THAT(point.Y(), WithinAbs(4442.323, 0.000001));
+            REQUIRE_THAT(point.Z(), WithinAbs(45.531, 0.000001));
+
+            point.X(50502.888);
+            point.Y(4002.111);
+            point.Z(-80.5);
+
+            // static_cast<T>(std::round((value - offset) / scale));
+            REQUIRE(point.UnscaledX() == 501432);
+            REQUIRE(point.UnscaledY() == -441012);
+            REQUIRE(point.UnscaledZ() == 174501);
+
+            // (value * scale) + offset
+            REQUIRE_THAT(point.X(), WithinAbs(50502.888, 0.000001));
+            REQUIRE_THAT(point.Y(), WithinAbs(4002.111, 0.000001));
+            REQUIRE_THAT(point.Z(), WithinAbs(-80.5, 0.000001));
+        }
+        SECTION("Precision checks")
+        {
+            {
+                copc::Vector3 scale = {0.000001, 0.000001, 0.000001};
+                copc::Vector3 offset = {0, 0, 0};
+                auto point = Point(pfid, scale, offset);
+
+                REQUIRE_THROWS(point.X(50501132.888123));
+            }
+            {
+                copc::Vector3 scale = {1, 1, 1};
+                copc::Vector3 offset = {-8001100065, 0, 0};
+                auto point = Point(pfid, scale, offset);
+                REQUIRE_THROWS(point.X(0));
+            }
+        }
     }
 }
