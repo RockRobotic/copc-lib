@@ -211,10 +211,9 @@ PYBIND11_MODULE(copclib, m)
         .def("GetExtraByteVlr", &Writer::GetExtraByteVlr)
         .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &FileWriter::Close)
-        .def("AddNode", static_cast<Node (Writer::*)(Page &, const VoxelKey &, las::Points &)>(&Writer::AddNode))
+        .def("AddNode", py::overload_cast<Page &, const VoxelKey &, las::Points &>(&Writer::AddNode))
         .def("AddNodeCompressed", &Writer::AddNodeCompressed)
-        .def("AddNode",
-             static_cast<Node (Writer::*)(Page &, const VoxelKey &, std::vector<char> const &)>(&Writer::AddNode))
+        .def("AddNode", py::overload_cast<Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode))
         .def("AddSubPage", &Writer::AddSubPage);
 
     py::class_<Node>(m, "Node")
