@@ -12,7 +12,7 @@ def test_constructor():
     assert point.HasRGB is False
     assert point.HasNIR is False
 
-    point_ext = copc.Point(8, 0)
+    point_ext = copc.Point(8, num_extra_bytes=0)
 
     assert point_ext.HasExtendedPoint is True
     assert point_ext.HasGPSTime is True
@@ -614,7 +614,7 @@ def test_extra_byte():
     assert len(point.ExtraBytes) == 0
     assert point.NumExtraBytes == 0
 
-    point = copc.Point(0, 5)
+    point = copc.Point(0, num_extra_bytes=5)
     assert point.PointFormatID == 0
     assert point.PointRecordLength == 20 + 5
     assert point.NumExtraBytes == 5
@@ -635,7 +635,7 @@ def test_extra_byte():
 
 
 def test_operator_copy():
-    point = copc.Point(8, 2)
+    point = copc.Point(8, num_extra_bytes=2)
 
     point.UnscaledX = 4
     point.UnscaledY = 4
