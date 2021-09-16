@@ -106,8 +106,8 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     las::LasHeader h;
     h.file_source_id = config.file_source_id;
     h.global_encoding = config.global_encoding;
-    h.creation.day = config.creation.day;
-    h.creation.year = config.creation.year;
+    h.creation_day = config.creation_day;
+    h.creation_year = config.creation_year;
     h.point_format_id = config.point_format_id;
     h.point_record_length =
         las::PointBaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
@@ -129,8 +129,8 @@ copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVl
 {
     file_source_id = config.file_source_id;
     global_encoding = config.global_encoding;
-    creation.day = config.creation.day;
-    creation.year = config.creation.year;
+    creation_day = config.creation_day;
+    creation_year = config.creation_year;
     point_format_id = config.point_format_id;
 
     guid_ = config.GUID();

@@ -55,20 +55,11 @@ class Writer : public BaseIO
         }
         std::string GeneratingSoftware() const { return generating_software_; }
 
-        // Getter/Setters for python bindings
-        void CreationDay(const uint16_t &day) { creation.day = day; }
-        uint16_t CreationDay() const { return creation.day; }
-        void CreationYear(const uint16_t &year) { creation.year = year; }
-        uint16_t CreationYear() const { return creation.year; }
-
         uint16_t file_source_id{};
         uint16_t global_encoding{};
 
-        struct
-        {
-            uint16_t day{};
-            uint16_t year{};
-        } creation;
+        uint16_t creation_day{};
+        uint16_t creation_year{};
 
         // default to 0
         int8_t point_format_id{};

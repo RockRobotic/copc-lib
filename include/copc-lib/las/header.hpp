@@ -86,17 +86,11 @@ class LasHeader
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
-    struct
-    {
-        uint8_t major{1};
-        uint8_t minor{4};
-    } version;
+    uint8_t version_major{1};
+    uint8_t version_minor{4};
 
-    struct
-    {
-        uint16_t day{};
-        uint16_t year{};
-    } creation;
+    uint16_t creation_day{};
+    uint16_t creation_year{};
 
     uint16_t header_size{};
     uint32_t point_offset{};

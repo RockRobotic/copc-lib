@@ -103,8 +103,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             FileReader reader(file_path);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
-            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
+            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
+            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
             REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
@@ -215,8 +215,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Reader reader(&out_stream);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
-            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
+            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
+            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
             REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
