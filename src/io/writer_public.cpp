@@ -106,33 +106,22 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     las::LasHeader h;
     h.file_source_id = config.file_source_id;
     h.global_encoding = config.global_encoding;
-    h.creation.day = config.creation.day;
-    h.creation.year = config.creation.year;
+    h.creation_day = config.creation_day;
+    h.creation_year = config.creation_year;
     h.point_format_id = config.point_format_id;
     h.point_record_length =
         las::PointBaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
 
-    std::strcpy(h.guid, config.guid);
-    std::strcpy(h.system_identifier, config.system_identifier);
-    std::strcpy(h.generating_software, config.generating_software);
+    h.GUID(config.GUID());
+    h.SystemIdentifier(config.SystemIdentifier());
+    h.GeneratingSoftware(config.GeneratingSoftware());
 
-    h.offset.x = config.offset.x;
-    h.offset.y = config.offset.y;
-    h.offset.z = config.offset.z;
+    h.offset = config.offset;
+    h.scale = config.scale;
+    h.max = config.max;
+    h.min = config.min;
 
-    h.scale.x = config.scale.x;
-    h.scale.y = config.scale.y;
-    h.scale.z = config.scale.z;
-
-    h.maxx = config.max.x;
-    h.minx = config.min.x;
-    h.maxy = config.max.y;
-    h.miny = config.min.y;
-    h.maxz = config.max.z;
-    h.minz = config.min.z;
-
-    memcpy(h.points_by_return_14, config.points_by_return_14, sizeof(config.points_by_return_14));
-
+    h.points_by_return_14 = config.points_by_return_14;
     return h;
 }
 
@@ -140,30 +129,21 @@ copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVl
 {
     file_source_id = config.file_source_id;
     global_encoding = config.global_encoding;
-    creation.day = config.creation.day;
-    creation.year = config.creation.year;
+    creation_day = config.creation_day;
+    creation_year = config.creation_year;
     point_format_id = config.point_format_id;
 
-    std::strcpy(guid, config.guid);
-    std::strcpy(system_identifier, config.system_identifier);
-    std::strcpy(generating_software, config.generating_software);
+    guid_ = config.GUID();
+    system_identifier_ = config.SystemIdentifier();
+    generating_software_ = config.GeneratingSoftware();
 
-    offset.x = config.offset.x;
-    offset.y = config.offset.y;
-    offset.z = config.offset.z;
+    offset = config.offset;
+    scale = config.scale;
 
-    scale.x = config.scale.x;
-    scale.y = config.scale.y;
-    scale.z = config.scale.z;
+    max = config.max;
+    min = config.min;
 
-    max.x = config.maxx;
-    min.x = config.minx;
-    max.y = config.maxy;
-    min.y = config.miny;
-    max.z = config.maxz;
-    min.z = config.minz;
-
-    memcpy(points_by_return_14, config.points_by_return_14, sizeof(config.points_by_return_14));
+    points_by_return_14 = config.points_by_return_14;
     extra_bytes = extra_bytes_;
 }
 } // namespace copc

@@ -1,17 +1,16 @@
 #include <iostream>
-#include <utility>
 #include <vector>
 
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "lazperf/vlr.hpp"
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/file.hpp>
+#include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
 #include <copc-lib/laz/compressor.hpp>
@@ -179,48 +178,54 @@ PYBIND11_MODULE(copclib, m)
     m.def("DecompressBytes", py::overload_cast<const std::vector<char> &, const las::LasHeader &, const int &>(
                                  &laz::Decompressor::DecompressBytes));
 
-    py::class_<copc::vector3>(m, "vector3")
-        .def(py::init<>())
+    py::class_<Vector3>(m, "Vector3")
         .def(py::init<const double &, const double &, const double &>())
-        .def_readwrite("x", &copc::vector3::x)
-        .def_readwrite("y", &copc::vector3::y)
-        .def_readwrite("z", &copc::vector3::z);
+        .def(py::init<const std::vector<double> &>())
+        .def_readwrite("x", &Vector3::x)
+        .def_readwrite("y", &Vector3::y)
+        .def_readwrite("z", &Vector3::z)
+        .def(py::self == py::self);
 
-    // TODO[Leo]: Finish commented attributes
+    py::implicitly_convertible<py::list, Vector3>();
+
     py::class_<Writer::LasConfig>(m, "LasConfig")
-        .def(py::init<const int8_t &, const copc::vector3 &, const copc::vector3 &>(), py::arg("point_format_id"),
-             py::arg("scale") = copc::vector3(0.01, 0.01, 0.01), py::arg("offset") = copc::vector3(0, 0, 0))
+        .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
+             py::arg("scale") = Vector3(0.01, 0.01, 0.01), py::arg("offset") = Vector3(0, 0, 0))
         .def(py::init<const las::LasHeader &, const las::EbVlr &>())
         .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
         .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
-        //        .def_readwrite("guid", &Writer::LasConfig::guid)
-        //        .def_readwrite("system_identifier", &Writer::LasConfig::system_identifier)
-        //        .def_readwrite("generating_software", &Writer::LasConfig::generating_software)
-        .def_readwrite("creation", &Writer::LasConfig::creation)
+        .def_readwrite("creation_day", &Writer::LasConfig::creation_day)
+        .def_readwrite("creation_year", &Writer::LasConfig::creation_year)
         .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
         .def_readwrite("extra_bytes", &Writer::LasConfig::extra_bytes)
         .def_readwrite("scale", &Writer::LasConfig::scale)
         .def_readwrite("offset", &Writer::LasConfig::offset)
         .def_readwrite("max", &Writer::LasConfig::max)
-        .def_readwrite("min", &Writer::LasConfig::min);
-    //        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14);
+        .def_readwrite("min", &Writer::LasConfig::min)
+        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14)
+        .def_property("guid", py::overload_cast<>(&Writer::LasConfig::GUID, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::GUID))
+        .def_property("system_identifier", py::overload_cast<>(&Writer::LasConfig::SystemIdentifier, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::SystemIdentifier))
+        .def_property("generating_software", py::overload_cast<>(&Writer::LasConfig::GeneratingSoftware, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware));
 
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),
+        .def(py::init<const std::string &, FileWriter::LasConfig const &, const int &, const std::string &>(),
              py::arg("file_path"), py::arg("config"), py::arg("span") = 0, py::arg("wkt") = "")
         .def("FindNode", &FileReader::FindNode)
         .def("GetWkt", &FileWriter::GetWkt)
         .def("GetCopcHeader", &FileWriter::GetCopcHeader)
         .def("GetLasHeader", &FileWriter::GetLasHeader)
         .def("GetExtraByteVlr", &FileWriter::GetExtraByteVlr)
-        .def(py::init<std::string &, Writer::LasConfig const &, const int &, const std::string &>())
-        .def("GetRootPage", &Writer::GetRootPage)
-        .def("Close", &Writer::Close)
-        .def("AddNode", static_cast<Node (Writer::*)(Page &, const VoxelKey &, las::Points &)>(&Writer::AddNode))
-        .def("AddNodeCompressed", &Writer::AddNodeCompressed)
+        .def(py::init<std::string &, FileWriter::LasConfig const &, const int &, const std::string &>())
+        .def("GetRootPage", &FileWriter::GetRootPage)
+        .def("Close", &FileWriter::Close)
+        .def("AddNode", static_cast<Node (FileWriter::*)(Page &, const VoxelKey &, las::Points &)>(&Writer::AddNode))
+        .def("AddNodeCompressed", &FileWriter::AddNodeCompressed)
         .def("AddNode",
-             static_cast<Node (Writer::*)(Page &, const VoxelKey &, std::vector<char> const &)>(&Writer::AddNode))
-        .def("AddSubPage", &Writer::AddSubPage);
+             static_cast<Node (FileWriter::*)(Page &, const VoxelKey &, std::vector<char> const &)>(&Writer::AddNode))
+        .def("AddSubPage", &FileWriter::AddSubPage);
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -256,24 +261,40 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("eb_vlr_offset", &las::CopcVlr::eb_vlr_offset)
         .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
 
-    // TODO[Leo]: Update this after making our own lazperf headers
     py::class_<las::LasHeader>(m, "LasHeader")
-        //        .def_readwrite("magic", &las::LasHeader::magic)
+        .def_readwrite("magic", &las::LasHeader::magic)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
-        //        .def_readwrite("guid", &las::LasHeader::guid)
-        .def_readwrite("version", &las::LasHeader::version)
-        //        .def_readwrite("system_identifier", &las::LasHeader::system_identifier)
-        //        .def_readwrite("generating_software", &las::LasHeader::generating_software)
-        .def_readwrite("scale", &las::LasHeader::scale)
-        .def_readwrite("offset", &las::LasHeader::offset)
+        .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
+                      py::overload_cast<const std::string &>(&las::LasHeader::GUID))
+        .def_readwrite("version_minor", &las::LasHeader::version_minor)
+        .def_readwrite("version_major", &las::LasHeader::version_major)
+        .def_property("system_identifier", py::overload_cast<>(&las::LasHeader::SystemIdentifier, py::const_),
+                      py::overload_cast<const std::string &>(&las::LasHeader::SystemIdentifier))
+        .def_property("generating_software", py::overload_cast<>(&las::LasHeader::GeneratingSoftware, py::const_),
+                      py::overload_cast<const std::string &>(&las::LasHeader::GeneratingSoftware))
+        .def_readwrite("creation_day", &las::LasHeader::creation_day)
+        .def_readwrite("creation_year", &las::LasHeader::creation_year)
         .def_readwrite("header_size", &las::LasHeader::header_size)
+        .def_readwrite("point_offset", &las::LasHeader::point_offset)
+        .def_readwrite("vlr_count", &las::LasHeader::vlr_count)
         .def_readwrite("point_format_id", &las::LasHeader::point_format_id)
         .def_readwrite("point_record_length", &las::LasHeader::point_record_length)
-        .def_readwrite("point_count", &las::LasHeader::point_count);
+        .def_readwrite("point_count", &las::LasHeader::point_count)
+        .def_readwrite("points_by_return", &las::LasHeader::points_by_return)
+        .def_readwrite("scale", &las::LasHeader::scale)
+        .def_readwrite("offset", &las::LasHeader::offset)
+        .def_readwrite("max", &las::LasHeader::max)
+        .def_readwrite("min", &las::LasHeader::min)
+        .def_readwrite("wave_offset", &las::LasHeader::wave_offset)
+        .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
+        .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
+        .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14);
 
+    //TODO[Leo]: Make our own EbVlr
     py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
 
+    //TODO[Leo]: Make our own ebfields
     py::class_<las::EbVlr::ebfield>(m, "EbField")
         //    .def_readwrite("reserved",&las::EbVlr::ebfield::reserved)
         .def_readwrite("data_type", &las::EbVlr::ebfield::data_type)

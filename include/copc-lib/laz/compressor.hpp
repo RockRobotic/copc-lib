@@ -43,7 +43,7 @@ class Compressor
 
     static uint32_t CompressBytes(std::ostream &out_stream, las::LasHeader const &header, std::vector<char> &in)
     {
-        return CompressBytes(out_stream, header.point_format_id, header.ebCount(), in);
+        return CompressBytes(out_stream, header.point_format_id, header.NumExtraBytes(), in);
     }
 
     static std::vector<char> CompressBytes(std::vector<char> &in, const int8_t &point_format_id,

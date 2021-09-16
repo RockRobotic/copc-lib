@@ -1,7 +1,10 @@
 #ifndef COPCLIB_IO_WRITER_H_
 #define COPCLIB_IO_WRITER_H_
 
+#include <array>
 #include <ostream>
+#include <stdexcept>
+#include <string>
 
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/io/base_io.hpp>
@@ -22,24 +25,42 @@ class Writer : public BaseIO
     {
         // Not sure we should allow default constructor
         // LasConfig()= default;
-        LasConfig(const int8_t &point_format_id, const vector3 &scale = {0.01, 0.01, 0.01},
-                  const vector3 &offset = {0, 0, 0})
+        LasConfig(const int8_t &point_format_id, const Vector3 &scale = {0.01, 0.01, 0.01},
+                  const Vector3 &offset = {0, 0, 0})
             : point_format_id(point_format_id), scale(scale), offset(offset){};
         // Allow for "copying" a lasheader from one file to another
         LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_);
 
+        // Getters/Setters for string attributes
+        void GUID(const std::string &guid)
+        {
+            if (guid.size() > 16)
+                throw std::runtime_error("GUID length must be <= 16.");
+            guid_ = guid;
+        }
+        std::string GUID() const { return guid_; }
+
+        void SystemIdentifier(const std::string &system_identifier)
+        {
+            if (system_identifier.size() > 32)
+                throw std::runtime_error("System Identifier length must be <= 32.");
+            system_identifier_ = system_identifier;
+        }
+        std::string SystemIdentifier() const { return system_identifier_; }
+
+        void GeneratingSoftware(const std::string &generating_software)
+        {
+            if (generating_software.size() > 32)
+                throw std::runtime_error("System Identifier length must be <= 32.");
+            generating_software_ = generating_software;
+        }
+        std::string GeneratingSoftware() const { return generating_software_; }
+
         uint16_t file_source_id{};
         uint16_t global_encoding{};
-        char guid[16]{};
 
-        char system_identifier[32]{};
-        char generating_software[32]{};
-
-        struct
-        {
-            uint16_t day{};
-            uint16_t year{};
-        } creation;
+        uint16_t creation_day{};
+        uint16_t creation_year{};
 
         // default to 0
         int8_t point_format_id{};
@@ -47,14 +68,19 @@ class Writer : public BaseIO
         las::EbVlr extra_bytes;
 
         // xyz scale/offset
-        vector3 scale{0.01, 0.01, 0.01};
-        vector3 offset{0, 0, 0};
+        Vector3 scale{0.01, 0.01, 0.01};
+        Vector3 offset{0, 0, 0};
         // xyz min/max for las header
-        vector3 max{0, 0, 0};
-        vector3 min{0, 0, 0};
+        Vector3 max{0, 0, 0};
+        Vector3 min{0, 0, 0};
 
         // # of points per return 0-14
-        uint64_t points_by_return_14[15]{};
+        std::array<uint64_t, 15> points_by_return_14{};
+
+      private:
+        std::string guid_{};
+        std::string system_identifier_{};
+        std::string generating_software_{};
     };
 
     Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "")

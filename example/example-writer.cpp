@@ -5,6 +5,7 @@
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/point.hpp>
+#include <copc-lib/las/header.hpp>
 #include <copc-lib/laz/compressor.hpp>
 #include <copc-lib/laz/decompressor.hpp>
 #include <copc-lib/utils.hpp>
@@ -81,8 +82,8 @@ void TrimFileExample()
 }
 
 // constants
-const copc::vector3 MIN_BOUNDS = {-2000, -5000, 20};
-const copc::vector3 MAX_BOUNDS = {5000, 1034, 125};
+const Vector3 MIN_BOUNDS = {-2000, -5000, 20};
+const Vector3 MAX_BOUNDS = {5000, 1034, 125};
 const int NUM_POINTS = 3000;
 
 // random num devices
@@ -130,9 +131,9 @@ void NewFileExample()
     Writer::LasConfig cfg(8, {1, 1, 1}, {0, 0, 0});
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
-    cfg.min = copc::vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
+    cfg.min = Vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
                             (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
-    cfg.max = copc::vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
+    cfg.max = Vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
                             (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:

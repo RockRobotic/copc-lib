@@ -15,7 +15,7 @@ void Reader::InitReader()
 
     this->reader_ = std::make_unique<lazperf::reader::generic_file>(*this->in_stream_);
 
-    auto header = this->reader_->header();
+    las::LasHeader header(this->reader_->header());
 
     std::map<uint64_t, las::VlrHeader> vlrs = ReadVlrs();
     auto copc_data = ReadCopcData();

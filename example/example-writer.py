@@ -76,8 +76,8 @@ def TrimFileExample():
 
 
 # constants
-MIN_BOUNDS = copc.vector3(-2000, -5000, 20)
-MAX_BOUNDS = copc.vector3(5000, 1034, 125)
+MIN_BOUNDS = copc.Vector3(-2000, -5000, 20)
+MAX_BOUNDS = copc.Vector3(5000, 1034, 125)
 NUM_POINTS = 3000
 
 
@@ -129,19 +129,19 @@ def RandomPoints(key, point_format_id):
 def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
-    cfg = copc.LasConfig(8, copc.vector3(1, 1, 1), copc.vector3(0, 0, 0))
+    cfg = copc.LasConfig(8, [1, 1, 1], [0, 0, 0])
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
-    cfg.min = copc.vector3(
+    cfg.min = [
         (MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x,
         (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
         (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z,
-    )
-    cfg.max = copc.vector3(
+    ]
+    cfg.max = [
         (MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x,
         (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
         (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z,
-    )
+    ]
 
     # Now, we can create our COPC writer, with an optional `span` and `wkt`:
     writer = copc.FileWriter("../test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT")
