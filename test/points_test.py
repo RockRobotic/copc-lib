@@ -104,3 +104,67 @@ def test_points_format_conversion():
         points.ToPointFormat(-1)
     with pytest.raises(RuntimeError):
         points.ToPointFormat(11)
+
+
+def test_points_accessors():
+    points = copc.Points(
+        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+    )
+
+    # generate points
+    num_points = 2000
+    for i in range(num_points):
+        p = points.CreatePoint()
+        p.X = i
+        p.Y = i * 3
+        p.Z = i - 80
+        points.AddPoint(p)
+
+    assert points.Size == num_points
+
+    # test that the getters work
+    for i in range(num_points):
+        assert points.X[i] == i
+        assert points.Y[i] == i * 3
+        assert points.Z[i] == i - 80
+
+    # generate vector of coordinates
+    Xn = []
+    Yn = []
+    Zn = []
+    with pytest.raises(RuntimeError):
+        points.X = Xn
+        points.Y = Yn
+        points.Z = Zn
+
+    for i in range(num_points - 1):
+        Xn.append(i * 50 + 8)
+        Yn.append(i + 800)
+        Zn.append(i * 4)
+
+    with pytest.raises(RuntimeError):
+        points.X = Xn
+        points.Y = Yn
+        points.Z = Zn
+
+    # add the last point
+    Xn.append(1)
+    Yn.append(2)
+    Zn.append(3)
+
+    # test setters
+    points.X = Xn
+    points.Y = Yn
+    points.Z = Zn
+
+    for i in range(num_points - 1):
+        p = points.Get(i)
+        assert p.X == i * 50 + 8
+        assert p.Y == i + 800
+        assert p.Z == i * 4
+
+    # test last point
+    last_point = points.Get(points.Size - 1)
+    assert last_point.X == 1
+    assert last_point.Y == 2
+    assert last_point.Z == 3

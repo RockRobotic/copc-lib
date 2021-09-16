@@ -152,6 +152,12 @@ PYBIND11_MODULE(copclib, m)
              py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("num_extra_bytes") = 0)
         .def(py::init<const std::vector<las::Point> &>())
         .def(py::init<const las::LasHeader &>())
+        .def_property("X", py::overload_cast<>(&las::Points::X, py::const_),
+                      py::overload_cast<const std::vector<double> &>(&las::Points::X))
+        .def_property("Y", py::overload_cast<>(&las::Points::Y, py::const_),
+                      py::overload_cast<const std::vector<double> &>(&las::Points::Y))
+        .def_property("Z", py::overload_cast<>(&las::Points::Z, py::const_),
+                      py::overload_cast<const std::vector<double> &>(&las::Points::Z))
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
         .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
