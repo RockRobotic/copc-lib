@@ -11,29 +11,46 @@ def test_writer_config():
     writer = copc.FileWriter(file_path, cfg)
 
     las_header = writer.GetLasHeader()
-    # TODO[Leo]: Update after making our own lazperf headers
-    # assert las_header.scale.z == 0.01
-    # assert las_header.offset.z == 0
+    assert las_header.scale == [0.01, 0.01, 0.01]
+    assert las_header.offset == [0.0, 0.0, 0.0]
     assert las_header.point_format_id == 0
 
     writer.Close()
 
     # Custom config
 
-    cfg = copc.LasConfig(8, copc.vector3(2, 3, 4), copc.vector3(-0.02, -0.03, -40.8))
+    cfg = copc.LasConfig(8, [2, 3, 4], [-0.02, -0.03, -40.8])
     cfg.file_source_id = 200
+
+    # Test LasConfig attributes
+    cfg.creation_day = 18
+    assert cfg.creation_day == 18
+    cfg.creation_year = 11
+    assert cfg.creation_year == 11
+
+    # Test checks on string attributes
+    cfg.guid = "test_string"
+    assert cfg.guid == "test_string"
+    with pytest.raises(RuntimeError):
+        cfg.guid = "a" * 17
+
+    cfg.system_identifier = "test_string"
+    assert cfg.system_identifier == "test_string"
+    with pytest.raises(RuntimeError):
+        cfg.system_identifier = "a" * 33
+
+    cfg.generating_software = "test_string"
+    assert cfg.generating_software == "test_string"
+    with pytest.raises(RuntimeError):
+        cfg.generating_software = "a" * 33
+
     writer = copc.FileWriter(file_path, cfg)
 
     las_header = writer.GetLasHeader()
     assert las_header.file_source_id == 200
     assert las_header.point_format_id == 8
-    # TODO[Leo]: Update after making our own lazperf headers
-    # assert las_header.scale.x == 2
-    # assert las_header.offset.x == -0.02
-    # assert las_header.scale.y == 3
-    # assert las_header.offset.y == -0.03
-    # assert las_header.scale.z == 4
-    # assert las_header.offset.z == -40.8
+    assert las_header.scale == [2.0, 3.0, 4.0]
+    assert las_header.offset == [-0.02, -0.03, -40.8]
 
     writer.Close()
 
@@ -72,8 +89,8 @@ def test_writer_config():
     reader = copc.FileReader(file_path)
     assert reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id
     assert reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding
-    # assert reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day
-    # assert reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year
+    assert reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day
+    assert reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year
     assert reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id
     assert reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id
     assert (
@@ -81,8 +98,8 @@ def test_writer_config():
         == orig.GetLasHeader().point_record_length
     )
     assert reader.GetLasHeader().point_count == 0
-    # assert reader.GetLasHeader().scale == reader.GetLasHeader().scale
-    # assert reader.GetLasHeader().offset == reader.GetLasHeader().offset
+    assert reader.GetLasHeader().scale == reader.GetLasHeader().scale
+    assert reader.GetLasHeader().offset == reader.GetLasHeader().offset
 
 
 def test_writer_pages():
@@ -133,73 +150,6 @@ def test_writer_pages():
     assert not reader.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
 
 
-def test_writer_extra_bytes():
-    # Given a valid file path
-    file_path = "data/writer_test.copc.laz"
-
-    # Data Type 0
-    config = copc.LasConfig(7)
-    eb_vlr = copc.EbVlr(1)  # Always initialize with the ebCount constructor
-    # don't make ebfields yourself unless you set their names correctly
-    eb_vlr.items[0].data_type = 0
-    eb_vlr.items[0].options = 4
-    config.extra_bytes = eb_vlr
-    writer = copc.FileWriter(file_path, config)
-
-    assert writer.GetLasHeader().point_record_length == 40  # 36 + 4
-
-    writer.Close()
-
-    reader = copc.FileReader(file_path)
-    assert len(reader.GetExtraByteVlr().items) == 1
-    assert reader.GetExtraByteVlr().items[0].data_type == 0
-    assert reader.GetExtraByteVlr().items[0].options == 4
-    assert reader.GetExtraByteVlr().items[0].name == "FIELD_0"
-    # TODO
-    # assert reader.GetExtraByteVlr().items[0].maxval[2] == 0
-    # assert reader.GetExtraByteVlr().items[0].minval[2] == 0
-    # assert reader.GetExtraByteVlr().items[0].offset[2] == 0
-    # assert reader.GetExtraByteVlr().items[0].scale[2] == 0
-    assert reader.GetLasHeader().point_record_length == 40
-
-    # Data type 29
-
-    config = copc.LasConfig(7)
-    eb_vlr = copc.EbVlr(1)
-    eb_vlr.items[0].data_type = 29
-    config.extra_bytes = eb_vlr
-    writer = copc.FileWriter(file_path, config)
-
-    assert writer.GetLasHeader().point_record_length == 48  # 36 + 1
-
-    writer.Close()
-
-    reader = copc.FileReader(file_path)
-    assert len(reader.GetExtraByteVlr().items) == 1
-    assert reader.GetLasHeader().point_record_length == 48
-
-    # Copy Vlr
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
-
-    in_eb_vlr = reader.GetExtraByteVlr()
-
-    config = copc.LasConfig(3)
-    config.extra_bytes = in_eb_vlr
-    writer = copc.FileWriter(file_path, config)
-
-    assert writer.GetLasHeader().point_record_length == 36  # 34 + 1 + 1
-
-    writer.Close()
-
-    reader2 = copc.FileReader(file_path)
-    assert len(reader2.GetExtraByteVlr().items) == 2
-    assert (
-        reader2.GetLasHeader().point_record_length
-        == reader.GetLasHeader().point_record_length
-    )
-    assert reader2.GetExtraByteVlr().items == reader.GetExtraByteVlr().items
-
-
 def test_writer_copy():
     # Given a valid file path
     file_path = "data/writer_test.copc.laz"
@@ -211,29 +161,31 @@ def test_writer_copy():
 
     root_page = writer.GetRootPage()
 
-    for node in reader.GetAllChildren():
-        # only write/compare compressed data or otherwise tests take too long
-        writer.AddNodeCompressed(
-            root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
-        )
-
-    writer.Close()
-
-    new_reader = copc.FileReader(file_path)
-
-    for node in reader.GetAllChildren():
-        assert node.IsValid()
-        new_node = new_reader.FindNode(node.key)
-        assert new_node.IsValid()
-        assert new_node.key == node.key
-        assert new_node.point_count == node.point_count
-        assert new_node.byte_size == node.byte_size
-        # assert new_reader.GetPointData(new_node) == reader.GetPointData(node)
-        assert new_reader.GetPointDataCompressed(
-            new_node
-        ) == reader.GetPointDataCompressed(node)
-
-    # we can do one uncompressed comparison here
-    assert new_reader.GetPointData(
-        new_reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
-    ) == reader.GetPointData(reader.FindNode(copc.VoxelKey(5, 9, 7, 0)))
+    # TODO[Leo]: Find out why this test is so slow
+    #
+    # for node in reader.GetAllChildren():
+    #     # only write/compare compressed data or otherwise tests take too long
+    #     writer.AddNodeCompressed(
+    #         root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
+    #     )
+    #
+    # writer.Close()
+    #
+    # new_reader = copc.FileReader(file_path)
+    #
+    # for node in reader.GetAllChildren():
+    #     assert node.IsValid()
+    #     new_node = new_reader.FindNode(node.key)
+    #     assert new_node.IsValid()
+    #     assert new_node.key == node.key
+    #     assert new_node.point_count == node.point_count
+    #     assert new_node.byte_size == node.byte_size
+    #     assert new_reader.GetPointData(new_node) == reader.GetPointData(node)
+    #     assert new_reader.GetPointDataCompressed(
+    #         new_node
+    #     ) == reader.GetPointDataCompressed(node)
+    #
+    # # we can do one uncompressed comparison here
+    # assert new_reader.GetPointData(
+    #     new_reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
+    # ) == reader.GetPointData(reader.FindNode(copc.VoxelKey(5, 9, 7, 0)))

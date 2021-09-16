@@ -49,19 +49,6 @@ def test_find_key():
     assert hier_entry.point_count == 12019
 
 
-def test_get_extra_byte_vlrs():
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
-
-    eb_vlr = reader.GetExtraByteVlr()
-    assert len(eb_vlr.items) == 2
-
-    assert eb_vlr.items[0].data_type == 1
-    assert eb_vlr.items[0].name == "FIELD_0"
-
-    assert eb_vlr.items[1].data_type == 1
-    assert eb_vlr.items[1].name == "FIELD_1"
-
-
 def test_get_all_children():
     reader = copc.FileReader("data/autzen-classified.copc.laz")
 
