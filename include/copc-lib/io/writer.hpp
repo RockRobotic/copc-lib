@@ -24,8 +24,8 @@ class Writer : public BaseIO
     {
         // Not sure we should allow default constructor
         // LasConfig()= default;
-        LasConfig(const int8_t &point_format_id, const vector3 &scale = {0.01, 0.01, 0.01},
-                  const vector3 &offset = {0, 0, 0})
+        LasConfig(const int8_t &point_format_id, const Vector3 &scale = {0.01, 0.01, 0.01},
+                  const Vector3 &offset = {0, 0, 0})
             : point_format_id(point_format_id), scale(scale), offset(offset){};
         // Allow for "copying" a lasheader from one file to another
         LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_);
@@ -67,11 +67,11 @@ class Writer : public BaseIO
         las::EbVlr extra_bytes;
 
         // xyz scale/offset
-        vector3 scale{0.01, 0.01, 0.01};
-        vector3 offset{0, 0, 0};
+        Vector3 scale{0.01, 0.01, 0.01};
+        Vector3 offset{0, 0, 0};
         // xyz min/max for las header
-        vector3 max{0, 0, 0};
-        vector3 min{0, 0, 0};
+        Vector3 max{0, 0, 0};
+        Vector3 min{0, 0, 0};
 
         // # of points per return 0-14
         std::array<uint64_t, 15> points_by_return_14{};

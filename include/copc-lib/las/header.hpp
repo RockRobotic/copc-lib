@@ -11,11 +11,11 @@
 namespace copc
 {
 
-struct vector3
+struct Vector3
 {
-    vector3() : x(0), y(0), z(0) {}
-    vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
-    vector3(const std::vector<double> &vec)
+    Vector3() : x(0), y(0), z(0) {}
+    Vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
+    Vector3(const std::vector<double> &vec)
     {
         if (vec.size() != 3)
             throw std::runtime_error("Vector must be of size 3.");
@@ -28,7 +28,7 @@ struct vector3
     double y;
     double z;
 
-    vector3 &operator=(const lazperf::vector3 &a)
+    Vector3 &operator=(const lazperf::vector3 &a)
     {
         x = a.x;
         y = a.y;
@@ -37,7 +37,7 @@ struct vector3
         return *this; // Return a reference to myself.
     }
 
-    bool operator==(vector3 a) const { return x == a.x && y == a.y && z == a.z; }
+    bool operator==(Vector3 a) const { return x == a.x && y == a.y && z == a.z; }
 };
 
 namespace las
@@ -99,12 +99,12 @@ class LasHeader
     uint32_t point_count{};
     std::array<uint32_t, 5> points_by_return{};
 
-    vector3 scale;
-    vector3 offset;
+    Vector3 scale;
+    Vector3 offset;
     // xyz min/max for las header
-    vector3 max{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(),
+    Vector3 max{std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest(),
                 std::numeric_limits<double>::lowest()};
-    vector3 min{(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)(),
+    Vector3 min{(std::numeric_limits<double>::max)(), (std::numeric_limits<double>::max)(),
                 (std::numeric_limits<double>::max)()};
 
     uint64_t wave_offset{0};

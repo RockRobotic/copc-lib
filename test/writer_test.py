@@ -11,16 +11,15 @@ def test_writer_config():
     writer = copc.FileWriter(file_path, cfg)
 
     las_header = writer.GetLasHeader()
-    # TODO[Leo]: Update after making our own lazperf headers
-    # assert las_header.scale.z == 0.01
-    # assert las_header.offset.z == 0
+    assert las_header.scale == [0.01, 0.01, 0.01]
+    assert las_header.offset == [0.0, 0.0, 0.0]
     assert las_header.point_format_id == 0
 
     writer.Close()
 
     # Custom config
 
-    cfg = copc.LasConfig(8, copc.vector3(2, 3, 4), copc.vector3(-0.02, -0.03, -40.8))
+    cfg = copc.LasConfig(8, [2, 3, 4], [-0.02, -0.03, -40.8])
     cfg.file_source_id = 200
 
     # Test LasConfig attributes
@@ -56,13 +55,8 @@ def test_writer_config():
     las_header = writer.GetLasHeader()
     assert las_header.file_source_id == 200
     assert las_header.point_format_id == 8
-    # TODO[Leo]: Update after making our own lazperf headers
-    # assert las_header.scale.x == 2
-    # assert las_header.offset.x == -0.02
-    # assert las_header.scale.y == 3
-    # assert las_header.offset.y == -0.03
-    # assert las_header.scale.z == 4
-    # assert las_header.offset.z == -40.8
+    assert las_header.scale == [2, 3, 4]
+    assert las_header.offset == [-0.02, -0.03, -40.8]
 
     writer.Close()
 
@@ -101,8 +95,8 @@ def test_writer_config():
     reader = copc.FileReader(file_path)
     assert reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id
     assert reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding
-    # assert reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day
-    # assert reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year
+    assert reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day
+    assert reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year
     assert reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id
     assert reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id
     assert (
@@ -110,8 +104,8 @@ def test_writer_config():
         == orig.GetLasHeader().point_record_length
     )
     assert reader.GetLasHeader().point_count == 0
-    # assert reader.GetLasHeader().scale == reader.GetLasHeader().scale
-    # assert reader.GetLasHeader().offset == reader.GetLasHeader().offset
+    assert reader.GetLasHeader().scale == reader.GetLasHeader().scale
+    assert reader.GetLasHeader().offset == reader.GetLasHeader().offset
 
 
 def test_writer_pages():
@@ -184,7 +178,7 @@ def test_writer_extra_bytes():
     assert reader.GetExtraByteVlr().items[0].data_type == 0
     assert reader.GetExtraByteVlr().items[0].options == 4
     assert reader.GetExtraByteVlr().items[0].name == "FIELD_0"
-    # TODO
+    # TODO[Leo]: Make our own ebvlr
     # assert reader.GetExtraByteVlr().items[0].maxval[2] == 0
     # assert reader.GetExtraByteVlr().items[0].minval[2] == 0
     # assert reader.GetExtraByteVlr().items[0].offset[2] == 0
@@ -257,7 +251,7 @@ def test_writer_copy():
         assert new_node.key == node.key
         assert new_node.point_count == node.point_count
         assert new_node.byte_size == node.byte_size
-        # assert new_reader.GetPointData(new_node) == reader.GetPointData(node)
+        assert new_reader.GetPointData(new_node) == reader.GetPointData(node)
         assert new_reader.GetPointDataCompressed(
             new_node
         ) == reader.GetPointDataCompressed(node)
