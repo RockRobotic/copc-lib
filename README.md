@@ -43,8 +43,8 @@ copc-lib is compatible with CMake. Assuming copc-lib and lazperf are installed o
 find_package(copc-lib REQUIRED)
 find_package(lazperf REQUIRED)
 
-add_executable(funfile fun-main.cpp)
-target_link_libraries(funfile copc-lib LAZPERF::lazperf)
+add_executable(funlib fun-main.cpp)
+target_link_libraries(funlib copc-lib LAZPERF::lazperf)
 ```
 
 ### Python
@@ -70,7 +70,7 @@ for point in points.Get():
 - [x] Return Point structures from the reader rather than raw char* arrays, to support a more familiar laspy-like interface.
 - [x] Add writer for COPC data
 - [x] Python bindings
-- [-] JavaScript bindings (not planned, see below)
+- [x] JavaScript bindings (not planned, see below)
 - [ ] Conda and pip packages
 - [ ] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 
