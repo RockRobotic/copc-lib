@@ -108,7 +108,7 @@ def RandomPoints(key, point_format_id):
     )
     for i in range(NUM_POINTS):
         # Create a point with a given point format
-        point = copc.Point(point_format_id)
+        point = points.CreatePoint()
         # point has getters/setters for all attributes
         point.UnscaledX = int(
             random.uniform(min(minx, MAX_BOUNDS.x), min(minx + step, MAX_BOUNDS.x))

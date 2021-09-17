@@ -79,11 +79,6 @@ PYBIND11_MODULE(copclib, m)
     py::implicitly_convertible<py::list, Vector3>();
 
     py::class_<las::Point>(m, "Point")
-        .def(py::init<const uint8_t &, const Vector3 &, const Vector3 &, const uint16_t &>(),
-             py::arg("point_format_id"), py::arg("scale") = Vector3::DefaultScale(),
-             py::arg("offset") = Vector3::DefaultOffset(), py::arg("num_extra_bytes") = 0)
-        .def(py::init<const las::LasHeader &>())
-        .def(py::init<const las::Point &>(), py::arg("point"))
         .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
                       py::overload_cast<const double &>(&las::Point::X))
         .def_property("Y", py::overload_cast<>(&las::Point::Y, py::const_),
