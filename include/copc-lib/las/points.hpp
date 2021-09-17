@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
+#include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/utils.hpp>
-#include <copc-lib/las/header.hpp>
 
 namespace copc::las
 {
@@ -54,14 +54,14 @@ class Points
     std::string ToString() const;
 
     // Getters and setters
-    std::vector<double> X()
+    std::vector<double> X() const
     {
         std::vector<double> out;
         out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(), [](Point p) { return p.X(); });
         return out;
     }
-    void X(std::vector<double> in)
+    void X(const std::vector<double> &in)
     {
         if (in.size() != Size())
             throw std::runtime_error("X setter array must be same size as Points array!");
@@ -70,14 +70,14 @@ class Points
             points_[i].X(in[i]);
     }
 
-    std::vector<double> Y()
+    std::vector<double> Y() const
     {
         std::vector<double> out;
         out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(), [](const Point &p) { return p.Y(); });
         return out;
     }
-    void Y(std::vector<double> in)
+    void Y(const std::vector<double> &in)
     {
         if (in.size() != Size())
             throw std::runtime_error("Y setter array must be same size as Points array!");
@@ -86,14 +86,14 @@ class Points
             points_[i].Y(in[i]);
     }
 
-    std::vector<double> Z()
+    std::vector<double> Z() const
     {
         std::vector<double> out;
         out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(), [](const Point &p) { return p.Z(); });
         return out;
     }
-    void Z(std::vector<double> in)
+    void Z(const std::vector<double> &in)
     {
         if (in.size() != Size())
             throw std::runtime_error("Z setter array must be same size as Points array!");

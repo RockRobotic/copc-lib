@@ -3,8 +3,8 @@
 #include <sstream>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/las/point.hpp>
 #include <copc-lib/las/header.hpp>
+#include <copc-lib/las/point.hpp>
 
 using namespace copc::las;
 using namespace std;
@@ -721,9 +721,7 @@ TEST_CASE("Point tests", "[Point]")
 
         SECTION("No scale and offset")
         {
-            copc::Vector3 scale = {1, 1, 1};
-            copc::Vector3 offset = {0, 0, 0};
-            auto point = Point(pfid, scale, offset);
+            auto point = Point(pfid, {1, 1, 1}, {0, 0, 0});
 
             point.UnscaledX(4);
             point.UnscaledY(4);
@@ -743,9 +741,7 @@ TEST_CASE("Point tests", "[Point]")
         }
         SECTION("Scale test")
         {
-            copc::Vector3 scale = {0.01, 0.01, 0.01};
-            copc::Vector3 offset = {0, 0, 0};
-            auto point = Point(pfid, scale, offset);
+            auto point = Point(pfid, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset());
 
             point.UnscaledX(1);
             point.UnscaledY(2);
@@ -793,9 +789,7 @@ TEST_CASE("Point tests", "[Point]")
         }
         SECTION("Scale and Offset test")
         {
-            copc::Vector3 scale = {0.001, 0.001, 0.001};
-            copc::Vector3 offset = {50001.456, 4443.123, -255.001};
-            auto point = Point(pfid, scale, offset);
+            auto point = Point(pfid, {0.001, 0.001, 0.001}, {50001.456, 4443.123, -255.001});
 
             point.UnscaledX(0);
             point.UnscaledY(-800);
@@ -822,16 +816,12 @@ TEST_CASE("Point tests", "[Point]")
         SECTION("Precision checks")
         {
             {
-                copc::Vector3 scale = {0.000001, 0.000001, 0.000001};
-                copc::Vector3 offset = {0, 0, 0};
-                auto point = Point(pfid, scale, offset);
+                auto point = Point(pfid, {0.000001, 0.000001, 0.000001}, {0, 0, 0});
 
                 REQUIRE_THROWS(point.X(50501132.888123));
             }
             {
-                copc::Vector3 scale = {1, 1, 1};
-                copc::Vector3 offset = {-8001100065, 0, 0};
-                auto point = Point(pfid, scale, offset);
+                auto point = Point(pfid, {1, 1, 1}, {-8001100065, 0, 0});
                 REQUIRE_THROWS(point.X(0));
             }
         }
