@@ -27,7 +27,7 @@ def test_reader():
     # WKT Test
     wkt = reader.GetWkt()
     assert len(wkt) > 0
-    assert wkt.rfind("COMPD_CS[", 0) == 0
+    assert wkt.startswith("COMPD_CS[")
 
 
 def test_find_key():
@@ -81,14 +81,14 @@ def test_point_error_handling():
     reader.GetPointData(valid_node)
 
     assert len(reader.GetPointData(key=invalid_node.key)) == 0
-    assert not len(reader.GetPointData(valid_node.key)) == 0
+    assert len(reader.GetPointData(valid_node.key)) != 0
 
     with pytest.raises(RuntimeError):
         reader.GetPoints(invalid_node)
     reader.GetPoints(valid_node)
 
     assert len(reader.GetPoints(invalid_node.key).Get()) == 0
-    assert not len(reader.GetPoints(valid_node.key).Get()) == 0
+    assert len(reader.GetPoints(valid_node.key).Get()) != 0
 
     with pytest.raises(RuntimeError):
         reader.GetPointDataCompressed(invalid_node)

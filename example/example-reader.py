@@ -14,14 +14,13 @@ def reader_example():
 
     # Get the Las Header
     las_header = reader.GetLasHeader()
-    print("\nLas Header:")
-    print(
-        "\tPoint Format: %d\n\tPoint Count: %d"
-        % (las_header.point_format_id, las_header.point_count)
-    )
+    print()
+    print("Las Header:")
+    print("\tPoint Format: %d" % las_header.point_format_id)
+    print("\tPoint Count: %d" % las_header.point_count)
 
     # Get the WKT string
-    print("WKT: %s\n" % reader.GetWkt())
+    print("WKT: %s" % reader.GetWkt())
 
     load_key = copc.VoxelKey(4, 11, 9, 0)
 
