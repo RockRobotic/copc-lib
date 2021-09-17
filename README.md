@@ -50,7 +50,6 @@ target_link_libraries(funlib copc-lib LAZPERF::lazperf)
 ### Python
 ```python
 import copclib as copc
-import numpy as np
 
 # Create a reader object
 reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
