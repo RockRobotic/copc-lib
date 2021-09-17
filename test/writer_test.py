@@ -109,8 +109,8 @@ def test_writer_pages():
     # Root Page
     writer = copc.FileWriter(file_path, copc.LasConfig(0))
 
-    assert not writer.FindNode(copc.VoxelKey.BaseKey()).IsValid()
-    assert not writer.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
+    assert not writer.FindNode(copc.VoxelKey().BaseKey()).IsValid()
+    assert not writer.FindNode(copc.VoxelKey().InvalidKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey(5, 4, 3, 2)).IsValid()
 
     writer.GetRootPage()
@@ -119,14 +119,14 @@ def test_writer_pages():
     assert root_page.IsPage()
     assert root_page.loaded is True
     with pytest.raises(RuntimeError):
-        writer.AddSubPage(parent_page=root_page, key=copc.VoxelKey.InvalidKey())
+        writer.AddSubPage(parent_page=root_page, key=copc.VoxelKey().InvalidKey())
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
     assert reader.GetCopcHeader().root_hier_offset > 0
     assert reader.GetCopcHeader().root_hier_size == 0
-    assert not reader.FindNode(key=copc.VoxelKey.InvalidKey()).IsValid()
+    assert not reader.FindNode(key=copc.VoxelKey().InvalidKey()).IsValid()
 
     # Nested page
     writer = copc.FileWriter(file_path, copc.LasConfig(0))
@@ -147,7 +147,7 @@ def test_writer_pages():
     reader = copc.FileReader(file_path)
     assert reader.GetCopcHeader().root_hier_offset > 0
     assert reader.GetCopcHeader().root_hier_size == 32
-    assert not reader.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
+    assert not reader.FindNode(copc.VoxelKey().InvalidKey()).IsValid()
 
 
 def test_writer_copy():

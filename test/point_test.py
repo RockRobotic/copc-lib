@@ -7,8 +7,8 @@ import pytest
 def test_constructor():
     point = copc.Points(
         point_format_id=0,
-        scale=copc.Vector3.DefaultScale(),
-        offset=copc.Vector3.DefaultOffset(),
+        scale=copc.Vector3().DefaultScale(),
+        offset=copc.Vector3().DefaultOffset(),
         num_extra_bytes=0,
     ).CreatePoint()
 
@@ -18,7 +18,7 @@ def test_constructor():
     assert point.HasNIR is False
 
     point_ext = copc.Points(
-        8, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        8, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     assert point_ext.HasExtendedPoint is True
@@ -29,7 +29,7 @@ def test_constructor():
 
 def test_point_format10():
     point0 = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        0, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
     # Position
     point0.UnscaledX = 2147483647
@@ -143,7 +143,7 @@ def test_point_format10():
     str(point0)
 
     point1 = copc.Points(
-        1, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        1, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     point1.GPSTime = sys.float_info.max
@@ -160,7 +160,7 @@ def test_point_format10():
         assert point0.NIR
 
     point2 = copc.Points(
-        2, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        2, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
     assert point2.PointRecordLength == 26
 
@@ -183,7 +183,7 @@ def test_point_format10():
         assert point2.NIR
 
     point3 = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        3, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
     assert point3.PointRecordLength == 34
 
@@ -200,7 +200,7 @@ def test_point_format10():
 
 def test_point_format14():
     point6 = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
     # Position
     point6.UnscaledX = 2147483647
@@ -334,7 +334,7 @@ def test_point_format14():
     str(point6)
 
     point7 = copc.Points(
-        7, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        7, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     point7.RGB = [65535, 65535, 65535]
@@ -348,7 +348,7 @@ def test_point_format14():
         assert point7.NIR
 
     point8 = copc.Points(
-        8, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        8, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     point8.NIR = 65535
@@ -358,7 +358,7 @@ def test_point_format14():
 
 def test_point_conversion_10():
     point = copc.Points(
-        1, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        1, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     assert point.GPSTime == 0
@@ -377,7 +377,7 @@ def test_point_conversion_10():
 
 def test_point_conversion_14():
     point = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     assert point.GPSTime == 0
@@ -407,7 +407,7 @@ def test_point_conversion_14():
 
 def test_point_conversion_10_to_14():
     point = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        0, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     point.ReturnNumber = 5
@@ -484,10 +484,10 @@ def test_point_conversion_10_to_14():
 def test_operators_equal():
     # Format 0
     point = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        0, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
     point_other = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        0, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     assert point == point_other
@@ -638,7 +638,7 @@ def test_operators_equal():
 
 def test_extra_byte():
     point = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        0, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
     assert point.PointFormatID == 0
     assert point.PointRecordLength == 20
@@ -648,7 +648,10 @@ def test_extra_byte():
     assert point.NumExtraBytes == 0
 
     point = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), num_extra_bytes=5
+        0,
+        copc.Vector3().DefaultScale(),
+        copc.Vector3().DefaultOffset(),
+        num_extra_bytes=5,
     ).CreatePoint()
     assert point.PointFormatID == 0
     assert point.PointRecordLength == 20 + 5
@@ -671,7 +674,10 @@ def test_extra_byte():
 
 def test_operator_copy():
     point = copc.Points(
-        8, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), num_extra_bytes=2
+        8,
+        copc.Vector3().DefaultScale(),
+        copc.Vector3().DefaultOffset(),
+        num_extra_bytes=2,
     ).CreatePoint()
 
     point.UnscaledX = 4
@@ -714,7 +720,7 @@ def test_scaled_xyz():
 
     # Scale test
     point = copc.Points(
-        pfid, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        pfid, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset()
     ).CreatePoint()
 
     point.UnscaledX = 1

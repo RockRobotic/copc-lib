@@ -25,11 +25,10 @@ def test_get_parent():
     assert copc.VoxelKey(4, 5, 6, 13).GetParent() == copc.VoxelKey(3, 2, 3, 6)
     assert copc.VoxelKey(3, 2, 3, 6).GetParent() == copc.VoxelKey(2, 1, 1, 3)
 
-    # TODO[Leo]: Check if there is a way to avoid self in function definition
-    assert not copc.VoxelKey(3, 2, 3, 6).GetParent() == copc.VoxelKey.BaseKey()
+    assert copc.VoxelKey(3, 2, 3, 6).GetParent() != copc.VoxelKey().BaseKey()
 
-    assert copc.VoxelKey(1, 1, 1, 1).GetParent() == copc.VoxelKey.BaseKey()
-    assert copc.VoxelKey(1, 1, 1, -1).GetParent() == copc.VoxelKey.InvalidKey()
+    assert copc.VoxelKey(1, 1, 1, 1).GetParent() == copc.VoxelKey().BaseKey()
+    assert copc.VoxelKey(1, 1, 1, -1).GetParent() == copc.VoxelKey().InvalidKey()
 
     assert copc.VoxelKey(1, 1, 1, -1).GetParent().IsValid() is False
     assert copc.VoxelKey(0, 0, 0, 0).GetParent().IsValid() is False
@@ -37,14 +36,14 @@ def test_get_parent():
 
 def test_is_child():
     assert (
-        copc.VoxelKey(-1, -1, -1, -1).ChildOf(parent_key=copc.VoxelKey.BaseKey())
+        copc.VoxelKey(-1, -1, -1, -1).ChildOf(parent_key=copc.VoxelKey().BaseKey())
         is False
     )
-    assert copc.VoxelKey.BaseKey().ChildOf(copc.VoxelKey.InvalidKey()) is False
+    assert copc.VoxelKey().BaseKey().ChildOf(copc.VoxelKey().InvalidKey()) is False
 
     assert copc.VoxelKey(4, 4, 6, 12).ChildOf(copc.VoxelKey(3, 2, 3, 6))
     assert copc.VoxelKey(3, 2, 3, 6).ChildOf(copc.VoxelKey(2, 1, 1, 3))
-    assert copc.VoxelKey(3, 2, 3, 6).ChildOf(copc.VoxelKey.BaseKey())
+    assert copc.VoxelKey(3, 2, 3, 6).ChildOf(copc.VoxelKey().BaseKey())
 
     assert not copc.VoxelKey(4, 4, 6, 12).ChildOf(copc.VoxelKey(3, 4, 8, 6))
     assert not copc.VoxelKey(3, 2, 3, 6).ChildOf(copc.VoxelKey(2, 2, 2, 2))

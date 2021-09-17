@@ -95,9 +95,8 @@ class Writer : public BaseIO
     virtual void Close() { writer_->Close(); }
 
     // Adds a node to a given page
-    Node AddNode(Page &page, const VoxelKey &key, las::Points &points); // TODO[Leo]: Add this to tests
-    Node AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed,
-                           uint64_t point_count); // TODO[Leo]: Add this to tests
+    Node AddNode(Page &page, const VoxelKey &key, las::Points &points);
+    Node AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed, uint64_t point_count);
     Node AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed);
 
     // Adds a subpage to a given page

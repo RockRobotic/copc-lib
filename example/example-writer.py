@@ -103,8 +103,8 @@ def RandomPoints(key, point_format_id):
 
     points = copc.Points(
         point_format_id,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
+        copc.Vector3().DefaultScale(),
+        copc.Vector3().DefaultOffset(),
     )
     for i in range(NUM_POINTS):
         # Create a point with a given point format

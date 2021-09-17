@@ -34,7 +34,7 @@ def test_find_key():
     # Given a valid file path
     reader = copc.FileReader("data/autzen-classified.copc.laz")
 
-    key = copc.VoxelKey.BaseKey()
+    key = copc.VoxelKey().BaseKey()
     hier_entry = reader.FindNode(key)
 
     assert hier_entry.IsValid() == True
@@ -57,7 +57,7 @@ def test_get_all_children():
     assert len(nodes) == 278
 
     # Get an invalid key
-    nodes = reader.GetAllChildren(copc.VoxelKey.InvalidKey())
+    nodes = reader.GetAllChildren(copc.VoxelKey().InvalidKey())
     assert len(nodes) == 0
 
     # Get an existing key

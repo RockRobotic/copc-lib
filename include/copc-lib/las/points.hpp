@@ -37,7 +37,6 @@ class Points
     // Add points functions
     void AddPoint(const Point &point);
     void AddPoints(Points points);
-    // TODO[Leo]: Add this to tests
     void AddPoints(std::vector<las::Point> points);
 
     // Point functions

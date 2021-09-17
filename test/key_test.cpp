@@ -23,7 +23,7 @@ TEST_CASE("GetParent Checks", "[Key]")
     REQUIRE(VoxelKey(4, 5, 6, 13).GetParent() == VoxelKey(3, 2, 3, 6));
     REQUIRE(VoxelKey(3, 2, 3, 6).GetParent() == VoxelKey(2, 1, 1, 3));
 
-    REQUIRE(!(VoxelKey(3, 2, 3, 6).GetParent() == VoxelKey::BaseKey()));
+    REQUIRE(VoxelKey(3, 2, 3, 6).GetParent() != VoxelKey::BaseKey());
 
     REQUIRE(VoxelKey(1, 1, 1, 1).GetParent() == VoxelKey::BaseKey());
     REQUIRE(VoxelKey(1, 1, 1, -1).GetParent() == VoxelKey::InvalidKey());
