@@ -3,7 +3,9 @@
 
 namespace copc::las
 {
-Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
+Point::Point(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
+             const uint16_t &num_extra_bytes)
+    : scale_(scale), offset_(offset), point_format_id_(point_format_id)
 {
     if (point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10");
@@ -11,7 +13,6 @@ Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
     if (point_format_id > 5)
         extended_point_type_ = true;
 
-    point_format_id_ = point_format_id;
     point_record_length_ = PointBaseByteSize(point_format_id) + num_extra_bytes;
 
     has_gps_time_ = FormatHasGPSTime(point_format_id);
@@ -21,7 +22,10 @@ Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
     extra_bytes_.resize(num_extra_bytes, 0);
 }
 
-Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraBytes())
+Point::Point(const LasHeader &header)
+    : Point(header.point_format_id, header.scale, header.offset, header.NumExtraBytes()){};
+
+Point::Point(const Point &other) : Point(other.point_format_id_, other.scale_, other.offset_, other.NumExtraBytes())
 {
     x_ = other.x_;
     y_ = other.y_;
@@ -63,9 +67,41 @@ Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraB
 
 uint16_t Point::NumExtraBytes() const { return point_record_length_ - PointBaseByteSize(point_format_id_); }
 
-Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes)
+bool Point::operator==(const Point &other) const
 {
-    Point p(point_format_id, num_extra_bytes);
+    if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
+        return false;
+    if (x_ != other.UnscaledX() || y_ != other.UnscaledY() || z_ != other.UnscaledZ() ||
+        intensity_ != other.Intensity())
+        return false;
+    if (ReturnNumber() != other.ReturnNumber() || NumberOfReturns() != other.NumberOfReturns())
+        return false;
+    if (ScanDirectionFlag() != other.ScanDirectionFlag() || EdgeOfFlightLineFlag() != other.EdgeOfFlightLineFlag())
+        return false;
+    if (Classification() != other.Classification())
+        return false;
+    if (Synthetic() != other.Synthetic() || KeyPoint() != other.KeyPoint() || Withheld() != other.Withheld())
+        return false;
+    if (ScanAngle() != other.ScanAngle() || user_data_ != other.UserData() || point_source_id_ != other.PointSourceID())
+        return false;
+    if (ExtraBytes() != other.ExtraBytes())
+        return false;
+    if (extended_point_type_ && (Overlap() != other.Overlap() || ScannerChannel() != other.ScannerChannel()))
+        return false;
+    if (has_gps_time_ && (gps_time_ != other.GPSTime()))
+        return false;
+    if (has_rgb_ && (rgb_[0] != other.Red() || rgb_[1] != other.Green() || rgb_[2] != other.Blue()))
+        return false;
+    if (has_nir_ && (nir_ != other.NIR()))
+        return false;
+    return true;
+}
+
+Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, 
+                    const Vector3 &scale, const Vector3 &offset,
+                    const uint16_t &num_extra_bytes)
+{
+    Point p(point_format_id, scale, offset, num_extra_bytes);
 
     p.x_ = unpack<int32_t>(in_stream);
     p.y_ = unpack<int32_t>(in_stream);

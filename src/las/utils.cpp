@@ -1,9 +1,8 @@
 #include <copc-lib/las/utils.hpp>
 
-#include <iostream>
-
 namespace copc::las
 {
+
 uint8_t PointBaseByteSize(const int8_t &point_format_id)
 {
     switch (point_format_id)
@@ -31,6 +30,85 @@ uint8_t PointBaseByteSize(const int8_t &point_format_id)
         //        return 30;
     case 10:
         //        return 38;
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
+    default:
+        throw std::runtime_error("Point format must be 0-10");
+    }
+}
+
+bool FormatHasGPSTime(const uint8_t &point_format_id)
+{
+    switch (point_format_id)
+    {
+    case 0:
+        return false;
+    case 1:
+        return true;
+    case 2:
+        return false;
+    case 3:
+        return true;
+    case 4:
+    case 5:
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
+    case 6:
+    case 7:
+    case 8:
+        return true;
+    case 9:
+    case 10:
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
+
+    default:
+        throw std::runtime_error("Point format must be 0-10");
+    }
+}
+
+bool FormatHasRGB(const uint8_t &point_format_id)
+{
+    switch (point_format_id)
+    {
+    case 0:
+    case 1:
+        return false;
+    case 2:
+    case 3:
+        return true;
+    case 4:
+    case 5:
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
+    case 6:
+        return false;
+    case 7:
+    case 8:
+        return true;
+    case 9:
+    case 10:
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
+    default:
+        throw std::runtime_error("Point format must be 0-10");
+    }
+}
+
+bool FormatHasNIR(const uint8_t &point_format_id)
+{
+    switch (point_format_id)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+        return false;
+    case 4:
+    case 5:
+        throw std::runtime_error("Point formats with Wave Packets not yet supported");
+    case 6:
+    case 7:
+        return false;
+    case 8:
+        return true;
+    case 9:
+    case 10:
         throw std::runtime_error("Point formats with Wave Packets not yet supported");
     default:
         throw std::runtime_error("Point format must be 0-10");

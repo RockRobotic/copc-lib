@@ -13,14 +13,11 @@ using namespace copc;
 using namespace std;
 
 // In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
-void TrimFileExample()
+void TrimFileExample(bool compressor_example_flag)
 {
     // We'll get our point data from this file
     FileReader reader("test/data/autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
-
-    // Change this flag to test laz::Compressor and laz::Decompressor
-    bool compressor_example_flag = false;
 
     {
         // Copy the header to the new file
@@ -48,10 +45,8 @@ void TrimFileExample()
                 // (for example, compress multiple nodes in parallel and have one thread writing the data),
                 // we can use the Compressor class:
 
-                las::LasHeader header = writer.GetLasHeader();
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
-                std::vector<char> compressed_points = laz::Compressor::CompressBytes(
-                    uncompressed_points, header.point_format_id, cfg.extra_bytes.items.size());
+                std::vector<char> compressed_points = laz::Compressor::CompressBytes(uncompressed_points, writer.GetLasHeader());
                 writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
             }
         }
@@ -106,15 +101,15 @@ las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
     std::uniform_int_distribution<> rand_y((int)std::min(miny, MAX_BOUNDS.y), (int)std::min(miny + step, MAX_BOUNDS.y));
     std::uniform_int_distribution<> rand_z((int)std::min(minz, MAX_BOUNDS.z), (int)std::min(minz + step, MAX_BOUNDS.z));
 
-    las::Points points(point_format_id);
+    las::Points points(point_format_id, {1, 1, 1}, {0, 0, 0});
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Create a point with a given point format
-        las::Point point(point_format_id);
+        las::Point point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point.X(rand_x(gen));
-        point.Y(rand_y(gen));
-        point.Z(rand_z(gen));
+        point.UnscaledX(rand_x(gen));
+        point.UnscaledY(rand_y(gen));
+        point.UnscaledZ(rand_z(gen));
         // For visualization purposes
         point.PointSourceID(key.d + key.x + key.y + key.d);
 
@@ -173,6 +168,7 @@ void NewFileExample()
 
 int main()
 {
-    TrimFileExample();
+    TrimFileExample(false);
+    TrimFileExample(true);
     NewFileExample();
 }

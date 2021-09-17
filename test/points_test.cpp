@@ -11,22 +11,22 @@ TEST_CASE("Points tests", "[Point]")
 {
     SECTION("Points constructors")
     {
-        auto points = Points(3, 4);
+        auto points = Points(3, {1, 1, 1}, {0, 0, 0}, 4);
         REQUIRE(points.PointFormatID() == 3);
         REQUIRE(points.PointRecordLength() == 38);
         REQUIRE(points.Get().empty());
 
         auto point_vec = std::vector<Point>();
-        auto point1 = Point(3, 4);
-        point1.X(11);
-        point1.Y(11);
-        point1.Z(11);
+        auto point1 = points.CreatePoint();
+        point1.UnscaledX(11);
+        point1.UnscaledY(11);
+        point1.UnscaledZ(11);
         point_vec.push_back(point1);
 
-        auto point2 = points.NewPoint();
+        auto point2 = points.CreatePoint();
         point_vec.push_back(point2);
 
-        auto point3 = Point(3, 4);
+        auto point3 = points.CreatePoint();
         point_vec.push_back(point3);
 
         points = Points(point_vec);
@@ -35,69 +35,74 @@ TEST_CASE("Points tests", "[Point]")
         for (const auto &point : points.Get())
             REQUIRE(point.PointFormatID() == 3);
         REQUIRE(points.PointRecordLength() == 38);
-        REQUIRE(points.Get(0).X() == 11);
-        REQUIRE(points.Get(0).Y() == 11);
-        REQUIRE(points.Get(0).Z() == 11);
+        REQUIRE(points.Get(0).UnscaledX() == 11);
+        REQUIRE(points.Get(0).UnscaledY() == 11);
+        REQUIRE(points.Get(0).UnscaledZ() == 11);
 
         points.ToString();
     }
 
     SECTION("Adding Point to Points")
     {
-        auto points = Points(3, 0);
-        auto point = Point(3, 0);
-        point.X(11);
-        point.Y(11);
-        point.Z(11);
+        auto points = Points(3, {1, 1, 1}, {0, 0, 0}, 0);
+        auto point = points.CreatePoint();
+        point.UnscaledX(11);
+        point.UnscaledY(11);
+        point.UnscaledZ(11);
 
         points.AddPoint(point);
 
         REQUIRE(points.Get().size() == 1);
-        REQUIRE(points.Get(0).X() == 11);
-        REQUIRE(points.Get(0).Y() == 11);
-        REQUIRE(points.Get(0).Z() == 11);
+        REQUIRE(points.Get(0).UnscaledX() == 11);
+        REQUIRE(points.Get(0).UnscaledY() == 11);
+        REQUIRE(points.Get(0).UnscaledZ() == 11);
 
-        point = Point(3, 0);
-        point.X(22);
-        point.Y(22);
-        point.Z(22);
+        point = points.CreatePoint();
+        point.UnscaledX(22);
+        point.UnscaledY(22);
+        point.UnscaledZ(22);
 
         points.AddPoint(point);
         REQUIRE(points.Get().size() == 2);
-        REQUIRE(points.Get(1).X() == 22);
-        REQUIRE(points.Get(1).Y() == 22);
-        REQUIRE(points.Get(1).Z() == 22);
+        REQUIRE(points.Get(1).UnscaledX() == 22);
+        REQUIRE(points.Get(1).UnscaledY() == 22);
+        REQUIRE(points.Get(1).UnscaledZ() == 22);
 
         // Test check on point format
-        point = Point(6, 0);
+        point = Point(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 0);
         REQUIRE_THROWS(points.AddPoint(point));
 
         // Test check on extra bytes
-        point = Point(3, 1);
+        point = Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1);
         REQUIRE_THROWS(points.AddPoint(point));
     }
 
     SECTION("Adding Points to Points")
     {
-        auto points = Points(std::vector<Point>(10, Point(3, 4)));
-        auto points_other = Points(std::vector<Point>(10, Point(3, 4)));
+        auto points =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+        auto points_other =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
 
         points.AddPoints(points_other);
 
         REQUIRE(points.Get().size() == 20);
 
         // Test check on point format
-        points_other = Points(std::vector<Point>(10, Point(6, 4)));
+        points_other =
+            Points(std::vector<Point>(10, Point(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
         REQUIRE_THROWS(points.AddPoints(points_other));
 
         // Test check on extra bytes
-        points_other = Points(std::vector<Point>(10, Point(3, 1)));
+        points_other =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1)));
         REQUIRE_THROWS(points.AddPoints(points_other));
     }
 
     SECTION("Points format conversion")
     {
-        auto points = Points(std::vector<Point>(10, Point(3, 4)));
+        auto points =
+            Points(std::vector<Point>(10, Point(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
         points.ToPointFormat(6);
 
         REQUIRE(points.PointFormatID() == 6);
@@ -107,5 +112,79 @@ TEST_CASE("Points tests", "[Point]")
 
         REQUIRE_THROWS(points.ToPointFormat(-1));
         REQUIRE_THROWS(points.ToPointFormat(11));
+    }
+
+    SECTION("Points Accessors")
+    {
+        auto points =
+            Points(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
+
+        // generate points
+        int num_points = 2000;
+        for (int i = 0; i < num_points; i++)
+        {
+            auto p = points.CreatePoint();
+            p.X(i);
+            p.Y(i * 3);
+            p.Z(i - 80);
+            points.AddPoint(p);
+        }
+
+        REQUIRE(points.Size() == num_points);
+
+        // test that the getters work
+        auto X = points.X();
+        auto Y = points.Y();
+        auto Z = points.Z();
+        for (int i = 0; i < num_points; i++)
+        {
+            REQUIRE(X[i] == i);
+            REQUIRE(Y[i] == i * 3);
+            REQUIRE(Z[i] == i - 80);
+        }
+
+        // generate vector of coordinates
+        std::vector<double> Xn;
+        std::vector<double> Yn;
+        std::vector<double> Zn;
+
+        REQUIRE_THROWS(points.X(Xn));
+        REQUIRE_THROWS(points.Y(Yn));
+        REQUIRE_THROWS(points.Z(Zn));
+
+        for (int i = 0; i < num_points - 1; i++)
+        {
+            Xn.push_back(i * 50 + 8);
+            Yn.push_back(i + 800);
+            Zn.push_back(i * 4);
+        }
+
+        REQUIRE_THROWS(points.X(Xn));
+        REQUIRE_THROWS(points.Y(Yn));
+        REQUIRE_THROWS(points.Z(Zn));
+
+        // add the last point
+        Xn.push_back(1);
+        Yn.push_back(2);
+        Zn.push_back(3);
+
+        // test setters
+        REQUIRE_NOTHROW(points.X(Xn));
+        REQUIRE_NOTHROW(points.Y(Yn));
+        REQUIRE_NOTHROW(points.Z(Zn));
+
+        for (int i = 0; i < num_points - 1; i++)
+        {
+            auto p = points.Get(i);
+            REQUIRE(p.X() == i * 50 + 8);
+            REQUIRE(p.Y() == i + 800);
+            REQUIRE(p.Z() == i * 4);
+        }
+
+        // test last point
+        auto last_point = points.Get(points.Size() - 1);
+        REQUIRE(last_point.X() == 1);
+        REQUIRE(last_point.Y() == 2);
+        REQUIRE(last_point.Z() == 3);
     }
 }
