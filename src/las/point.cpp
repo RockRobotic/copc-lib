@@ -97,8 +97,7 @@ bool Point::operator==(const Point &other) const
     return true;
 }
 
-Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, 
-                    const Vector3 &scale, const Vector3 &offset,
+Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
                     const uint16_t &num_extra_bytes)
 {
     Point p(point_format_id, scale, offset, num_extra_bytes);

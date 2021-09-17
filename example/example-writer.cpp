@@ -46,7 +46,8 @@ void TrimFileExample(bool compressor_example_flag)
                 // we can use the Compressor class:
 
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
-                std::vector<char> compressed_points = laz::Compressor::CompressBytes(uncompressed_points, writer.GetLasHeader());
+                std::vector<char> compressed_points =
+                    laz::Compressor::CompressBytes(uncompressed_points, writer.GetLasHeader());
                 writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
             }
         }

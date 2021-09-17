@@ -1,8 +1,8 @@
 #ifndef COPCLIB_LAS_UTILS_H_
 #define COPCLIB_LAS_UTILS_H_
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 namespace copc::las
 {
@@ -20,7 +20,9 @@ template <typename T> T RemoveScale(double value, double scale, double offset)
     double val = std::round((value - offset) / scale);
 
     if (val < std::numeric_limits<T>::min() || val > std::numeric_limits<T>::max())
-        throw std::runtime_error("The value " + std::to_string(value) + " is too large to save into the requested format." + " Your scale and/or offset may be incorrect.");
+        throw std::runtime_error("The value " + std::to_string(value) +
+                                 " is too large to save into the requested format." +
+                                 " Your scale and/or offset may be incorrect.");
 
     return static_cast<T>(val);
 }

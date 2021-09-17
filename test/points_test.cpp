@@ -116,8 +116,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Points Accessors")
     {
-        auto points =
-            Points(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
+        auto points = Points(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
 
         // generate points
         int num_points = 2000;
