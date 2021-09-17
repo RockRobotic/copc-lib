@@ -83,11 +83,11 @@ TEST_CASE("Reader tests", "[Reader]")
 
 TEST_CASE("FindKey Check", "[Reader]")
 {
-    GIVEN("A valid input stream")
+    GIVEN("A valid file path")
     {
         FileReader reader("test/data/autzen-classified.copc.laz");
 
-        auto key = VoxelKey(0, 0, 0, 0);
+        auto key = VoxelKey::BaseKey();
         auto hier_entry = reader.FindNode(key);
 
         REQUIRE(hier_entry.IsValid() == true);

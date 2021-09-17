@@ -3,7 +3,9 @@
 
 namespace copc::las
 {
-Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
+Point::Point(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
+             const uint16_t &num_extra_bytes)
+    : scale_(scale), offset_(offset), point_format_id_(point_format_id)
 {
     if (point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10");
@@ -11,8 +13,7 @@ Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
     if (point_format_id > 5)
         extended_point_type_ = true;
 
-    point_format_id_ = point_format_id;
-    point_record_length_ = BaseByteSize(point_format_id) + num_extra_bytes;
+    point_record_length_ = PointBaseByteSize(point_format_id) + num_extra_bytes;
 
     has_gps_time_ = FormatHasGPSTime(point_format_id);
     has_rgb_ = FormatHasRGB(point_format_id);
@@ -21,7 +22,10 @@ Point::Point(const int8_t &point_format_id, const uint16_t &num_extra_bytes)
     extra_bytes_.resize(num_extra_bytes, 0);
 }
 
-Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraBytes())
+Point::Point(const LasHeader &header)
+    : Point(header.point_format_id, header.scale, header.offset, header.NumExtraBytes()){};
+
+Point::Point(const Point &other) : Point(other.point_format_id_, other.scale_, other.offset_, other.NumExtraBytes())
 {
     x_ = other.x_;
     y_ = other.y_;
@@ -61,49 +65,82 @@ Point::Point(const Point &other) : Point(other.point_format_id_, other.NumExtraB
     extra_bytes_ = other.extra_bytes_;
 }
 
-Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const uint16_t &num_extra_bytes)
-{
-    Point p(point_format_id, num_extra_bytes);
+uint16_t Point::NumExtraBytes() const { return point_record_length_ - PointBaseByteSize(point_format_id_); }
 
-    p.x_ = internal::unpack<int32_t>(in_stream);
-    p.y_ = internal::unpack<int32_t>(in_stream);
-    p.z_ = internal::unpack<int32_t>(in_stream);
-    p.intensity_ = internal::unpack<uint16_t>(in_stream);
+bool Point::operator==(const Point &other) const
+{
+    if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
+        return false;
+    if (x_ != other.UnscaledX() || y_ != other.UnscaledY() || z_ != other.UnscaledZ() ||
+        intensity_ != other.Intensity())
+        return false;
+    if (ReturnNumber() != other.ReturnNumber() || NumberOfReturns() != other.NumberOfReturns())
+        return false;
+    if (ScanDirectionFlag() != other.ScanDirectionFlag() || EdgeOfFlightLineFlag() != other.EdgeOfFlightLineFlag())
+        return false;
+    if (Classification() != other.Classification())
+        return false;
+    if (Synthetic() != other.Synthetic() || KeyPoint() != other.KeyPoint() || Withheld() != other.Withheld())
+        return false;
+    if (ScanAngle() != other.ScanAngle() || user_data_ != other.UserData() || point_source_id_ != other.PointSourceID())
+        return false;
+    if (ExtraBytes() != other.ExtraBytes())
+        return false;
+    if (extended_point_type_ && (Overlap() != other.Overlap() || ScannerChannel() != other.ScannerChannel()))
+        return false;
+    if (has_gps_time_ && (gps_time_ != other.GPSTime()))
+        return false;
+    if (has_rgb_ && (rgb_[0] != other.Red() || rgb_[1] != other.Green() || rgb_[2] != other.Blue()))
+        return false;
+    if (has_nir_ && (nir_ != other.NIR()))
+        return false;
+    return true;
+}
+
+Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
+                    const uint16_t &num_extra_bytes)
+{
+    Point p(point_format_id, scale, offset, num_extra_bytes);
+
+    p.x_ = unpack<int32_t>(in_stream);
+    p.y_ = unpack<int32_t>(in_stream);
+    p.z_ = unpack<int32_t>(in_stream);
+    p.intensity_ = unpack<uint16_t>(in_stream);
     if (p.extended_point_type_)
     {
-        p.extended_returns_ = internal::unpack<uint8_t>(in_stream);
-        p.extended_flags_ = internal::unpack<uint8_t>(in_stream);
-        p.extended_classification_ = internal::unpack<uint8_t>(in_stream);
-        p.user_data_ = internal::unpack<uint8_t>(in_stream);
-        p.extended_scan_angle_ = internal::unpack<int16_t>(in_stream);
+        p.extended_returns_ = unpack<uint8_t>(in_stream);
+        p.extended_flags_ = unpack<uint8_t>(in_stream);
+        p.extended_classification_ = unpack<uint8_t>(in_stream);
+        p.user_data_ = unpack<uint8_t>(in_stream);
+        p.extended_scan_angle_ = unpack<int16_t>(in_stream);
     }
     else
     {
-        p.returns_flags_eof_ = internal::unpack<uint8_t>(in_stream);
-        p.classification_ = internal::unpack<uint8_t>(in_stream);
-        p.scan_angle_rank_ = internal::unpack<int8_t>(in_stream);
-        p.user_data_ = internal::unpack<uint8_t>(in_stream);
+        p.returns_flags_eof_ = unpack<uint8_t>(in_stream);
+        p.classification_ = unpack<uint8_t>(in_stream);
+        p.scan_angle_rank_ = unpack<int8_t>(in_stream);
+        p.user_data_ = unpack<uint8_t>(in_stream);
     }
-    p.point_source_id_ = internal::unpack<uint16_t>(in_stream);
+    p.point_source_id_ = unpack<uint16_t>(in_stream);
 
     if (p.has_gps_time_)
     {
-        p.gps_time_ = internal::unpack<double>(in_stream);
+        p.gps_time_ = unpack<double>(in_stream);
     }
     if (p.has_rgb_)
     {
-        p.rgb_[0] = internal::unpack<uint16_t>(in_stream);
-        p.rgb_[1] = internal::unpack<uint16_t>(in_stream);
-        p.rgb_[2] = internal::unpack<uint16_t>(in_stream);
+        p.rgb_[0] = unpack<uint16_t>(in_stream);
+        p.rgb_[1] = unpack<uint16_t>(in_stream);
+        p.rgb_[2] = unpack<uint16_t>(in_stream);
     }
     if (p.has_nir_)
     {
-        p.nir_ = internal::unpack<uint16_t>(in_stream);
+        p.nir_ = unpack<uint16_t>(in_stream);
     }
 
     for (uint32_t i = 0; i < num_extra_bytes; i++)
     {
-        p.extra_bytes_[i] = internal::unpack<uint8_t>(in_stream);
+        p.extra_bytes_[i] = unpack<uint8_t>(in_stream);
     }
     return p;
 }
@@ -111,73 +148,40 @@ Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, cons
 void Point::Pack(std::ostream &out_stream) const
 {
     // Point
-    internal::pack(x_, out_stream);
-    internal::pack(y_, out_stream);
-    internal::pack(z_, out_stream);
-    internal::pack(intensity_, out_stream);
+    pack(x_, out_stream);
+    pack(y_, out_stream);
+    pack(z_, out_stream);
+    pack(intensity_, out_stream);
     if (extended_point_type_)
     {
-        internal::pack(extended_returns_, out_stream);
-        internal::pack(extended_flags_, out_stream);
-        internal::pack(extended_classification_, out_stream);
-        internal::pack(user_data_, out_stream);
-        internal::pack(extended_scan_angle_, out_stream);
+        pack(extended_returns_, out_stream);
+        pack(extended_flags_, out_stream);
+        pack(extended_classification_, out_stream);
+        pack(user_data_, out_stream);
+        pack(extended_scan_angle_, out_stream);
     }
     else
     {
-        internal::pack(returns_flags_eof_, out_stream);
-        internal::pack(classification_, out_stream);
-        internal::pack(scan_angle_rank_, out_stream);
-        internal::pack(user_data_, out_stream);
+        pack(returns_flags_eof_, out_stream);
+        pack(classification_, out_stream);
+        pack(scan_angle_rank_, out_stream);
+        pack(user_data_, out_stream);
     }
-    internal::pack(point_source_id_, out_stream);
+    pack(point_source_id_, out_stream);
 
     if (has_gps_time_)
-        internal::pack(gps_time_, out_stream);
+        pack(gps_time_, out_stream);
     if (has_rgb_)
     {
-        internal::pack(rgb_[0], out_stream);
-        internal::pack(rgb_[1], out_stream);
-        internal::pack(rgb_[2], out_stream);
+        pack(rgb_[0], out_stream);
+        pack(rgb_[1], out_stream);
+        pack(rgb_[2], out_stream);
     }
     if (has_nir_)
-        internal::pack(nir_, out_stream);
+        pack(nir_, out_stream);
 
     for (auto eb : extra_bytes_)
-        internal::pack(eb, out_stream);
-}
-
-uint8_t Point::BaseByteSize(const int8_t &point_format_id)
-{
-    switch (point_format_id)
-    {
-    case 0:
-        return 20;
-    case 1:
-        return 28;
-    case 2:
-        return 26;
-    case 3:
-        return 34;
-    case 4:
-        //        return 28;
-    case 5:
-        //        return 34;
-        throw std::runtime_error("Point formats with Wave Packets not yet supported");
-    case 6:
-        return 30;
-    case 7:
-        return 36;
-    case 8:
-        return 38;
-    case 9:
-        //        return 30;
-    case 10:
-        //        return 38;
-        throw std::runtime_error("Point formats with Wave Packets not yet supported");
-    default:
-        throw std::runtime_error("Point format must be 0-10");
-    }
+        pack(eb, out_stream);
 }
 
 void Point::ToPointFormat(const int8_t &point_format_id)
@@ -215,7 +219,7 @@ void Point::ToPointFormat(const int8_t &point_format_id)
     has_gps_time_ = FormatHasGPSTime(point_format_id);
     has_rgb_ = FormatHasRGB(point_format_id);
     has_nir_ = FormatHasNIR(point_format_id);
-    point_record_length_ = BaseByteSize(point_format_id) + extra_bytes_.size();
+    point_record_length_ = PointBaseByteSize(point_format_id) + extra_bytes_.size();
     point_format_id_ = point_format_id;
 }
 

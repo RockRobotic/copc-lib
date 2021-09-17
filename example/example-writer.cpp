@@ -1,20 +1,19 @@
 #include <cassert>
 #include <cstdint>
-#include <cstring>
-#include <fstream>
 #include <random>
 
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
+#include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
-//#include <copc-lib/laz/compressor.hpp>
-//#include <copc-lib/laz/decompressor.hpp>
+#include <copc-lib/laz/compressor.hpp>
+#include <copc-lib/laz/decompressor.hpp>
 
 using namespace copc;
 using namespace std;
 
 // In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
-void TrimFileExample()
+void TrimFileExample(bool compressor_example_flag)
 {
     // We'll get our point data from this file
     FileReader reader("test/data/autzen-classified.copc.laz");
@@ -37,19 +36,22 @@ void TrimFileExample()
             if (node.key.d > 3)
                 continue;
 
-            // It's much faster to write and read compressed data, to avoid compression and decompression
-            writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+            if (!compressor_example_flag)
+            {
+                // It's much faster to write and read compressed data, to avoid compression and decompression
+                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+            }
+            else
+            {
+                // Alternatively, if we have uncompressed data and want to compress it without writing it to the file,
+                // (for example, compress multiple nodes in parallel and have one thread writing the data),
+                // we can use the Compressor class:
 
-            // Alternatively, if we have uncompressed data and want to compress it without writing it to the file,
-            // (for example, compress multiple nodes in parallel and have one thread writing the data),
-            // we can use the Compressor class:
-            /*
-            las::LasHeader header = writer.GetLasHeader();
-            std::vector<char> uncompressed_points = reader.GetPointData(node);
-            std::vector<char> compressed_points = laz::Compressor::CompressBytes(
-                uncompressed_points, header.point_format_id, cfg.extra_bytes.items.size(), header.point_record_length);
-            writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
-            */
+                std::vector<char> uncompressed_points = reader.GetPointData(node);
+                std::vector<char> compressed_points =
+                    laz::Compressor::CompressBytes(uncompressed_points, writer.GetLasHeader());
+                writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
+            }
         }
 
         // Make sure we call close to finish writing the file!
@@ -66,18 +68,19 @@ void TrimFileExample()
 
         // Similarly, we could retrieve the compressed node data from the file
         // and decompress it later using the Decompressor class
-        /*
-        las::LasHeader header = new_reader.GetLasHeader();
-        std::vector<char> compressed_points = reader.GetPointDataCompressed(node.key);
-        std::vector<char> uncompressed_points = laz::Decompressor::DecompressBytes(compressed_points,
-        header, node.point_count);
-        */
+        if (compressor_example_flag)
+        {
+            las::LasHeader header = new_reader.GetLasHeader();
+            std::vector<char> compressed_points = reader.GetPointDataCompressed(node.key);
+            std::vector<char> uncompressed_points =
+                laz::Decompressor::DecompressBytes(compressed_points, header, node.point_count);
+        }
     }
 }
 
 // constants
-const copc::vector3 MIN_BOUNDS = {-2000, -5000, 20};
-const copc::vector3 MAX_BOUNDS = {5000, 1034, 125};
+const Vector3 MIN_BOUNDS = {-2000, -5000, 20};
+const Vector3 MAX_BOUNDS = {5000, 1034, 125};
 const int NUM_POINTS = 3000;
 
 // random num devices
@@ -101,15 +104,16 @@ las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
     std::uniform_int_distribution<> rand_y((int)std::min(miny, MAX_BOUNDS.y), (int)std::min(miny + step, MAX_BOUNDS.y));
     std::uniform_int_distribution<> rand_z((int)std::min(minz, MAX_BOUNDS.z), (int)std::min(minz + step, MAX_BOUNDS.z));
 
-    las::Points points(point_format_id);
+    las::Points points(point_format_id, {1, 1, 1}, {0, 0, 0});
     for (int i = 0; i < NUM_POINTS; i++)
     {
         // Create a point with a given point format
-        las::Point point(point_format_id);
+        // The use of las::Point constructor is strongly discouraged, instead use las::Points::CreatePoint
+        las::Point point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point.X(rand_x(gen));
-        point.Y(rand_y(gen));
-        point.Z(rand_z(gen));
+        point.UnscaledX(rand_x(gen));
+        point.UnscaledY(rand_y(gen));
+        point.UnscaledZ(rand_z(gen));
         // For visualization purposes
         point.PointSourceID(key.d + key.x + key.y + key.d);
 
@@ -125,10 +129,10 @@ void NewFileExample()
     Writer::LasConfig cfg(8, {1, 1, 1}, {0, 0, 0});
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
-    cfg.min = copc::vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-                            (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
-    cfg.max = copc::vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-                            (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
+    cfg.min = Vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
+                      (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
+    cfg.max = Vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
+                      (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:
     FileWriter writer("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT");
@@ -168,6 +172,7 @@ void NewFileExample()
 
 int main()
 {
-    TrimFileExample();
+    TrimFileExample(false);
+    TrimFileExample(true);
     NewFileExample();
 }

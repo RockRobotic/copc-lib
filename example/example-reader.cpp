@@ -1,15 +1,10 @@
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/laz/decompressor.hpp>
 
 using namespace copc;
 using namespace std;
 
-int main()
+void ReaderExample()
 {
     // Create a reader object
     FileReader reader("test/data/autzen-classified.copc.laz");
@@ -24,8 +19,8 @@ int main()
     // Get the Las Header
     auto las_header = reader.GetLasHeader();
     cout << endl << "Las Header:" << endl;
-    cout << "\tPoint format: " << (int)las_header.point_format_id << endl
-         << "\tPoint count: " << (int)las_header.point_count << endl;
+    cout << "\tPoint Format: " << (int)las_header.point_format_id << endl
+         << "\tPoint Count: " << (int)las_header.point_count << endl;
 
     // Get the WKT string
     auto wkt = reader.GetWkt();
@@ -76,3 +71,5 @@ int main()
              << endl;
     }
 }
+
+int main() { ReaderExample(); }

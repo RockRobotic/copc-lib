@@ -3,10 +3,12 @@
 #include <sstream>
 
 #include <catch2/catch.hpp>
+#include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 
 using namespace copc::las;
 using namespace std;
+using Catch::Matchers::WithinAbs;
 
 TEST_CASE("Point tests", "[Point]")
 {
@@ -32,16 +34,16 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point0 = Point(0);
         // Position
-        point0.X(INT32_MAX);
-        point0.Y(INT32_MAX);
-        point0.Z(INT32_MAX);
-        REQUIRE(point0.X() == INT32_MAX);
-        REQUIRE(point0.Y() == INT32_MAX);
-        REQUIRE(point0.Z() == INT32_MAX);
+        point0.UnscaledX(INT32_MAX);
+        point0.UnscaledY(INT32_MAX);
+        point0.UnscaledZ(INT32_MAX);
+        REQUIRE(point0.UnscaledX() == INT32_MAX);
+        REQUIRE(point0.UnscaledY() == INT32_MAX);
+        REQUIRE(point0.UnscaledZ() == INT32_MAX);
 
         // Intensity
-        point0.Intensity(INT8_MAX);
-        REQUIRE(point0.Intensity() == INT8_MAX);
+        point0.Intensity(UINT16_MAX);
+        REQUIRE(point0.Intensity() == UINT16_MAX);
 
         // Return Number
         point0.ReturnNumber(7);
@@ -188,16 +190,16 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point6 = Point(6);
         // Position
-        point6.X(INT32_MAX);
-        point6.Y(INT32_MAX);
-        point6.Z(INT32_MAX);
-        REQUIRE(point6.X() == INT32_MAX);
-        REQUIRE(point6.Y() == INT32_MAX);
-        REQUIRE(point6.Z() == INT32_MAX);
+        point6.UnscaledX(INT32_MAX);
+        point6.UnscaledY(INT32_MAX);
+        point6.UnscaledZ(INT32_MAX);
+        REQUIRE(point6.UnscaledX() == INT32_MAX);
+        REQUIRE(point6.UnscaledY() == INT32_MAX);
+        REQUIRE(point6.UnscaledZ() == INT32_MAX);
 
         // Intensity
-        point6.Intensity(INT8_MAX);
-        REQUIRE(point6.Intensity() == INT8_MAX);
+        point6.Intensity(UINT16_MAX);
+        REQUIRE(point6.Intensity() == UINT16_MAX);
 
         // Return BitField
         point6.ExtendedReturnsBitFields(UINT8_MAX);
@@ -495,19 +497,19 @@ TEST_CASE("Point tests", "[Point]")
 
         // Atributes
 
-        point.X(4);
+        point.UnscaledX(4);
         REQUIRE(point != point_other);
-        point_other.X(4);
+        point_other.UnscaledX(4);
         REQUIRE(point == point_other);
 
-        point.Y(4);
+        point.UnscaledY(4);
         REQUIRE(point != point_other);
-        point_other.Y(4);
+        point_other.UnscaledY(4);
         REQUIRE(point == point_other);
 
-        point.Z(4);
+        point.UnscaledZ(4);
         REQUIRE(point != point_other);
-        point_other.Z(4);
+        point_other.UnscaledZ(4);
         REQUIRE(point == point_other);
 
         point.Intensity(4);
@@ -610,7 +612,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.ExtraBytes().size() == 0);
         REQUIRE(point.NumExtraBytes() == 0);
 
-        point = Point(0, 5);
+        point = Point(0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 5);
         REQUIRE(point.PointFormatID() == 0);
         REQUIRE(point.PointRecordLength() == 20 + 5);
         REQUIRE(point.NumExtraBytes() == 5);
@@ -630,11 +632,11 @@ TEST_CASE("Point tests", "[Point]")
 
     SECTION("Operator =")
     {
-        auto point = Point(8, 2);
+        auto point = Point(8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2);
 
-        point.X(4);
-        point.Y(4);
-        point.Z(4);
+        point.UnscaledX(4);
+        point.UnscaledY(4);
+        point.UnscaledZ(4);
 
         point.GPSTime(4.0);
         point.Red(4.0);
@@ -652,56 +654,176 @@ TEST_CASE("Point tests", "[Point]")
     {
 
         std::stringstream ss;
-        auto orig_point = Point(0, 2); // use two extra bytes
-        orig_point.X(20);
-        orig_point.Y(-20);
-        orig_point.Z(100000);
+        auto orig_point =
+            Point(0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2); // use two extra bytes
+        orig_point.UnscaledX(20);
+        orig_point.UnscaledY(-20);
+        orig_point.UnscaledZ(100000);
         orig_point.ScanAngleRank(90);
         orig_point.ClassificationBitFields(124);
 
         // Format 0
         auto point = orig_point;
         point.Pack(ss);
-        auto point_other = Point::Unpack(ss, 0, point.NumExtraBytes());
+        auto point_other =
+            Point::Unpack(ss, 0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 1
         point.ToPointFormat(1);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 1, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 1, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 2
         point.ToPointFormat(2);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 2, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 2, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 3
         point.ToPointFormat(3);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 3, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 6
         point.ToPointFormat(6);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 6, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 7
         point.ToPointFormat(7);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 7, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         // Format 8
         point.ToPointFormat(8);
         point.Pack(ss);
-        point_other = Point::Unpack(ss, 8, point.NumExtraBytes());
+        point_other =
+            Point::Unpack(ss, 8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
         REQUIRE(point == point_other);
 
         point.ToPointFormat(0);
         REQUIRE(point == orig_point);
+    }
+
+    SECTION("Scaled XYZ")
+    {
+        int8_t pfid = 8;
+
+        SECTION("No scale and offset")
+        {
+            auto point = Point(pfid, {1, 1, 1}, {0, 0, 0});
+
+            point.UnscaledX(4);
+            point.UnscaledY(4);
+            point.UnscaledZ(4);
+
+            REQUIRE(point.X() == 4);
+            REQUIRE(point.Y() == 4);
+            REQUIRE(point.Z() == 4);
+
+            point.X(5);
+            point.Y(6);
+            point.Z(7);
+
+            REQUIRE(point.UnscaledX() == 5);
+            REQUIRE(point.UnscaledY() == 6);
+            REQUIRE(point.UnscaledZ() == 7);
+        }
+        SECTION("Scale test")
+        {
+            auto point = Point(pfid, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset());
+
+            point.UnscaledX(1);
+            point.UnscaledY(2);
+            point.UnscaledZ(3);
+
+            REQUIRE(point.X() == 0.01);
+            REQUIRE(point.Y() == 0.02);
+            REQUIRE(point.Z() == 0.03);
+
+            point.X(200);
+            point.Y(300);
+            point.Z(400);
+
+            REQUIRE(point.UnscaledX() == 200 * 100);
+            REQUIRE(point.UnscaledY() == 300 * 100);
+            REQUIRE(point.UnscaledZ() == 400 * 100);
+        }
+        SECTION("Offset test")
+        {
+            copc::Vector3 scale = {1, 1, 1};
+            copc::Vector3 offset = {50001.456, 4443.123, -255.001};
+            auto point = Point(pfid, scale, offset);
+
+            point.UnscaledX(0);
+            point.UnscaledY(-800);
+            point.UnscaledZ(3);
+
+            REQUIRE(point.X() == 0 + offset.x);
+            REQUIRE(point.Y() == -800 + offset.y);
+            REQUIRE(point.Z() == 3 + offset.z);
+
+            point.X(50502.888);
+            point.Y(4002.111);
+            point.Z(-80.5);
+
+            // static_cast<T>(std::round((value - offset) / scale));
+            REQUIRE(point.UnscaledX() == 501); // 50502.888 - 50001.456 = 501.432
+            REQUIRE(point.UnscaledY() == -441);
+            REQUIRE(point.UnscaledZ() == 175); // -80.5 - -255.001 = 255.001 - 80.5 = 175
+
+            // (value * scale) + offset
+            REQUIRE_THAT(point.X(), WithinAbs(50502.456, 0.000001));
+            REQUIRE_THAT(point.Y(), WithinAbs(4002.123, 0.000001));
+            REQUIRE_THAT(point.Z(), WithinAbs(-80.001, 0.000001));
+        }
+        SECTION("Scale and Offset test")
+        {
+            auto point = Point(pfid, {0.001, 0.001, 0.001}, {50001.456, 4443.123, -255.001});
+
+            point.UnscaledX(0);
+            point.UnscaledY(-800);
+            point.UnscaledZ(300532);
+
+            REQUIRE_THAT(point.X(), WithinAbs(50001.456, 0.000001));
+            REQUIRE_THAT(point.Y(), WithinAbs(4442.323, 0.000001));
+            REQUIRE_THAT(point.Z(), WithinAbs(45.531, 0.000001));
+
+            point.X(50502.888);
+            point.Y(4002.111);
+            point.Z(-80.5);
+
+            // static_cast<T>(std::round((value - offset) / scale));
+            REQUIRE(point.UnscaledX() == 501432);
+            REQUIRE(point.UnscaledY() == -441012);
+            REQUIRE(point.UnscaledZ() == 174501);
+
+            // (value * scale) + offset
+            REQUIRE_THAT(point.X(), WithinAbs(50502.888, 0.000001));
+            REQUIRE_THAT(point.Y(), WithinAbs(4002.111, 0.000001));
+            REQUIRE_THAT(point.Z(), WithinAbs(-80.5, 0.000001));
+        }
+        SECTION("Precision checks")
+        {
+            {
+                auto point = Point(pfid, {0.000001, 0.000001, 0.000001}, {0, 0, 0});
+
+                REQUIRE_THROWS(point.X(50501132.888123));
+            }
+            {
+                auto point = Point(pfid, {1, 1, 1}, {-8001100065, 0, 0});
+                REQUIRE_THROWS(point.X(0));
+            }
+        }
     }
 }

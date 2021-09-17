@@ -34,6 +34,15 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             Writer::LasConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
             cfg.file_source_id = 200;
+
+            // Test checks on string attributes
+            cfg.SystemIdentifier("test_string");
+            REQUIRE(cfg.SystemIdentifier() == "test_string");
+            REQUIRE_THROWS(cfg.SystemIdentifier(std::string(33, 'a')));
+            cfg.GeneratingSoftware("test_string");
+            REQUIRE(cfg.GeneratingSoftware() == "test_string");
+            REQUIRE_THROWS(cfg.GeneratingSoftware(std::string(33, 'a')));
+
             FileWriter writer(file_path, cfg);
 
             auto las_header = writer.GetLasHeader();
@@ -94,8 +103,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             FileReader reader(file_path);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
-            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
+            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
+            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
             REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
@@ -206,8 +215,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Reader reader(&out_stream);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-            REQUIRE(reader.GetLasHeader().creation.day == orig.GetLasHeader().creation.day);
-            REQUIRE(reader.GetLasHeader().creation.year == orig.GetLasHeader().creation.year);
+            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
+            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
             REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
             REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
             REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
@@ -369,8 +378,7 @@ TEST_CASE("Writer Copy", "[Writer]")
             REQUIRE(new_node.IsValid());
             REQUIRE(new_node.key == node.key);
             REQUIRE(new_node.point_count == node.point_count);
-            REQUIRE(new_node.size == node.size);
-            // REQUIRE(new_reader.GetPointData(new_node) == reader.GetPointData(node));
+            REQUIRE(new_node.byte_size == node.byte_size);
             REQUIRE(new_reader.GetPointDataCompressed(new_node) == reader.GetPointDataCompressed(node));
         }
 

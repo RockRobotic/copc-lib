@@ -7,7 +7,7 @@
 namespace copc
 {
 
-void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, int span, const std::string &wkt)
+void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
     this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
@@ -57,7 +57,7 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     return *node;
 }
 
-Node Writer::AddNode(Page &page, VoxelKey key, las::Points &points)
+Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 {
     auto header = file_->GetLasHeader();
     if (points.PointFormatID() != header.point_format_id || points.PointRecordLength() != header.point_record_length)
@@ -67,7 +67,7 @@ Node Writer::AddNode(Page &page, VoxelKey key, las::Points &points)
     return AddNode(page, key, uncompressed);
 }
 
-Node Writer::AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompressed)
+Node Writer::AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed)
 {
     int point_size = file_->GetLasHeader().point_record_length;
     if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
@@ -76,7 +76,8 @@ Node Writer::AddNode(Page &page, VoxelKey key, std::vector<char> const &uncompre
     return DoAddNode(page, key, uncompressed, 0, false);
 }
 
-Node Writer::AddNodeCompressed(Page &page, VoxelKey key, std::vector<char> const &compressed, uint64_t point_count)
+Node Writer::AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed,
+                               uint64_t point_count)
 {
     if (point_count == 0)
         throw std::runtime_error("Point count must be >0!");
@@ -105,64 +106,44 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     las::LasHeader h;
     h.file_source_id = config.file_source_id;
     h.global_encoding = config.global_encoding;
-    h.creation.day = config.creation.day;
-    h.creation.year = config.creation.year;
+    h.creation_day = config.creation_day;
+    h.creation_year = config.creation_year;
     h.point_format_id = config.point_format_id;
     h.point_record_length =
-        las::Point::BaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
+        las::PointBaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
 
-    std::strcpy(h.guid, config.guid);
-    std::strcpy(h.system_identifier, config.system_identifier);
-    std::strcpy(h.generating_software, config.generating_software);
+    h.GUID(config.GUID());
+    h.SystemIdentifier(config.SystemIdentifier());
+    h.GeneratingSoftware(config.GeneratingSoftware());
 
-    h.offset.x = config.offset.x;
-    h.offset.y = config.offset.y;
-    h.offset.z = config.offset.z;
+    h.offset = config.offset;
+    h.scale = config.scale;
+    h.max = config.max;
+    h.min = config.min;
 
-    h.scale.x = config.scale.x;
-    h.scale.y = config.scale.y;
-    h.scale.z = config.scale.z;
-
-    h.maxx = config.max.x;
-    h.minx = config.min.x;
-    h.maxy = config.max.y;
-    h.miny = config.min.y;
-    h.maxz = config.max.z;
-    h.minz = config.min.z;
-
-    memcpy(h.points_by_return_14, config.points_by_return_14, sizeof(config.points_by_return_14));
-
+    h.points_by_return_14 = config.points_by_return_14;
     return h;
 }
 
-copc::Writer::LasConfig::LasConfig(las::LasHeader config, const las::EbVlr &extra_bytes_)
+copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_)
 {
     file_source_id = config.file_source_id;
     global_encoding = config.global_encoding;
-    creation.day = config.creation.day;
-    creation.year = config.creation.year;
+    creation_day = config.creation_day;
+    creation_year = config.creation_year;
     point_format_id = config.point_format_id;
 
-    std::strcpy(guid, config.guid);
-    std::strcpy(system_identifier, config.system_identifier);
-    std::strcpy(generating_software, config.generating_software);
+    guid_ = config.GUID();
+    system_identifier_ = config.SystemIdentifier();
+    generating_software_ = config.GeneratingSoftware();
 
-    offset.x = config.offset.x;
-    offset.y = config.offset.y;
-    offset.z = config.offset.z;
+    offset = config.offset;
+    scale = config.scale;
 
-    scale.x = config.scale.x;
-    scale.y = config.scale.y;
-    scale.z = config.scale.z;
+    max = config.max;
+    min = config.min;
 
-    max.x = config.maxx;
-    min.x = config.minx;
-    max.y = config.maxy;
-    min.y = config.miny;
-    max.z = config.maxz;
-    min.z = config.minz;
-
-    memcpy(points_by_return_14, config.points_by_return_14, sizeof(config.points_by_return_14));
+    points_by_return_14 = config.points_by_return_14;
     extra_bytes = extra_bytes_;
 }
 } // namespace copc

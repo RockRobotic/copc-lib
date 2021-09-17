@@ -15,7 +15,7 @@ void Reader::InitReader()
 
     this->reader_ = std::make_unique<lazperf::reader::generic_file>(*this->in_stream_);
 
-    auto header = this->reader_->header();
+    auto header = las::LasHeader::FromLazPerf(this->reader_->header());
 
     std::map<uint64_t, las::VlrHeader> vlrs = ReadVlrs();
     auto copc_data = ReadCopcData();
@@ -73,7 +73,7 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
     in_stream_->seekg(page->offset);
 
     // Iterate through each Entry in the page
-    int num_entries = int(page->size / Entry::ENTRY_SIZE);
+    int num_entries = int(page->byte_size / Entry::ENTRY_SIZE);
     for (int i = 0; i < num_entries; i++)
     {
         Entry e = Entry::Unpack(*in_stream_);
@@ -90,20 +90,17 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
 las::Points Reader::GetPoints(Node const &node)
 {
     std::vector<char> point_data = GetPointData(node);
-    return las::Points::Unpack(point_data, file_->GetLasHeader().point_format_id,
-                               file_->GetLasHeader().point_record_length);
+    return las::Points::Unpack(point_data, file_->GetLasHeader());
 }
 
 las::Points Reader::GetPoints(VoxelKey const &key)
 {
     std::vector<char> point_data = GetPointData(key);
 
-    auto point_format_id = file_->GetLasHeader().point_format_id;
-    auto point_record_length = file_->GetLasHeader().point_record_length;
-    auto eb_count = las::Point::ComputeNumExtraBytes(point_format_id, point_record_length);
     if (point_data.empty())
-        return las::Points(point_format_id, eb_count);
-    return las::Points::Unpack(point_data, point_format_id, point_record_length);
+        return las::Points(file_->GetLasHeader());
+
+    return las::Points::Unpack(point_data, file_->GetLasHeader());
 }
 
 std::vector<char> Reader::GetPointData(Node const &node)
@@ -139,8 +136,8 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     in_stream_->seekg(node.offset);
 
     std::vector<char> out;
-    out.resize(node.size);
-    in_stream_->read(&out[0], node.size);
+    out.resize(node.byte_size);
+    in_stream_->read(&out[0], node.byte_size);
     return out;
 }
 
@@ -157,7 +154,7 @@ std::vector<char> Reader::GetPointDataCompressed(VoxelKey const &key)
     return GetPointDataCompressed(node);
 }
 
-std::vector<Node> Reader::GetAllChildren(VoxelKey key)
+std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
 {
     std::vector<Node> out;
     if (!key.IsValid())

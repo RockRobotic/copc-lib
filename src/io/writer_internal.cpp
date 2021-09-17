@@ -51,30 +51,35 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader(las::LasHeader &head14)
 {
-    laz_vlr lazVlr(head14.pointFormat(), head14.ebCount(), VARIABLE_CHUNK_SIZE);
+
+    // Convert back to lazperf header for writing
+    auto laz_header = head14.ToLazPerf();
+
+    laz_vlr lazVlr(laz_header.point_format_id, laz_header.ebCount(), VARIABLE_CHUNK_SIZE);
 
     // point_format_id and point_record_length  are set on open().
-    head14.header_size = head14.sizeFromVersion();
-    head14.vlr_count = 2; // copc + laz
+    laz_header.header_size = laz_header.sizeFromVersion();
+    laz_header.vlr_count = 2; // copc + laz
 
-    head14.point_format_id |= (1 << 7);
-    head14.point_offset = OFFSET_TO_POINT_DATA;
-    head14.point_count_14 = point_count_14_;
+    laz_header.point_format_id |= (1 << 7);
+    laz_header.point_offset = OFFSET_TO_POINT_DATA;
+    laz_header.point_count_14 = point_count_14_;
 
-    if (head14.ebCount())
+    if (laz_header.ebCount())
     {
-        head14.vlr_count++;
+        laz_header.vlr_count++;
     }
 
-    if (head14.point_count_14 > (std::numeric_limits<uint32_t>::max)())
-        head14.point_count = 0;
+    if (laz_header.point_count_14 > (std::numeric_limits<uint32_t>::max)())
+        laz_header.point_count = 0;
     else
-        head14.point_count = (uint32_t)head14.point_count_14;
+        laz_header.point_count = (uint32_t)laz_header.point_count_14;
     // Set the WKT bit.
-    head14.global_encoding |= (1 << 4);
+    laz_header.global_encoding |= (1 << 4);
 
     out_stream_.seekp(0);
-    head14.write(out_stream_);
+
+    laz_header.write(out_stream_);
 
     // Write the VLR.
     copc_data_.span = file_->GetCopc().span;
@@ -84,7 +89,7 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
 
-    if (head14.ebCount())
+    if (head14.NumExtraBytes())
     {
         auto ebVlr = this->file_->GetExtraBytes();
         ebVlr.header().write(out_stream_);
@@ -171,7 +176,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool 
     auto size = endpos - startpos;
     if (size > (std::numeric_limits<int32_t>::max)())
         throw std::runtime_error("Chunk is too large!");
-    entry.size = static_cast<int32_t>(size);
+    entry.byte_size = static_cast<int32_t>(size);
     if (point_count > (std::numeric_limits<int32_t>::max)())
         throw std::runtime_error("Chunk has too many points!");
     entry.point_count = point_count;
@@ -193,7 +198,7 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     page->offset = offset;
     if (page_size > (std::numeric_limits<int32_t>::max)())
         throw std::runtime_error("Page is too large!");
-    page->size = static_cast<int32_t>(page_size);
+    page->byte_size = static_cast<int32_t>(page_size);
 
     // Set the copc header info if needed
     if (page->key == VoxelKey::BaseKey())

@@ -27,6 +27,8 @@ class WriterInternal
     // Call close on destructor if needed
     ~WriterInternal() { Close(); }
 
+    bool IsOpen() const { return open_; }
+
     // Writes a chunk to the laz file
     Entry WriteNode(std::vector<char> in, int32_t point_count, bool compressed);
 
