@@ -62,7 +62,7 @@ points = reader.GetPoints(node)
 
 # Iterate through each point
 for point in points.Get():
-	print(point)
+    print(point)
 ```
 
 ## Coming Soon
