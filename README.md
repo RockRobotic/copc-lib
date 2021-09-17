@@ -12,6 +12,8 @@ copc-lib depends on laz-perf 2.1.0 or greater. See the [laz-perf repo](https://g
 ### Build & Install
 With the dependencies installed, we can now build copc-lib. Note that you need to clone this repo with the `--recurse-submodules` flag, so that all dependencies get included.
 
+### C++
+
 ```bash
 git clone --recurse-submodules https://github.com/RockRobotic/copc-lib.git
 cd copc-lib
@@ -22,8 +24,9 @@ sudo make install
 ```
 
 ### Python
-Python bindings are supported using Pybind11 through a git submodule. 
+
 ```bash
+git clone --recurse-submodules https://github.com/RockRobotic/copc-lib.git
 pip install ./copc-lib
 ```
 
@@ -33,6 +36,7 @@ The `Reader` and `Writer` objects provide the primary means of interfacing with 
 
 For common use cases, see the `example` and `test` folders for full examples.
 
+### C++
 copc-lib is compatible with CMake. Assuming copc-lib and lazperf are installed on the system, you can link with them in your `CMakeLists.txt`:
 
 ```CMake
@@ -42,20 +46,38 @@ find_package(lazperf REQUIRED)
 add_executable(funfile fun-main.cpp)
 target_link_libraries(funfile copc-lib LAZPERF::lazperf)
 ```
+
 ### Python
 ```python
-import copclib
-```
+import copclib as copc
+import numpy as np
 
-If other library functionality is needed, feel free to open an issue to see about getting it added.
+# Create a reader object
+reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+
+# Get the node metadata from the hierarchy
+node = reader.FindNode(copc.VoxelKey(0, 0, 0, 0))
+# Fetch the points of a node
+points = reader.GetPoints(node)
+
+# Iterate through each point
+for point in points.Get():
+	print(point)
+```
 
 ## Coming Soon
 - [x] Basic C++ Reader Interface
 - [x] Return Point structures from the reader rather than raw char* arrays, to support a more familiar laspy-like interface.
 - [x] Add writer for COPC data
+- [x] Python bindings
+- [-] JavaScript bindings (not planned, see below)
+- [ ] Conda and pip packages
 - [ ] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
-- [ ] Python bindings
-- [ ] Javascript (emscripten) bindings
+
+## Helpful Links
+- [COPC Spec](https://copc.io/)
+- [copc.js](https://github.com/connormanning/copc.js) - TypeScript library for reading COPC files
+- [copc.js for browser](https://github.com/connormanning/copc.js/pull/1) - Webpacked version of copc.js for the browser
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
