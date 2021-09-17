@@ -166,11 +166,11 @@ def test_writer_copy():
         writer.AddNodeCompressed(
             root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
         )
-    
+
     writer.Close()
-    
+
     # validate
-    new_reader = copc.FileReader(file_path)    
+    new_reader = copc.FileReader(file_path)
     for node in reader.GetAllChildren():
         assert node.IsValid()
         new_node = new_reader.FindNode(node.key)
@@ -178,11 +178,11 @@ def test_writer_copy():
         assert new_node.key == node.key
         assert new_node.point_count == node.point_count
         assert new_node.byte_size == node.byte_size
-        #assert new_reader.GetPointData(new_node) == reader.GetPointData(node)
+        # assert new_reader.GetPointData(new_node) == reader.GetPointData(node)
         assert new_reader.GetPointDataCompressed(
             new_node
         ) == reader.GetPointDataCompressed(node)
-    
+
     # we can do one uncompressed comparison here
     assert new_reader.GetPointData(
         new_reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
