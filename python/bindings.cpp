@@ -4,6 +4,7 @@
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
@@ -19,8 +20,11 @@
 namespace py = pybind11;
 using namespace copc;
 
+PYBIND11_MAKE_OPAQUE(std::vector<char>);
+
 PYBIND11_MODULE(copclib, m)
 {
+    py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol());
 
     py::class_<VoxelKey>(m, "VoxelKey")
         .def(py::init<>())
