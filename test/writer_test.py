@@ -178,7 +178,6 @@ def test_writer_copy():
         assert new_node.key == node.key
         assert new_node.point_count == node.point_count
         assert new_node.byte_size == node.byte_size
-        # assert new_reader.GetPointData(new_node) == reader.GetPointData(node)
         assert new_reader.GetPointDataCompressed(
             new_node
         ) == reader.GetPointDataCompressed(node)
