@@ -71,11 +71,13 @@ def TrimFileExample(compressor_example_flag):
             uncompressed_points = copc.DecompressBytes(
                 compressed_points, header, node.point_count
             )
+    reader.Close()
+    new_reader.Close()
 
 
 # constants
-MIN_BOUNDS = copc.Vector3(-2000, -5000, 20)
-MAX_BOUNDS = copc.Vector3(5000, 1034, 125)
+MIN_BOUNDS = copc.Vector3(-2000, -5000, 20)  # Argument Constructor
+MAX_BOUNDS = copc.Vector3([5000, 1034, 125])  # List Constructor
 NUM_POINTS = 3000
 
 

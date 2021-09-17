@@ -61,7 +61,7 @@ class Reader : public BaseIO
 class FileReader : public Reader
 {
   public:
-    FileReader(const std::string &file_path)
+    FileReader(const std::string &file_path) : is_open_(true)
     {
         auto f_stream = new std::fstream;
         f_stream->open(file_path.c_str(), std::ios::in | std::ios::binary);
@@ -70,11 +70,20 @@ class FileReader : public Reader
         InitReader();
     }
 
-    ~FileReader()
+    void Close()
     {
-        dynamic_cast<std::fstream *>(in_stream_)->close();
-        delete in_stream_;
+        if (is_open_)
+        {
+            dynamic_cast<std::fstream *>(in_stream_)->close();
+            delete in_stream_;
+            is_open_ = false;
+        }
     }
+
+    ~FileReader() { Close(); }
+
+  private:
+    bool is_open_;
 };
 
 } // namespace copc

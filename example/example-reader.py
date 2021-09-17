@@ -61,6 +61,8 @@ def reader_example():
         % (len(uncompressed_data) / las_header.point_record_length)
     )
 
+    reader.Close()
+
 
 if __name__ == "__main__":
     reader_example()

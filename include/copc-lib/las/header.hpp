@@ -3,6 +3,7 @@
 
 #include <array>
 #include <limits>
+#include <sstream>
 #include <string>
 
 #include <lazperf/header.hpp>
@@ -39,6 +40,13 @@ struct Vector3
         z = a.z;
 
         return *this; // Return a reference to myself.
+    }
+
+    std::string ToString()
+    {
+        std::stringstream ss;
+        ss << "Vector3: x=" << x << ", y=" << y << ", z=" << z;
+        return ss.str();
     }
 
     bool operator==(Vector3 a) const { return x == a.x && y == a.y && z == a.z; }

@@ -41,6 +41,29 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
 
+    py::class_<Node>(m, "Node")
+        .def(py::init<>())
+        .def(py::init<Entry>())
+        .def_readwrite("point_count", &Node::point_count)
+        .def_readwrite("key", &Node::key)
+        .def_readwrite("offset", &Node::offset)
+        .def_readwrite("byte_size", &Node::byte_size)
+        .def("IsValid", &Node::IsValid)
+        .def("IsPage", &Node::IsPage)
+        .def("__str__", &Node::ToString)
+        .def("__repr__", &Node::ToString);
+
+    py::class_<Page>(m, "Page")
+        .def_readwrite("point_count", &Page::point_count)
+        .def_readwrite("key", &Page::key)
+        .def_readwrite("offset", &Page::offset)
+        .def_readwrite("byte_size", &Page::byte_size)
+        .def_readwrite("loaded", &Page::loaded)
+        .def("IsValid", &Page::IsValid)
+        .def("IsPage", &Page::IsPage)
+        .def("__str__", &Page::ToString)
+        .def("__repr__", &Page::ToString);
+
     py::class_<Vector3>(m, "Vector3")
         .def(py::init<const double &, const double &, const double &>())
         .def(py::init<const std::vector<double> &>())
@@ -49,7 +72,9 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("z", &Vector3::z)
         .def("DefaultScale", &Vector3::DefaultScale)
         .def("DefaultOffset", &Vector3::DefaultOffset)
-        .def(py::self == py::self);
+        .def(py::self == py::self)
+        .def("__str__", &Vector3::ToString)
+        .def("__repr__", &Vector3::ToString);
 
     py::implicitly_convertible<py::list, Vector3>();
 
@@ -176,54 +201,22 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())
-        .def("FindNode", &FileReader::FindNode, py::arg("key"))
-        .def("GetWkt", &FileReader::GetWkt)
-        .def("GetCopcHeader", &FileReader::GetCopcHeader)
-        .def("GetLasHeader", &FileReader::GetLasHeader)
-        .def("GetExtraByteVlr", &FileReader::GetExtraByteVlr)
-        .def("GetPointData", py::overload_cast<const Node &>(&FileReader::GetPointData), py::arg("node"))
-        .def("GetPointData", py::overload_cast<const VoxelKey &>(&FileReader::GetPointData), py::arg("key"))
-        .def("GetPoints", py::overload_cast<const Node &>(&FileReader::GetPoints), py::arg("node"))
-        .def("GetPoints", py::overload_cast<const VoxelKey &>(&FileReader::GetPoints), py::arg("key"))
-        .def("GetPointDataCompressed", py::overload_cast<const Node &>(&FileReader::GetPointDataCompressed),
+        .def("Close", &FileReader::Close)
+        .def("FindNode", &Reader::FindNode, py::arg("key"))
+        .def("GetWkt", &Reader::GetWkt)
+        .def("GetCopcHeader", &Reader::GetCopcHeader)
+        .def("GetLasHeader", &Reader::GetLasHeader)
+        .def("GetExtraByteVlr", &Reader::GetExtraByteVlr)
+        .def("GetPointData", py::overload_cast<const Node &>(&Reader::GetPointData), py::arg("node"))
+        .def("GetPointData", py::overload_cast<const VoxelKey &>(&Reader::GetPointData), py::arg("key"))
+        .def("GetPoints", py::overload_cast<const Node &>(&Reader::GetPoints), py::arg("node"))
+        .def("GetPoints", py::overload_cast<const VoxelKey &>(&Reader::GetPoints), py::arg("key"))
+        .def("GetPointDataCompressed", py::overload_cast<const Node &>(&Reader::GetPointDataCompressed),
              py::arg("node"))
-        .def("GetPointDataCompressed", py::overload_cast<const VoxelKey &>(&FileReader::GetPointDataCompressed),
+        .def("GetPointDataCompressed", py::overload_cast<const VoxelKey &>(&Reader::GetPointDataCompressed),
              py::arg("key"))
-        .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&FileReader::GetAllChildren), py::arg("key"))
-        .def("GetAllChildren", py::overload_cast<>(&FileReader::GetAllChildren));
-
-    m.def("CompressBytes",
-          py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
-          py::arg("in"), py::arg("point_format_id"), py::arg("num_extra_bytes"));
-    m.def("CompressBytes",
-          py::overload_cast<std::vector<char> &, const las::LasHeader &>(&laz::Compressor::CompressBytes));
-
-    m.def("DecompressBytes",
-          py::overload_cast<const std::vector<char> &, const las::LasHeader &, const int &>(
-              &laz::Decompressor::DecompressBytes),
-          py::arg("compressed_data"), py::arg("header"), py::arg("point_count"));
-
-    py::class_<Writer::LasConfig>(m, "LasConfig")
-        .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
-             py::arg("scale") = Vector3::DefaultScale(), py::arg("offset") = Vector3::DefaultOffset())
-        .def(py::init<const las::LasHeader &, const las::EbVlr &>())
-        .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
-        .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
-        .def_readwrite("creation_day", &Writer::LasConfig::creation_day)
-        .def_readwrite("creation_year", &Writer::LasConfig::creation_year)
-        .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
-        .def_readwrite("scale", &Writer::LasConfig::scale)
-        .def_readwrite("offset", &Writer::LasConfig::offset)
-        .def_readwrite("max", &Writer::LasConfig::max)
-        .def_readwrite("min", &Writer::LasConfig::min)
-        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14)
-        .def_property("guid", py::overload_cast<>(&Writer::LasConfig::GUID, py::const_),
-                      py::overload_cast<const std::string &>(&Writer::LasConfig::GUID))
-        .def_property("system_identifier", py::overload_cast<>(&Writer::LasConfig::SystemIdentifier, py::const_),
-                      py::overload_cast<const std::string &>(&Writer::LasConfig::SystemIdentifier))
-        .def_property("generating_software", py::overload_cast<>(&Writer::LasConfig::GeneratingSoftware, py::const_),
-                      py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware))
-        .def("NumExtraBytes", &Writer::LasConfig::NumExtraBytes);
+        .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
+        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren));
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),
@@ -242,39 +235,16 @@ PYBIND11_MODULE(copclib, m)
              py::arg("page"), py::arg("key"), py::arg("uncompressed_data"))
         .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"));
 
-    py::class_<Node>(m, "Node")
-        .def(py::init<>())
-        .def(py::init<Entry>())
-        .def_readwrite("point_count", &Node::point_count)
-        .def_readwrite("key", &Node::key)
-        .def_readwrite("offset", &Node::offset)
-        .def_readwrite("byte_size", &Node::byte_size)
-        .def("IsValid", &Node::IsValid)
-        .def("IsPage", &Node::IsPage)
-        .def("__str__", &Node::ToString)
-        .def("__repr__", &Node::ToString);
+    m.def("CompressBytes",
+          py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
+          py::arg("in"), py::arg("point_format_id"), py::arg("num_extra_bytes"));
+    m.def("CompressBytes",
+          py::overload_cast<std::vector<char> &, const las::LasHeader &>(&laz::Compressor::CompressBytes));
 
-    py::class_<Page>(m, "Page")
-        .def_readwrite("point_count", &Page::point_count)
-        .def_readwrite("key", &Page::key)
-        .def_readwrite("offset", &Page::offset)
-        .def_readwrite("byte_size", &Page::byte_size)
-        .def_readwrite("loaded", &Page::loaded)
-        .def("IsValid", &Page::IsValid)
-        .def("IsPage", &Page::IsPage)
-        .def("__str__", &Page::ToString)
-        .def("__repr__", &Page::ToString);
-
-    py::class_<las::CopcVlr>(m, "CopcVlr")
-        .def_readwrite("span", &las::CopcVlr::span)
-        .def_readwrite("root_hier_offset", &las::CopcVlr::root_hier_offset)
-        .def_readwrite("root_hier_size", &las::CopcVlr::root_hier_size)
-        .def_readwrite("laz_vlr_offset", &las::CopcVlr::laz_vlr_offset)
-        .def_readwrite("laz_vlr_size", &las::CopcVlr::laz_vlr_size)
-        .def_readwrite("wkt_vlr_offset", &las::CopcVlr::wkt_vlr_offset)
-        .def_readwrite("wkt_vlr_size", &las::CopcVlr::wkt_vlr_size)
-        .def_readwrite("eb_vlr_offset", &las::CopcVlr::eb_vlr_offset)
-        .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
+    m.def("DecompressBytes",
+          py::overload_cast<const std::vector<char> &, const las::LasHeader &, const int &>(
+              &laz::Decompressor::DecompressBytes),
+          py::arg("compressed_data"), py::arg("header"), py::arg("point_count"));
 
     py::class_<las::LasHeader>(m, "LasHeader")
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
@@ -304,6 +274,39 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
         .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14);
+
+    py::class_<Writer::LasConfig>(m, "LasConfig")
+        .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
+             py::arg("scale") = Vector3::DefaultScale(), py::arg("offset") = Vector3::DefaultOffset())
+        .def(py::init<const las::LasHeader &, const las::EbVlr &>())
+        .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
+        .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
+        .def_readwrite("creation_day", &Writer::LasConfig::creation_day)
+        .def_readwrite("creation_year", &Writer::LasConfig::creation_year)
+        .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
+        .def_readwrite("scale", &Writer::LasConfig::scale)
+        .def_readwrite("offset", &Writer::LasConfig::offset)
+        .def_readwrite("max", &Writer::LasConfig::max)
+        .def_readwrite("min", &Writer::LasConfig::min)
+        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14)
+        .def_property("guid", py::overload_cast<>(&Writer::LasConfig::GUID, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::GUID))
+        .def_property("system_identifier", py::overload_cast<>(&Writer::LasConfig::SystemIdentifier, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::SystemIdentifier))
+        .def_property("generating_software", py::overload_cast<>(&Writer::LasConfig::GeneratingSoftware, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware))
+        .def("NumExtraBytes", &Writer::LasConfig::NumExtraBytes);
+
+    py::class_<las::CopcVlr>(m, "CopcVlr")
+        .def_readwrite("span", &las::CopcVlr::span)
+        .def_readwrite("root_hier_offset", &las::CopcVlr::root_hier_offset)
+        .def_readwrite("root_hier_size", &las::CopcVlr::root_hier_size)
+        .def_readwrite("laz_vlr_offset", &las::CopcVlr::laz_vlr_offset)
+        .def_readwrite("laz_vlr_size", &las::CopcVlr::laz_vlr_size)
+        .def_readwrite("wkt_vlr_offset", &las::CopcVlr::wkt_vlr_offset)
+        .def_readwrite("wkt_vlr_size", &las::CopcVlr::wkt_vlr_size)
+        .def_readwrite("eb_vlr_offset", &las::CopcVlr::eb_vlr_offset)
+        .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
 
     py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>());
 }
