@@ -1,0 +1,14 @@
+{
+  "github": {
+    "release": true,
+    "releaseName": "Version ${version}"
+  },
+  "git": {
+    "commitMessage": "[RELEASE]: copc-lib v${version}"
+  },
+  "plugins": {
+    "@release-it/bumper": {
+      "out": [ "setup.py", "CMakeLists.txt" ]
+    }
+  }
+}
