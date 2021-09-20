@@ -37,6 +37,9 @@ class Reader : public BaseIO
     // Helper function to get all nodes from the root
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 
+    // Spatial querry helper functions
+    std::vector<Node> GetNodesWithinBox(const Box &box);
+
   protected:
     Reader() = default;
 

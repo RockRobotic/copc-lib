@@ -175,6 +175,39 @@ std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
     return out;
 }
 
+std::vector<Node> Reader::GetNodesWithinBox(const Box &box)
+{
+    std::vector<Node> out;
+
+    auto header = GetLasHeader();
+
+    auto root_node = FindNode(VoxelKey::BaseKey());
+    if (!hierarchy_->PageExists(VoxelKey::BaseKey()))
+    {
+        if (root_node.IsValid())
+            out.push_back(root_node);
+        return out;
+    }
+
+    if (!hierarchy_->seen_pages_[VoxelKey::BaseKey()]->IsValid())
+        return out;
+
+    if (!hierarchy_->seen_pages_[VoxelKey::BaseKey()]->loaded)
+        ReadAndParsePage(hierarchy_->seen_pages_[VoxelKey::BaseKey()]);
+
+    for (const auto &sub_page : hierarchy_->seen_pages_[VoxelKey::BaseKey()]->sub_pages)
+    {
+        LoadPageHierarchy(sub_page, out);
+    }
+    for (const auto &node : hierarchy_->seen_pages_[VoxelKey::BaseKey()]->nodes)
+    {
+        if (node->key.Within(box, header))
+            out.push_back(*node);
+    }
+
+    return out;
+}
+
 las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     for (auto &[offset, vlr_header] : vlrs)

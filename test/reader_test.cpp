@@ -178,3 +178,15 @@ TEST_CASE("Point Error Handling Test", "[Reader] ")
         REQUIRE_NOTHROW(reader.GetPointDataCompressed(valid_node));
     }
 }
+
+TEST_CASE("Box Spatial Query", "[Reader] ")
+{
+    FileReader reader("test/data/autzen-classified.copc.laz");
+
+    // Return no nodes with a zero-sized Box
+    auto nodes = reader.GetNodesWithinBox(Box(0, 0, 0, 0, 0, 0));
+    REQUIRE(nodes.empty());
+
+    // Return all nodes with a max-sized Box
+    nodes = reader.GetNodesWithinBox(Box());
+}
