@@ -196,7 +196,8 @@ PYBIND11_MODULE(copclib, m)
         .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
                                          const Vector3 &>(&las::Points::Unpack))
         .def("__str__", &las::Points::ToString)
-        .def("__repr__", &las::Points::ToString);
+        .def("__repr__", &las::Points::ToString)
+        .def("__len__", &las::Points::Size);
 
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())
