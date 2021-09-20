@@ -156,7 +156,44 @@ TEST_CASE("Box functions", "[Box]")
         auto box2 = Box(VoxelKey(1, 1, 0, 0), header);
         REQUIRE(!box1.Within(box2));
         REQUIRE(box2.Within(box1));
-        // A box is not within itself
+        // A box is within itself
         REQUIRE(box2.Within(box2));
+    }
+}
+
+TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
+{
+    auto header = las::LasHeader();
+    header.span = 2;
+
+    SECTION("Intersects")
+    {
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 2, 0.5, 0.75), header));
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 2, 1.5, 2), header));
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 1.5, 0.5, 1.5, 1.5, 2), header));
+
+        // If one box contains the other they also intersect
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0, 2, 0, 2), header));
+    }
+
+    SECTION("Contains box")
+    {
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 1, 0, 1, 0, 1), header));
+        REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(Box(0, 1, 0, 1, 0, 1), header));
+        // A box contains itself
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, header.span, 0, header.span, 0, header.span), header));
+    }
+
+    SECTION("Contains vector")
+    {
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Vector3(1, 1, 1), header));
+        REQUIRE(!VoxelKey(0, 0, 0, 0).Contains(Vector3(2.1, 1, 1), header));
+    }
+
+    SECTION("Within")
+    {
+        REQUIRE(VoxelKey(1, 1, 1, 1).Within(Box(0.99, 2.01, 0.99, 2.01, 0.99, 2.01), header));
+        // A box is within itself
+        REQUIRE(VoxelKey(0, 0, 0, 0).Within(Box(0, header.span, 0, header.span, 0, header.span), header));
     }
 }

@@ -42,6 +42,10 @@ PYBIND11_MODULE(copclib, m)
         .def("GetParent", &VoxelKey::GetParent)
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
+        .def("Intersects", &VoxelKey::Intersects)
+        .def("Contains", py::overload_cast<const Box &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
+        .def("Contains", py::overload_cast<const Vector3 &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
+        .def("Within", &VoxelKey::Within)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
 

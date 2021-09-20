@@ -61,6 +61,17 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     return false;
 }
 
+bool VoxelKey::Intersects(const Box &box, const las::LasHeader &header) const
+{
+    return Box(*this, header).Intersects(box);
+}
+bool VoxelKey::Contains(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Contains(box); }
+bool VoxelKey::Contains(const Vector3 &vec, const las::LasHeader &header) const
+{
+    return Box(*this, header).Contains(vec);
+}
+bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
+
 Box::Box(const VoxelKey &key, const las::LasHeader &header)
 {
 

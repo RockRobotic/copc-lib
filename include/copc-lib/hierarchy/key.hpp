@@ -11,7 +11,7 @@
 
 namespace copc
 {
-
+class Box;
 class VoxelKey
 {
   public:
@@ -42,6 +42,11 @@ class VoxelKey
 
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;
+
+    bool Intersects(const Box &box, const las::LasHeader &header) const;
+    bool Contains(const Box &box, const las::LasHeader &header) const;
+    bool Contains(const Vector3 &vec, const las::LasHeader &header) const;
+    bool Within(const Box &box, const las::LasHeader &header) const;
 
     int32_t d;
     int32_t x;

@@ -151,5 +151,41 @@ def test_box_functions():
     box2 = copc.Box(copc.VoxelKey(1, 1, 0, 0), header)
     assert not box1.Within(box2)
     assert box2.Within(box1)
-    ## A box is not within itself
+    ## A box is within itself
     assert box2.Within(box2)
+
+
+def test_key_spatial_functions():
+
+    header = copc.LasHeader()
+    header.span = 2
+
+    # Intersects
+    assert copc.VoxelKey(1, 0, 0, 0).Intersects(copc.Box(0.5, 2, 0.5, 0.75), header)
+    assert not copc.VoxelKey(1, 0, 0, 0).Intersects(copc.Box(0.5, 2, 1.5, 2), header)
+    assert not copc.VoxelKey(1, 0, 0, 0).Intersects(
+        copc.Box(0.5, 1.5, 0.5, 1.5, 1.5, 2), header
+    )
+    ## If one box contains the other they also intersect
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects(copc.Box(0, 2, 0, 2), header)
+
+    # Contains box
+    assert copc.VoxelKey(0, 0, 0, 0).Contains(copc.Box(0, 1, 0, 1, 0, 1), header)
+    assert not copc.VoxelKey(2, 0, 0, 0).Contains(copc.Box(0, 1, 0, 1, 0, 1), header)
+    ## A box contains itself
+    assert copc.VoxelKey(0, 0, 0, 0).Contains(
+        copc.Box(0, header.span, 0, header.span, 0, header.span), header
+    )
+
+    # Contains vector
+    assert copc.VoxelKey(0, 0, 0, 0).Contains(copc.Vector3(1, 1, 1), header)
+    assert not copc.VoxelKey(0, 0, 0, 0).Contains(copc.Vector3(2.1, 1, 1), header)
+
+    # Within
+    assert copc.VoxelKey(1, 1, 1, 1).Within(
+        copc.Box(0.99, 2.01, 0.99, 2.01, 0.99, 2.01), header
+    )
+    ## A box is within itself
+    assert copc.VoxelKey(0, 0, 0, 0).Within(
+        copc.Box(0, header.span, 0, header.span, 0, header.span), header
+    )
