@@ -44,6 +44,7 @@ PYBIND11_MODULE(copclib, m)
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
+    py::implicitly_convertible<py::tuple, VoxelKey>();
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -79,7 +80,6 @@ PYBIND11_MODULE(copclib, m)
         .def(py::self == py::self)
         .def("__str__", &Vector3::ToString)
         .def("__repr__", &Vector3::ToString);
-
     py::implicitly_convertible<py::list, Vector3>();
 
     py::class_<las::Point>(m, "Point")
