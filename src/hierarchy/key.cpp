@@ -1,5 +1,7 @@
 #include <copc-lib/hierarchy/key.hpp>
 
+#include <cmath>
+
 namespace copc
 {
 
@@ -58,5 +60,35 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     }
     return false;
 }
+
+Box::Box(const VoxelKey &key, const las::LasHeader &header)
+{
+
+    // Step size accounts for depth level
+    double step = header.span / std::pow(2, key.d);
+
+    x_min = step * key.x;
+    y_min = step * key.y;
+    z_min = step * key.z;
+    x_max = x_min + step;
+    y_max = y_min + step;
+    z_max = z_min + step;
+}
+
+bool Box::Intersects(const Box &other) const
+{
+    return x_max >= other.x_min && x_min <= other.x_max && y_max >= other.y_min && y_min <= other.y_max &&
+           z_max >= other.z_min && z_min <= other.z_max;
+}
+bool Box::Contains(const Box &other) const
+{
+    return x_max >= other.x_max && x_min <= other.x_min && y_max >= other.y_max && y_min <= other.y_min &&
+           z_max >= other.z_max && z_min <= other.z_min;
+}
+bool Box::Contains(const Vector3 &vec) const
+{
+    return x_max >= vec.x && x_min <= vec.x && y_max >= vec.y && y_min <= vec.y && z_max >= vec.z && z_min <= vec.z;
+}
+bool Box::Within(const Box &other) const { return other.Contains(*this); }
 
 } // namespace copc

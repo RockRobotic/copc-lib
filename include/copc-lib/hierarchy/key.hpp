@@ -1,10 +1,13 @@
 #ifndef COPCLIB_HIERARCHY_KEY_H_
 #define COPCLIB_HIERARCHY_KEY_H_
 
+#include <cfloat>
 #include <cstdint>
 #include <functional> // for hash
 #include <sstream>
 #include <vector>
+
+#include <copc-lib/las/header.hpp>
 
 namespace copc
 {
@@ -69,6 +72,29 @@ inline bool operator==(const VoxelKey &a, const VoxelKey &b)
     return a.d == b.d && a.x == b.x && a.y == b.y && a.z == b.z;
 }
 inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b); }
+
+class Box
+{
+  public:
+    Box(const double &x_min, const double &x_max, const double &y_min, const double &y_max, const double &z_min,
+        const double &z_max)
+        : x_min(x_min), x_max(x_max), y_min(y_min), y_max(y_max), z_min(z_min), z_max(z_max){};
+    Box(const double &x_min, const double &x_max, const double &y_min, const double &y_max)
+        : x_min(x_min), x_max(x_max), y_min(y_min), y_max(y_max){};
+    Box(const VoxelKey &key, const las::LasHeader &header);
+
+    bool Intersects(const Box &box) const;
+    bool Contains(const Box &box) const;
+    bool Contains(const Vector3 &vec) const;
+    bool Within(const Box &box) const;
+
+    double x_min{DBL_MIN};
+    double x_max{DBL_MAX};
+    double y_min{DBL_MIN};
+    double y_max{DBL_MAX};
+    double z_min{DBL_MIN};
+    double z_max{DBL_MAX};
+};
 
 } // namespace copc
 

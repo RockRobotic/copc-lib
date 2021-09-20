@@ -2,6 +2,7 @@
 #define COPCLIB_LAS_HEADER_H_
 
 #include <array>
+#include <cmath>
 #include <limits>
 #include <sstream>
 #include <string>
@@ -41,6 +42,8 @@ struct Vector3
 
         return *this; // Return a reference to myself.
     }
+
+    Vector3 operator*(const double &d) const { return Vector3(x * d, y * d, z * d); }
 
     std::string ToString()
     {
@@ -90,6 +93,8 @@ class LasHeader
     }
     std::string GeneratingSoftware() const { return generating_software_; }
 
+    double ComputeSpan() { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
+
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
@@ -114,6 +119,8 @@ class LasHeader
     // xyz min/max for las header
     Vector3 max{};
     Vector3 min{};
+    // octree span in scaled value
+    double span{};
 
     uint64_t wave_offset{0};
 

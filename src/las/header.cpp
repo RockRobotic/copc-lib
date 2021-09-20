@@ -41,6 +41,7 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.min.y = header.miny;
     h.max.z = header.maxz;
     h.min.z = header.minz;
+    h.span = h.ComputeSpan();
     h.wave_offset = header.wave_offset;
     h.evlr_offset = header.evlr_offset;
     h.evlr_count = header.evlr_count;
