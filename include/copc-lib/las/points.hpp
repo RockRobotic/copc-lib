@@ -33,6 +33,8 @@ class Points
     Point Get(const size_t &idx) { return points_[idx]; }
     size_t Size() const { return points_.size(); }
     void Reserve(const size_t &num) { points_.reserve(num); }
+    Point &operator[](size_t i) { return points_[i]; }
+    const Point &operator[](size_t i) const { return points_[i]; }
 
     // Add points functions
     void AddPoint(const Point &point);
