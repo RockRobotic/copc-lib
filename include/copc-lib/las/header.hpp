@@ -30,15 +30,11 @@ struct Vector3
         z = vec[2];
     }
 
-    double x{};
-    double y{};
-    double z{};
-
-    Vector3 &operator=(const lazperf::vector3 &a)
+    Vector3 &operator=(const lazperf::vector3 &other)
     {
-        x = a.x;
-        y = a.y;
-        z = a.z;
+        x = other.x;
+        y = other.y;
+        z = other.z;
 
         return *this; // Return a reference to myself.
     }
@@ -52,7 +48,12 @@ struct Vector3
         return ss.str();
     }
 
-    bool operator==(Vector3 a) const { return x == a.x && y == a.y && z == a.z; }
+    bool operator==(Vector3 other) const { return x == other.x && y == other.y && z == other.z; }
+    bool operator!=(Vector3 other) const { return !(*this == other); }
+
+    double x{};
+    double y{};
+    double z{};
 };
 
 namespace las
