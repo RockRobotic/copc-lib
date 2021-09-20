@@ -1,3 +1,5 @@
+from sys import float_info
+
 import copclib as copc
 
 
@@ -71,3 +73,83 @@ def test_get_parents():
     get_parents_non_inclusive = test_keys[0].GetParents(False)
     assert len(get_parents_non_inclusive) == len(test_keys) - 1
     assert get_parents_non_inclusive == test_keys_exclusive
+
+
+def test_box_constructors():
+
+    # 3D box constructor
+
+    box = copc.Box(0.0, 1.0, 0.0, 1.0, 0.0, 1.0)
+    assert box.x_min == 0.0
+    assert box.x_max == 1.0
+    assert box.y_min == 0.0
+    assert box.y_max == 1.0
+    assert box.z_min == 0.0
+    assert box.z_max == 1.0
+
+    # 2D box constructor
+    box = copc.Box(0.0, 1.0, 0.0, 1.0)
+    assert box.x_min == 0.0
+    assert box.x_max == 1.0
+    assert box.y_min == 0.0
+    assert box.y_max == 1.0
+    assert box.z_min == float_info.min
+    assert box.z_max == float_info.max
+
+    # copc.VoxelKey constructor
+    header = copc.LasHeader()
+    header.span = 10
+    box = copc.Box(copc.VoxelKey(1, 1, 0, 0), header)
+
+    assert box.x_min == 5.0
+    assert box.x_max == 10.0
+    assert box.y_min == 0.0
+    assert box.y_max == 5.0
+    assert box.z_min == 0.0
+    assert box.z_max == 5.0
+
+
+def test_box_functions():
+
+    # Intersects
+    ## X axis only crosses boundary
+    assert copc.Box(1, 2, 0.5, 1).Intersects(copc.Box(0.5, 1.5, 0, 2))
+    assert copc.Box(0.5, 1.5, 0, 2).Intersects(copc.Box(1, 2, 0.5, 1))
+
+    assert not copc.Box(1, 2, 0.5, 1).Intersects(copc.Box(2.01, 2.5, 0, 2))
+    assert not copc.Box(2.01, 2.5, 0, 2).Intersects(copc.Box(1, 2, 0.5, 1))
+
+    ## If one box contains the other they also intersect
+    assert copc.Box(1, 2, 1, 2).Intersects(copc.Box(0, 4, 0, 4))
+    assert copc.Box(0, 4, 0, 4).Intersects(copc.Box(1, 2, 1, 2))
+
+    # Contains box
+    header = copc.LasHeader()
+    header.span = 10
+    box1 = copc.Box(copc.VoxelKey(0, 0, 0, 0), header)
+    box2 = copc.Box(copc.VoxelKey(1, 1, 0, 0), header)
+    assert box1.Contains(box2)
+    assert not box2.Contains(box1)
+    ## A box contains itself
+    assert box2.Contains(box2)
+
+    # Contains vector
+    ## 2D box
+    assert copc.Box(0, 1, 0, 1).Contains((0.5, 0.5, 5))
+    assert copc.Box(0, 1, 0, 1).Contains((0.5, 1, 5))
+    assert not copc.Box(0, 1, 0, 1).Contains((0.5, 5, 5))
+
+    ## 3D box
+    assert copc.Box(0, 1, 0, 1, 0, 1).Contains((0.5, 0.5, 0.5))
+    assert copc.Box(0, 1, 0, 1, 0, 1).Contains((1, 1, 1))
+    assert not copc.Box(0, 1, 0, 1, 0, 1).Contains((0.5, 0.5, 5))
+
+    # Within
+    header = copc.LasHeader()
+    header.span = 10
+    box1 = copc.Box(copc.VoxelKey(0, 0, 0, 0), header)
+    box2 = copc.Box(copc.VoxelKey(1, 1, 0, 0), header)
+    assert not box1.Within(box2)
+    assert box2.Within(box1)
+    ## A box is not within itself
+    assert box2.Within(box2)

@@ -45,6 +45,23 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
 
+    py::class_<Box>(m, "Box")
+        .def(py::init<const double &, const double &, const double &, const double &, const double &, const double &>())
+        .def(py::init<const double &, const double &, const double &, const double &>())
+        .def(py::init<const VoxelKey &, const las::LasHeader &>())
+        .def_readwrite("x_min", &Box::x_min)
+        .def_readwrite("x_max", &Box::x_max)
+        .def_readwrite("y_min", &Box::y_min)
+        .def_readwrite("y_max", &Box::y_max)
+        .def_readwrite("z_min", &Box::z_min)
+        .def_readwrite("z_max", &Box::z_max)
+        .def("Intersects", &Box::Intersects)
+        .def("Contains", py::overload_cast<const Box &>(&Box::Contains, py::const_))
+        .def("Contains", py::overload_cast<const Vector3 &>(&Box::Contains, py::const_))
+        .def("Within", &Box::Within)
+        .def("__str__", &Box::ToString)
+        .def("__repr__", &Box::ToString);
+
     py::class_<Node>(m, "Node")
         .def(py::init<>())
         .def(py::init<Entry>())
@@ -81,6 +98,7 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &Vector3::ToString);
 
     py::implicitly_convertible<py::list, Vector3>();
+    py::implicitly_convertible<py::tuple, Vector3>();
 
     py::class_<las::Point>(m, "Point")
         .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
@@ -246,6 +264,7 @@ PYBIND11_MODULE(copclib, m)
           py::arg("compressed_data"), py::arg("header"), py::arg("point_count"));
 
     py::class_<las::LasHeader>(m, "LasHeader")
+        .def(py::init<>())
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
@@ -269,6 +288,7 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("offset", &las::LasHeader::offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
+        .def_readwrite("span", &las::LasHeader::span)
         .def_readwrite("wave_offset", &las::LasHeader::wave_offset)
         .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)

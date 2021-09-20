@@ -106,6 +106,7 @@ TEST_CASE("Box constructor", "[Box]")
         REQUIRE(box.z_max == 5.0);
     }
 }
+
 TEST_CASE("Box functions", "[Box]")
 {
     SECTION("Intersects")

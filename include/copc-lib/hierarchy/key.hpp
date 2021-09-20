@@ -88,6 +88,14 @@ class Box
     bool Contains(const Vector3 &vec) const;
     bool Within(const Box &box) const;
 
+    std::string ToString() const
+    {
+        std::stringstream ss;
+        ss << "Box: x_min=" << x_min << "x_max=" << x_max << "y_min=" << y_min << "y_max=" << y_max << "z_min=" << z_min
+           << "z_max=" << z_max;
+        return ss.str();
+    }
+
     double x_min{DBL_MIN};
     double x_max{DBL_MAX};
     double y_min{DBL_MIN};
