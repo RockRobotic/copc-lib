@@ -21,10 +21,12 @@ namespace py = pybind11;
 using namespace copc;
 
 PYBIND11_MAKE_OPAQUE(std::vector<char>);
+PYBIND11_MAKE_OPAQUE(std::vector<las::Point>);
 
 PYBIND11_MODULE(copclib, m)
 {
     py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol());
+    py::bind_vector<std::vector<las::Point>>(m, "VectorPoint", py::buffer_protocol());
 
     py::class_<VoxelKey>(m, "VoxelKey")
         .def(py::init<>())
