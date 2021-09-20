@@ -185,9 +185,6 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
         .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
-        .def("Get", py::overload_cast<>(&las::Points::Get))
-        .def("Get", py::overload_cast<const size_t &>(&las::Points::Get), py::arg("idx"))
-        .def_property_readonly("Size", &las::Points::Size)
         .def("AddPoint", &las::Points::AddPoint)
         .def("AddPoints", py::overload_cast<las::Points>(&las::Points::AddPoints))
         .def("AddPoints", py::overload_cast<std::vector<las::Point>>(&las::Points::AddPoints))
@@ -197,9 +194,35 @@ PYBIND11_MODULE(copclib, m)
         .def("Unpack", py::overload_cast<const std::vector<char> &, const las::LasHeader &>(&las::Points::Unpack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
                                          const Vector3 &>(&las::Points::Unpack))
+        /// Bare bones interface
+        .def("__getitem__",
+             [](const las::Points &s, size_t i) {
+                 if (i >= s.Size())
+                     throw py::index_error();
+                 return s[i];
+             })
+        .def("__setitem__",
+             [](las::Points &s, size_t i, float v) {
+                 if (i >= s.Size())
+                     throw py::index_error();
+                 s[i] = v;
+             })
+        .def("__len__", &las::Points::Size)
+        /// Optional sequence protocol operations
+        .def(
+            "__iter__",
+            [](las::Points &s) {
+                auto vec = s.Get();
+                return py::make_iterator(vec.begin(), vec.end());
+            },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+        .def("__contains__",
+             [](las::Points &s, las::Point v) {
+                 auto vec = s.Get();
+                 return std::find(vec.begin(), vec.end(), v) != vec.end();
+             })
         .def("__str__", &las::Points::ToString)
-        .def("__repr__", &las::Points::ToString)
-        .def("__len__", &las::Points::Size);
+        .def("__repr__", &las::Points::ToString);
 
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())
