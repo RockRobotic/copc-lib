@@ -50,6 +50,7 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &VoxelKey::ToString);
 
     py::class_<Box>(m, "Box")
+        .def(py::init<>())
         .def(py::init<const double &, const double &, const double &, const double &, const double &, const double &>())
         .def(py::init<const double &, const double &, const double &, const double &>())
         .def(py::init<const VoxelKey &, const las::LasHeader &>())
@@ -237,7 +238,8 @@ PYBIND11_MODULE(copclib, m)
         .def("GetPointDataCompressed", py::overload_cast<const VoxelKey &>(&Reader::GetPointDataCompressed),
              py::arg("key"))
         .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
-        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren));
+        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren))
+        .def("GetNodesWithinBox", &Reader::GetNodesWithinBox);
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),

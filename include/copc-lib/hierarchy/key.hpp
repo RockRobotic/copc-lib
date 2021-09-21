@@ -102,11 +102,11 @@ class Box
         return ss.str();
     }
 
-    double x_min{std::numeric_limits<double>::min()};
+    double x_min{-std::numeric_limits<double>::max()};
     double x_max{std::numeric_limits<double>::max()};
-    double y_min{std::numeric_limits<double>::min()};
+    double y_min{-std::numeric_limits<double>::max()};
     double y_max{std::numeric_limits<double>::max()};
-    double z_min{std::numeric_limits<double>::min()};
+    double z_min{-std::numeric_limits<double>::max()};
     double z_max{std::numeric_limits<double>::max()};
 };
 

@@ -1,4 +1,4 @@
-#include <cfloat>
+#include <limits>
 
 #include <catch2/catch.hpp>
 #include <copc-lib/hierarchy/key.hpp>
@@ -88,8 +88,8 @@ TEST_CASE("Box constructor", "[Box]")
         REQUIRE(box.x_max == 1.0);
         REQUIRE(box.y_min == 0.0);
         REQUIRE(box.y_max == 1.0);
-        REQUIRE(box.z_min == DBL_MIN);
-        REQUIRE(box.z_max == DBL_MAX);
+        REQUIRE(box.z_min == -std::numeric_limits<double>::max());
+        REQUIRE(box.z_max == std::numeric_limits<double>::max());
     }
 
     SECTION("VoxelKey constructor")

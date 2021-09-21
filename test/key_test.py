@@ -93,7 +93,7 @@ def test_box_constructors():
     assert box.x_max == 1.0
     assert box.y_min == 0.0
     assert box.y_max == 1.0
-    assert box.z_min == float_info.min
+    assert box.z_min == -float_info.max
     assert box.z_max == float_info.max
 
     # copc.VoxelKey constructor

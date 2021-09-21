@@ -189,4 +189,5 @@ TEST_CASE("Box Spatial Query", "[Reader] ")
 
     // Return all nodes with a max-sized Box
     nodes = reader.GetNodesWithinBox(Box());
+    REQUIRE(nodes.size() == reader.GetAllChildren().size());
 }
