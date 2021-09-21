@@ -8,6 +8,7 @@ def test_vector_char():
     char_vec.append("e")
     char_vec.append("s")
     char_vec.append("t")
+    char_vec.append(chr(200))
 
     char_vec_other = pickle.loads(pickle.dumps(char_vec, -1))
 

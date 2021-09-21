@@ -30,7 +30,7 @@ PYBIND11_MODULE(copclib, m)
         .def(py::pickle(
             [](const std::vector<char> &vec) { // __getstate__
                 // Convert vector<char> to string for pickling
-                return py::make_tuple(std::string(vec.begin(), vec.end()));
+                return py::make_tuple(py::bytes(std::string(vec.begin(), vec.end())));
             },
             [](const py::tuple &t) { // __setstate__
                 auto s = t[0].cast<std::string>();
