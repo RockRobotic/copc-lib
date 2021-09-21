@@ -175,20 +175,6 @@ std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
     return out;
 }
 
-std::vector<Node> Reader::GetNodesWithinBox(const Box &box)
-{
-    std::vector<Node> out;
-
-    auto header = GetLasHeader();
-    for (const auto &node : GetAllChildren())
-    {
-        if (node.key.Within(box, header))
-            out.push_back(node);
-    }
-
-    return out;
-}
-
 las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     for (auto &[offset, vlr_header] : vlrs)

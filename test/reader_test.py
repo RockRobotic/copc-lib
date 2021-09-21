@@ -93,16 +93,3 @@ def test_point_error_handling():
     with pytest.raises(RuntimeError):
         reader.GetPointDataCompressed(invalid_node)
     reader.GetPointDataCompressed(valid_node)
-
-
-def test_spatial_query():
-
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
-
-    # Return no nodes with a zero-sized Box
-    nodes = reader.GetNodesWithinBox(copc.Box(0, 0, 0, 0, 0, 0))
-    assert len(nodes) == 0
-
-    # Return all nodes with a max-sized Box
-    nodes = reader.GetNodesWithinBox(copc.Box())
-    assert len(nodes) == len(reader.GetAllChildren())
