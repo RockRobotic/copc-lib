@@ -1,5 +1,4 @@
 #include <copc-lib/las/point.hpp>
-#include <copc-lib/las/utils.hpp>
 
 namespace copc::las
 {
@@ -96,6 +95,8 @@ bool Point::operator==(const Point &other) const
         return false;
     return true;
 }
+
+bool Point::Within(const Box &box) const { return box.Contains(Vector3(x_, y_, z_)); }
 
 Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
                     const uint16_t &num_extra_bytes)

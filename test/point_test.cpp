@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include <catch2/catch.hpp>
+#include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 
@@ -830,5 +831,24 @@ TEST_CASE("Point tests", "[Point]")
                 REQUIRE_THROWS(point.X(0));
             }
         }
+    }
+    SECTION("Within")
+    {
+        auto point = Point(3, {1, 1, 1}, copc::Vector3::DefaultOffset());
+
+        point.X(5);
+        point.Y(5);
+        point.Z(5);
+
+        REQUIRE(point.Within(copc::Box::MaxBox()));
+        REQUIRE(!point.Within(copc::Box::ZeroBox()));
+
+        // 2D box
+        REQUIRE(point.Within(copc::Box(0, 5, 0, 5)));
+        REQUIRE(!point.Within(copc::Box(6, 10, 0, 5)));
+
+        // 3D box
+        REQUIRE(point.Within(copc::Box(0, 5, 0, 5, 0, 5)));
+        REQUIRE(!point.Within(copc::Box(6, 10, 0, 5, 0, 5)));
     }
 }

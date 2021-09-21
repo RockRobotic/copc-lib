@@ -89,6 +89,9 @@ class Box
         : x_min(x_min), x_max(x_max), y_min(y_min), y_max(y_max){};
     Box(const VoxelKey &key, const las::LasHeader &header);
 
+    static Box ZeroBox() { return Box(0, 0, 0, 0, 0, 0); }
+    static Box MaxBox() { return Box(); }
+
     bool Intersects(const Box &box) const;
     bool Contains(const Box &box) const;
     bool Contains(const Vector3 &vec) const;
