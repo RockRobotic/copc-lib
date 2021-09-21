@@ -109,7 +109,6 @@ class Writer : public BaseIO
     void SetPointsByReturn(std::array<uint64_t, 15> points_by_return_14)
     {
         this->file_->SetPointsByReturn(points_by_return_14);
-
     }
     virtual ~Writer() { writer_->Close(); }
 

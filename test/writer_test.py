@@ -116,10 +116,10 @@ def test_writer_config():
     # todo: use Reader to check all of these
     assert writer.GetLasHeader().min == min1
     assert writer.GetLasHeader().max == max1
-    assert writer.GetLasHeader().points_by_return_14 == [0]*15
-    
+    assert writer.GetLasHeader().points_by_return_14 == [0] * 15
+
     with pytest.raises(TypeError):
-        writer.SetPointsByReturn([20]*800)
+        writer.SetPointsByReturn([20] * 800)
 
     writer.SetMin(min2)
     writer.SetMax(max2)
@@ -135,7 +135,6 @@ def test_writer_config():
     assert reader.GetLasHeader().min == min2
     assert reader.GetLasHeader().max == max2
     assert reader.GetLasHeader().points_by_return_14 == points_by_return
-
 
 
 def test_writer_pages():
