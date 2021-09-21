@@ -90,7 +90,14 @@ PYBIND11_MODULE(copclib, m)
         .def("DefaultOffset", &Vector3::DefaultOffset)
         .def(py::self == py::self)
         .def("__str__", &Vector3::ToString)
-        .def("__repr__", &Vector3::ToString);
+        .def("__repr__", &Vector3::ToString)
+        .def(py::pickle(
+            [](const Vector3 &vec) { // __getstate__
+                return py::make_tuple(vec.x, vec.y, vec.z);
+            },
+            [](const py::tuple &t) { // __setstate__
+                return Vector3(t[0].cast<double>(), t[1].cast<double>(), t[2].cast<double>());
+            }));
 
     py::implicitly_convertible<py::list, Vector3>();
 
@@ -297,13 +304,12 @@ PYBIND11_MODULE(copclib, m)
                 return py::make_tuple(h.file_source_id, h.global_encoding, h.GUID(), h.version_major, h.version_minor,
                                       h.SystemIdentifier(), h.GeneratingSoftware(), h.creation_day, h.creation_year,
                                       h.header_size, h.point_offset, h.vlr_count, h.point_format_id,
-                                      h.point_record_length, h.point_count, h.points_by_return, h.scale.x, h.scale.y,
-                                      h.scale.z, h.offset.x, h.offset.y, h.offset.z, h.max.x, h.min.x, h.max.y, h.min.y,
-                                      h.max.z, h.min.z, h.wave_offset, h.evlr_offset, h.evlr_count, h.point_count_14,
+                                      h.point_record_length, h.point_count, h.points_by_return, h.scale, h.offset,
+                                      h.max, h.min, h.wave_offset, h.evlr_offset, h.evlr_count, h.point_count_14,
                                       h.points_by_return_14);
             },
             [](py::tuple t) { // __setstate__
-                if (t.size() != 33)
+                if (t.size() != 25)
                     throw std::runtime_error("Invalid state!");
 
                 /* Create a new C++ instance */
@@ -324,23 +330,15 @@ PYBIND11_MODULE(copclib, m)
                 h.point_record_length = t[13].cast<uint16_t>();
                 h.point_count = t[14].cast<uint32_t>();
                 h.points_by_return = t[15].cast<std::array<uint32_t, 5>>();
-                h.scale.x = t[16].cast<double>();
-                h.scale.y = t[17].cast<double>();
-                h.scale.z = t[18].cast<double>();
-                h.offset.x = t[19].cast<double>();
-                h.offset.y = t[20].cast<double>();
-                h.offset.z = t[21].cast<double>();
-                h.max.x = t[22].cast<double>();
-                h.min.x = t[23].cast<double>();
-                h.max.y = t[24].cast<double>();
-                h.min.y = t[25].cast<double>();
-                h.max.z = t[26].cast<double>();
-                h.min.z = t[27].cast<double>();
-                h.wave_offset = t[28].cast<uint64_t>();
-                h.evlr_offset = t[29].cast<uint64_t>();
-                h.evlr_count = t[30].cast<uint32_t>();
-                h.point_count_14 = t[31].cast<uint64_t>();
-                h.points_by_return_14 = t[32].cast<std::array<uint64_t, 15>>();
+                h.scale = t[16].cast<Vector3>();
+                h.offset = t[17].cast<Vector3>();
+                h.max = t[18].cast<Vector3>();
+                h.min = t[19].cast<Vector3>();
+                h.wave_offset = t[20].cast<uint64_t>();
+                h.evlr_offset = t[21].cast<uint64_t>();
+                h.evlr_count = t[22].cast<uint32_t>();
+                h.point_count_14 = t[23].cast<uint64_t>();
+                h.points_by_return_14 = t[24].cast<std::array<uint64_t, 15>>();
                 return h;
             }));
 
