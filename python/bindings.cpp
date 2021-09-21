@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <pybind11/operators.h>
@@ -24,7 +25,18 @@ PYBIND11_MAKE_OPAQUE(std::vector<char>);
 
 PYBIND11_MODULE(copclib, m)
 {
-    py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol());
+
+    py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol())
+        .def(py::pickle(
+            [](const std::vector<char> &vec) { // __getstate__
+                // Convert vector<char> to string for pickling
+                return py::make_tuple(std::string(vec.begin(), vec.end()));
+            },
+            [](const py::tuple &t) { // __setstate__
+                auto s = t[0].cast<std::string>();
+                // Convert string back to vector<char> for unpickling
+                return std::vector<char>(s.begin(), s.end());
+            }));
 
     py::class_<VoxelKey>(m, "VoxelKey")
         .def(py::init<>())

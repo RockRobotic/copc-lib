@@ -70,3 +70,15 @@ def test_pickling():
     assert las_header.evlr_count == las_header2.evlr_count
     assert las_header.point_count_14 == las_header2.point_count_14
     assert las_header.points_by_return_14 == las_header2.points_by_return_14
+
+    # Also tests VectorChar pickling while we're testing pickle
+    test_vec = copc.VectorChar()
+    test_vec.append("t")
+    test_vec.append("e")
+    test_vec.append("s")
+    test_vec.append("t")
+    data = pickle.dumps(test_vec, -1)
+    test_vec2 = pickle.loads(data)
+
+    for c1, c2 in zip(test_vec, test_vec2):
+        assert c1 == c2
