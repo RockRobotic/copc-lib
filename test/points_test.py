@@ -185,7 +185,7 @@ def test_points_iterator():
     for i in range(num_points):
         p = points.CreatePoint()
         p.Classification = i % 32
-        points.AddPoint()
+        points.AddPoint(p)
         
     classification_index = [points[i].Classification for i in range(num_points)]
     classification_iterator = [p.Classification for p in points]
@@ -210,7 +210,6 @@ def test_points_group_accessors():
         p.Z = i - 80
         points.AddPoint(p)
 
-    assert points.Size == num_points
     assert len(points) == num_points
 
     # test that the getters work
@@ -255,7 +254,7 @@ def test_points_group_accessors():
         assert p.Z == i * 4
 
     # test last point
-    last_point = points[-1]
+    last_point = points[len(points) - 1]
     assert last_point.X == 1
     assert last_point.Y == 2
     assert last_point.Z == 3

@@ -37,6 +37,9 @@ class Points
     std::shared_ptr<Point> &operator[](size_t i) { return points_[i]; }
     const std::shared_ptr<Point> &operator[](size_t i) const { return points_[i]; }
 
+    const std::vector<std::shared_ptr<Point>>::const_iterator begin() const { return points_.begin(); }
+    const std::vector<std::shared_ptr<Point>>::const_iterator end() const { return points_.end(); }
+
     // Add points functions
     void AddPoint(const std::shared_ptr<Point> &point);
     void AddPoints(Points points);

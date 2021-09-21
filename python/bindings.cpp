@@ -21,12 +21,10 @@ namespace py = pybind11;
 using namespace copc;
 
 PYBIND11_MAKE_OPAQUE(std::vector<char>);
-PYBIND11_MAKE_OPAQUE(std::vector<las::Point>);
 
 PYBIND11_MODULE(copclib, m)
 {
     py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol());
-    py::bind_vector<std::vector<las::Point>>(m, "VectorPoint", py::buffer_protocol());
 
     py::class_<VoxelKey>(m, "VoxelKey")
         .def(py::init<>())
@@ -82,9 +80,9 @@ PYBIND11_MODULE(copclib, m)
         .def(py::self == py::self)
         .def("__str__", &Vector3::ToString)
         .def("__repr__", &Vector3::ToString);
-    py::implicitly_convertible<py::list, Vector3>();
+    py::implicitly_convertible<py::list, Vector3>(); 
 
-    py::class_<las::Point>(m, "Point")
+    py::class_<las::Point, std::shared_ptr<las::Point>>(m, "Point")
         .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
                       py::overload_cast<const double &>(&las::Point::X))
         .def_property("Y", py::overload_cast<>(&las::Point::Y, py::const_),
@@ -174,7 +172,7 @@ PYBIND11_MODULE(copclib, m)
     py::class_<las::Points>(m, "Points")
         .def(py::init<const uint8_t &, const Vector3 &, const Vector3 &, const uint16_t &>(),
              py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("num_extra_bytes") = 0)
-        .def(py::init<const std::vector<las::Point> &>(), py::arg("points"))
+        .def(py::init<const std::vector<std::shared_ptr<las::Point>> &>(), py::arg("points"))
         .def(py::init<const las::LasHeader &>())
         .def_property("X", py::overload_cast<>(&las::Points::X, py::const_),
                       py::overload_cast<const std::vector<double> &>(&las::Points::X))
@@ -187,7 +185,7 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
         .def("AddPoint", &las::Points::AddPoint)
         .def("AddPoints", py::overload_cast<las::Points>(&las::Points::AddPoints))
-        .def("AddPoints", py::overload_cast<std::vector<las::Point>>(&las::Points::AddPoints))
+        .def("AddPoints", py::overload_cast<std::vector<std::shared_ptr<las::Point>>>(&las::Points::AddPoints))
         .def("CreatePoint", &las::Points::CreatePoint)
         .def("ToPointFormat", &las::Points::ToPointFormat, py::arg("point_format_id"))
         .def("Pack", py::overload_cast<>(&las::Points::Pack))
@@ -202,7 +200,7 @@ PYBIND11_MODULE(copclib, m)
                  return s[i];
              })
         .def("__setitem__",
-             [](las::Points &s, size_t i, float v) {
+             [](las::Points &s, size_t i, std::shared_ptr<las::Point> v) {
                  if (i >= s.Size())
                      throw py::index_error();
                  s[i] = v;
@@ -211,15 +209,12 @@ PYBIND11_MODULE(copclib, m)
         /// Optional sequence protocol operations
         .def(
             "__iter__",
-            [](las::Points &s) {
-                auto vec = s.Get();
-                return py::make_iterator(vec.begin(), vec.end());
+            [](las::Points &s) { return py::make_iterator(s.begin(), s.end());
             },
             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("__contains__",
-             [](las::Points &s, las::Point v) {
-                 auto vec = s.Get();
-                 return std::find(vec.begin(), vec.end(), v) != vec.end();
+             [](las::Points &s, std::shared_ptr<las::Point> v) {
+                 return std::find(s.begin(), s.end(), v) != s.end();
              })
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
