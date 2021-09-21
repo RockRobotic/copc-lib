@@ -38,7 +38,7 @@ def reader_example():
 
     print("First 5 points:")
     for i in range(5):
-        print(node_points.Get(i))
+        print(node_points[i])
 
     # We can also get the raw compressed data if we want to decompress it ourselves:
 

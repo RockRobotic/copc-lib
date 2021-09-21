@@ -114,7 +114,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.ToPointFormat(11));
     }
 
-    SECTION("Points Accessors")
+    SECTION("Points Group Accessors")
     {
         auto points = Points(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
 
@@ -185,5 +185,56 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point.X() == 1);
         REQUIRE(last_point.Y() == 2);
         REQUIRE(last_point.Z() == 3);
+    }
+
+    SECTION("Points Indexers")
+    {
+        auto points = Points(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
+
+        // generate points
+        int num_points = 2000;
+        for (int i = 0; i < num_points; i++)
+        {
+            auto p = points.CreatePoint();
+            p.X(i);
+            p.Y(i * 3);
+            p.Z(i - 80);
+            points.AddPoint(p);
+        }
+
+        REQUIRE(points[0].X() == 0);
+        REQUIRE(points.Get(0).X() == 0);
+        REQUIRE(points[0].Y() == 0);
+        REQUIRE(points.Get(0).Y() == 0);
+        REQUIRE(points[0].Z() == 0 - 80);
+        REQUIRE(points.Get(0).Z() == 0 - 80);
+
+        REQUIRE(points[1999].X() == 1999);
+        REQUIRE(points.Get(1999).X() == 1999);
+        REQUIRE(points[1999].Y() == 1999 * 3);
+        REQUIRE(points.Get(1999).Y() == 1999 * 3);
+        REQUIRE(points[1999].Z() == 1999 - 80);
+        REQUIRE(points.Get(1999).Z() == 1999 - 80);
+
+        for (int i = 0; i < num_points; i++)
+        {
+            points[i].X(-i);
+            points[i].Y(-i * 2);
+            points[i].Z(-i * 3);
+        }
+
+        REQUIRE(points[0].X() == 0);
+        REQUIRE(points.Get(0).X() == 0);
+        REQUIRE(points[0].Y() == 0);
+        REQUIRE(points.Get(0).Y() == 0);
+        REQUIRE(points[0].Z() == 0);
+        REQUIRE(points.Get(0).Z() == 0);
+
+        REQUIRE(points[1999].X() == -1999);
+        REQUIRE(points.Get(1999).X() == -1999);
+        REQUIRE(points[1999].Y() == -1999 * 2);
+        REQUIRE(points.Get(1999).Y() == -1999 * 2);
+        REQUIRE(points[1999].Z() == -1999 * 3);
+        REQUIRE(points.Get(1999).Z() == -1999 * 3);
     }
 }
