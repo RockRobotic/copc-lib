@@ -97,50 +97,50 @@ bool Point::operator==(const Point &other) const
     return true;
 }
 
-Point Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
+std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
                     const uint16_t &num_extra_bytes)
 {
-    Point p(point_format_id, scale, offset, num_extra_bytes);
+    std::shared_ptr<Point> p = std::make_shared<Point>(point_format_id, scale, offset, num_extra_bytes);
 
-    p.x_ = unpack<int32_t>(in_stream);
-    p.y_ = unpack<int32_t>(in_stream);
-    p.z_ = unpack<int32_t>(in_stream);
-    p.intensity_ = unpack<uint16_t>(in_stream);
-    if (p.extended_point_type_)
+    p->x_ = unpack<int32_t>(in_stream);
+    p->y_ = unpack<int32_t>(in_stream);
+    p->z_ = unpack<int32_t>(in_stream);
+    p->intensity_ = unpack<uint16_t>(in_stream);
+    if (p->extended_point_type_)
     {
-        p.extended_returns_ = unpack<uint8_t>(in_stream);
-        p.extended_flags_ = unpack<uint8_t>(in_stream);
-        p.extended_classification_ = unpack<uint8_t>(in_stream);
-        p.user_data_ = unpack<uint8_t>(in_stream);
-        p.extended_scan_angle_ = unpack<int16_t>(in_stream);
+        p->extended_returns_ = unpack<uint8_t>(in_stream);
+        p->extended_flags_ = unpack<uint8_t>(in_stream);
+        p->extended_classification_ = unpack<uint8_t>(in_stream);
+        p->user_data_ = unpack<uint8_t>(in_stream);
+        p->extended_scan_angle_ = unpack<int16_t>(in_stream);
     }
     else
     {
-        p.returns_flags_eof_ = unpack<uint8_t>(in_stream);
-        p.classification_ = unpack<uint8_t>(in_stream);
-        p.scan_angle_rank_ = unpack<int8_t>(in_stream);
-        p.user_data_ = unpack<uint8_t>(in_stream);
+        p->returns_flags_eof_ = unpack<uint8_t>(in_stream);
+        p->classification_ = unpack<uint8_t>(in_stream);
+        p->scan_angle_rank_ = unpack<int8_t>(in_stream);
+        p->user_data_ = unpack<uint8_t>(in_stream);
     }
-    p.point_source_id_ = unpack<uint16_t>(in_stream);
+    p->point_source_id_ = unpack<uint16_t>(in_stream);
 
-    if (p.has_gps_time_)
+    if (p->has_gps_time_)
     {
-        p.gps_time_ = unpack<double>(in_stream);
+        p->gps_time_ = unpack<double>(in_stream);
     }
-    if (p.has_rgb_)
+    if (p->has_rgb_)
     {
-        p.rgb_[0] = unpack<uint16_t>(in_stream);
-        p.rgb_[1] = unpack<uint16_t>(in_stream);
-        p.rgb_[2] = unpack<uint16_t>(in_stream);
+        p->rgb_[0] = unpack<uint16_t>(in_stream);
+        p->rgb_[1] = unpack<uint16_t>(in_stream);
+        p->rgb_[2] = unpack<uint16_t>(in_stream);
     }
-    if (p.has_nir_)
+    if (p->has_nir_)
     {
-        p.nir_ = unpack<uint16_t>(in_stream);
+        p->nir_ = unpack<uint16_t>(in_stream);
     }
 
     for (uint32_t i = 0; i < num_extra_bytes; i++)
     {
-        p.extra_bytes_[i] = unpack<uint8_t>(in_stream);
+        p->extra_bytes_[i] = unpack<uint8_t>(in_stream);
     }
     return p;
 }
