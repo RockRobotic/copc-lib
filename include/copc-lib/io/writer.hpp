@@ -103,6 +103,14 @@ class Writer : public BaseIO
     // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
 
+    // Update file internals
+    void SetMin(Vector3 min) { this->file_->SetMin(min); }
+    void SetMax(Vector3 max) { this->file_->SetMax(max); }
+    void SetPointsByReturn(std::array<uint64_t, 15> points_by_return_14)
+    {
+        this->file_->SetPointsByReturn(points_by_return_14);
+
+    }
     virtual ~Writer() { writer_->Close(); }
 
   protected:

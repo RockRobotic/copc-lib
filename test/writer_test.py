@@ -101,6 +101,42 @@ def test_writer_config():
     assert reader.GetLasHeader().scale == reader.GetLasHeader().scale
     assert reader.GetLasHeader().offset == reader.GetLasHeader().offset
 
+    # Update
+    min1 = copc.Vector3([-800, 300, 800])
+    max1 = copc.Vector3([5000, 8444, 3333])
+    min2 = copc.Vector3([-20, -30, -40])
+    max2 = copc.Vector3([20, 30, 40])
+    points_by_return = list(range(15))
+
+    cfg = copc.LasConfig(0)
+    cfg.min = min1
+    cfg.max = max1
+    writer = copc.FileWriter(file_path, cfg, 256, "TEST_WKT")
+
+    # todo: use Reader to check all of these
+    assert writer.GetLasHeader().min == min1
+    assert writer.GetLasHeader().max == max1
+    assert writer.GetLasHeader().points_by_return_14 == [0]*15
+    
+    with pytest.raises(TypeError):
+        writer.SetPointsByReturn([20]*800)
+
+    writer.SetMin(min2)
+    writer.SetMax(max2)
+    writer.SetPointsByReturn(points_by_return)
+
+    assert writer.GetLasHeader().min == min2
+    assert writer.GetLasHeader().max == max2
+    assert writer.GetLasHeader().points_by_return_14 == points_by_return
+
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.GetLasHeader().min == min2
+    assert reader.GetLasHeader().max == max2
+    assert reader.GetLasHeader().points_by_return_14 == points_by_return
+
+
 
 def test_writer_pages():
     # Given a valid file path
