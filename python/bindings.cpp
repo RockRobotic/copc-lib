@@ -79,7 +79,6 @@ PYBIND11_MODULE(copclib, m)
         .def(py::self == py::self)
         .def("__str__", &Vector3::ToString)
         .def("__repr__", &Vector3::ToString);
-
     py::implicitly_convertible<py::list, Vector3>();
 
     py::class_<las::Point>(m, "Point")
@@ -232,7 +231,10 @@ PYBIND11_MODULE(copclib, m)
         .def("AddNodeCompressed", &Writer::AddNodeCompressed)
         .def("AddNode", py::overload_cast<Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode),
              py::arg("page"), py::arg("key"), py::arg("uncompressed_data"))
-        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"));
+        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"))
+        .def("SetMin", &Writer::SetMin)
+        .def("SetMax", &Writer::SetMax)
+        .def("SetPointsByReturn", &Writer::SetPointsByReturn);
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
