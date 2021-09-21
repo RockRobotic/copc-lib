@@ -1,9 +1,9 @@
 #ifndef COPCLIB_HIERARCHY_KEY_H_
 #define COPCLIB_HIERARCHY_KEY_H_
 
-#include <cfloat>
 #include <cstdint>
 #include <functional> // for hash
+#include <limits>
 #include <sstream>
 #include <vector>
 
@@ -102,12 +102,12 @@ class Box
         return ss.str();
     }
 
-    double x_min{DBL_MIN};
-    double x_max{DBL_MAX};
-    double y_min{DBL_MIN};
-    double y_max{DBL_MAX};
-    double z_min{DBL_MIN};
-    double z_max{DBL_MAX};
+    double x_min{std::numeric_limits<double>::min()};
+    double x_max{std::numeric_limits<double>::max()};
+    double y_min{std::numeric_limits<double>::min()};
+    double y_max{std::numeric_limits<double>::max()};
+    double z_min{std::numeric_limits<double>::min()};
+    double z_max{std::numeric_limits<double>::max()};
 };
 
 } // namespace copc
