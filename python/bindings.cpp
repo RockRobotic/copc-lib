@@ -81,6 +81,7 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &Vector3::ToString)
         .def("__repr__", &Vector3::ToString);
     py::implicitly_convertible<py::list, Vector3>();
+    py::implicitly_convertible<py::tuple, Vector3>();
 
     py::class_<las::Point, std::shared_ptr<las::Point>>(m, "Point")
         .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
