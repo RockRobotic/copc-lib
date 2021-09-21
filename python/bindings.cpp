@@ -244,8 +244,13 @@ PYBIND11_MODULE(copclib, m)
           py::overload_cast<const std::vector<char> &, const las::LasHeader &, const int &>(
               &laz::Decompressor::DecompressBytes),
           py::arg("compressed_data"), py::arg("header"), py::arg("point_count"));
+    m.def("DecompressBytes",
+          py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const int &>(
+              &laz::Decompressor::DecompressBytes),
+          py::arg("compressed_data"), py::arg("point_format_id"), py::arg("num_extra_bytes"), py::arg("point_count"));
 
     py::class_<las::LasHeader>(m, "LasHeader")
+        .def_property_readonly("num_extra_bytes", &las::LasHeader::NumExtraBytes)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
