@@ -25,6 +25,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(las_header.offset.z == 0);
             REQUIRE(las_header.point_format_id == 0);
 
+            cfg.ToString();
+
             writer.Close();
         }
 

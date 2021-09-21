@@ -249,8 +249,8 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
                       py::overload_cast<const std::string &>(&las::LasHeader::GUID))
-        .def_readwrite("version_minor", &las::LasHeader::version_minor)
         .def_readwrite("version_major", &las::LasHeader::version_major)
+        .def_readwrite("version_minor", &las::LasHeader::version_minor)
         .def_property("system_identifier", py::overload_cast<>(&las::LasHeader::SystemIdentifier, py::const_),
                       py::overload_cast<const std::string &>(&las::LasHeader::SystemIdentifier))
         .def_property("generating_software", py::overload_cast<>(&las::LasHeader::GeneratingSoftware, py::const_),
@@ -271,7 +271,9 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("wave_offset", &las::LasHeader::wave_offset)
         .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
-        .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14);
+        .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14)
+        .def("__str__", &las::LasHeader::ToString)
+        .def("__repr__", &las::LasHeader::ToString);
 
     py::class_<Writer::LasHeaderConfig>(m, "LasHeaderConfig")
         .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
@@ -294,7 +296,9 @@ PYBIND11_MODULE(copclib, m)
         .def_property("generating_software",
                       py::overload_cast<>(&Writer::LasHeaderConfig::GeneratingSoftware, py::const_),
                       py::overload_cast<const std::string &>(&Writer::LasHeaderConfig::GeneratingSoftware))
-        .def("NumExtraBytes", &Writer::LasHeaderConfig::NumExtraBytes);
+        .def("NumExtraBytes", &Writer::LasHeaderConfig::NumExtraBytes)
+        .def("__str__", &Writer::LasHeaderConfig::ToString)
+        .def("__repr__", &Writer::LasHeaderConfig::ToString);
 
     py::class_<las::CopcVlr>(m, "CopcVlr")
         .def_readwrite("span", &las::CopcVlr::span)

@@ -15,6 +15,8 @@ def test_writer_config():
     assert las_header.offset == [0.0, 0.0, 0.0]
     assert las_header.point_format_id == 0
 
+    str(cfg)
+
     writer.Close()
 
     # Custom config

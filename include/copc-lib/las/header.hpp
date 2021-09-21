@@ -42,7 +42,7 @@ struct Vector3
         return *this; // Return a reference to myself.
     }
 
-    std::string ToString()
+    std::string ToString() const
     {
         std::stringstream ss;
         ss << "Vector3: x=" << x << ", y=" << y << ", z=" << z;
@@ -85,6 +85,9 @@ class LasHeaderBase
     }
     std::string GeneratingSoftware() const { return generating_software_; }
 
+    virtual std::string ToString() const = 0;
+
+    // TODO[Leo]: Check with Chris if we can remove some things here
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
@@ -123,6 +126,36 @@ class LasHeader : public LasHeaderBase
 
     static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf() const;
+
+    std::string ToString() const
+    {
+        std::stringstream ss;
+        ss << "LasHeader:" << std::endl;
+        ss << "\tFile Source ID: " << file_source_id << std::endl;
+        ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
+        ss << "\tGUID: " << GUID() << std::endl;
+        ss << "\tVersion: " << static_cast<int>(version_major) << "." << static_cast<int>(version_minor) << std::endl;
+        ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
+        ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
+        ss << "\tCreation (DD/YYYY): (" << creation_day << "/" << creation_year << ")" << std::endl;
+        ss << "\tHeader Size: " << header_size << std::endl;
+        ss << "\tPoint Offset: " << point_offset << std::endl;
+        ss << "\tVLR Count: " << vlr_count << std::endl;
+        ss << "\tPoint Format ID: " << static_cast<int>(point_format_id) << std::endl;
+        ss << "\tPoint Record Length: " << point_record_length << std::endl;
+        ss << "\tPoint Count: " << point_count << std::endl;
+        ss << "\tScale: " << scale.ToString() << std::endl;
+        ss << "\tOffset: " << offset.ToString() << std::endl;
+        ss << "\tMax: " << max.ToString() << std::endl;
+        ss << "\tMin: " << min.ToString() << std::endl;
+        ss << "\tWave Offset: " << wave_offset << std::endl;
+        ss << "\tEVLR Offset: " << evlr_offset << std::endl;
+        ss << "\tEVLR count: " << evlr_count << std::endl;
+        ss << "\tPoints By Return:" << std::endl;
+        for (int i = 0; i < points_by_return_14.size(); i++)
+            ss << "\t\t[" << i << "]: " << points_by_return_14[i] << std::endl;
+        return ss.str();
+    }
 
     uint8_t version_major{1};
     uint8_t version_minor{4};

@@ -28,6 +28,28 @@ class Writer : public BaseIO
         // Allow for "copying" a lasheader from one file to another
         LasHeaderConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes);
 
+        std::string ToString() const
+        {
+            std::stringstream ss;
+            ss << "LasConfig:" << std::endl;
+            ss << "\tFile Source ID: " << file_source_id << std::endl;
+            ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
+            ss << "\tGUID: " << GUID() << std::endl;
+            ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
+            ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
+            ss << "\tCreation (DD/YYYY): (" << creation_day << "/" << creation_year << ")" << std::endl;
+            ss << "\tPoint Format ID: " << static_cast<int>(point_format_id) << std::endl;
+            ss << "\tScale: " << scale.ToString() << std::endl;
+            ss << "\tOffset: " << offset.ToString() << std::endl;
+            ss << "\tMax: " << max.ToString() << std::endl;
+            ss << "\tMin: " << min.ToString() << std::endl;
+            ss << "\tPoints By Return:" << std::endl;
+            for (int i = 0; i < points_by_return_14.size(); i++)
+                ss << "\t\t [" << i << "]: " << points_by_return_14[i] << std::endl;
+            ss << "\tNumber of Extra Bytes: " << NumExtraBytes() << std::endl;
+            return ss.str();
+        }
+
         uint16_t NumExtraBytes() const { return extra_bytes.items.size(); }
 
         las::EbVlr extra_bytes;
