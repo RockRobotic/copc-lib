@@ -186,7 +186,7 @@ def test_points_iterator():
         p = points.CreatePoint()
         p.Classification = i % 32
         points.AddPoint(p)
-        
+
     classification_index = [points[i].Classification for i in range(num_points)]
     classification_iterator = [p.Classification for p in points]
 
@@ -273,7 +273,7 @@ def test_points_accessors():
         p.Y = i * 3
         p.Z = i - 80
         points.AddPoint(p)
-        
+
     assert min(points.X) == 0
     assert max(points.X) == num_points - 1
     assert min(points.Y) == 0
@@ -307,8 +307,8 @@ def test_points_accessors():
     assert max(points.Y) == -60
     assert min(points.Z) == -70
     assert max(points.Z) == -70
- 
-        
+
+
 def test_points_indexer_setter():
     points = copc.Points(
         3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
@@ -318,7 +318,7 @@ def test_points_indexer_setter():
     num_points = 2000
     for i in range(num_points):
         points.AddPoint(points.CreatePoint())
-        
+
     assert min(points.X) == 0
     assert max(points.X) == 0
     assert min(points.Y) == 0

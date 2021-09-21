@@ -97,8 +97,8 @@ bool Point::operator==(const Point &other) const
     return true;
 }
 
-std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
-                    const uint16_t &num_extra_bytes)
+std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
+                                     const Vector3 &offset, const uint16_t &num_extra_bytes)
 {
     std::shared_ptr<Point> p = std::make_shared<Point>(point_format_id, scale, offset, num_extra_bytes);
 

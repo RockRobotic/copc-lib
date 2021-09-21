@@ -438,7 +438,7 @@ class Point
     std::string ToString() const;
 
     static std::shared_ptr<Point> Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
-                        const Vector3 &offset, const uint16_t &num_extra_bytes);
+                                         const Vector3 &offset, const uint16_t &num_extra_bytes);
     void Pack(std::ostream &out_stream) const;
     void ToPointFormat(const int8_t &point_format_id);
 

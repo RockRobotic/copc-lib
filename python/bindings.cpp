@@ -80,7 +80,7 @@ PYBIND11_MODULE(copclib, m)
         .def(py::self == py::self)
         .def("__str__", &Vector3::ToString)
         .def("__repr__", &Vector3::ToString);
-    py::implicitly_convertible<py::list, Vector3>(); 
+    py::implicitly_convertible<py::list, Vector3>();
 
     py::class_<las::Point, std::shared_ptr<las::Point>>(m, "Point")
         .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
@@ -208,14 +208,10 @@ PYBIND11_MODULE(copclib, m)
         .def("__len__", &las::Points::Size)
         /// Optional sequence protocol operations
         .def(
-            "__iter__",
-            [](las::Points &s) { return py::make_iterator(s.begin(), s.end());
-            },
+            "__iter__", [](las::Points &s) { return py::make_iterator(s.begin(), s.end()); },
             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("__contains__",
-             [](las::Points &s, std::shared_ptr<las::Point> v) {
-                 return std::find(s.begin(), s.end(), v) != s.end();
-             })
+             [](las::Points &s, std::shared_ptr<las::Point> v) { return std::find(s.begin(), s.end(), v) != s.end(); })
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
 
