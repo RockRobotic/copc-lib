@@ -11,7 +11,7 @@ def TrimFileExample(compressor_example_flag):
     old_header = reader.GetLasHeader()
 
     # Copy the header to the new file
-    cfg = copc.LasConfig(old_header, reader.GetExtraByteVlr())
+    cfg = copc.LasHeaderConfig(old_header, reader.GetExtraByteVlr())
 
     # Now, we can create our actual writer, with an optional `span` and `wkt`:
     writer = copc.FileWriter(
@@ -133,7 +133,7 @@ def RandomPoints(key, point_format_id):
 def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
-    cfg = copc.LasConfig(8, [1, 1, 1], [0, 0, 0])
+    cfg = copc.LasHeaderConfig(8, [1, 1, 1], [0, 0, 0])
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
     cfg.min = [

@@ -21,7 +21,7 @@ void TrimFileExample(bool compressor_example_flag)
 
     {
         // Copy the header to the new file
-        Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
+        Writer::LasHeaderConfig cfg(old_header, reader.GetExtraByteVlr());
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
         FileWriter writer("test/data/autzen-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
@@ -126,7 +126,7 @@ las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
 void NewFileExample()
 {
     // Create our new file with the specified format, scale, and offset
-    Writer::LasConfig cfg(8, {1, 1, 1}, {0, 0, 0});
+    Writer::LasHeaderConfig cfg(8, {1, 1, 1}, {0, 0, 0});
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
     cfg.min = Vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,

@@ -17,7 +17,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             string file_path = "test/data/writer_test.copc.laz";
 
-            Writer::LasConfig cfg(0);
+            Writer::LasHeaderConfig cfg(0);
             FileWriter writer(file_path, cfg);
 
             auto las_header = writer.GetLasHeader();
@@ -32,7 +32,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             string file_path = "test/data/writer_test.copc.laz";
 
-            Writer::LasConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
+            Writer::LasHeaderConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
             cfg.file_source_id = 200;
 
             // Test checks on string attributes
@@ -62,7 +62,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             string file_path = "test/data/writer_test.copc.laz";
 
-            Writer::LasConfig cfg(0);
+            Writer::LasHeaderConfig cfg(0);
             FileWriter writer(file_path, cfg, 256);
 
             // todo: use Reader to check all of these
@@ -79,7 +79,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             string file_path = "test/data/writer_test.copc.laz";
 
-            Writer::LasConfig cfg(0);
+            Writer::LasHeaderConfig cfg(0);
             FileWriter writer(file_path, cfg, 256, "TEST_WKT");
 
             // todo: use Reader to check all of these
@@ -96,7 +96,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             FileReader orig("test/data/autzen-classified.copc.laz");
 
             string file_path = "test/data/writer_test.copc.laz";
-            Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
+            Writer::LasHeaderConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
             FileWriter writer(file_path, cfg);
             writer.Close();
 
@@ -119,7 +119,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             stringstream out_stream;
 
-            Writer::LasConfig cfg(0);
+            Writer::LasHeaderConfig cfg(0);
             Writer writer(out_stream, cfg);
 
             auto las_header = writer.GetLasHeader();
@@ -140,7 +140,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             stringstream out_stream;
 
-            Writer::LasConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
+            Writer::LasHeaderConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
             cfg.file_source_id = 200;
             Writer writer(out_stream, cfg);
 
@@ -172,7 +172,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             stringstream out_stream;
 
-            Writer::LasConfig cfg(0);
+            Writer::LasHeaderConfig cfg(0);
             Writer writer(out_stream, cfg, 256);
 
             // todo: use Reader to check all of these
@@ -189,7 +189,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             stringstream out_stream;
 
-            Writer::LasConfig cfg(0);
+            Writer::LasHeaderConfig cfg(0);
             Writer writer(out_stream, cfg, 256, "TEST_WKT");
 
             // todo: use Reader to check all of these
@@ -208,7 +208,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Reader orig(&in_stream);
 
             stringstream out_stream;
-            Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
+            Writer::LasHeaderConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
             Writer writer(out_stream, cfg);
             writer.Close();
 
@@ -233,7 +233,7 @@ TEST_CASE("Writer Pages", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer writer(out_stream, Writer::LasConfig(0));
+        Writer writer(out_stream, Writer::LasHeaderConfig(0));
 
         REQUIRE(!writer.FindNode(VoxelKey::BaseKey()).IsValid());
         REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
@@ -259,7 +259,7 @@ TEST_CASE("Writer Pages", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer writer(out_stream, Writer::LasConfig(0));
+        Writer writer(out_stream, Writer::LasHeaderConfig(0));
 
         Page root_page = writer.GetRootPage();
 
@@ -285,7 +285,7 @@ TEST_CASE("Writer EBs", "[Writer]")
     SECTION("Data type 0")
     {
         stringstream out_stream;
-        Writer::LasConfig config(7);
+        Writer::LasHeaderConfig config(7);
         las::EbVlr eb_vlr(1); // Always initialize with the ebCount constructor
         // don't make ebfields yourself unless you set their names correctly
         eb_vlr.items[0].data_type = 0;
@@ -312,7 +312,7 @@ TEST_CASE("Writer EBs", "[Writer]")
     SECTION("Data type 29")
     {
         stringstream out_stream;
-        Writer::LasConfig config(7);
+        Writer::LasHeaderConfig config(7);
         las::EbVlr eb_vlr(1);
         eb_vlr.items[0].data_type = 29;
         config.extra_bytes = eb_vlr;
@@ -334,7 +334,7 @@ TEST_CASE("Writer EBs", "[Writer]")
         auto in_eb_vlr = reader.GetExtraByteVlr();
 
         stringstream out_stream;
-        Writer::LasConfig config(3);
+        Writer::LasHeaderConfig config(3);
         config.extra_bytes = in_eb_vlr;
         Writer writer(out_stream, config);
 
@@ -356,7 +356,7 @@ TEST_CASE("Writer Copy", "[Writer]")
         FileReader reader("test/data/autzen-classified.copc.laz");
 
         stringstream out_stream;
-        Writer::LasConfig cfg(reader.GetLasHeader(), reader.GetExtraByteVlr());
+        Writer::LasHeaderConfig cfg(reader.GetLasHeader(), reader.GetExtraByteVlr());
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();

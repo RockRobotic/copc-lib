@@ -7,7 +7,7 @@ def test_writer_config():
     file_path = "data/writer_test.copc.laz"
 
     # Default config
-    cfg = copc.LasConfig(0)
+    cfg = copc.LasHeaderConfig(0)
     writer = copc.FileWriter(file_path, cfg)
 
     las_header = writer.GetLasHeader()
@@ -19,10 +19,10 @@ def test_writer_config():
 
     # Custom config
 
-    cfg = copc.LasConfig(8, [2, 3, 4], [-0.02, -0.03, -40.8])
+    cfg = copc.LasHeaderConfig(8, [2, 3, 4], [-0.02, -0.03, -40.8])
     cfg.file_source_id = 200
 
-    # Test LasConfig attributes
+    # Test LasHeaderConfig attributes
     cfg.creation_day = 18
     assert cfg.creation_day == 18
     cfg.creation_year = 11
@@ -56,7 +56,7 @@ def test_writer_config():
 
     # COPC Span
 
-    cfg = copc.LasConfig(0)
+    cfg = copc.LasHeaderConfig(0)
     writer = copc.FileWriter(file_path, cfg, 256)
 
     # todo: use Reader to check all of these
@@ -68,7 +68,7 @@ def test_writer_config():
     assert reader.GetCopcHeader().span == 256
 
     # WKT
-    cfg = copc.LasConfig(0)
+    cfg = copc.LasHeaderConfig(0)
     writer = copc.FileWriter(file_path, cfg, 256, "TEST_WKT")
 
     # todo: use Reader to check all of these
@@ -82,7 +82,7 @@ def test_writer_config():
     # Copy
     orig = copc.FileReader("data/autzen-classified.copc.laz")
 
-    cfg = copc.LasConfig(orig.GetLasHeader(), orig.GetExtraByteVlr())
+    cfg = copc.LasHeaderConfig(orig.GetLasHeader(), orig.GetExtraByteVlr())
     writer = copc.FileWriter(file_path, cfg)
     writer.Close()
 
@@ -107,7 +107,7 @@ def test_writer_pages():
     file_path = "data/writer_test.copc.laz"
 
     # Root Page
-    writer = copc.FileWriter(file_path, copc.LasConfig(0))
+    writer = copc.FileWriter(file_path, copc.LasHeaderConfig(0))
 
     assert not writer.FindNode(copc.VoxelKey().BaseKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey().InvalidKey()).IsValid()
@@ -129,7 +129,7 @@ def test_writer_pages():
     assert not reader.FindNode(key=copc.VoxelKey().InvalidKey()).IsValid()
 
     # Nested page
-    writer = copc.FileWriter(file_path, copc.LasConfig(0))
+    writer = copc.FileWriter(file_path, copc.LasHeaderConfig(0))
 
     root_page = writer.GetRootPage()
 
@@ -156,7 +156,7 @@ def test_writer_copy():
 
     reader = copc.FileReader("data/autzen-classified.copc.laz")
 
-    cfg = copc.LasConfig(reader.GetLasHeader(), reader.GetExtraByteVlr())
+    cfg = copc.LasHeaderConfig(reader.GetLasHeader(), reader.GetExtraByteVlr())
     writer = copc.FileWriter(file_path, cfg)
 
     root_page = writer.GetRootPage()
