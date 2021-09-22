@@ -94,7 +94,7 @@ class LasHeader
     }
     std::string GeneratingSoftware() const { return generating_software_; }
 
-    double ComputeSpan() { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
+    void ComputeSpan() { span = std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};
