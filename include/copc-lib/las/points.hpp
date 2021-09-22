@@ -119,7 +119,7 @@ class Points
     {
         for (auto point : points_)
         {
-            if (!point.Within(box))
+            if (!point->Within(box))
                 return false;
         }
         return true;

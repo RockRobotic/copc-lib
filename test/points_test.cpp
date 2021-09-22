@@ -296,18 +296,18 @@ TEST_CASE("Points tests", "[Point]")
         for (int i = 0; i < num_points; i++)
         {
             auto p = points.CreatePoint();
-            p.X(dist(gen));
-            p.Y(dist(gen));
-            p.Z(dist(gen));
+            p->X(dist(gen));
+            p->Y(dist(gen));
+            p->Z(dist(gen));
             points.AddPoint(p);
         }
 
         REQUIRE(points.Within(copc::Box(0, 0, 0, 5, 5, 5)));
 
         auto p = points.CreatePoint();
-        p.X(dist(gen));
-        p.Y(dist(gen));
-        p.Z(6);
+        p->X(dist(gen));
+        p->Y(dist(gen));
+        p->Z(6);
         points.AddPoint(p);
 
         REQUIRE(!points.Within(copc::Box(0, 0, 0, 5, 5, 5)));
