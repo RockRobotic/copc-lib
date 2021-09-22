@@ -34,12 +34,12 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point0 = Point(0);
         // Position
-        point0.UnscaledX(std::numeric_limits<int>::max());
-        point0.UnscaledY(std::numeric_limits<int>::max());
-        point0.UnscaledZ(std::numeric_limits<int>::max());
-        REQUIRE(point0.UnscaledX() == std::numeric_limits<int>::max());
-        REQUIRE(point0.UnscaledY() == std::numeric_limits<int>::max());
-        REQUIRE(point0.UnscaledZ() == std::numeric_limits<int>::max());
+        point0.UnscaledX(std::numeric_limits<int32_t>::max());
+        point0.UnscaledY(std::numeric_limits<int32_t>::max());
+        point0.UnscaledZ(std::numeric_limits<int32_t>::max());
+        REQUIRE(point0.UnscaledX() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point0.UnscaledY() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point0.UnscaledZ() == std::numeric_limits<int32_t>::max());
 
         // Intensity
         point0.Intensity(std::numeric_limits<unsigned short>::max());
@@ -193,12 +193,12 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point6 = Point(6);
         // Position
-        point6.UnscaledX(std::numeric_limits<int>::max());
-        point6.UnscaledY(std::numeric_limits<int>::max());
-        point6.UnscaledZ(std::numeric_limits<int>::max());
-        REQUIRE(point6.UnscaledX() == std::numeric_limits<int>::max());
-        REQUIRE(point6.UnscaledY() == std::numeric_limits<int>::max());
-        REQUIRE(point6.UnscaledZ() == std::numeric_limits<int>::max());
+        point6.UnscaledX(std::numeric_limits<int32_t>::max());
+        point6.UnscaledY(std::numeric_limits<int32_t>::max());
+        point6.UnscaledZ(std::numeric_limits<int32_t>::max());
+        REQUIRE(point6.UnscaledX() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point6.UnscaledY() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point6.UnscaledZ() == std::numeric_limits<int32_t>::max());
 
         // Intensity
         point6.Intensity(std::numeric_limits<unsigned short>::max());

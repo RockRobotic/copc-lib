@@ -104,9 +104,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE_THROWS(points[0].ExtendedScanAngle());
 
         // Setters
-        points[0].UnscaledX(std::numeric_limits<int>::max());
-        points[0].UnscaledY(std::numeric_limits<int>::max());
-        points[0].UnscaledZ(std::numeric_limits<int>::max());
+        points[0].UnscaledX(std::numeric_limits<int32_t>::max());
+        points[0].UnscaledY(std::numeric_limits<int32_t>::max());
+        points[0].UnscaledZ(std::numeric_limits<int32_t>::max());
         points[0].Intensity(std::numeric_limits<unsigned short>::max());
         points[0].NumberOfReturns(7);
         points[0].ReturnNumber(7);
@@ -126,9 +126,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE_THROWS(points[0].ScannerChannel(3));
         REQUIRE_THROWS(points[0].ScanAngle(std::numeric_limits<short>::max()));
 
-        REQUIRE(points[0].UnscaledX() == std::numeric_limits<int>::max());
-        REQUIRE(points[0].UnscaledY() == std::numeric_limits<int>::max());
-        REQUIRE(points[0].UnscaledZ() == std::numeric_limits<int>::max());
+        REQUIRE(points[0].UnscaledX() == std::numeric_limits<int32_t>::max());
+        REQUIRE(points[0].UnscaledY() == std::numeric_limits<int32_t>::max());
+        REQUIRE(points[0].UnscaledZ() == std::numeric_limits<int32_t>::max());
         REQUIRE(points[0].Intensity() == std::numeric_limits<unsigned short>::max());
         REQUIRE(points[0].NumberOfReturns() == 7);
         REQUIRE(points[0].ReturnNumber() == 7);
