@@ -253,8 +253,8 @@ def test_points_group_accessors():
         assert p.Y == i + 800
         assert p.Z == i * 4
 
-    # test last point
-    last_point = points[len(points) - 1]
+    # test negative indices
+    last_point = points[-1]
     assert last_point.X == 1
     assert last_point.Y == 2
     assert last_point.Z == 3
@@ -281,32 +281,31 @@ def test_points_accessors():
     assert min(points.Z) == 0 - 80
     assert max(points.Z) == (num_points - 1) - 80
 
+    # test slice
+    assert points.X[5:10] == [x for x in range(5, 10)]
+    assert points.Y[-10:] == [x * 3 for x in range(1990, 2000)]
+    assert points.Z[:10] == [x - 80 for x in range(0, 10)]
+
     # test index setter
     for i in range(len(points)):
         p = points[i]
         p.X = 20
         p.Y = 30
         p.Z = 40
-
-    assert min(points.X) == 20
-    assert max(points.X) == 20
-    assert min(points.Y) == 30
-    assert max(points.Y) == 30
-    assert min(points.Z) == 40
-    assert max(points.Z) == 40
+     
+    assert all([x == 20 for x in points.X])
+    assert all([y == 30 for y in points.Y])
+    assert all([z == 40 for z in points.Z])
 
     # test iterator setter
     for p in points:
         p.X = -50
         p.Y = -60
         p.Z = -70
-
-    assert min(points.X) == -50
-    assert max(points.X) == -50
-    assert min(points.Y) == -60
-    assert max(points.Y) == -60
-    assert min(points.Z) == -70
-    assert max(points.Z) == -70
+        
+    assert all([x == -50 for x in points.X])
+    assert all([y == -60 for y in points.Y])
+    assert all([z == -70 for z in points.Z])
 
 
 def test_points_indexer_setter():
@@ -318,13 +317,10 @@ def test_points_indexer_setter():
     num_points = 2000
     for i in range(num_points):
         points.AddPoint(points.CreatePoint())
-
-    assert min(points.X) == 0
-    assert max(points.X) == 0
-    assert min(points.Y) == 0
-    assert max(points.Y) == 0
-    assert min(points.Z) == 0
-    assert max(points.Z) == 0
+        
+    assert all([x == 0 for x in points.X])
+    assert all([y == 0 for y in points.Y])
+    assert all([z == 0 for z in points.Z])
 
     points[0].X = 20
     points[0].Y = 40
@@ -335,3 +331,25 @@ def test_points_indexer_setter():
     assert points[0].Y == 40
     assert points[0].Z == 80
     assert points[2].Intensity == 60000
+    
+    # test slicing setters
+    points[:].X = [2] * len(points)
+    points[:].Y = [4] * len(points)
+    points[:].Z = [8] * len(points)
+
+    assert all([x == 2 for x in points.X])
+    assert all([x == 4 for x in points.Y])
+    assert all([x == 8 for x in points.Z])
+
+    # TODO: Allow the user to set all values the same
+    points[1000:].X = [-2] * 1000
+    points[1500:1600].Y = [-4] * 100
+    points[-5:].Z = [-8] * 5
+
+    assert all([x == -2 for i, x in enumerate(points.X) if i >= 1000])
+    assert all([x != -2 for i, x in enumerate(points.X) if not i >= 1000])
+    assert all([x == -4 for i, x in enumerate(points.Y) if i >= 1500 and i < 1600])
+    assert all([x != -4 for i, x in enumerate(points.Y) if not (i >= 1500 and i < 1600)])
+    assert all([x == -8 for i, x in enumerate(points.Z) if i >= len(points) - 5])
+    assert all([x != -8 for i, x in enumerate(points.Z) if not (i >= len(points) - 5)])
+    

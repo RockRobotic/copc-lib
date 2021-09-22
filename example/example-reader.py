@@ -37,8 +37,9 @@ def reader_example():
     print(node_points)
 
     print("First 5 points:")
-    for i in range(5):
-        print(node_points[i])
+    # Points object supports slicing
+    for point in node_points[:5]:
+        print(point)
 
     # We can also get the raw compressed data if we want to decompress it ourselves:
 

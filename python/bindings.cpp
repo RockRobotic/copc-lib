@@ -169,6 +169,18 @@ PYBIND11_MODULE(copclib, m)
         .def(py::self != py::self)
         .def("__str__", &las::Point::ToString)
         .def("__repr__", &las::Point::ToString);
+    
+
+    using DiffType = ssize_t;
+    using SizeType = size_t;
+
+    auto wrap_i = [](DiffType i, SizeType n) {
+        if (i < 0)
+            i += n;
+        if (i < 0 || (SizeType)i >= n)
+            throw py::index_error();
+        return i;
+    };
 
     py::class_<las::Points>(m, "Points")
         .def(py::init<const uint8_t &, const Vector3 &, const Vector3 &, const uint16_t &>(),
@@ -195,17 +207,22 @@ PYBIND11_MODULE(copclib, m)
                                          const Vector3 &>(&las::Points::Unpack))
         /// Bare bones interface
         .def("__getitem__",
-             [](const las::Points &s, size_t i) {
-                 if (i >= s.Size())
-                     throw py::index_error();
-                 return s[i];
+             [wrap_i](const las::Points &s, DiffType i) {
+                 i = wrap_i(i, s.Size());
+                 return s[(SizeType)i];
              })
         .def("__setitem__",
-             [](las::Points &s, size_t i, std::shared_ptr<las::Point> v) {
-                 if (i >= s.Size())
-                     throw py::index_error();
-                 s[i] = v;
+             [wrap_i](las::Points &s, DiffType i, std::shared_ptr<las::Point> v) {
+                 i = wrap_i(i, s.Size());
+                 s[(SizeType)i] = v;
              })
+        // todo?
+        //.def(
+        //    "__delitem__",
+        //    [wrap_i](las::Points &s, size_t i) {
+        //        i = wrap_i(i, s.Size());
+        //    },
+        //    "Delete the list elements at index ``i``")
         .def("__len__", &las::Points::Size)
         /// Optional sequence protocol operations
         .def(
@@ -213,6 +230,40 @@ PYBIND11_MODULE(copclib, m)
             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("__contains__",
              [](las::Points &s, std::shared_ptr<las::Point> v) { return std::find(s.begin(), s.end(), v) != s.end(); })
+        /// Slicing protocol (optional)
+        .def("__getitem__",
+             [](const las::Points &s, const py::slice &slice) -> las::Points * {
+                 size_t start = 0, stop = 0, step = 0, slicelength = 0;
+                 if (!slice.compute(s.Size(), &start, &stop, &step, &slicelength))
+                     throw py::error_already_set();
+
+                 std::vector<std::shared_ptr<las::Point>> new_points;
+                 new_points.reserve(slicelength);
+
+                 for (size_t i = 0; i < slicelength; ++i)
+                 {
+                     new_points.push_back(s[start]);
+                     start += step;
+                 }
+
+                 auto *seq = new las::Points(new_points);
+                 return seq;
+             })
+        .def("__setitem__",
+             [](las::Points &s, const py::slice &slice, const las::Points &value) {
+                 size_t start = 0, stop = 0, step = 0, slicelength = 0;
+                 if (!slice.compute(s.Size(), &start, &stop, &step, &slicelength))
+                     throw py::error_already_set();
+
+                 if (slicelength != value.Size())
+                     throw std::runtime_error("Left and right hand size of slice assignment have different sizes!");
+
+                 for (size_t i = 0; i < slicelength; ++i)
+                 {
+                     s[start] = value[i];
+                     start += step;
+                 }
+             })
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
 
