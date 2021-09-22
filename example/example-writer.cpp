@@ -109,13 +109,13 @@ las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
     {
         // Create a point with a given point format
         // The use of las::Point constructor is strongly discouraged, instead use las::Points::CreatePoint
-        las::Point point = points.CreatePoint();
+        auto point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point.UnscaledX(rand_x(gen));
-        point.UnscaledY(rand_y(gen));
-        point.UnscaledZ(rand_z(gen));
+        point->UnscaledX(rand_x(gen));
+        point->UnscaledY(rand_y(gen));
+        point->UnscaledZ(rand_z(gen));
         // For visualization purposes
-        point.PointSourceID(key.d + key.x + key.y + key.d);
+        point->PointSourceID(key.d + key.x + key.y + key.d);
 
         points.AddPoint(point);
     }

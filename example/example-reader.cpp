@@ -47,7 +47,7 @@ void ReaderExample()
         cout << endl << "First 5 points: " << endl;
         for (int i = 0; i < 5; i++)
         {
-            cout << node_points.Get(i).ToString() << endl;
+            cout << node_points.Get(i)->ToString() << endl;
         }
     }
 

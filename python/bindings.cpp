@@ -56,6 +56,7 @@ PYBIND11_MODULE(copclib, m)
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
+    py::implicitly_convertible<py::tuple, VoxelKey>();
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -98,10 +99,10 @@ PYBIND11_MODULE(copclib, m)
             [](const py::tuple &t) { // __setstate__
                 return Vector3(t[0].cast<double>(), t[1].cast<double>(), t[2].cast<double>());
             }));
-
     py::implicitly_convertible<py::list, Vector3>();
+    py::implicitly_convertible<py::tuple, Vector3>();
 
-    py::class_<las::Point>(m, "Point")
+    py::class_<las::Point, std::shared_ptr<las::Point>>(m, "Point")
         .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
                       py::overload_cast<const double &>(&las::Point::X))
         .def_property("Y", py::overload_cast<>(&las::Point::Y, py::const_),
@@ -188,10 +189,21 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &las::Point::ToString)
         .def("__repr__", &las::Point::ToString);
 
+    using DiffType = ssize_t;
+    using SizeType = size_t;
+
+    auto wrap_i = [](DiffType i, SizeType n) {
+        if (i < 0)
+            i += n;
+        if (i < 0 || (SizeType)i >= n)
+            throw py::index_error();
+        return i;
+    };
+
     py::class_<las::Points>(m, "Points")
         .def(py::init<const uint8_t &, const Vector3 &, const Vector3 &, const uint16_t &>(),
              py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("num_extra_bytes") = 0)
-        .def(py::init<const std::vector<las::Point> &>(), py::arg("points"))
+        .def(py::init<const std::vector<std::shared_ptr<las::Point>> &>(), py::arg("points"))
         .def(py::init<const las::LasHeader &>())
         .def_property("X", py::overload_cast<>(&las::Points::X, py::const_),
                       py::overload_cast<const std::vector<double> &>(&las::Points::X))
@@ -202,18 +214,74 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
         .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
-        .def("Get", py::overload_cast<>(&las::Points::Get))
-        .def("Get", py::overload_cast<const size_t &>(&las::Points::Get), py::arg("idx"))
-        .def_property_readonly("Size", &las::Points::Size)
         .def("AddPoint", &las::Points::AddPoint)
         .def("AddPoints", py::overload_cast<las::Points>(&las::Points::AddPoints))
-        .def("AddPoints", py::overload_cast<std::vector<las::Point>>(&las::Points::AddPoints))
+        .def("AddPoints", py::overload_cast<std::vector<std::shared_ptr<las::Point>>>(&las::Points::AddPoints))
         .def("CreatePoint", &las::Points::CreatePoint)
         .def("ToPointFormat", &las::Points::ToPointFormat, py::arg("point_format_id"))
         .def("Pack", py::overload_cast<>(&las::Points::Pack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const las::LasHeader &>(&las::Points::Unpack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
                                          const Vector3 &>(&las::Points::Unpack))
+        /// Bare bones interface
+        .def("__getitem__",
+             [wrap_i](const las::Points &s, DiffType i) {
+                 i = wrap_i(i, s.Size());
+                 return s[(SizeType)i];
+             })
+        .def("__setitem__",
+             [wrap_i](las::Points &s, DiffType i, std::shared_ptr<las::Point> v) {
+                 i = wrap_i(i, s.Size());
+                 s[(SizeType)i] = v;
+             })
+        // todo?
+        //.def(
+        //    "__delitem__",
+        //    [wrap_i](las::Points &s, size_t i) {
+        //        i = wrap_i(i, s.Size());
+        //    },
+        //    "Delete the list elements at index ``i``")
+        .def("__len__", &las::Points::Size)
+        /// Optional sequence protocol operations
+        .def(
+            "__iter__", [](las::Points &s) { return py::make_iterator(s.begin(), s.end()); },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
+        .def("__contains__",
+             [](las::Points &s, std::shared_ptr<las::Point> v) { return std::find(s.begin(), s.end(), v) != s.end(); })
+        /// Slicing protocol (optional)
+        .def("__getitem__",
+             [](const las::Points &s, const py::slice &slice) -> las::Points * {
+                 size_t start = 0, stop = 0, step = 0, slicelength = 0;
+                 if (!slice.compute(s.Size(), &start, &stop, &step, &slicelength))
+                     throw py::error_already_set();
+
+                 std::vector<std::shared_ptr<las::Point>> new_points;
+                 new_points.reserve(slicelength);
+
+                 for (size_t i = 0; i < slicelength; ++i)
+                 {
+                     new_points.push_back(s[start]);
+                     start += step;
+                 }
+
+                 auto *seq = new las::Points(new_points);
+                 return seq;
+             })
+        .def("__setitem__",
+             [](las::Points &s, const py::slice &slice, const las::Points &value) {
+                 size_t start = 0, stop = 0, step = 0, slicelength = 0;
+                 if (!slice.compute(s.Size(), &start, &stop, &step, &slicelength))
+                     throw py::error_already_set();
+
+                 if (slicelength != value.Size())
+                     throw std::runtime_error("Left and right hand size of slice assignment have different sizes!");
+
+                 for (size_t i = 0; i < slicelength; ++i)
+                 {
+                     s[start] = value[i];
+                     start += step;
+                 }
+             })
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
 

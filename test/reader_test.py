@@ -89,8 +89,8 @@ def test_point_error_handling():
         reader.GetPoints(invalid_node)
     reader.GetPoints(valid_node)
 
-    assert len(reader.GetPoints(invalid_node.key).Get()) == 0
-    assert len(reader.GetPoints(valid_node.key).Get()) != 0
+    assert len(reader.GetPoints(invalid_node.key)) == 0
+    assert len(reader.GetPoints(valid_node.key)) != 0
 
     with pytest.raises(RuntimeError):
         reader.GetPointDataCompressed(invalid_node)
