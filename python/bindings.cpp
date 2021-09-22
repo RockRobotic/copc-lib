@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <pybind11/operators.h>
@@ -24,7 +25,18 @@ PYBIND11_MAKE_OPAQUE(std::vector<char>);
 
 PYBIND11_MODULE(copclib, m)
 {
-    py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol());
+
+    py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol())
+        .def(py::pickle(
+            [](const std::vector<char> &vec) { // __getstate__
+                // Convert vector<char> to string for pickling
+                return py::make_tuple(py::bytes(std::string(vec.begin(), vec.end())));
+            },
+            [](const py::tuple &t) { // __setstate__
+                auto s = t[0].cast<std::string>();
+                // Convert string back to vector<char> for unpickling
+                return std::vector<char>(s.begin(), s.end());
+            }));
 
     py::class_<VoxelKey>(m, "VoxelKey")
         .def(py::init<>())
@@ -104,7 +116,14 @@ PYBIND11_MODULE(copclib, m)
         .def("DefaultOffset", &Vector3::DefaultOffset)
         .def(py::self == py::self)
         .def("__str__", &Vector3::ToString)
-        .def("__repr__", &Vector3::ToString);
+        .def("__repr__", &Vector3::ToString)
+        .def(py::pickle(
+            [](const Vector3 &vec) { // __getstate__
+                return py::make_tuple(vec.x, vec.y, vec.z);
+            },
+            [](const py::tuple &t) { // __setstate__
+                return Vector3(t[0].cast<double>(), t[1].cast<double>(), t[2].cast<double>());
+            }));
 
     py::implicitly_convertible<py::list, Vector3>();
     py::implicitly_convertible<py::tuple, Vector3>();
@@ -261,7 +280,10 @@ PYBIND11_MODULE(copclib, m)
         .def("AddNodeCompressed", &Writer::AddNodeCompressed)
         .def("AddNode", py::overload_cast<Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode),
              py::arg("page"), py::arg("key"), py::arg("uncompressed_data"))
-        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"));
+        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"))
+        .def("SetMin", &Writer::SetMin)
+        .def("SetMax", &Writer::SetMax)
+        .def("SetPointsByReturn", &Writer::SetPointsByReturn);
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
@@ -273,9 +295,14 @@ PYBIND11_MODULE(copclib, m)
           py::overload_cast<const std::vector<char> &, const las::LasHeader &, const int &>(
               &laz::Decompressor::DecompressBytes),
           py::arg("compressed_data"), py::arg("header"), py::arg("point_count"));
+    m.def("DecompressBytes",
+          py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const int &>(
+              &laz::Decompressor::DecompressBytes),
+          py::arg("compressed_data"), py::arg("point_format_id"), py::arg("num_extra_bytes"), py::arg("point_count"));
 
     py::class_<las::LasHeader>(m, "LasHeader")
         .def(py::init<>())
+        .def_property_readonly("num_extra_bytes", &las::LasHeader::NumExtraBytes)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
@@ -303,7 +330,51 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("wave_offset", &las::LasHeader::wave_offset)
         .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
-        .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14);
+        .def_readwrite("point_count_14", &las::LasHeader::point_count)
+        .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14)
+        .def(py::pickle(
+            [](const las::LasHeader &h) { // __getstate__
+                /* Return a tuple that fully encodes the state of the object */
+                return py::make_tuple(h.file_source_id, h.global_encoding, h.GUID(), h.version_major, h.version_minor,
+                                      h.SystemIdentifier(), h.GeneratingSoftware(), h.creation_day, h.creation_year,
+                                      h.header_size, h.point_offset, h.vlr_count, h.point_format_id,
+                                      h.point_record_length, h.point_count, h.points_by_return, h.scale, h.offset,
+                                      h.max, h.min, h.wave_offset, h.evlr_offset, h.evlr_count, h.point_count_14,
+                                      h.points_by_return_14);
+            },
+            [](py::tuple t) { // __setstate__
+                if (t.size() != 25)
+                    throw std::runtime_error("Invalid state!");
+
+                /* Create a new C++ instance */
+                las::LasHeader h;
+                h.file_source_id = t[0].cast<uint16_t>();
+                h.global_encoding = t[1].cast<uint16_t>();
+                h.GUID(t[2].cast<std::string>());
+                h.version_major = t[3].cast<uint8_t>();
+                h.version_minor = t[4].cast<uint8_t>();
+                h.SystemIdentifier(t[5].cast<std::string>());
+                h.GeneratingSoftware(t[6].cast<std::string>());
+                h.creation_day = t[7].cast<uint16_t>();
+                h.creation_year = t[8].cast<uint16_t>();
+                h.header_size = t[9].cast<uint16_t>();
+                h.point_offset = t[10].cast<uint32_t>();
+                h.vlr_count = t[11].cast<uint32_t>();
+                h.point_format_id = t[12].cast<int8_t>();
+                h.point_record_length = t[13].cast<uint16_t>();
+                h.point_count = t[14].cast<uint32_t>();
+                h.points_by_return = t[15].cast<std::array<uint32_t, 5>>();
+                h.scale = t[16].cast<Vector3>();
+                h.offset = t[17].cast<Vector3>();
+                h.max = t[18].cast<Vector3>();
+                h.min = t[19].cast<Vector3>();
+                h.wave_offset = t[20].cast<uint64_t>();
+                h.evlr_offset = t[21].cast<uint64_t>();
+                h.evlr_count = t[22].cast<uint32_t>();
+                h.point_count_14 = t[23].cast<uint64_t>();
+                h.points_by_return_14 = t[24].cast<std::array<uint64_t, 15>>();
+                return h;
+            }));
 
     py::class_<Writer::LasConfig>(m, "LasConfig")
         .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
