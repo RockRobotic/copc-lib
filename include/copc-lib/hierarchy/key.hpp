@@ -82,6 +82,7 @@ class Box
 {
   public:
     Box() = default;
+    // TODO[Leo]: add checks for min<=max
     Box(const double &x_min, const double &y_min, const double &z_min, const double &x_max, const double &y_max,
         const double &z_max)
         : x_min(x_min), y_min(y_min), z_min(z_min), x_max(x_max), y_max(y_max), z_max(z_max){};

@@ -109,18 +109,39 @@ TEST_CASE("Box constructor", "[Box]")
 
 TEST_CASE("Box functions", "[Box]")
 {
-    SECTION("Intersects")
+    SECTION("Intersects 2D box")
     {
-        // X axis only crosses boundary
-        REQUIRE(Box(1, 0.5, 2, 1).Intersects(Box(0.5, 0, 1.5, 2)));
-        REQUIRE(Box(0.5, 0, 1.5, 2).Intersects(Box(1, 0.5, 2, 1)));
-
-        REQUIRE(!Box(1, 0.5, 2, 1).Intersects(Box(2.01, 0, 2.5, 2)));
-        REQUIRE(!Box(2.01, 0, 2.5, 2).Intersects(Box(1, 0.5, 2, 1)));
-
-        // If one box contains the other they also intersect
-        REQUIRE(Box(1, 1, 2, 2).Intersects(Box(0, 0, 4, 4)));
+        // Contains
         REQUIRE(Box(0, 0, 4, 4).Intersects(Box(1, 1, 2, 2)));
+        // Crosses
+        REQUIRE(Box(1, 1, 2, 2).Intersects(Box(1.5, 1.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 2, 2).Intersects(Box(1.5, 0.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 2, 2).Intersects(Box(0.5, 1.5, 2.5, 2.5)));
+        // Equals
+        REQUIRE(Box(0, 0, 1, 1).Intersects(Box(0, 0, 1, 1)));
+        // Touches
+        REQUIRE(Box(0, 0, 1, 1).Intersects(Box(1, 1, 2, 2)));
+        // Within
+        REQUIRE(Box(1, 1, 2, 2).Intersects(Box(0, 0, 4, 4)));
+        // Outside
+        REQUIRE(!Box(0, 0, 1, 1).Intersects(Box(1, 1.1, 2, 2)));
+    }
+    SECTION("Intersects 3D box")
+    {
+        // Contains
+        REQUIRE(Box(0, 0, 0, 4, 4, 4).Intersects(Box(1, 1, 1, 2, 2, 2)));
+        // Crosses
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(1.5, 1.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(1.5, 0.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(0.5, 1.5, 2.5, 2.5)));
+        // Equals
+        REQUIRE(Box(0, 0, 0, 1, 1, 1).Intersects(Box(0, 0, 0, 1, 1, 1)));
+        // Touches
+        REQUIRE(Box(0, 0, 0, 1, 1, 1).Intersects(Box(1, 1, 1, 2, 2, 2)));
+        // Within
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(0, 0, 0, 4, 4, 4)));
+        // Outside
+        REQUIRE(!Box(0, 0, 0, 1, 1, 1).Intersects(Box(1, 1, 1.1, 2, 2, 2)));
     }
 
     SECTION("Contains box")
@@ -168,12 +189,20 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
 
     SECTION("Intersects")
     {
-        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 0.5, 2.0, 0.75), header));
-        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 1.5, 2.0, 2.0), header));
-        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 0.5, 1.5, 1.5, 1.5, 2.0), header));
-
-        // If one box contains the other they also intersect
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0, 0, 2, 2), header));
+        // Contains
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.1, 1.1, 1.1, 1.9, 1.9, 1.9), header));
+        // Crosses
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 0.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0.5, 1.5, 2.5, 2.5), header));
+        // Equals
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0, 0, 0, 1, 1, 1), header));
+        // Touches
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(1, 1, 1, 2, 2, 2), header));
+        // Within
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0, 0, 0, 4, 4, 4), header));
+        // Outside
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(1, 1, 1.1, 2, 2, 2), header));
     }
 
     SECTION("Contains box")

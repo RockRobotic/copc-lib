@@ -111,17 +111,37 @@ def test_box_constructors():
 
 def test_box_functions():
 
-    # Intersects
-    ## X axis only crosses boundary
-    assert copc.Box(1, 0.5, 2, 1).Intersects(copc.Box(0.5, 0, 1.5, 2))
-    assert copc.Box(0.5, 0, 1.5, 2).Intersects(copc.Box(1, 0.5, 2, 1))
-
-    assert not copc.Box(1, 0.5, 2, 1).Intersects(copc.Box(2.01, 0, 2.5, 2))
-    assert not copc.Box(2.01, 0, 2.5, 2).Intersects(copc.Box(1, 0.5, 2, 1))
-
-    ## If one box contains the other they also intersect
-    assert copc.Box(1, 1, 2, 2).Intersects(copc.Box(0, 0, 4, 4))
+    # Intersects 2D box
+    ## Contains
     assert copc.Box(0, 0, 4, 4).Intersects(copc.Box(1, 1, 2, 2))
+    ## Crosses
+    assert copc.Box(1, 1, 2, 2).Intersects(copc.Box(1.5, 1.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 2, 2).Intersects(copc.Box(1.5, 0.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 2, 2).Intersects(copc.Box(0.5, 1.5, 2.5, 2.5))
+    ## Equals
+    assert copc.Box(0, 0, 1, 1).Intersects(copc.Box(0, 0, 1, 1))
+    ## Touches
+    assert copc.Box(0, 0, 1, 1).Intersects(copc.Box(1, 1, 2, 2))
+    ## Within
+    assert copc.Box(1, 1, 2, 2).Intersects(copc.Box(0, 0, 4, 4))
+    ## Outside
+    assert not copc.Box(0, 0, 1, 1).Intersects(copc.Box(1, 1.1, 2, 2))
+
+    # Intersects 3D box
+    ## Contains
+    assert copc.Box(0, 0, 0, 4, 4, 4).Intersects(copc.Box(1, 1, 1, 2, 2, 2))
+    ## Crosses
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects(copc.Box(1.5, 1.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects(copc.Box(1.5, 0.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects(copc.Box(0.5, 1.5, 2.5, 2.5))
+    ## Equals
+    assert copc.Box(0, 0, 0, 1, 1, 1).Intersects(copc.Box(0, 0, 0, 1, 1, 1))
+    ## Touches
+    assert copc.Box(0, 0, 0, 1, 1, 1).Intersects(copc.Box(1, 1, 1, 2, 2, 2))
+    ## Within
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects(copc.Box(0, 0, 0, 4, 4, 4))
+    ## Outside
+    assert not copc.Box(0, 0, 0, 1, 1, 1).Intersects(copc.Box(1, 1, 1.1, 2, 2, 2))
 
     # Contains box
     header = copc.LasHeader()
@@ -161,13 +181,24 @@ def test_key_spatial_functions():
     header.span = 2
 
     # Intersects
-    assert copc.VoxelKey(1, 0, 0, 0).Intersects(copc.Box(0.5, 0.5, 2, 0.75), header)
-    assert not copc.VoxelKey(1, 0, 0, 0).Intersects(copc.Box(0.5, 1.5, 2, 2), header)
-    assert not copc.VoxelKey(1, 0, 0, 0).Intersects(
-        copc.Box(0.5, 0.5, 1.5, 1.5, 1.5, 2), header
+    ## Contains
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects(
+        copc.Box(1.1, 1.1, 1.1, 1.9, 1.9, 1.9), header
     )
-    ## If one box contains the other they also intersect
-    assert copc.VoxelKey(1, 1, 1, 1).Intersects(copc.Box(0, 0, 2, 2), header)
+    ## Crosses
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects(copc.Box(1.5, 1.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects(copc.Box(1.5, 0.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects(copc.Box(0.5, 1.5, 2.5, 2.5), header)
+    ## Equals
+    assert copc.VoxelKey(1, 0, 0, 0).Intersects(copc.Box(0, 0, 0, 1, 1, 1), header)
+    ## Touches
+    assert copc.VoxelKey(1, 0, 0, 0).Intersects(copc.Box(1, 1, 1, 2, 2, 2), header)
+    ## Within
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects(copc.Box(0, 0, 0, 4, 4, 4), header)
+    ## Outside
+    assert not copc.VoxelKey(1, 0, 0, 0).Intersects(
+        copc.Box(1, 1, 1.1, 2, 2, 2), header
+    )
 
     # Contains box
     assert copc.VoxelKey(0, 0, 0, 0).Contains(copc.Box(0, 0, 0, 1, 1, 1), header)
