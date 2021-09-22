@@ -1,6 +1,7 @@
 from sys import float_info
 
 import copclib as copc
+import pytest
 
 
 def test_key_validity():
@@ -77,24 +78,32 @@ def test_get_parents():
 
 def test_box_constructors():
 
-    # 3D box constructor
+    # 2D box constructor
+    box = copc.Box(1.0, 0.0, 1.0, 1.0)
+    assert box.x_min == 1.0
+    assert box.y_min == 0.0
+    assert box.z_min == -float_info.max
+    assert box.x_max == 1.0
+    assert box.y_max == 1.0
+    assert box.z_max == float_info.max
 
-    box = copc.Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
-    assert box.x_min == 0.0
+    with pytest.raises(RuntimeError):
+        assert copc.Box(2, 0, 1, 1)
+        assert copc.Box(0, 2, 1, 1)
+
+    # 3D box constructor
+    box = copc.Box(1.0, 0.0, 0.0, 1.0, 1.0, 1.0)
+    assert box.x_min == 1.0
     assert box.y_min == 0.0
     assert box.z_min == 0.0
     assert box.x_max == 1.0
     assert box.y_max == 1.0
     assert box.z_max == 1.0
 
-    # 2D box constructor
-    box = copc.Box(0.0, 0.0, 1.0, 1.0)
-    assert box.x_min == 0.0
-    assert box.y_min == 0.0
-    assert box.z_min == -float_info.max
-    assert box.x_max == 1.0
-    assert box.y_max == 1.0
-    assert box.z_max == float_info.max
+    with pytest.raises(RuntimeError):
+        assert copc.Box(2, 0, 0, 1, 1, 1)
+        assert copc.Box(0, 2, 0, 1, 1, 1)
+        assert copc.Box(0, 0, 2, 1, 1, 1)
 
     # copc.VoxelKey constructor
     header = copc.LasHeader()

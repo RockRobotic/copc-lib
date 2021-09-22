@@ -70,26 +70,33 @@ TEST_CASE("GetParents Checks", "[Key]")
 
 TEST_CASE("Box constructor", "[Box]")
 {
-    SECTION("3D box constructor")
-    {
-        auto box = Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
-        REQUIRE(box.x_min == 0.0);
-        REQUIRE(box.y_min == 0.0);
-        REQUIRE(box.z_min == 0.0);
-        REQUIRE(box.x_max == 1.0);
-        REQUIRE(box.y_max == 1.0);
-        REQUIRE(box.z_max == 1.0);
-    }
-
     SECTION("2D box constructor")
     {
-        auto box = Box(0.0, 0.0, 1.0, 1.0);
-        REQUIRE(box.x_min == 0.0);
+        auto box = Box(1.0, 0.0, 1.0, 1.0);
+        REQUIRE(box.x_min == 1.0);
         REQUIRE(box.y_min == 0.0);
         REQUIRE(box.x_max == 1.0);
         REQUIRE(box.y_max == 1.0);
         REQUIRE(box.z_min == -std::numeric_limits<double>::max());
         REQUIRE(box.z_max == std::numeric_limits<double>::max());
+
+        REQUIRE_THROWS(Box(2, 0, 1, 1));
+        REQUIRE_THROWS(Box(0, 2, 1, 1));
+    }
+
+    SECTION("3D box constructor")
+    {
+        auto box = Box(1.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+        REQUIRE(box.x_min == 1.0);
+        REQUIRE(box.y_min == 0.0);
+        REQUIRE(box.z_min == 0.0);
+        REQUIRE(box.x_max == 1.0);
+        REQUIRE(box.y_max == 1.0);
+        REQUIRE(box.z_max == 1.0);
+
+        REQUIRE_THROWS(Box(2, 0, 0, 1, 1, 1));
+        REQUIRE_THROWS(Box(0, 2, 0, 1, 1, 1));
+        REQUIRE_THROWS(Box(0, 0, 2, 1, 1, 1));
     }
 
     SECTION("VoxelKey constructor")

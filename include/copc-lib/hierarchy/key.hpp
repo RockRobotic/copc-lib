@@ -5,6 +5,7 @@
 #include <functional> // for hash
 #include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 #include <copc-lib/las/header.hpp>
@@ -82,12 +83,19 @@ class Box
 {
   public:
     Box() = default;
-    // TODO[Leo]: add checks for min<=max
     Box(const double &x_min, const double &y_min, const double &z_min, const double &x_max, const double &y_max,
         const double &z_max)
-        : x_min(x_min), y_min(y_min), z_min(z_min), x_max(x_max), y_max(y_max), z_max(z_max){};
+        : x_min(x_min), y_min(y_min), z_min(z_min), x_max(x_max), y_max(y_max), z_max(z_max)
+    {
+        if (x_max < x_min || y_max < y_min || z_max < z_min)
+            throw std::runtime_error("One or more of min values is greater than a value");
+    };
     Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max)
-        : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max){};
+        : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max)
+    {
+        if (x_max < x_min || y_max < y_min)
+            throw std::runtime_error("One or more of min values is greater than a value");
+    };
     Box(const VoxelKey &key, const las::LasHeader &header);
 
     static Box ZeroBox() { return Box(0, 0, 0, 0, 0, 0); }
