@@ -101,8 +101,10 @@ TEST_CASE("Box constructor", "[Box]")
 
     SECTION("VoxelKey constructor")
     {
+        // Make a LasHeader with span 10
         auto header = las::LasHeader();
-        header.span = 10;
+        header.min = Vector3(0, 0, 0);
+        header.max = Vector3(10, 10, 10);
         auto box = Box(VoxelKey(1, 1, 0, 0), header);
 
         REQUIRE(box.x_min == 5.0);
@@ -153,8 +155,10 @@ TEST_CASE("Box functions", "[Box]")
 
     SECTION("Contains box")
     {
+        // Make a LasHeader with span 10
         auto header = las::LasHeader();
-        header.span = 10;
+        header.min = Vector3(0, 0, 0);
+        header.max = Vector3(10, 10, 10);
         auto box1 = Box(VoxelKey(0, 0, 0, 0), header);
         auto box2 = Box(VoxelKey(1, 1, 0, 0), header);
         REQUIRE(box1.Contains(box2));
@@ -178,8 +182,10 @@ TEST_CASE("Box functions", "[Box]")
 
     SECTION("Within")
     {
+        // Make a LasHeader with span 10
         auto header = las::LasHeader();
-        header.span = 10;
+        header.min = Vector3(0, 0, 0);
+        header.max = Vector3(10, 10, 10);
         auto box1 = Box(VoxelKey(0, 0, 0, 0), header);
         auto box2 = Box(VoxelKey(1, 1, 0, 0), header);
         REQUIRE(!box1.Within(box2));
@@ -191,8 +197,10 @@ TEST_CASE("Box functions", "[Box]")
 
 TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
 {
+    // Make a LasHeader with span 2
     auto header = las::LasHeader();
-    header.span = 2;
+    header.min = Vector3(0, 0, 0);
+    header.max = Vector3(2, 2, 2);
 
     SECTION("Intersects")
     {
@@ -217,7 +225,8 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
         REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
         REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
         // A box contains itself
-        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, header.span, header.span, header.span), header));
+        REQUIRE(
+            VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header));
     }
 
     SECTION("Contains vector")
@@ -230,6 +239,7 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
     {
         REQUIRE(VoxelKey(1, 1, 1, 1).Within(Box(0.99, 0.99, 0.99, 2.01, 2.01, 2.01), header));
         // A box is within itself
-        REQUIRE(VoxelKey(0, 0, 0, 0).Within(Box(0, 0, 0, header.span, header.span, header.span), header));
+        REQUIRE(
+            VoxelKey(0, 0, 0, 0).Within(Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header));
     }
 }

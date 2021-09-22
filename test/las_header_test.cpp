@@ -86,7 +86,6 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
         REQUIRE(las_header_orig.offset.z == las_header.offset.z);
         REQUIRE(las_header_orig.max == las_header.max);
         REQUIRE(las_header_orig.min == las_header.min);
-        REQUIRE(las_header_orig.span == las_header.span);
         REQUIRE(las_header_orig.wave_offset == las_header.wave_offset);
         REQUIRE(las_header_orig.evlr_offset == las_header.evlr_offset);
         REQUIRE(las_header_orig.evlr_count == las_header.evlr_count);

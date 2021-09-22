@@ -96,6 +96,34 @@ class Box
         if (x_max < x_min || y_max < y_min)
             throw std::runtime_error("One or more of min values is greater than a value");
     };
+
+    // Constructor for tuple and list implicit conversion
+    Box(const std::vector<double> &vec)
+    {
+        if (vec.size() == 4)
+        {
+            x_min = vec[0];
+            y_min = vec[1];
+            x_max = vec[2];
+            y_max = vec[3];
+        }
+        else if (vec.size() == 6)
+        {
+            x_min = vec[0];
+            y_min = vec[1];
+            z_min = vec[2];
+            x_max = vec[3];
+            y_max = vec[4];
+            z_max = vec[5];
+        }
+        else
+        {
+            throw std::runtime_error("Vector must be of size 4 or 6.");
+        }
+        if (x_max < x_min || y_max < y_min || z_max < z_min)
+            throw std::runtime_error("One or more of min values is greater than a value");
+    }
+
     Box(const VoxelKey &key, const las::LasHeader &header);
 
     static Box ZeroBox() { return Box(0, 0, 0, 0, 0, 0); }

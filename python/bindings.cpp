@@ -67,6 +67,7 @@ PYBIND11_MODULE(copclib, m)
              py::arg("x_min"), py::arg("y_min"), py::arg("z_min"), py::arg("x_max"), py::arg("y_max"), py::arg("z_max"))
         .def(py::init<const double &, const double &, const double &, const double &>(), py::arg("x_min"),
              py::arg("y_min"), py::arg("x_max"), py::arg("y_max"))
+        .def(py::init<const std::vector<double> &>(), py::arg("list"))
         .def(py::init<const VoxelKey &, const las::LasHeader &>(), py::arg("key"), py::arg("las_header"))
         .def_readwrite("x_min", &Box::x_min)
         .def_readwrite("y_min", &Box::y_min)
@@ -82,6 +83,9 @@ PYBIND11_MODULE(copclib, m)
         .def("Within", &Box::Within)
         .def("__str__", &Box::ToString)
         .def("__repr__", &Box::ToString);
+
+    py::implicitly_convertible<py::list, Box>();
+    py::implicitly_convertible<py::tuple, Box>();
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -326,7 +330,7 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("offset", &las::LasHeader::offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
-        .def_readwrite("span", &las::LasHeader::span)
+        .def("GetSpan", &las::LasHeader::GetSpan)
         .def_readwrite("wave_offset", &las::LasHeader::wave_offset)
         .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
