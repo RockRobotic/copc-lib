@@ -1,0 +1,24 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      releaseLevel:
+        description: 'release-it type of release - "major", "minor", "patch", or "pre*" version; or specify version'
+        required: true
+        default: 'minor'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - run: npm install --global release-it @release-it/bumper
+      - run: release-it --ci --increment "${{ github.event.inputs.releaseLevel }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_CI }}

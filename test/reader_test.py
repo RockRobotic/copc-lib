@@ -23,6 +23,8 @@ def test_reader():
     assert header.header_size == 375
     assert header.point_format_id == 3
     assert header.point_count == 10653336
+    assert header.point_record_length == 36
+    assert header.num_extra_bytes == 2
 
     # WKT Test
     wkt = reader.GetWkt()

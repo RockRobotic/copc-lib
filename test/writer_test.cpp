@@ -226,6 +226,40 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
             REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
         }
+
+        SECTION("Update")
+        {
+            stringstream out_stream;
+            const Vector3 min1 = {-800, 300, 800};
+            const Vector3 max1 = {5000, 8444, 3333};
+            const Vector3 min2 = {-20, -30, -40};
+            const Vector3 max2 = {20, 30, 40};
+            std::array<uint64_t, 15> points_by_return = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
+            Writer::LasConfig cfg(0);
+            cfg.min = min1;
+            cfg.max = max1;
+            Writer writer(out_stream, cfg, 256, "TEST_WKT");
+
+            REQUIRE(writer.GetLasHeader().min == min1);
+            REQUIRE(writer.GetLasHeader().max == max1);
+            REQUIRE(writer.GetLasHeader().points_by_return_14 == std::array<uint64_t, 15>{0});
+
+            writer.SetMin(min2);
+            writer.SetMax(max2);
+            writer.SetPointsByReturn(points_by_return);
+
+            REQUIRE(writer.GetLasHeader().min == min2);
+            REQUIRE(writer.GetLasHeader().max == max2);
+            REQUIRE(writer.GetLasHeader().points_by_return_14 == points_by_return);
+
+            writer.Close();
+
+            Reader reader(&out_stream);
+            REQUIRE(reader.GetLasHeader().min == min2);
+            REQUIRE(reader.GetLasHeader().max == max2);
+            REQUIRE(reader.GetLasHeader().points_by_return_14 == points_by_return);
+        }
     }
 }
 

@@ -33,6 +33,8 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE(header.header_size == 375);
             REQUIRE(header.point_format_id == 3);
             REQUIRE(header.point_count == 10653336);
+            REQUIRE(header.point_record_length == 36);
+            REQUIRE(header.NumExtraBytes() == 2);
         }
 
         SECTION("WKT")
