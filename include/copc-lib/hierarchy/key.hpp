@@ -44,8 +44,8 @@ class VoxelKey
     bool ChildOf(VoxelKey parent_key) const;
 
     bool Intersects(const Box &box, const las::LasHeader &header) const;
-    bool Contains(const Box &box, const las::LasHeader &header) const;
-    bool Contains(const Vector3 &vec, const las::LasHeader &header) const;
+    bool Contains(const Box &vec, const las::LasHeader &header) const;
+    bool Contains(const Vector3 &point, const las::LasHeader &header) const;
     bool Within(const Box &box, const las::LasHeader &header) const;
 
     int32_t d;
@@ -82,11 +82,11 @@ class Box
 {
   public:
     Box() = default;
-    Box(const double &x_min, const double &x_max, const double &y_min, const double &y_max, const double &z_min,
+    Box(const double &x_min, const double &y_min, const double &z_min, const double &x_max, const double &y_max,
         const double &z_max)
-        : x_min(x_min), x_max(x_max), y_min(y_min), y_max(y_max), z_min(z_min), z_max(z_max){};
-    Box(const double &x_min, const double &x_max, const double &y_min, const double &y_max)
-        : x_min(x_min), x_max(x_max), y_min(y_min), y_max(y_max){};
+        : x_min(x_min), y_min(y_min), z_min(z_min), x_max(x_max), y_max(y_max), z_max(z_max){};
+    Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max)
+        : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max){};
     Box(const VoxelKey &key, const las::LasHeader &header);
 
     static Box ZeroBox() { return Box(0, 0, 0, 0, 0, 0); }
@@ -100,16 +100,16 @@ class Box
     std::string ToString() const
     {
         std::stringstream ss;
-        ss << "Box: x_min=" << x_min << "x_max=" << x_max << "y_min=" << y_min << "y_max=" << y_max << "z_min=" << z_min
-           << "z_max=" << z_max;
+        ss << "Box: x_min=" << x_min << " y_min=" << y_min << " z_min=" << z_min << " x_max=" << x_max
+           << " y_max=" << y_max << " z_max=" << z_max;
         return ss.str();
     }
 
     double x_min{-std::numeric_limits<double>::max()};
-    double x_max{std::numeric_limits<double>::max()};
     double y_min{-std::numeric_limits<double>::max()};
-    double y_max{std::numeric_limits<double>::max()};
     double z_min{-std::numeric_limits<double>::max()};
+    double x_max{std::numeric_limits<double>::max()};
+    double y_max{std::numeric_limits<double>::max()};
     double z_max{std::numeric_limits<double>::max()};
 };
 

@@ -207,7 +207,7 @@ TEST_CASE("Points tests", "[Point]")
             points.AddPoint(p);
         }
 
-        REQUIRE(points.Within(copc::Box(0, 5, 0, 5, 0, 5)));
+        REQUIRE(points.Within(copc::Box(0, 0, 0, 5, 5, 5)));
 
         auto p = points.CreatePoint();
         p.X(dist(gen));
@@ -215,6 +215,6 @@ TEST_CASE("Points tests", "[Point]")
         p.Z(6);
         points.AddPoint(p);
 
-        REQUIRE(!points.Within(copc::Box(0, 5, 0, 5, 0, 5)));
+        REQUIRE(!points.Within(copc::Box(0, 0, 0, 5, 5, 5)));
     }
 }

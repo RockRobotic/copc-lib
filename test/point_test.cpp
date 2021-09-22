@@ -844,11 +844,11 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(!point.Within(copc::Box::ZeroBox()));
 
         // 2D box
-        REQUIRE(point.Within(copc::Box(0, 5, 0, 5)));
-        REQUIRE(!point.Within(copc::Box(6, 10, 0, 5)));
+        REQUIRE(point.Within(copc::Box(0, 0, 5, 5)));
+        REQUIRE(!point.Within(copc::Box(6, 0, 10, 5)));
 
         // 3D box
-        REQUIRE(point.Within(copc::Box(0, 5, 0, 5, 0, 5)));
-        REQUIRE(!point.Within(copc::Box(6, 10, 0, 5, 0, 5)));
+        REQUIRE(point.Within(copc::Box(0, 0, 0, 5, 5, 5)));
+        REQUIRE(!point.Within(copc::Box(6, 0, 0, 10, 5, 5)));
     }
 }

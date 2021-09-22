@@ -66,9 +66,9 @@ bool VoxelKey::Intersects(const Box &box, const las::LasHeader &header) const
     return Box(*this, header).Intersects(box);
 }
 bool VoxelKey::Contains(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Contains(box); }
-bool VoxelKey::Contains(const Vector3 &vec, const las::LasHeader &header) const
+bool VoxelKey::Contains(const Vector3 &point, const las::LasHeader &header) const
 {
-    return Box(*this, header).Contains(vec);
+    return Box(*this, header).Contains(point);
 }
 bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
 
@@ -78,9 +78,9 @@ Box::Box(const VoxelKey &key, const las::LasHeader &header)
     // Step size accounts for depth level
     double step = header.span / std::pow(2, key.d);
 
-    x_min = step * key.x;
-    y_min = step * key.y;
-    z_min = step * key.z;
+    x_min = step * key.x + header.min.x;
+    y_min = step * key.y + header.min.y;
+    z_min = step * key.z + header.min.z;
     x_max = x_min + step;
     y_max = y_min + step;
     z_max = z_min + step;

@@ -72,21 +72,21 @@ TEST_CASE("Box constructor", "[Box]")
 {
     SECTION("3D box constructor")
     {
-        auto box = Box(0.0, 1.0, 0.0, 1.0, 0.0, 1.0);
+        auto box = Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
         REQUIRE(box.x_min == 0.0);
-        REQUIRE(box.x_max == 1.0);
         REQUIRE(box.y_min == 0.0);
-        REQUIRE(box.y_max == 1.0);
         REQUIRE(box.z_min == 0.0);
+        REQUIRE(box.x_max == 1.0);
+        REQUIRE(box.y_max == 1.0);
         REQUIRE(box.z_max == 1.0);
     }
 
     SECTION("2D box constructor")
     {
-        auto box = Box(0.0, 1.0, 0.0, 1.0);
+        auto box = Box(0.0, 0.0, 1.0, 1.0);
         REQUIRE(box.x_min == 0.0);
-        REQUIRE(box.x_max == 1.0);
         REQUIRE(box.y_min == 0.0);
+        REQUIRE(box.x_max == 1.0);
         REQUIRE(box.y_max == 1.0);
         REQUIRE(box.z_min == -std::numeric_limits<double>::max());
         REQUIRE(box.z_max == std::numeric_limits<double>::max());
@@ -99,10 +99,10 @@ TEST_CASE("Box constructor", "[Box]")
         auto box = Box(VoxelKey(1, 1, 0, 0), header);
 
         REQUIRE(box.x_min == 5.0);
-        REQUIRE(box.x_max == 10.0);
         REQUIRE(box.y_min == 0.0);
-        REQUIRE(box.y_max == 5.0);
         REQUIRE(box.z_min == 0.0);
+        REQUIRE(box.x_max == 10.0);
+        REQUIRE(box.y_max == 5.0);
         REQUIRE(box.z_max == 5.0);
     }
 }
@@ -112,15 +112,15 @@ TEST_CASE("Box functions", "[Box]")
     SECTION("Intersects")
     {
         // X axis only crosses boundary
-        REQUIRE(Box(1, 2, 0.5, 1).Intersects(Box(0.5, 1.5, 0, 2)));
-        REQUIRE(Box(0.5, 1.5, 0, 2).Intersects(Box(1, 2, 0.5, 1)));
+        REQUIRE(Box(1, 0.5, 2, 1).Intersects(Box(0.5, 0, 1.5, 2)));
+        REQUIRE(Box(0.5, 0, 1.5, 2).Intersects(Box(1, 0.5, 2, 1)));
 
-        REQUIRE(!Box(1, 2, 0.5, 1).Intersects(Box(2.01, 2.5, 0, 2)));
-        REQUIRE(!Box(2.01, 2.5, 0, 2).Intersects(Box(1, 2, 0.5, 1)));
+        REQUIRE(!Box(1, 0.5, 2, 1).Intersects(Box(2.01, 0, 2.5, 2)));
+        REQUIRE(!Box(2.01, 0, 2.5, 2).Intersects(Box(1, 0.5, 2, 1)));
 
         // If one box contains the other they also intersect
-        REQUIRE(Box(1, 2, 1, 2).Intersects(Box(0, 4, 0, 4)));
-        REQUIRE(Box(0, 4, 0, 4).Intersects(Box(1, 2, 1, 2)));
+        REQUIRE(Box(1, 1, 2, 2).Intersects(Box(0, 0, 4, 4)));
+        REQUIRE(Box(0, 0, 4, 4).Intersects(Box(1, 1, 2, 2)));
     }
 
     SECTION("Contains box")
@@ -138,14 +138,14 @@ TEST_CASE("Box functions", "[Box]")
     SECTION("Contains vector")
     {
         // 2D box
-        REQUIRE(Box(0, 1, 0, 1).Contains(Vector3(0.5, 0.5, 5)));
-        REQUIRE(Box(0, 1, 0, 1).Contains(Vector3(0.5, 1, 5)));
-        REQUIRE(!Box(0, 1, 0, 1).Contains(Vector3(0.5, 5, 5)));
+        REQUIRE(Box(0.0, 0.0, 1.0, 1.0).Contains(Vector3(0.5, 0.5, 5.0)));
+        REQUIRE(Box(0.0, 0.0, 1.0, 1.0).Contains(Vector3(0.5, 1.0, 5.0)));
+        REQUIRE(!Box(0.0, 0.0, 1.0, 1.0).Contains(Vector3(0.5, 5.0, 5.0)));
 
         // 3D box
-        REQUIRE(Box(0, 1, 0, 1, 0, 1).Contains(Vector3(0.5, 0.5, 0.5)));
-        REQUIRE(Box(0, 1, 0, 1, 0, 1).Contains(Vector3(1, 1, 1)));
-        REQUIRE(!Box(0, 1, 0, 1, 0, 1).Contains(Vector3(0.5, 0.5, 5)));
+        REQUIRE(Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0).Contains(Vector3(0.5, 0.5, 0.5)));
+        REQUIRE(Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0).Contains(Vector3(1.0, 1.0, 1.0)));
+        REQUIRE(!Box(0.0, 0.0, 0.0, 1.0, 1.0, 1.0).Contains(Vector3(0.5, 0.5, 5.0)));
     }
 
     SECTION("Within")
@@ -168,20 +168,20 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
 
     SECTION("Intersects")
     {
-        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 2, 0.5, 0.75), header));
-        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 2, 1.5, 2), header));
-        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 1.5, 0.5, 1.5, 1.5, 2), header));
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 0.5, 2.0, 0.75), header));
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 1.5, 2.0, 2.0), header));
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(0.5, 0.5, 1.5, 1.5, 1.5, 2.0), header));
 
         // If one box contains the other they also intersect
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0, 2, 0, 2), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0, 0, 2, 2), header));
     }
 
     SECTION("Contains box")
     {
-        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 1, 0, 1, 0, 1), header));
-        REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(Box(0, 1, 0, 1, 0, 1), header));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
+        REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
         // A box contains itself
-        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, header.span, 0, header.span, 0, header.span), header));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, header.span, header.span, header.span), header));
     }
 
     SECTION("Contains vector")
@@ -192,8 +192,8 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
 
     SECTION("Within")
     {
-        REQUIRE(VoxelKey(1, 1, 1, 1).Within(Box(0.99, 2.01, 0.99, 2.01, 0.99, 2.01), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Within(Box(0.99, 0.99, 0.99, 2.01, 2.01, 2.01), header));
         // A box is within itself
-        REQUIRE(VoxelKey(0, 0, 0, 0).Within(Box(0, header.span, 0, header.span, 0, header.span), header));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Within(Box(0, 0, 0, header.span, header.span, header.span), header));
     }
 }

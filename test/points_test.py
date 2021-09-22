@@ -253,7 +253,7 @@ def test_within():
         p.Z = random.uniform(0, 5)
         points.AddPoint(p)
 
-    assert points.Within(copc.Box(0, 5, 0, 5, 0, 5))
+    assert points.Within(copc.Box(0, 0, 0, 5, 5, 5))
 
     p = points.CreatePoint()
     p.X = random.uniform(0, 5)
@@ -261,4 +261,4 @@ def test_within():
     p.Z = 6
     points.AddPoint(p)
 
-    assert not points.Within(copc.Box(0, 5, 0, 5, 0, 5))
+    assert not points.Within(copc.Box(0, 0, 0, 5, 5, 5))
