@@ -300,6 +300,8 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
         .def_readwrite("point_count_14", &las::LasHeader::point_count)
         .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14)
+        .def("__str__", &las::LasHeader::ToString)
+        .def("__repr__", &las::LasHeader::ToString)
         .def(py::pickle(
             [](const las::LasHeader &h) { // __getstate__
                 /* Return a tuple that fully encodes the state of the object */
@@ -343,8 +345,6 @@ PYBIND11_MODULE(copclib, m)
                 h.points_by_return_14 = t[24].cast<std::array<uint64_t, 15>>();
                 return h;
             }));
-        .def("__str__", &las::LasHeader::ToString)
-        .def("__repr__", &las::LasHeader::ToString);
 
     py::class_<Writer::LasHeaderConfig>(m, "LasHeaderConfig")
         .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),

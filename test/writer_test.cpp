@@ -236,7 +236,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             const Vector3 max2 = {20, 30, 40};
             std::array<uint64_t, 15> points_by_return = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-            Writer::LasConfig cfg(0);
+            Writer::LasHeaderConfig cfg(0);
             cfg.min = min1;
             cfg.max = max1;
             Writer writer(out_stream, cfg, 256, "TEST_WKT");

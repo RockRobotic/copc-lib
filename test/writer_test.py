@@ -110,7 +110,7 @@ def test_writer_config():
     max2 = copc.Vector3([20, 30, 40])
     points_by_return = list(range(15))
 
-    cfg = copc.LasConfig(0)
+    cfg = copc.LasHeaderConfig(0)
     cfg.min = min1
     cfg.max = max1
     writer = copc.FileWriter(file_path, cfg, 256, "TEST_WKT")
