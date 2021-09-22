@@ -20,13 +20,10 @@ struct Vector3
     static Vector3 DefaultScale() { return Vector3(DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE); }
     static Vector3 DefaultOffset() { return Vector3{}; }
 
-    Vector3(const std::vector<double> &vec)
+    Vector3(const std::vector<double> &vec) : x(vec[0]), y(vec[1]), z(vec[2])
     {
         if (vec.size() != 3)
             throw std::runtime_error("Vector must be of size 3.");
-        x = vec[0];
-        y = vec[1];
-        z = vec[2];
     }
 
     double x{};

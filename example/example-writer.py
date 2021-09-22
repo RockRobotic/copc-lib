@@ -162,7 +162,7 @@ def NewFileExample():
     # We can also add pages in the same way, as long as the Key we specify
     # is a child of the parent page
 
-    page = writer.AddSubPage(root_page, copc.VoxelKey(1, 1, 1, 0))
+    page = writer.AddSubPage(root_page, (1, 1, 1, 0))
 
     # Once our page is created, we can add nodes to it like before
     key = copc.VoxelKey(1, 1, 1, 0)
@@ -174,7 +174,7 @@ def NewFileExample():
     writer.AddNode(page, key, points)
 
     # We can nest subpages as much as we want, as long as they are children of the parent
-    sub_page = writer.AddSubPage(page, copc.VoxelKey(3, 4, 4, 2))
+    sub_page = writer.AddSubPage(page, (3, 4, 4, 2))
     points = RandomPoints(sub_page.key, cfg.point_format_id)
     writer.AddNode(page, sub_page.key, points)
 

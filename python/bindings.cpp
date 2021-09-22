@@ -40,7 +40,9 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<VoxelKey>(m, "VoxelKey")
         .def(py::init<>())
-        .def(py::init<int32_t, int32_t, int32_t, int32_t>(), py::arg("d"), py::arg("x"), py::arg("y"), py::arg("z"))
+        .def(py::init<const int32_t &, const int32_t &, const int32_t &, const int32_t &>(), py::arg("d"), py::arg("x"),
+             py::arg("y"), py::arg("z"))
+        .def(py::init<const std::vector<int32_t> &>(), py::arg("list"))
         .def(py::self == py::self)
         .def_readwrite("d", &VoxelKey::d)
         .def_readwrite("x", &VoxelKey::x)
@@ -55,6 +57,9 @@ PYBIND11_MODULE(copclib, m)
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
+
+    py::implicitly_convertible<py::list, VoxelKey>();
+    py::implicitly_convertible<py::tuple, VoxelKey>();
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -80,8 +85,8 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &Page::ToString);
 
     py::class_<Vector3>(m, "Vector3")
-        .def(py::init<const double &, const double &, const double &>())
-        .def(py::init<const std::vector<double> &>())
+        .def(py::init<const double &, const double &, const double &>(), py::arg("x"), py::arg("y"), py::arg("z"))
+        .def(py::init<const std::vector<double> &>(), py::arg("list"))
         .def(py::init<>())
         .def_readwrite("x", &Vector3::x)
         .def_readwrite("y", &Vector3::y)
@@ -100,6 +105,7 @@ PYBIND11_MODULE(copclib, m)
             }));
 
     py::implicitly_convertible<py::list, Vector3>();
+    py::implicitly_convertible<py::tuple, Vector3>();
 
     py::class_<las::Point>(m, "Point")
         .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),

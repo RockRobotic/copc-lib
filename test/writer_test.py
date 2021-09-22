@@ -104,10 +104,10 @@ def test_writer_config():
     assert reader.GetLasHeader().offset == reader.GetLasHeader().offset
 
     # Update
-    min1 = copc.Vector3([-800, 300, 800])
-    max1 = copc.Vector3([5000, 8444, 3333])
-    min2 = copc.Vector3([-20, -30, -40])
-    max2 = copc.Vector3([20, 30, 40])
+    min1 = (-800, 300, 800)
+    max1 = (5000, 8444, 3333)
+    min2 = (-20, -30, -40)
+    max2 = (20, 30, 40)
     points_by_return = list(range(15))
 
     cfg = copc.LasHeaderConfig(0)
@@ -148,7 +148,7 @@ def test_writer_pages():
 
     assert not writer.FindNode(copc.VoxelKey().BaseKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey().InvalidKey()).IsValid()
-    assert not writer.FindNode(copc.VoxelKey(5, 4, 3, 2)).IsValid()
+    assert not writer.FindNode((5, 4, 3, 2)).IsValid()
 
     writer.GetRootPage()
     root_page = writer.GetRootPage()
@@ -176,8 +176,8 @@ def test_writer_pages():
     assert sub_page.loaded is True
 
     with pytest.raises(RuntimeError):
-        writer.AddSubPage(sub_page, copc.VoxelKey(1, 1, 1, 0))
-        writer.AddSubPage(sub_page, copc.VoxelKey(2, 4, 5, 0))
+        writer.AddSubPage(sub_page, (1, 1, 1, 0))
+        writer.AddSubPage(sub_page, (2, 4, 5, 0))
 
     writer.Close()
 
@@ -221,5 +221,5 @@ def test_writer_copy():
 
     # we can do one uncompressed comparison here
     assert new_reader.GetPointData(
-        new_reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
-    ) == reader.GetPointData(reader.FindNode(copc.VoxelKey(5, 9, 7, 0)))
+        new_reader.FindNode((5, 9, 7, 0))
+    ) == reader.GetPointData(reader.FindNode((5, 9, 7, 0)))
