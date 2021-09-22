@@ -188,7 +188,6 @@ PYBIND11_MODULE(copclib, m)
         .def(py::self != py::self)
         .def("__str__", &las::Point::ToString)
         .def("__repr__", &las::Point::ToString);
-    
 
     using DiffType = ssize_t;
     using SizeType = size_t;

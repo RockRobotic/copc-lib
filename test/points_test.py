@@ -292,7 +292,7 @@ def test_points_accessors():
         p.X = 20
         p.Y = 30
         p.Z = 40
-     
+
     assert all([x == 20 for x in points.X])
     assert all([y == 30 for y in points.Y])
     assert all([z == 40 for z in points.Z])
@@ -302,7 +302,7 @@ def test_points_accessors():
         p.X = -50
         p.Y = -60
         p.Z = -70
-        
+
     assert all([x == -50 for x in points.X])
     assert all([y == -60 for y in points.Y])
     assert all([z == -70 for z in points.Z])
@@ -317,7 +317,7 @@ def test_points_indexer_setter():
     num_points = 2000
     for i in range(num_points):
         points.AddPoint(points.CreatePoint())
-        
+
     assert all([x == 0 for x in points.X])
     assert all([y == 0 for y in points.Y])
     assert all([z == 0 for z in points.Z])
@@ -331,7 +331,7 @@ def test_points_indexer_setter():
     assert points[0].Y == 40
     assert points[0].Z == 80
     assert points[2].Intensity == 60000
-    
+
     # test slicing setters
     points[:].X = [2] * len(points)
     points[:].Y = [4] * len(points)
@@ -349,7 +349,8 @@ def test_points_indexer_setter():
     assert all([x == -2 for i, x in enumerate(points.X) if i >= 1000])
     assert all([x != -2 for i, x in enumerate(points.X) if not i >= 1000])
     assert all([x == -4 for i, x in enumerate(points.Y) if i >= 1500 and i < 1600])
-    assert all([x != -4 for i, x in enumerate(points.Y) if not (i >= 1500 and i < 1600)])
+    assert all(
+        [x != -4 for i, x in enumerate(points.Y) if not (i >= 1500 and i < 1600)]
+    )
     assert all([x == -8 for i, x in enumerate(points.Z) if i >= len(points) - 5])
     assert all([x != -8 for i, x in enumerate(points.Z) if not (i >= len(points) - 5)])
-    
