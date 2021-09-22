@@ -142,9 +142,10 @@ def test_box_functions():
     ## Contains
     assert copc.Box(0, 0, 0, 4, 4, 4).Intersects((1, 1, 1, 2, 2, 2))
     ## Crosses
-    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects((1.5, 1.5, 2.5, 2.5))
-    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects((1.5, 0.5, 2.5, 2.5))
-    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects((0.5, 1.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects((1.5, 1.5, 1.5, 2.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects((1.5, 1.5, 0.5, 2.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects((1.5, 0.5, 1.5, 2.5, 2.5, 2.5))
+    assert copc.Box(1, 1, 1, 2, 2, 2).Intersects((0.5, 1.5, 1.5, 2.5, 2.5, 2.5))
     ## Equals
     assert copc.Box(0, 0, 0, 1, 1, 1).Intersects((0, 0, 0, 1, 1, 1))
     ## Touches
@@ -201,9 +202,10 @@ def test_key_spatial_functions():
     ## Contains
     assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.1, 1.1, 1.1, 1.9, 1.9, 1.9), header)
     ## Crosses
-    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 1.5, 2.5, 2.5), header)
-    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 0.5, 2.5, 2.5), header)
-    assert copc.VoxelKey(1, 1, 1, 1).Intersects((0.5, 1.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 1.5, 1.5, 2.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 1.5, 0.5, 2.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 0.5, 1.5, 2.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((0.5, 1.5, 1.5, 2.5, 2.5, 2.5), header)
     ## Equals
     assert copc.VoxelKey(1, 0, 0, 0).Intersects((0, 0, 0, 1, 1, 1), header)
     ## Touches

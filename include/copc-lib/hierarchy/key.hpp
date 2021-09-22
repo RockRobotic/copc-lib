@@ -83,6 +83,8 @@ class Box
 {
   public:
     Box() = default;
+
+    // 3D box constructor
     Box(const double &x_min, const double &y_min, const double &z_min, const double &x_max, const double &y_max,
         const double &z_max)
         : x_min(x_min), y_min(y_min), z_min(z_min), x_max(x_max), y_max(y_max), z_max(z_max)
@@ -90,44 +92,29 @@ class Box
         if (x_max < x_min || y_max < y_min || z_max < z_min)
             throw std::runtime_error("One or more of min values is greater than a value");
     };
+
+    // 2D box constructor
     Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max)
-        : x_min(x_min), y_min(y_min), x_max(x_max), y_max(y_max)
+        : x_min(x_min), y_min(y_min), z_min(-std::numeric_limits<double>::max()), x_max(x_max), y_max(y_max),
+          z_max(std::numeric_limits<double>::max())
     {
         if (x_max < x_min || y_max < y_min)
             throw std::runtime_error("One or more of min values is greater than a value");
     };
 
     // Constructor for tuple and list implicit conversion
-    Box(const std::vector<double> &vec)
-    {
-        if (vec.size() == 4)
-        {
-            x_min = vec[0];
-            y_min = vec[1];
-            x_max = vec[2];
-            y_max = vec[3];
-        }
-        else if (vec.size() == 6)
-        {
-            x_min = vec[0];
-            y_min = vec[1];
-            z_min = vec[2];
-            x_max = vec[3];
-            y_max = vec[4];
-            z_max = vec[5];
-        }
-        else
-        {
-            throw std::runtime_error("Vector must be of size 4 or 6.");
-        }
-        if (x_max < x_min || y_max < y_min || z_max < z_min)
-            throw std::runtime_error("One or more of min values is greater than a value");
-    }
+    Box(const std::vector<double> &vec);
 
+    // Constructor from Node
     Box(const VoxelKey &key, const las::LasHeader &header);
 
-    static Box ZeroBox() { return Box(0, 0, 0, 0, 0, 0); }
-    static Box MaxBox() { return Box(); }
+    static Box ZeroBox() { return Box(); }
+    static Box MaxBox()
+    {
+        return Box(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max(),
+                   -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
+                   std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    }
 
     bool Intersects(const Box &box) const;
     bool Contains(const Box &box) const;
@@ -142,12 +129,12 @@ class Box
         return ss.str();
     }
 
-    double x_min{-std::numeric_limits<double>::max()};
-    double y_min{-std::numeric_limits<double>::max()};
-    double z_min{-std::numeric_limits<double>::max()};
-    double x_max{std::numeric_limits<double>::max()};
-    double y_max{std::numeric_limits<double>::max()};
-    double z_max{std::numeric_limits<double>::max()};
+    double x_min{};
+    double y_min{};
+    double z_min{};
+    double x_max{};
+    double y_max{};
+    double z_max{};
 };
 
 } // namespace copc

@@ -140,9 +140,10 @@ TEST_CASE("Box functions", "[Box]")
         // Contains
         REQUIRE(Box(0, 0, 0, 4, 4, 4).Intersects(Box(1, 1, 1, 2, 2, 2)));
         // Crosses
-        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(1.5, 1.5, 2.5, 2.5)));
-        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(1.5, 0.5, 2.5, 2.5)));
-        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(0.5, 1.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(1.5, 1.5, 1.5, 2.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(1.5, 1.5, 0.5, 2.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(1.5, 0.5, 1.5, 2.5, 2.5, 2.5)));
+        REQUIRE(Box(1, 1, 1, 2, 2, 2).Intersects(Box(0.5, 1.5, 1.5, 2.5, 2.5, 2.5)));
         // Equals
         REQUIRE(Box(0, 0, 0, 1, 1, 1).Intersects(Box(0, 0, 0, 1, 1, 1)));
         // Touches
@@ -207,9 +208,10 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
         // Contains
         REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.1, 1.1, 1.1, 1.9, 1.9, 1.9), header));
         // Crosses
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 2.5, 2.5), header));
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 0.5, 2.5, 2.5), header));
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0.5, 1.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 1.5, 2.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 0.5, 2.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 0.5, 1.5, 2.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0.5, 1.5, 1.5, 2.5, 2.5, 2.5), header));
         // Equals
         REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0, 0, 0, 1, 1, 1), header));
         // Touches

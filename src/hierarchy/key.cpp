@@ -72,6 +72,34 @@ bool VoxelKey::Contains(const Vector3 &point, const las::LasHeader &header) cons
 }
 bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
 
+Box::Box(const std::vector<double> &vec)
+{
+    if (vec.size() == 4)
+    {
+        x_min = vec[0];
+        y_min = vec[1];
+        z_min = -std::numeric_limits<double>::max();
+        x_max = vec[2];
+        y_max = vec[3];
+        z_max = std::numeric_limits<double>::max();
+    }
+    else if (vec.size() == 6)
+    {
+        x_min = vec[0];
+        y_min = vec[1];
+        z_min = vec[2];
+        x_max = vec[3];
+        y_max = vec[4];
+        z_max = vec[5];
+    }
+    else
+    {
+        throw std::runtime_error("Vector must be of size 4 or 6.");
+    }
+    if (x_max < x_min || y_max < y_min || z_max < z_min)
+        throw std::runtime_error("One or more of min values is greater than a value");
+}
+
 Box::Box(const VoxelKey &key, const las::LasHeader &header)
 {
 
