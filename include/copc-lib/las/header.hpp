@@ -30,16 +30,10 @@ struct Vector3
         z = vec[2];
     }
 
-    Vector3 &operator=(const lazperf::vector3 &other)
-    {
-        x = other.x;
-        y = other.y;
-        z = other.z;
-
-        return *this; // Return a reference to myself.
-    }
-
     Vector3 operator*(const double &d) const { return Vector3(x * d, y * d, z * d); }
+    Vector3 operator/(const double &d) const { return Vector3(x / d, y / d, z / d); }
+    Vector3 operator+(const double &d) const { return Vector3(x + d, y + d, z + d); }
+    Vector3 operator-(const double &d) const { return Vector3(x - d, y - d, z - d); }
 
     std::string ToString()
     {

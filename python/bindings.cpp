@@ -119,6 +119,14 @@ PYBIND11_MODULE(copclib, m)
         .def("DefaultScale", &Vector3::DefaultScale)
         .def("DefaultOffset", &Vector3::DefaultOffset)
         .def(py::self == py::self)
+        .def(
+            "__mul__", [](const Vector3 &vec, const double &d) { return vec * d; }, py::is_operator())
+        .def(
+            "__div__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
+        .def(
+            "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
+        .def(
+            "__sub__", [](const Vector3 &vec, const double &d) { return vec - d; }, py::is_operator())
         .def("__str__", &Vector3::ToString)
         .def("__repr__", &Vector3::ToString)
         .def(py::pickle(
