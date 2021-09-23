@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -7,6 +8,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
+#include <copc-lib/hierarchy/box.hpp>
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/io/reader.hpp>
@@ -112,18 +114,25 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &Page::ToString);
 
     py::class_<Vector3>(m, "Vector3")
+        .def(py::init<>())
         .def(py::init<const double &, const double &, const double &>())
         .def(py::init<const std::vector<double> &>())
         .def_readwrite("x", &Vector3::x)
         .def_readwrite("y", &Vector3::y)
         .def_readwrite("z", &Vector3::z)
-        .def("DefaultScale", &Vector3::DefaultScale)
-        .def("DefaultOffset", &Vector3::DefaultOffset)
+        .def_static("DefaultScale", &Vector3::DefaultScale)
+        .def_static("DefaultOffset", &Vector3::DefaultOffset)
         .def(py::self == py::self)
         .def(
             "__mul__", [](const Vector3 &vec, const double &d) { return vec * d; }, py::is_operator())
         .def(
-            "__div__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
+            "__truediv__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
+        .def(
+            "__floordiv__",
+            [](const Vector3 &vec, const double &d) {
+                return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d));
+            },
+            py::is_operator())
         .def(
             "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
         .def(

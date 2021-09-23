@@ -1,0 +1,49 @@
+#ifndef COPCLIB_HIERARCHY_VECTOR3_H_
+#define COPCLIB_HIERARCHY_VECTOR3_H_
+
+#include <sstream>
+#include <vector>
+
+namespace copc
+{
+
+const double DEFAULT_SCALE = 0.01;
+struct Vector3
+{
+    Vector3() : x(0), y(0), z(0) {}
+    Vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
+    static Vector3 DefaultScale() { return Vector3(DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE); }
+    static Vector3 DefaultOffset() { return Vector3{}; }
+
+    Vector3(const std::vector<double> &vec)
+    {
+        if (vec.size() != 3)
+            throw std::runtime_error("Vector must be of size 3.");
+        x = vec[0];
+        y = vec[1];
+        z = vec[2];
+    }
+
+    Vector3 operator*(const double &d) const { return Vector3(x * d, y * d, z * d); }
+    Vector3 operator/(const double &d) const { return Vector3(x / d, y / d, z / d); }
+    Vector3 operator+(const double &d) const { return Vector3(x + d, y + d, z + d); }
+    Vector3 operator-(const double &d) const { return Vector3(x - d, y - d, z - d); }
+
+    std::string ToString()
+    {
+        std::stringstream ss;
+        ss << "Vector3: x=" << x << ", y=" << y << ", z=" << z;
+        return ss.str();
+    }
+
+    bool operator==(Vector3 other) const { return x == other.x && y == other.y && z == other.z; }
+    bool operator!=(Vector3 other) const { return !(*this == other); }
+
+    double x{};
+    double y{};
+    double z{};
+};
+
+} // namespace copc
+
+#endif // COPCLIB_HIERARCHY_VECTOR3_H_

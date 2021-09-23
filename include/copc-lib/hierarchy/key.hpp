@@ -8,10 +8,18 @@
 #include <stdexcept>
 #include <vector>
 
+#include <copc-lib/hierarchy/box.hpp>
+#include <copc-lib/hierarchy/vector3.hpp>
 #include <copc-lib/las/header.hpp>
 
 namespace copc
 {
+
+namespace las
+{
+class LasHeader;
+}
+
 class Box;
 class VoxelKey
 {
@@ -24,15 +32,10 @@ class VoxelKey
 
     bool IsValid() const { return d >= 0 && x >= 0 && y >= 0 && z >= 0; }
 
-    std::string ToString() const
-    {
-        std::stringstream ss;
-        ss << d << "-" << x << "-" << y << "-" << z;
-        return ss.str();
-    }
+    std::string ToString() const;
 
     // Returns the corresponding key depending on direction [0,7]
-    VoxelKey Bisect(uint64_t direction) const;
+    VoxelKey Bisect(const uint64_t &direction) const;
 
     // The hierarchial parent of this key
     VoxelKey GetParent() const;
@@ -56,7 +59,7 @@ class VoxelKey
 
   private:
     // Used for Bisect function
-    int32_t &IdAt(uint64_t i)
+    int32_t &IdAt(const uint8_t &i)
     {
         switch (i)
         {
@@ -78,64 +81,6 @@ inline bool operator==(const VoxelKey &a, const VoxelKey &b)
     return a.d == b.d && a.x == b.x && a.y == b.y && a.z == b.z;
 }
 inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b); }
-
-class Box
-{
-  public:
-    Box() = default;
-
-    // 3D box constructor
-    Box(const double &x_min, const double &y_min, const double &z_min, const double &x_max, const double &y_max,
-        const double &z_max)
-        : x_min(x_min), y_min(y_min), z_min(z_min), x_max(x_max), y_max(y_max), z_max(z_max)
-    {
-        if (x_max < x_min || y_max < y_min || z_max < z_min)
-            throw std::runtime_error("One or more of min values is greater than a value");
-    };
-
-    // 2D box constructor
-    Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max)
-        : x_min(x_min), y_min(y_min), z_min(-std::numeric_limits<double>::max()), x_max(x_max), y_max(y_max),
-          z_max(std::numeric_limits<double>::max())
-    {
-        if (x_max < x_min || y_max < y_min)
-            throw std::runtime_error("One or more of min values is greater than a value");
-    };
-
-    // Constructor for tuple and list implicit conversion
-    Box(const std::vector<double> &vec);
-
-    // Constructor from Node
-    Box(const VoxelKey &key, const las::LasHeader &header);
-
-    static Box ZeroBox() { return Box(); }
-    static Box MaxBox()
-    {
-        return Box(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max(),
-                   -std::numeric_limits<double>::max(), std::numeric_limits<double>::max(),
-                   std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-    }
-
-    bool Intersects(const Box &box) const;
-    bool Contains(const Box &box) const;
-    bool Contains(const Vector3 &vec) const;
-    bool Within(const Box &box) const;
-
-    std::string ToString() const
-    {
-        std::stringstream ss;
-        ss << "Box: x_min=" << x_min << " y_min=" << y_min << " z_min=" << z_min << " x_max=" << x_max
-           << " y_max=" << y_max << " z_max=" << z_max;
-        return ss.str();
-    }
-
-    double x_min{};
-    double y_min{};
-    double z_min{};
-    double x_max{};
-    double y_max{};
-    double z_max{};
-};
 
 } // namespace copc
 

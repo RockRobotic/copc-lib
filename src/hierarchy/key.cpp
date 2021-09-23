@@ -5,7 +5,14 @@
 namespace copc
 {
 
-VoxelKey VoxelKey::Bisect(uint64_t direction) const
+std::string VoxelKey::ToString() const
+{
+    std::stringstream ss;
+    ss << d << "-" << x << "-" << y << "-" << z;
+    return ss.str();
+}
+
+VoxelKey VoxelKey::Bisect(const uint64_t &direction) const
 {
     VoxelKey key(*this);
     ++key.d;
@@ -71,63 +78,5 @@ bool VoxelKey::Contains(const Vector3 &point, const las::LasHeader &header) cons
     return Box(*this, header).Contains(point);
 }
 bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
-
-Box::Box(const std::vector<double> &vec)
-{
-    if (vec.size() == 4)
-    {
-        x_min = vec[0];
-        y_min = vec[1];
-        z_min = -std::numeric_limits<double>::max();
-        x_max = vec[2];
-        y_max = vec[3];
-        z_max = std::numeric_limits<double>::max();
-    }
-    else if (vec.size() == 6)
-    {
-        x_min = vec[0];
-        y_min = vec[1];
-        z_min = vec[2];
-        x_max = vec[3];
-        y_max = vec[4];
-        z_max = vec[5];
-    }
-    else
-    {
-        throw std::runtime_error("Vector must be of size 4 or 6.");
-    }
-    if (x_max < x_min || y_max < y_min || z_max < z_min)
-        throw std::runtime_error("One or more of min values is greater than a value");
-}
-
-Box::Box(const VoxelKey &key, const las::LasHeader &header)
-{
-
-    // Step size accounts for depth level
-    double step = header.GetSpan() / std::pow(2, key.d);
-
-    x_min = step * key.x + header.min.x;
-    y_min = step * key.y + header.min.y;
-    z_min = step * key.z + header.min.z;
-    x_max = x_min + step;
-    y_max = y_min + step;
-    z_max = z_min + step;
-}
-
-bool Box::Intersects(const Box &other) const
-{
-    return x_max >= other.x_min && x_min <= other.x_max && y_max >= other.y_min && y_min <= other.y_max &&
-           z_max >= other.z_min && z_min <= other.z_max;
-}
-bool Box::Contains(const Box &other) const
-{
-    return x_max >= other.x_max && x_min <= other.x_min && y_max >= other.y_max && y_min <= other.y_min &&
-           z_max >= other.z_max && z_min <= other.z_min;
-}
-bool Box::Contains(const Vector3 &vec) const
-{
-    return x_max >= vec.x && x_min <= vec.x && y_max >= vec.y && y_min <= vec.y && z_max >= vec.z && z_min <= vec.z;
-}
-bool Box::Within(const Box &other) const { return other.Contains(*this); }
 
 } // namespace copc

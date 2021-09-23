@@ -2,6 +2,8 @@
 #include <random>
 
 #include <catch2/catch.hpp>
+#include <copc-lib/hierarchy/box.hpp>
+#include <copc-lib/hierarchy/vector3.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
 
