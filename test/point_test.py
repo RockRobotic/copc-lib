@@ -794,3 +794,22 @@ def test_scaled_xyz():
     point = copc.Points(pfid, [1, 1, 1], [-8001100065, 0, 0]).CreatePoint()
     with pytest.raises(RuntimeError):
         point.X = 0
+
+
+def test_within():
+    point = copc.Points(3, (1, 1, 1), copc.Vector3.DefaultOffset()).CreatePoint()
+
+    point.X = 5
+    point.Y = 5
+    point.Z = 5
+
+    assert point.Within(copc.Box.MaxBox())
+    assert not point.Within(copc.Box.ZeroBox())
+
+    # 2D box
+    assert point.Within(copc.Box(0, 0, 5, 5))
+    assert not point.Within(copc.Box(6, 0, 10, 5))
+
+    # 3D box
+    assert point.Within(copc.Box(0, 0, 0, 5, 5, 5))
+    assert not point.Within(copc.Box(6, 0, 0, 10, 5, 5))

@@ -1,8 +1,9 @@
-#include <catch2/catch.hpp>
-#include <cfloat>
-#include <copc-lib/io/reader.hpp>
 #include <cstring>
 #include <fstream>
+#include <limits>
+
+#include <catch2/catch.hpp>
+#include <copc-lib/io/reader.hpp>
 
 using namespace copc;
 using namespace std;
@@ -103,43 +104,43 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE_THROWS(points[0]->ExtendedScanAngle());
 
         // Setters
-        points[0]->UnscaledX(INT32_MAX);
-        points[0]->UnscaledY(INT32_MAX);
-        points[0]->UnscaledZ(INT32_MAX);
-        points[0]->Intensity(UINT16_MAX);
+        points[0]->UnscaledX(std::numeric_limits<int32_t>::max());
+        points[0]->UnscaledY(std::numeric_limits<int32_t>::max());
+        points[0]->UnscaledZ(std::numeric_limits<int32_t>::max());
+        points[0]->Intensity(std::numeric_limits<uint16_t>::max());
         points[0]->NumberOfReturns(7);
         points[0]->ReturnNumber(7);
         points[0]->ScanDirectionFlag(false);
         points[0]->EdgeOfFlightLineFlag(true);
         points[0]->Classification(31);
         points[0]->ScanAngleRank(90);
-        points[0]->UserData(UINT8_MAX);
-        points[0]->PointSourceID(UINT8_MAX);
-        points[0]->GPSTime(DBL_MAX);
-        points[0]->Red(UINT16_MAX);
-        points[0]->Green(UINT16_MAX);
-        points[0]->Blue(UINT16_MAX);
-        REQUIRE_THROWS(points[0]->NIR(UINT16_MAX));
-        REQUIRE_THROWS(points[0]->ExtendedFlagsBitFields(UINT8_MAX));
-        REQUIRE_THROWS(points[0]->ExtendedReturnsBitFields(UINT8_MAX));
+        points[0]->UserData(std::numeric_limits<int8_t>::max());
+        points[0]->PointSourceID(std::numeric_limits<int8_t>::max());
+        points[0]->GPSTime(std::numeric_limits<double>::max());
+        points[0]->Red(std::numeric_limits<uint16_t>::max());
+        points[0]->Green(std::numeric_limits<uint16_t>::max());
+        points[0]->Blue(std::numeric_limits<uint16_t>::max());
+        REQUIRE_THROWS(points[0]->NIR(std::numeric_limits<uint16_t>::max()));
+        REQUIRE_THROWS(points[0]->ExtendedFlagsBitFields(std::numeric_limits<int8_t>::max()));
+        REQUIRE_THROWS(points[0]->ExtendedReturnsBitFields(std::numeric_limits<int8_t>::max()));
         REQUIRE_THROWS(points[0]->ScannerChannel(3));
-        REQUIRE_THROWS(points[0]->ScanAngle(INT16_MAX));
+        REQUIRE_THROWS(points[0]->ScanAngle(std::numeric_limits<int16_t>::max()));
 
-        REQUIRE(points[0]->UnscaledX() == INT32_MAX);
-        REQUIRE(points[0]->UnscaledY() == INT32_MAX);
-        REQUIRE(points[0]->UnscaledZ() == INT32_MAX);
-        REQUIRE(points[0]->Intensity() == UINT16_MAX);
+        REQUIRE(points[0]->UnscaledX() == std::numeric_limits<int32_t>::max());
+        REQUIRE(points[0]->UnscaledY() == std::numeric_limits<int32_t>::max());
+        REQUIRE(points[0]->UnscaledZ() == std::numeric_limits<int32_t>::max());
+        REQUIRE(points[0]->Intensity() == std::numeric_limits<uint16_t>::max());
         REQUIRE(points[0]->NumberOfReturns() == 7);
         REQUIRE(points[0]->ReturnNumber() == 7);
         REQUIRE(points[0]->ScanDirectionFlag() == false);
         REQUIRE(points[0]->EdgeOfFlightLineFlag() == true);
         REQUIRE(points[0]->Classification() == 31);
         REQUIRE(points[0]->ScanAngleRank() == 90);
-        REQUIRE(points[0]->UserData() == UINT8_MAX);
-        REQUIRE(points[0]->PointSourceID() == UINT8_MAX);
-        REQUIRE(points[0]->GPSTime() == DBL_MAX);
-        REQUIRE(points[0]->Red() == UINT16_MAX);
-        REQUIRE(points[0]->Green() == UINT16_MAX);
-        REQUIRE(points[0]->Blue() == UINT16_MAX);
+        REQUIRE(points[0]->UserData() == std::numeric_limits<int8_t>::max());
+        REQUIRE(points[0]->PointSourceID() == std::numeric_limits<int8_t>::max());
+        REQUIRE(points[0]->GPSTime() == std::numeric_limits<double>::max());
+        REQUIRE(points[0]->Red() == std::numeric_limits<uint16_t>::max());
+        REQUIRE(points[0]->Green() == std::numeric_limits<uint16_t>::max());
+        REQUIRE(points[0]->Blue() == std::numeric_limits<uint16_t>::max());
     }
 }

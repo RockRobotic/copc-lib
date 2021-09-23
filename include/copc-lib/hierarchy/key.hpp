@@ -3,12 +3,23 @@
 
 #include <cstdint>
 #include <functional> // for hash
+#include <limits>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
+
+#include <copc-lib/geometry/box.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 
 namespace copc
 {
 
+namespace las
+{
+class LasHeader;
+}
+
+class Box;
 class VoxelKey
 {
   public:
@@ -20,15 +31,10 @@ class VoxelKey
 
     bool IsValid() const { return d >= 0 && x >= 0 && y >= 0 && z >= 0; }
 
-    std::string ToString() const
-    {
-        std::stringstream ss;
-        ss << d << "-" << x << "-" << y << "-" << z;
-        return ss.str();
-    }
+    std::string ToString() const;
 
     // Returns the corresponding key depending on direction [0,7]
-    VoxelKey Bisect(uint64_t direction) const;
+    VoxelKey Bisect(const uint64_t &direction) const;
 
     // The hierarchial parent of this key
     VoxelKey GetParent() const;
@@ -40,6 +46,11 @@ class VoxelKey
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;
 
+    bool Intersects(const Box &box, const las::LasHeader &header) const;
+    bool Contains(const Box &vec, const las::LasHeader &header) const;
+    bool Contains(const Vector3 &point, const las::LasHeader &header) const;
+    bool Within(const Box &box, const las::LasHeader &header) const;
+
     int32_t d;
     int32_t x;
     int32_t y;
@@ -47,7 +58,7 @@ class VoxelKey
 
   private:
     // Used for Bisect function
-    int32_t &IdAt(uint64_t i)
+    int32_t &IdAt(const uint8_t &i)
     {
         switch (i)
         {

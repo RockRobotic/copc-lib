@@ -1,9 +1,17 @@
 #include <copc-lib/hierarchy/key.hpp>
+#include <copc-lib/las/header.hpp>
 
 namespace copc
 {
 
-VoxelKey VoxelKey::Bisect(uint64_t direction) const
+std::string VoxelKey::ToString() const
+{
+    std::stringstream ss;
+    ss << d << "-" << x << "-" << y << "-" << z;
+    return ss.str();
+}
+
+VoxelKey VoxelKey::Bisect(const uint64_t &direction) const
 {
     VoxelKey key(*this);
     ++key.d;
@@ -58,5 +66,16 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     }
     return false;
 }
+
+bool VoxelKey::Intersects(const Box &box, const las::LasHeader &header) const
+{
+    return Box(*this, header).Intersects(box);
+}
+bool VoxelKey::Contains(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Contains(box); }
+bool VoxelKey::Contains(const Vector3 &point, const las::LasHeader &header) const
+{
+    return Box(*this, header).Contains(point);
+}
+bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
 
 } // namespace copc

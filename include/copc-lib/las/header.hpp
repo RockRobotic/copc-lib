@@ -2,60 +2,21 @@
 #define COPCLIB_LAS_HEADER_H_
 
 #include <array>
+#include <cmath>
 #include <limits>
 #include <sstream>
 #include <string>
 
+#include <copc-lib/geometry/vector3.hpp>
 #include <lazperf/header.hpp>
 #include <lazperf/readers.hpp>
 
 namespace copc
 {
-const double DEFAULT_SCALE = 0.01;
-
-struct Vector3
-{
-    Vector3() : x(0), y(0), z(0) {}
-    Vector3(const double &x, const double &y, const double &z) : x(x), y(y), z(z) {}
-    static Vector3 DefaultScale() { return Vector3(DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE); }
-    static Vector3 DefaultOffset() { return Vector3{}; }
-
-    Vector3(const std::vector<double> &vec)
-    {
-        if (vec.size() != 3)
-            throw std::runtime_error("Vector must be of size 3.");
-        x = vec[0];
-        y = vec[1];
-        z = vec[2];
-    }
-
-    double x{};
-    double y{};
-    double z{};
-
-    Vector3 &operator=(const lazperf::vector3 &a)
-    {
-        x = a.x;
-        y = a.y;
-        z = a.z;
-
-        return *this; // Return a reference to myself.
-    }
-
-    std::string ToString()
-    {
-        std::stringstream ss;
-        ss << "Vector3: x=" << x << ", y=" << y << ", z=" << z;
-        return ss.str();
-    }
-
-    bool operator==(Vector3 a) const { return x == a.x && y == a.y && z == a.z; }
-};
-
+class Box;
 namespace las
 {
 using VlrHeader = lazperf::vlr_header;
-
 class LasHeader
 {
   public:
@@ -89,6 +50,9 @@ class LasHeader
         generating_software_ = generating_software;
     }
     std::string GeneratingSoftware() const { return generating_software_; }
+
+    double GetSpan() const { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
+    Box GetBounds() const;
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};

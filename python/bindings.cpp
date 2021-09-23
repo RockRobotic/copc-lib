@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -7,6 +8,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
+#include <copc-lib/geometry/box.hpp>
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/io/reader.hpp>
@@ -54,9 +56,39 @@ PYBIND11_MODULE(copclib, m)
         .def("GetParent", &VoxelKey::GetParent)
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
+        .def("Intersects", &VoxelKey::Intersects)
+        .def("Contains", py::overload_cast<const Box &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
+        .def("Contains", py::overload_cast<const Vector3 &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
+        .def("Within", &VoxelKey::Within)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
     py::implicitly_convertible<py::tuple, VoxelKey>();
+
+    py::class_<Box>(m, "Box")
+        .def(py::init<>())
+        .def(py::init<const double &, const double &, const double &, const double &, const double &, const double &>(),
+             py::arg("x_min"), py::arg("y_min"), py::arg("z_min"), py::arg("x_max"), py::arg("y_max"), py::arg("z_max"))
+        .def(py::init<const double &, const double &, const double &, const double &>(), py::arg("x_min"),
+             py::arg("y_min"), py::arg("x_max"), py::arg("y_max"))
+        .def(py::init<const std::vector<double> &>(), py::arg("list"))
+        .def(py::init<const VoxelKey &, const las::LasHeader &>(), py::arg("key"), py::arg("las_header"))
+        .def_readwrite("x_min", &Box::x_min)
+        .def_readwrite("y_min", &Box::y_min)
+        .def_readwrite("z_min", &Box::z_min)
+        .def_readwrite("x_max", &Box::x_max)
+        .def_readwrite("y_max", &Box::y_max)
+        .def_readwrite("z_max", &Box::z_max)
+        .def_static("MaxBox", &Box::MaxBox)
+        .def_static("ZeroBox", &Box::ZeroBox)
+        .def("Intersects", &Box::Intersects)
+        .def("Contains", py::overload_cast<const Box &>(&Box::Contains, py::const_))
+        .def("Contains", py::overload_cast<const Vector3 &>(&Box::Contains, py::const_))
+        .def("Within", &Box::Within)
+        .def("__str__", &Box::ToString)
+        .def("__repr__", &Box::ToString);
+
+    py::implicitly_convertible<py::list, Box>();
+    py::implicitly_convertible<py::tuple, Box>();
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
@@ -82,14 +114,29 @@ PYBIND11_MODULE(copclib, m)
         .def("__repr__", &Page::ToString);
 
     py::class_<Vector3>(m, "Vector3")
+        .def(py::init<>())
         .def(py::init<const double &, const double &, const double &>())
         .def(py::init<const std::vector<double> &>())
         .def_readwrite("x", &Vector3::x)
         .def_readwrite("y", &Vector3::y)
         .def_readwrite("z", &Vector3::z)
-        .def("DefaultScale", &Vector3::DefaultScale)
-        .def("DefaultOffset", &Vector3::DefaultOffset)
+        .def_static("DefaultScale", &Vector3::DefaultScale)
+        .def_static("DefaultOffset", &Vector3::DefaultOffset)
         .def(py::self == py::self)
+        .def(
+            "__mul__", [](const Vector3 &vec, const double &d) { return vec * d; }, py::is_operator())
+        .def(
+            "__truediv__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
+        .def(
+            "__floordiv__",
+            [](const Vector3 &vec, const double &d) {
+                return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d));
+            },
+            py::is_operator())
+        .def(
+            "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
+        .def(
+            "__sub__", [](const Vector3 &vec, const double &d) { return vec - d; }, py::is_operator())
         .def("__str__", &Vector3::ToString)
         .def("__repr__", &Vector3::ToString)
         .def(py::pickle(
@@ -186,6 +233,7 @@ PYBIND11_MODULE(copclib, m)
 
         .def(py::self == py::self)
         .def(py::self != py::self)
+        .def("Within", &las::Point::Within, py::arg("box"))
         .def("__str__", &las::Point::ToString)
         .def("__repr__", &las::Point::ToString);
 
@@ -219,6 +267,7 @@ PYBIND11_MODULE(copclib, m)
         .def("AddPoints", py::overload_cast<std::vector<std::shared_ptr<las::Point>>>(&las::Points::AddPoints))
         .def("CreatePoint", &las::Points::CreatePoint)
         .def("ToPointFormat", &las::Points::ToPointFormat, py::arg("point_format_id"))
+        .def("Within", &las::Points::Within, py::arg("box"))
         .def("Pack", py::overload_cast<>(&las::Points::Pack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const las::LasHeader &>(&las::Points::Unpack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
@@ -302,7 +351,11 @@ PYBIND11_MODULE(copclib, m)
         .def("GetPointDataCompressed", py::overload_cast<const VoxelKey &>(&Reader::GetPointDataCompressed),
              py::arg("key"))
         .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
-        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren));
+        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren))
+        .def("GetAllPoints", &Reader::GetAllPoints)
+        .def("GetNodesWithinBox", &Reader::GetNodesWithinBox)
+        .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox)
+        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox);
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),
@@ -340,6 +393,7 @@ PYBIND11_MODULE(copclib, m)
           py::arg("compressed_data"), py::arg("point_format_id"), py::arg("num_extra_bytes"), py::arg("point_count"));
 
     py::class_<las::LasHeader>(m, "LasHeader")
+        .def(py::init<>())
         .def_property_readonly("num_extra_bytes", &las::LasHeader::NumExtraBytes)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
@@ -364,6 +418,8 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("offset", &las::LasHeader::offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
+        .def("GetSpan", &las::LasHeader::GetSpan)
+        .def("GetBounds", &las::LasHeader::GetBounds)
         .def_readwrite("wave_offset", &las::LasHeader::wave_offset)
         .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)

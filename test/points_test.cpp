@@ -1,6 +1,9 @@
 #include <limits>
+#include <random>
 
 #include <catch2/catch.hpp>
+#include <copc-lib/geometry/box.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
 
@@ -280,5 +283,35 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point->X() == 1);
         REQUIRE(last_point->Y() == 2);
         REQUIRE(last_point->Z() == 3);
+    }
+
+    SECTION("Within")
+    {
+        auto points = Points(3, {1, 1, 1}, copc::Vector3::DefaultOffset());
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<double> dist(0.0, 5.0);
+
+        // generate points
+        int num_points = 2000;
+        for (int i = 0; i < num_points; i++)
+        {
+            auto p = points.CreatePoint();
+            p->X(dist(gen));
+            p->Y(dist(gen));
+            p->Z(dist(gen));
+            points.AddPoint(p);
+        }
+
+        REQUIRE(points.Within(copc::Box(0, 0, 0, 5, 5, 5)));
+
+        auto p = points.CreatePoint();
+        p->X(dist(gen));
+        p->Y(dist(gen));
+        p->Z(6);
+        points.AddPoint(p);
+
+        REQUIRE(!points.Within(copc::Box(0, 0, 0, 5, 5, 5)));
     }
 }

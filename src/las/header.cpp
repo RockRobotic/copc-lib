@@ -2,6 +2,7 @@
 
 #include <cstring>
 
+#include <copc-lib/geometry/box.hpp>
 #include <copc-lib/las/utils.hpp>
 #include <lazperf/header.hpp>
 
@@ -92,5 +93,7 @@ lazperf::header14 LasHeader::ToLazPerf() const
     std::copy(std::begin(points_by_return_14), std::end(points_by_return_14), std::begin(h.points_by_return_14));
     return h;
 }
+
+Box LasHeader::GetBounds() const { return Box(min.x, min.y, min.z, max.x, max.y, max.z); }
 
 } // namespace copc::las

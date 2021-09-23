@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/utils.hpp>
@@ -111,6 +112,31 @@ class Points
 
         for (unsigned i = 0; i < points_.size(); ++i)
             points_[i]->Z(in[i]);
+    }
+
+    // Function that return true only if all points are within the box
+    bool Within(const Box &box) const
+    {
+        for (const auto &point : points_)
+        {
+            if (!point->Within(box))
+                return false;
+        }
+        return true;
+    }
+
+    // Return sub-set of points that fall within the box
+    std::vector<std::shared_ptr<Point>> GetWithin(const Box &box)
+    {
+
+        std::vector<std::shared_ptr<Point>> points;
+
+        for (const auto &point : points_)
+        {
+            if (point->Within(box))
+                points.push_back(point);
+        }
+        return points;
     }
 
   private:
