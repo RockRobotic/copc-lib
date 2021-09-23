@@ -11,7 +11,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         int record_length = reader.GetLasHeader().point_record_length;
 
@@ -51,7 +51,7 @@ TEST_CASE("GetPointDataCompressed Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);
@@ -65,7 +65,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
 {
     GIVEN("A valid input stream")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         auto key = VoxelKey(0, 0, 0, 0);
         auto hier_entry = reader.FindNode(key);

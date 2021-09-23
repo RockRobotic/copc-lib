@@ -15,7 +15,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
     {
         SECTION("Default Config")
         {
-            string file_path = "test/data/writer_test.copc.laz";
+            string file_path = "writer_test.copc.laz";
 
             Writer::LasConfig cfg(0);
             FileWriter writer(file_path, cfg);
@@ -30,7 +30,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
         SECTION("Custom Config")
         {
-            string file_path = "test/data/writer_test.copc.laz";
+            string file_path = "writer_test.copc.laz";
 
             Writer::LasConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
             cfg.file_source_id = 200;
@@ -60,7 +60,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
         SECTION("COPC Span")
         {
-            string file_path = "test/data/writer_test.copc.laz";
+            string file_path = "writer_test.copc.laz";
 
             Writer::LasConfig cfg(0);
             FileWriter writer(file_path, cfg, 256);
@@ -77,7 +77,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
         SECTION("WKT")
         {
-            string file_path = "test/data/writer_test.copc.laz";
+            string file_path = "writer_test.copc.laz";
 
             Writer::LasConfig cfg(0);
             FileWriter writer(file_path, cfg, 256, "TEST_WKT");
@@ -93,9 +93,9 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
         SECTION("Copy")
         {
-            FileReader orig("test/data/autzen-classified.copc.laz");
+            FileReader orig("autzen-classified.copc.laz");
 
-            string file_path = "test/data/writer_test.copc.laz";
+            string file_path = "writer_test.copc.laz";
             Writer::LasConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
             FileWriter writer(file_path, cfg);
             writer.Close();
@@ -204,7 +204,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         SECTION("Copy")
         {
             fstream in_stream;
-            in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+            in_stream.open("autzen-classified.copc.laz", ios::in | ios::binary);
             Reader orig(&in_stream);
 
             stringstream out_stream;
@@ -363,7 +363,7 @@ TEST_CASE("Writer EBs", "[Writer]")
 
     SECTION("Copy Vlr")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         auto in_eb_vlr = reader.GetExtraByteVlr();
 
@@ -387,7 +387,7 @@ TEST_CASE("Writer Copy", "[Writer]")
 {
     SECTION("Autzen")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         stringstream out_stream;
         Writer::LasConfig cfg(reader.GetLasHeader(), reader.GetExtraByteVlr());
