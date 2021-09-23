@@ -8,7 +8,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#include <copc-lib/hierarchy/box.hpp>
+#include <copc-lib/geometry/box.hpp>
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/io/reader.hpp>

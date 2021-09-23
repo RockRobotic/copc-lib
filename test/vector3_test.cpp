@@ -1,5 +1,5 @@
 #include <catch2/catch.hpp>
-#include <copc-lib/hierarchy/vector3.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 
 using namespace copc;
 

@@ -1,5 +1,5 @@
-#ifndef COPCLIB_HIERARCHY_VECTOR3_H_
-#define COPCLIB_HIERARCHY_VECTOR3_H_
+#ifndef COPCLIB_GEOMETRY_VECTOR3_H_
+#define COPCLIB_GEOMETRY_VECTOR3_H_
 
 #include <sstream>
 #include <vector>
@@ -46,4 +46,4 @@ struct Vector3
 
 } // namespace copc
 
-#endif // COPCLIB_HIERARCHY_VECTOR3_H_
+#endif // COPCLIB_GEOMETRY_VECTOR3_H_

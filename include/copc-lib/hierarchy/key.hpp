@@ -8,8 +8,8 @@
 #include <stdexcept>
 #include <vector>
 
-#include <copc-lib/hierarchy/box.hpp>
-#include <copc-lib/hierarchy/vector3.hpp>
+#include <copc-lib/geometry/box.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/las/header.hpp>
 
 namespace copc

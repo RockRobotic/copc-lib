@@ -7,7 +7,7 @@
 #include <string>
 
 #include <copc-lib/copc/file.hpp>
-#include <copc-lib/hierarchy/box.hpp>
+#include <copc-lib/geometry/box.hpp>
 #include <copc-lib/io/base_io.hpp>
 #include <copc-lib/io/internal/writer_internal.hpp>
 #include <copc-lib/las/header.hpp>

@@ -1,11 +1,11 @@
-#ifndef COPCLIB_HIERARCHY_BOX_H_
-#define COPCLIB_HIERARCHY_BOX_H_
+#ifndef COPCLIB_GEOMETRY_BOX_H_
+#define COPCLIB_GEOMETRY_BOX_H_
 
 #include <sstream>
 #include <vector>
 
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/hierarchy/vector3.hpp>
 #include <copc-lib/las/header.hpp>
 
 namespace copc
@@ -53,4 +53,4 @@ class Box
 
 } // namespace copc
 
-#endif // COPCLIB_HIERARCHY_BOX_H_
+#endif // COPCLIB_GEOMETRY_BOX_H_

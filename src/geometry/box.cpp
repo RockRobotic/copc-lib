@@ -1,4 +1,4 @@
-#include <copc-lib/hierarchy/box.hpp>
+#include <copc-lib/geometry/box.hpp>
 
 namespace copc
 {

@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <random>
 
-#include <copc-lib/hierarchy/vector3.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/header.hpp>

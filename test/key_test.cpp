@@ -1,9 +1,9 @@
 #include <limits>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/hierarchy/box.hpp>
+#include <copc-lib/geometry/box.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/hierarchy/vector3.hpp>
 #include <copc-lib/las/header.hpp>
 
 using namespace copc;

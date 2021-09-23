@@ -3,7 +3,7 @@
 #include <string>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/hierarchy/vector3.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <lazperf/readers.hpp>

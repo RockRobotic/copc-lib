@@ -7,8 +7,8 @@
 #include <sstream>
 #include <string>
 
-#include <copc-lib/hierarchy/box.hpp>
-#include <copc-lib/hierarchy/vector3.hpp>
+#include <copc-lib/geometry/box.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <lazperf/header.hpp>
 #include <lazperf/readers.hpp>
 
