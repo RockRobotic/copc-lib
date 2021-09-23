@@ -1,6 +1,5 @@
 #include <copc-lib/hierarchy/key.hpp>
-
-#include <cmath>
+#include <copc-lib/las/header.hpp>
 
 namespace copc
 {

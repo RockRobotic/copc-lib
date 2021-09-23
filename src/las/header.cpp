@@ -2,6 +2,7 @@
 
 #include <cstring>
 
+#include <copc-lib/geometry/box.hpp>
 #include <copc-lib/las/utils.hpp>
 #include <lazperf/header.hpp>
 

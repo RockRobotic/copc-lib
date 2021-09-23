@@ -7,7 +7,6 @@
 #include <sstream>
 #include <string>
 
-#include <copc-lib/geometry/box.hpp>
 #include <copc-lib/geometry/vector3.hpp>
 #include <lazperf/header.hpp>
 #include <lazperf/readers.hpp>

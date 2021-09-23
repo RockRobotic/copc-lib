@@ -10,7 +10,6 @@
 
 #include <copc-lib/geometry/box.hpp>
 #include <copc-lib/geometry/vector3.hpp>
-#include <copc-lib/las/header.hpp>
 
 namespace copc
 {
