@@ -93,4 +93,6 @@ lazperf::header14 LasHeader::ToLazPerf() const
     return h;
 }
 
+Box LasHeader::GetBounds() const { return Box(min.x, min.y, min.z, max.x, max.y, max.z); }
+
 } // namespace copc::las

@@ -14,6 +14,7 @@
 
 namespace copc
 {
+class Box;
 namespace las
 {
 using VlrHeader = lazperf::vlr_header;
@@ -52,6 +53,7 @@ class LasHeader
     std::string GeneratingSoftware() const { return generating_software_; }
 
     double GetSpan() const { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
+    Box GetBounds() const;
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};

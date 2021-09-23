@@ -1,5 +1,5 @@
-#ifndef COPCLIB_HIERARCHY_GEOMETRY_H_
-#define COPCLIB_HIERARCHY_GEOMETRY_H_
+#ifndef COPCLIB_HIERARCHY_BOX_H_
+#define COPCLIB_HIERARCHY_BOX_H_
 
 #include <sstream>
 #include <vector>
@@ -53,4 +53,4 @@ class Box
 
 } // namespace copc
 
-#endif // COPCLIB_HIERARCHY_GEOMETRY_H_
+#endif // COPCLIB_HIERARCHY_BOX_H_
