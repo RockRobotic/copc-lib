@@ -5,7 +5,6 @@ find_package(lazperf REQUIRED)
 
 set (COPC_SHARED_LIB copc-lib)
 set (COPC_STATIC_LIB copc-lib-s)
-set (COPC_PYTHON_LIB copclib)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -32,65 +31,27 @@ set(WITH_EXAMPLES TRUE CACHE BOOL "Choose if examples should be built")
 set(WITH_PYTHON TRUE CACHE BOOL "Choose if python bindings should be built")
 
 if (WITH_TESTS OR WITH_EXAMPLES OR WITH_PYTHON)
-    set(AutzenFilePath "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
-    if(NOT EXISTS ${AutzenFilePath})
-        message(STATUS "Downloading test files")
-        file (DOWNLOAD
-        "https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
-        ${AutzenFilePath}
-        )
-    endif()
+    include(${CMAKE_SOURCE_DIR}/cmake/helpers.cmake NO_POLICY_SCOPE)
 
-    add_executable(example_reader "example/example-reader.cpp")
-    target_link_libraries(example_reader ${COPC_SHARED_LIB})
-    add_executable(example_writer "example/example-writer.cpp")
-    target_link_libraries(example_writer ${COPC_SHARED_LIB})
+    download_test_files("${CMAKE_BINARY_DIR}/autzen-classified.copc.laz")
+    set(BaseAutzenFilePath "${CMAKE_BINARY_DIR}/autzen-classified.copc.laz")
 endif()
 
 if(WITH_TESTS)
-    add_subdirectory(lib/Catch2)
+    enable_testing()
+    add_subdirectory(test)
+endif()
 
-    file(GLOB TEST_SRCS
-            test/*.cpp
-            )
-
-    add_executable(tests ${TEST_SRCS})
-    target_link_libraries(tests ${COPC_SHARED_LIB} Catch2::Catch2)
-
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/Catch2/contrib")
-    include(CTest)
-    include(Catch)
-    catch_discover_tests(tests)
-
-    add_test(NAME example_reader COMMAND example_reader)
-    add_test(NAME example_writer COMMAND example_writer)
+if(WITH_EXAMPLES OR WITH_TESTS)
+    add_subdirectory(example)
+    if(WITH_TESTS)
+        add_test(NAME example_reader COMMAND example_reader)
+        add_test(NAME example_writer COMMAND example_writer)
+    endif()
 endif()
 
 if(WITH_PYTHON)
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/test/data/autzen-classified.copc.laz")
-        message(STATUS "Copying test files")
-        file(COPY "${AutzenFilePath}" 
-            DESTINATION "${CMAKE_SOURCE_DIR}/test/data")
-    endif()
-
-    add_subdirectory(lib/pybind11)
-    pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
-    target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${COPC_STATIC_LIB})
-    target_compile_definitions(${COPC_PYTHON_LIB} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-    if(WITH_TESTS)
-        add_test(NAME python-tests
-                COMMAND ${PYTHON_EXECUTABLE} -m pytest "${CMAKE_SOURCE_DIR}/test"
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-                )
-        add_test(NAME example_reader_py
-                COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/example/example-reader.py"
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/example"
-                )
-        add_test(NAME example_writer_py
-                COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/example/example-writer.py"
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/example"
-                )
-    endif()
+    add_subdirectory(python)
 endif()
 
 # Install
