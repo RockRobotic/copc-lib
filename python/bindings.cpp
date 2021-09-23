@@ -342,7 +342,11 @@ PYBIND11_MODULE(copclib, m)
         .def("GetPointDataCompressed", py::overload_cast<const VoxelKey &>(&Reader::GetPointDataCompressed),
              py::arg("key"))
         .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
-        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren));
+        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren))
+        .def("GetAllPoints", &Reader::GetAllPoints)
+        .def("GetNodesWithinBox", &Reader::GetNodesWithinBox)
+        .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox)
+        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox);
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),

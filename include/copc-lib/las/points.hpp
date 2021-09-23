@@ -117,12 +117,26 @@ class Points
     // Function that return true only if all points are within the box
     bool Within(const Box &box) const
     {
-        for (auto point : points_)
+        for (const auto &point : points_)
         {
             if (!point->Within(box))
                 return false;
         }
         return true;
+    }
+
+    // Return sub-set of points that fall within the box
+    std::vector<std::shared_ptr<Point>> GetWithin(const Box &box)
+    {
+
+        std::vector<std::shared_ptr<Point>> points;
+
+        for (const auto &point : points_)
+        {
+            if (point->Within(box))
+                points.push_back(point);
+        }
+        return points;
     }
 
   private:

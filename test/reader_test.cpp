@@ -1,7 +1,8 @@
 #include <catch2/catch.hpp>
-#include <cfloat>
+#include <cmath>
 #include <copc-lib/io/reader.hpp>
 #include <fstream>
+#include <limits>
 
 using namespace copc;
 using namespace std;
@@ -105,7 +106,7 @@ TEST_CASE("FindKey Check", "[Reader]")
     }
 }
 
-TEST_CASE("GetExtraByteVlrs Test", "[Reader] ")
+TEST_CASE("GetExtraByteVlrs Test", "[Reader]")
 {
     GIVEN("A valid file path")
     {
@@ -122,7 +123,7 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader] ")
     }
 }
 
-TEST_CASE("GetAllChildren Test", "[Reader] ")
+TEST_CASE("GetAllChildren Test", "[Reader]")
 {
     GIVEN("A valid file path")
     {
@@ -156,7 +157,14 @@ TEST_CASE("GetAllChildren Test", "[Reader] ")
     }
 }
 
-TEST_CASE("Point Error Handling Test", "[Reader] ")
+// TODO[Leo]: Make this test optional
+TEST_CASE("GetAllPoints Test", "[Reader]")
+{
+    //    FileReader reader("test/data/autzen-classified.copc.laz");
+    //    REQUIRE(reader.GetAllPoints().Get().size() == reader.GetLasHeader().point_count);
+}
+
+TEST_CASE("Point Error Handling Test", "[Reader]")
 {
     GIVEN("A valid file path")
     {
@@ -178,5 +186,54 @@ TEST_CASE("Point Error Handling Test", "[Reader] ")
 
         REQUIRE_THROWS(reader.GetPointDataCompressed(invalid_node));
         REQUIRE_NOTHROW(reader.GetPointDataCompressed(valid_node));
+    }
+}
+
+TEST_CASE("Spatial Query Functions", "[Reader]")
+{
+    FileReader reader("test/data/autzen-classified.copc.laz");
+
+    SECTION("GetNodesWithinBox")
+    {
+        // Check that no nodes fit in a zero-sized box
+        auto subset_nodes = reader.GetNodesWithinBox(Box::ZeroBox());
+        REQUIRE(subset_nodes.empty());
+
+        // Check that all nodes fit in a max-sized box
+        subset_nodes = reader.GetNodesWithinBox(Box::MaxBox());
+        auto all_nodes = reader.GetAllChildren();
+        REQUIRE(subset_nodes.size() == all_nodes.size());
+    }
+
+    SECTION("GetNodesIntersectBox")
+    {
+        // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+        auto subset_nodes = reader.GetNodesIntersectBox(Box(637190, 851109, 637390, 851309));
+        REQUIRE(subset_nodes.size() == 13);
+    }
+
+    SECTION("GetPointsWithinBox")
+    {
+        {
+            // Check that no points fit in a zero-sized box
+            auto subset_points = reader.GetPointsWithinBox(Box::ZeroBox());
+            REQUIRE(subset_points.Get().empty());
+        }
+        {
+            // TODO[Leo]: Make this test optional
+            // Check that all points fit in a box sized from header
+            //            auto header = reader.GetLasHeader();
+            //            auto subset_points = reader.GetPointsWithinBox(Box(std::floor(header.min.x),
+            //            std::floor(header.min.y),
+            //                                                               std::floor(header.min.z),
+            //                                                               std::ceil(header.max.x),
+            //                                                               std::ceil(header.max.y),
+            //                                                               std::ceil(header.max.z)));
+            //            REQUIRE(subset_points.Get().size() == header.point_count);
+        } {
+            // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+            auto subset_points = reader.GetPointsWithinBox(Box(637190, 851109, 637390, 851309));
+            REQUIRE(subset_points.Get().size() == 22902);
+        }
     }
 }

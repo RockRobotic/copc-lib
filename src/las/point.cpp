@@ -96,7 +96,7 @@ bool Point::operator==(const Point &other) const
     return true;
 }
 
-bool Point::Within(const Box &box) const { return box.Contains(Vector3(x_, y_, z_)); }
+bool Point::Within(const Box &box) const { return box.Contains(Vector3(X(), Y(), Z())); }
 
 std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
                                      const Vector3 &offset, const uint16_t &num_extra_bytes)
