@@ -57,7 +57,7 @@ las::CopcInfoVlr Reader::ReadCopcInfo()
     return copc_info;
 }
 
-// TODO[Leo] (STATS) Update this once new COPC specs have been merged.
+// TODO[Leo] (EXTENTS) Update this once new COPC specs have been merged.
 las::CopcExtentsVlr Reader::ReadCopcExtents(const las::CopcInfoVlr &copc_data)
 {
     //    this->in_stream_->seekg(copc_data.extent_vlr_offset);

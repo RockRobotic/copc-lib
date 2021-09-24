@@ -46,6 +46,7 @@ class WriterInternal
     void WriteHeader(las::LasHeader &head14);
     void WriteChunkTable();
     void WriteWkt(las::LasHeader &head14);
+    void WriteExtents(las::LasHeader &head14);
     void WritePage(const std::shared_ptr<PageInternal> &page);
 
     // Iterates through a given page in a postorder traversal and writes the pages

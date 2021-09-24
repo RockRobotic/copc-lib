@@ -9,7 +9,7 @@
 namespace copc::las
 {
 
-// TODO[Leo] (STATS) Update this once new COPC specs have been merged.
+// TODO[Leo] (EXTENTS) Update this once new COPC specs have been merged.
 struct CopcExtent
 {
     double min;
@@ -29,7 +29,7 @@ using WktVlr = lazperf::wkt_vlr;
 using CopcInfoVlr = lazperf::copc_vlr;
 using EbVlr = lazperf::eb_vlr;
 using VlrHeader = lazperf::vlr_header;
-// TODO[Leo] (STATS) Update this once new COPC specs have been merged.
+// TODO[Leo] (EXTENTS) Update this once new COPC specs have been merged.
 // CopcExtentsVlr = std::vector<CopcExtent>;
 
 } // namespace copc::las

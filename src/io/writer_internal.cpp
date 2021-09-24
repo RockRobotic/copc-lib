@@ -35,6 +35,9 @@ void WriterInternal::Close()
     auto head14 = file_->GetLasHeader();
     WriteChunkTable();
 
+    // Write COPC Extents VLR.
+    WriteExtents(head14);
+
     // Always write the wkt for now, since it sets evlr_offset
     // if (!file_->GetWkt().empty())
     WriteWkt(head14);
@@ -87,11 +90,6 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     copc_data_.header().write(out_stream_);
     copc_data_.write(out_stream_);
 
-    // TODO[Leo] (STATS) Update this once new COPC specs have been merged.
-    // Write the COPC Extents VLR
-    //    file_->GetCopcExtentsVlr().header().write(out_stream_);
-    //    file_->GetCopcExtentsVlr().write(out_stream_);
-
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
 
@@ -101,6 +99,22 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
         ebVlr.header().write(out_stream_);
         ebVlr.write(out_stream_);
     }
+}
+
+void WriterInternal::WriteExtents(las::LasHeader &head14)
+{
+    // TODO[Leo] (EXTENTS) Update this once new COPC specs have been merged.
+    //    out_stream_.seekp(0, std::ios::end);
+    //    auto offset = static_cast<uint64_t>(out_stream_.tellp());
+    //    copc_data_.extent_vlr_offset = offset;
+    //    copc_data_.extent_vlr_size = file_->GetCopcExtentsVlr().size();
+    //
+    //     // Write the COPC Extents VLR
+    //    file_->GetCopcExtentsVlr().header().write(out_stream_);
+    //    file_->GetCopcExtentsVlr().write(out_stream_);
+    //
+    //    head14.evlr_offset = offset;
+    //    head14.evlr_count++;
 }
 
 void WriterInternal::WriteWkt(las::LasHeader &head14)
