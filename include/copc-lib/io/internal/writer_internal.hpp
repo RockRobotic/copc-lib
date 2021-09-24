@@ -15,7 +15,7 @@ class WriterInternal
   public:
     const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
     // header + COPC vlr + LAZ vlr (max 4 items)
-    size_t OFFSET_TO_POINT_DATA = 375 + (54 + 160) + (54 + (34 + 4 * 6));
+    const size_t OFFSET_TO_POINT_DATA = 375 + (54 + 160) + (54 + (34 + 4 * 6));
     // 8 bytes for the chunk table offset
     uint64_t FIRST_CHUNK_OFFSET() const { return OFFSET_TO_POINT_DATA + sizeof(uint64_t); };
 
