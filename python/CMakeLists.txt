@@ -4,7 +4,7 @@ find_package(lazperf REQUIRED)
 find_package(copc-lib REQUIRED)
 find_package(pybind11 CONFIG)
 
-include(${CMAKE_SOURCE_DIR}/cmake/helpers.cmake NO_POLICY_SCOPE)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/helpers.cmake NO_POLICY_SCOPE)
 download_test_files("${CMAKE_SOURCE_DIR}/test/data/autzen-classified.copc.laz")
 
 pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} bindings.cpp)
