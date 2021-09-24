@@ -18,14 +18,15 @@ void Reader::InitReader()
     auto header = las::LasHeader::FromLazPerf(this->reader_->header());
 
     std::map<uint64_t, las::VlrHeader> vlrs = ReadVlrs();
-    auto copc_data = ReadCopcData();
-    auto wkt = ReadWktData(copc_data);
+    auto copc_info = ReadCopcInfo();
+    auto copc_extents = ReadCopcExtents(copc_info);
+    auto wkt = ReadWktData(copc_info);
     auto eb = ReadExtraByteVlr(vlrs);
 
-    this->file_ = std::make_shared<CopcFile>(header, copc_data, wkt, eb);
+    this->file_ = std::make_shared<CopcFile>(header, copc_info, copc_extents, wkt, eb);
     this->file_->vlrs = vlrs;
 
-    this->hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_data.root_hier_offset, copc_data.root_hier_size);
+    this->hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
 }
 
 std::map<uint64_t, las::VlrHeader> Reader::ReadVlrs()
@@ -49,14 +50,23 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrs()
     return out;
 }
 
-las::CopcVlr Reader::ReadCopcData()
+las::CopcInfoVlr Reader::ReadCopcInfo()
 {
     this->in_stream_->seekg(COPC_OFFSET);
-    las::CopcVlr copc = las::CopcVlr::create(*this->in_stream_);
-    return copc;
+    las::CopcInfoVlr copc_info = las::CopcInfoVlr::create(*this->in_stream_);
+    return copc_info;
 }
 
-las::WktVlr Reader::ReadWktData(const las::CopcVlr &copc_data)
+// TODO[Leo] (STATS) Update this once new COPC specs have been merged.
+las::CopcExtentsVlr Reader::ReadCopcExtents(const las::CopcInfoVlr &copc_data)
+{
+    //    this->in_stream_->seekg(copc_data.extent_vlr_offset);
+    //    auto copc_extents = las::CopcExtentsVlr::create(*this->in_stream_, copc_data.extent_vlr_size);
+    //    return copc_extents;
+    return {};
+}
+
+las::WktVlr Reader::ReadWktData(const las::CopcInfoVlr &copc_data)
 {
     this->in_stream_->seekg(copc_data.wkt_vlr_offset);
     las::WktVlr wkt = las::WktVlr::create(*this->in_stream_, copc_data.wkt_vlr_size);

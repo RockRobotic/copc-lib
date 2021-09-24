@@ -22,9 +22,9 @@ class LasFile
     las::EbVlr GetExtraBytes() const { return eb_; }
 
     // Update header
-    void SetMin(Vector3 min) { header_.min = min; }
-    void SetMax(Vector3 max) { header_.max = max; }
-    void SetPointsByReturn(std::array<uint64_t, 15> points_by_return_14)
+    void SetMin(const Vector3 &min) { header_.min = min; }
+    void SetMax(const Vector3 &max) { header_.max = max; }
+    void SetPointsByReturn(const std::array<uint64_t, 15> &points_by_return_14)
     {
         header_.points_by_return_14 = points_by_return_14;
     }

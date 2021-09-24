@@ -14,7 +14,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         FileReader reader("test/data/autzen-classified.copc.laz");
 
-        SECTION("GetCopc Test")
+        SECTION("GetCopcHeader Test")
         {
             auto copc = reader.GetCopcHeader();
             REQUIRE(copc.span == 0);
@@ -53,7 +53,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         Reader reader(&in_stream);
 
-        SECTION("GetCopc Test")
+        SECTION("GetCopcHeader Test")
         {
             auto copc = reader.GetCopcHeader();
             REQUIRE(copc.span == 0);

@@ -1,5 +1,3 @@
-#include <cstring>
-
 #include <copc-lib/hierarchy/internal/page.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/point.hpp>

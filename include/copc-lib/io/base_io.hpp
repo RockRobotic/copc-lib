@@ -19,7 +19,7 @@ class BaseIO
     // WKT string if defined, else empty
     std::string GetWkt() const { return this->file_->GetWkt(); }
     // CopcData
-    las::CopcVlr GetCopcHeader() const { return this->file_->GetCopc(); }
+    las::CopcInfoVlr GetCopcHeader() const { return this->file_->GetCopcInfoVlr(); }
     // Las header
     las::LasHeader GetLasHeader() const { return this->file_->GetLasHeader(); }
     // EB Vlr

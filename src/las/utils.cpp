@@ -36,6 +36,21 @@ uint8_t PointBaseByteSize(const int8_t &point_format_id)
     }
 }
 
+uint8_t PointBaseNumberDimensions(const int8_t &point_format_id)
+{
+    switch (point_format_id)
+    {
+    case 6:
+        return 14;
+    case 7:
+        return 17;
+    case 8:
+        return 18;
+    default:
+        throw std::runtime_error("Point format must be 6-8");
+    }
+}
+
 bool FormatHasGPSTime(const uint8_t &point_format_id)
 {
     switch (point_format_id)

@@ -105,12 +105,13 @@ class Writer : public BaseIO
     Page AddSubPage(Page &page, VoxelKey key);
 
     // Update file internals
-    void SetMin(Vector3 min) { this->file_->SetMin(min); }
-    void SetMax(Vector3 max) { this->file_->SetMax(max); }
-    void SetPointsByReturn(std::array<uint64_t, 15> points_by_return_14)
+    void SetMin(const Vector3 &min) { this->file_->SetMin(min); }
+    void SetMax(const Vector3 &max) { this->file_->SetMax(max); }
+    void SetPointsByReturn(const std::array<uint64_t, 15> &points_by_return_14)
     {
         this->file_->SetPointsByReturn(points_by_return_14);
     }
+    void SetExtents(const std::vector<las::CopcExtent> &extents) { this->file_->SetExtents(extents); }
     virtual ~Writer() { writer_->Close(); }
 
   protected:

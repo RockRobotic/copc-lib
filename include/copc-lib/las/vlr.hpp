@@ -1,16 +1,36 @@
 #ifndef COPCLIB_LAS_VLR_H_
 #define COPCLIB_LAS_VLR_H_
 
-#include "lazperf/vlr.hpp"
 #include <cstring>
+#include <vector>
+
+#include "lazperf/vlr.hpp"
 
 namespace copc::las
 {
 
+// TODO[Leo] (STATS) Update this once new COPC specs have been merged.
+struct CopcExtent
+{
+    double min;
+    double max;
+};
+
+class CopcExtentsVlr
+{
+  public:
+    CopcExtentsVlr() = default;
+    CopcExtentsVlr(const CopcExtentsVlr &copc_extents) { extents = copc_extents.extents; };
+
+    std::vector<CopcExtent> extents;
+};
+
 using WktVlr = lazperf::wkt_vlr;
-using CopcVlr = lazperf::copc_vlr;
+using CopcInfoVlr = lazperf::copc_vlr;
 using EbVlr = lazperf::eb_vlr;
 using VlrHeader = lazperf::vlr_header;
+// TODO[Leo] (STATS) Update this once new COPC specs have been merged.
+// CopcExtentsVlr = std::vector<CopcExtent>;
 
 } // namespace copc::las
 

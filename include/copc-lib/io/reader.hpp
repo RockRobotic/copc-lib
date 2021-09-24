@@ -57,9 +57,11 @@ class Reader : public BaseIO
     // Reads file VLRs into vlrs_
     std::map<uint64_t, las::VlrHeader> ReadVlrs();
     // Finds and loads the COPC vlr
-    las::CopcVlr ReadCopcData();
+    las::CopcInfoVlr ReadCopcInfo();
+    // Finds and loads the COPC vlr
+    las::CopcExtentsVlr ReadCopcExtents(const las::CopcInfoVlr &copc_data);
     // Finds and loads the WKT vlr
-    las::WktVlr ReadWktData(const las::CopcVlr &copc_data);
+    las::WktVlr ReadWktData(const las::CopcInfoVlr &copc_data);
     // finds and loads EB vlr
     las::EbVlr ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
 

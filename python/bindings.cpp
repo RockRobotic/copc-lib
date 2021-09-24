@@ -491,16 +491,16 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware))
         .def("NumExtraBytes", &Writer::LasConfig::NumExtraBytes);
 
-    py::class_<las::CopcVlr>(m, "CopcVlr")
-        .def_readwrite("span", &las::CopcVlr::span)
-        .def_readwrite("root_hier_offset", &las::CopcVlr::root_hier_offset)
-        .def_readwrite("root_hier_size", &las::CopcVlr::root_hier_size)
-        .def_readwrite("laz_vlr_offset", &las::CopcVlr::laz_vlr_offset)
-        .def_readwrite("laz_vlr_size", &las::CopcVlr::laz_vlr_size)
-        .def_readwrite("wkt_vlr_offset", &las::CopcVlr::wkt_vlr_offset)
-        .def_readwrite("wkt_vlr_size", &las::CopcVlr::wkt_vlr_size)
-        .def_readwrite("eb_vlr_offset", &las::CopcVlr::eb_vlr_offset)
-        .def_readwrite("eb_vlr_size", &las::CopcVlr::eb_vlr_size);
+    py::class_<las::CopcInfoVlr>(m, "CopcVlr")
+        .def_readwrite("span", &las::CopcInfoVlr::span)
+        .def_readwrite("root_hier_offset", &las::CopcInfoVlr::root_hier_offset)
+        .def_readwrite("root_hier_size", &las::CopcInfoVlr::root_hier_size)
+        .def_readwrite("laz_vlr_offset", &las::CopcInfoVlr::laz_vlr_offset)
+        .def_readwrite("laz_vlr_size", &las::CopcInfoVlr::laz_vlr_size)
+        .def_readwrite("wkt_vlr_offset", &las::CopcInfoVlr::wkt_vlr_offset)
+        .def_readwrite("wkt_vlr_size", &las::CopcInfoVlr::wkt_vlr_size)
+        .def_readwrite("eb_vlr_offset", &las::CopcInfoVlr::eb_vlr_offset)
+        .def_readwrite("eb_vlr_size", &las::CopcInfoVlr::eb_vlr_size);
 
     py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>());
 }

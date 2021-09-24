@@ -35,7 +35,7 @@ class WriterInternal
   private:
     bool open_;
 
-    las::CopcVlr copc_data_;
+    las::CopcInfoVlr copc_data_;
     std::ostream &out_stream_;
     std::shared_ptr<CopcFile> file_;
     std::shared_ptr<Hierarchy> hierarchy_;

@@ -1,10 +1,11 @@
 #include <cstring>
 
-#include <copc-lib/io/internal/writer_internal.hpp>
-#include <copc-lib/laz/compressor.hpp>
-
 #include <lazperf/filestream.hpp>
 #include <lazperf/lazperf.hpp>
+
+#include <copc-lib/io/internal/writer_internal.hpp>
+#include <copc-lib/las/utils.hpp>
+#include <copc-lib/laz/compressor.hpp>
 
 using namespace lazperf;
 
@@ -81,10 +82,15 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
 
     laz_header.write(out_stream_);
 
-    // Write the VLR.
-    copc_data_.span = file_->GetCopc().span;
+    // Write the COPC Info VLR.
+    copc_data_.span = file_->GetCopcInfoVlr().span;
     copc_data_.header().write(out_stream_);
     copc_data_.write(out_stream_);
+
+    // TODO[Leo] (STATS) Update this once new COPC specs have been merged.
+    // Write the COPC Extents VLR
+    //    file_->GetCopcExtentsVlr().header().write(out_stream_);
+    //    file_->GetCopcExtentsVlr().write(out_stream_);
 
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
