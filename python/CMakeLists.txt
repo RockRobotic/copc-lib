@@ -1,7 +1,7 @@
 set (COPC_PYTHON_LIB copclib)
 
 find_package(lazperf REQUIRED)
-find_package(copc-lib REQUIRED)
+find_package(copc-lib QUIET)
 find_package(pybind11 CONFIG)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/helpers.cmake NO_POLICY_SCOPE)

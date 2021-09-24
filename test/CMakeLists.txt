@@ -1,5 +1,5 @@
 find_package(lazperf REQUIRED)
-find_package(copc-lib REQUIRED)
+find_package(copc-lib QUIET)
 find_package(Catch2 REQUIRED)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/helpers.cmake NO_POLICY_SCOPE)
