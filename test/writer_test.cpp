@@ -92,7 +92,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             extents[1].minimum = -std::numeric_limits<double>::max();
             extents[1].maximum = std::numeric_limits<double>::max();
 
-            writer.SetExtents(extents);
+            writer.SetCopcExtents(extents);
 
             REQUIRE(writer.GetCopcExtents()[0].minimum == extents[0].minimum);
             REQUIRE(writer.GetCopcExtents()[0].maximum == extents[0].maximum);

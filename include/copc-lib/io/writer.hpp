@@ -111,7 +111,7 @@ class Writer : public BaseIO
     {
         this->file_->SetPointsByReturn(points_by_return_14);
     }
-    void SetExtents(const std::vector<las::CopcExtent> &extents) { this->file_->SetExtents(extents); }
+    void SetCopcExtents(const std::vector<las::CopcExtent> &extents) { this->file_->SetCopcExtents(extents); }
     virtual ~Writer() { writer_->Close(); }
 
   protected:

@@ -33,7 +33,7 @@ class CopcFile : public las::LasFile
     // CopcInfo
     las::CopcExtentsVlr GetCopcExtentsVlr() const { return copc_extents_; }
 
-    void SetExtents(const std::vector<las::CopcExtent> &extents)
+    void SetCopcExtents(const std::vector<las::CopcExtent> &extents)
     {
         // Check that the size of extents matches the point format id and number of EBs
         if (extents.size() != (las::PointBaseNumberDimensions(header_.point_format_id) + eb_.items.size()))

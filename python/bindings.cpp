@@ -334,12 +334,20 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
 
+    py::class_<las::CopcExtent>(m, "CopcExtent")
+        .def(py::init<double, double>())
+        .def_readwrite("minimum", &las::CopcExtent::minimum)
+        .def_readwrite("maximum", &las::CopcExtent::maximum);
+
+    m.def("PointBaseNumberDimensions", &las::PointBaseNumberDimensions);
+
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())
         .def("Close", &FileReader::Close)
         .def("FindNode", &Reader::FindNode, py::arg("key"))
         .def("GetWkt", &Reader::GetWkt)
         .def("GetCopcInfo", &Reader::GetCopcInfo)
+        .def("GetCopcExtents", &Reader::GetCopcExtents)
         .def("GetLasHeader", &Reader::GetLasHeader)
         .def("GetExtraByteVlr", &Reader::GetExtraByteVlr)
         .def("GetPointData", py::overload_cast<const Node &>(&Reader::GetPointData), py::arg("node"))
@@ -363,6 +371,8 @@ PYBIND11_MODULE(copclib, m)
         .def("FindNode", &Writer::FindNode)
         .def("GetWkt", &Writer::GetWkt)
         .def("GetCopcInfo", &Writer::GetCopcInfo)
+        .def("GetCopcExtents", &Writer::GetCopcExtents)
+        .def("SetCopcExtents", &Writer::SetCopcExtents)
         .def("GetLasHeader", &Writer::GetLasHeader)
         .def("GetExtraByteVlr", &Writer::GetExtraByteVlr)
         .def("GetRootPage", &Writer::GetRootPage)

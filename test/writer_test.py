@@ -1,5 +1,6 @@
 import copclib as copc
 import pytest
+from sys import float_info
 
 
 def test_writer_config():
@@ -66,6 +67,38 @@ def test_writer_config():
 
     reader = copc.FileReader(file_path)
     assert reader.GetCopcInfo().span == 256
+
+    # Extents
+    cfg = copc.LasConfig(6)
+    writer = copc.FileWriter(file_path, cfg)
+
+    extents = [
+        copc.CopcExtent(0, 0)
+        for i in range(
+            copc.PointBaseNumberDimensions(cfg.point_format_id) + cfg.NumExtraBytes()
+        )
+    ]
+
+    extents[0].minimum = -1.0
+    extents[0].maximum = 1
+
+    extents[1].minimum = -float_info.max
+    extents[1].maximum = float_info.max
+
+    writer.SetCopcExtents(extents)
+
+    assert writer.GetCopcExtents()[0].minimum == extents[0].minimum
+    assert writer.GetCopcExtents()[0].maximum == extents[0].maximum
+    assert writer.GetCopcExtents()[1].minimum == extents[1].minimum
+    assert writer.GetCopcExtents()[1].maximum == extents[1].maximum
+
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.GetCopcExtents()[0].minimum == extents[0].minimum
+    assert reader.GetCopcExtents()[0].maximum == extents[0].maximum
+    assert reader.GetCopcExtents()[1].minimum == extents[1].minimum
+    assert reader.GetCopcExtents()[1].maximum == extents[1].maximum
 
     # WKT
     cfg = copc.LasConfig(0)
