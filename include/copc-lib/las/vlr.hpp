@@ -9,28 +9,12 @@
 namespace copc::las
 {
 
-// TODO[Leo] (EXTENTS) Update this once new COPC specs have been merged.
-struct CopcExtent
-{
-    double min;
-    double max;
-};
-
-class CopcExtentsVlr
-{
-  public:
-    CopcExtentsVlr() = default;
-    CopcExtentsVlr(const CopcExtentsVlr &copc_extents) { extents = copc_extents.extents; };
-
-    std::vector<CopcExtent> extents;
-};
-
 using WktVlr = lazperf::wkt_vlr;
-using CopcInfoVlr = lazperf::copc_vlr;
+using CopcInfoVlr = lazperf::copc_info_vlr;
 using EbVlr = lazperf::eb_vlr;
 using VlrHeader = lazperf::vlr_header;
-// TODO[Leo] (EXTENTS) Update this once new COPC specs have been merged.
-// CopcExtentsVlr = std::vector<CopcExtent>;
+using CopcExtentsVlr = lazperf::copc_extents_vlr;
+using CopcExtent = lazperf::copc_extents_vlr::CopcExtent;
 
 } // namespace copc::las
 

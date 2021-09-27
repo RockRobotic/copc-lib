@@ -8,7 +8,7 @@ def test_reader():
     reader = copc.FileReader("data/autzen-classified.copc.laz")
 
     # GetLasHeader Test
-    copc_header = reader.GetCopcHeader()
+    copc_header = reader.GetCopcInfo()
     assert copc_header.span == 0
     assert copc_header.root_hier_offset == 93169718
     assert copc_header.root_hier_size == 8896

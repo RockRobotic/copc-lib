@@ -38,7 +38,7 @@ class CopcFile : public las::LasFile
         // Check that the size of extents matches the point format id and number of EBs
         if (extents.size() != (las::PointBaseNumberDimensions(header_.point_format_id) + eb_.items.size()))
             throw std::runtime_error("Wrong number of extents.");
-        copc_extents_.extents = extents;
+        copc_extents_.items = extents;
     }
 
   private:

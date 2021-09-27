@@ -6,7 +6,7 @@ def reader_example():
     reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
 
     # We can get the CopcData struct
-    copc_vlr = reader.GetCopcHeader()
+    copc_vlr = reader.GetCopcInfo()
     print("CopcData: ")
     print("\tSpan: %d" % copc_vlr.span)
     print("\tRoot Offset: %d" % copc_vlr.root_hier_offset)

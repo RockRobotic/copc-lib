@@ -68,14 +68,52 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             FileWriter writer(file_path, cfg, 256);
 
             // todo: use Reader to check all of these
-            auto span = writer.GetCopcHeader().span;
+            auto span = writer.GetCopcInfo().span;
             REQUIRE(span == 256);
 
             writer.Close();
 
             FileReader reader(file_path);
-            REQUIRE(reader.GetCopcHeader().span == 256);
+            REQUIRE(reader.GetCopcInfo().span == 256);
         }
+
+        //        SECTION("Extents")
+        //        {
+        //            string file_path = "test/data/writer_test.copc.laz";
+        //
+        //            Writer::LasConfig cfg(6);
+        //            FileWriter writer(file_path, cfg);
+        //
+        //            std::vector<las::CopcExtent>
+        //            extents(las::PointBaseNumberDimensions(cfg.point_format_id)+cfg.NumExtraBytes(),{0,0});
+        //            extents[0].minimum = -1.0;
+        //            extents[0].maximum = 1;
+        //
+        //            extents[1].minimum = 0;
+        //            extents[1].maximum = 0;
+        //
+        //            extents[2].minimum = -std::numeric_limits<double>::max();
+        //            extents[2].maximum = std::numeric_limits<double>::max();
+        //
+        //            writer.SetExtents(extents);
+        //
+        //            REQUIRE(writer.GetCopcExtents()[0].minimum == extents[0].minimum);
+        //            REQUIRE(writer.GetCopcExtents()[0].maximum == extents[0].maximum);
+        //            REQUIRE(writer.GetCopcExtents()[1].minimum == extents[1].minimum);
+        //            REQUIRE(writer.GetCopcExtents()[1].maximum == extents[1].maximum);
+        //            REQUIRE(writer.GetCopcExtents()[2].minimum == extents[2].minimum);
+        //            REQUIRE(writer.GetCopcExtents()[2].maximum == extents[2].maximum);
+        //
+        //            writer.Close();
+        //
+        //            FileReader reader(file_path);
+        //            REQUIRE(reader.GetCopcExtents()[0].minimum == extents[0].minimum);
+        //            REQUIRE(reader.GetCopcExtents()[0].maximum == extents[0].maximum);
+        //            REQUIRE(reader.GetCopcExtents()[1].minimum == extents[1].minimum);
+        //            REQUIRE(reader.GetCopcExtents()[1].maximum == extents[1].maximum);
+        //            REQUIRE(reader.GetCopcExtents()[2].minimum == extents[2].minimum);
+        //            REQUIRE(reader.GetCopcExtents()[2].maximum == extents[2].maximum);
+        //        }
 
         SECTION("WKT")
         {
@@ -178,13 +216,13 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer writer(out_stream, cfg, 256);
 
             // todo: use Reader to check all of these
-            auto span = writer.GetCopcHeader().span;
+            auto span = writer.GetCopcInfo().span;
             REQUIRE(span == 256);
 
             writer.Close();
 
             Reader reader(&out_stream);
-            REQUIRE(reader.GetCopcHeader().span == 256);
+            REQUIRE(reader.GetCopcInfo().span == 256);
         }
 
         SECTION("WKT")
@@ -286,8 +324,8 @@ TEST_CASE("Writer Pages", "[Writer]")
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 0);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
     }
 
@@ -310,8 +348,8 @@ TEST_CASE("Writer Pages", "[Writer]")
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 32);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
     }
 }

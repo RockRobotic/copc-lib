@@ -60,12 +60,12 @@ def test_writer_config():
     writer = copc.FileWriter(file_path, cfg, 256)
 
     # todo: use Reader to check all of these
-    assert writer.GetCopcHeader().span == 256
+    assert writer.GetCopcInfo().span == 256
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcHeader().span == 256
+    assert reader.GetCopcInfo().span == 256
 
     # WKT
     cfg = copc.LasConfig(0)
@@ -159,8 +159,8 @@ def test_writer_pages():
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcHeader().root_hier_offset > 0
-    assert reader.GetCopcHeader().root_hier_size == 0
+    assert reader.GetCopcInfo().root_hier_offset > 0
+    assert reader.GetCopcInfo().root_hier_size == 0
     assert not reader.FindNode(key=copc.VoxelKey.InvalidKey()).IsValid()
 
     # Nested page
@@ -180,8 +180,8 @@ def test_writer_pages():
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcHeader().root_hier_offset > 0
-    assert reader.GetCopcHeader().root_hier_size == 32
+    assert reader.GetCopcInfo().root_hier_offset > 0
+    assert reader.GetCopcInfo().root_hier_size == 32
     assert not reader.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
 
 

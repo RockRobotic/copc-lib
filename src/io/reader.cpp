@@ -57,13 +57,11 @@ las::CopcInfoVlr Reader::ReadCopcInfo()
     return copc_info;
 }
 
-// TODO[Leo] (EXTENTS) Update this once new COPC specs have been merged.
 las::CopcExtentsVlr Reader::ReadCopcExtents(const las::CopcInfoVlr &copc_data)
 {
-    //    this->in_stream_->seekg(copc_data.extent_vlr_offset);
-    //    auto copc_extents = las::CopcExtentsVlr::create(*this->in_stream_, copc_data.extent_vlr_size);
-    //    return copc_extents;
-    return {};
+    this->in_stream_->seekg(copc_data.extent_vlr_offset);
+    las::CopcExtentsVlr copc_extents = las::CopcExtentsVlr::create(*this->in_stream_, copc_data.extent_vlr_size);
+    return copc_extents;
 }
 
 las::WktVlr Reader::ReadWktData(const las::CopcInfoVlr &copc_data)

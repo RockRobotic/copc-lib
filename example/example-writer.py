@@ -17,7 +17,7 @@ def TrimFileExample(compressor_example_flag):
     writer = copc.FileWriter(
         "../test/data/autzen-trimmed.copc.laz",
         cfg,
-        reader.GetCopcHeader().span,
+        reader.GetCopcInfo().span,
         reader.GetWkt(),
     )
 
@@ -183,6 +183,6 @@ def NewFileExample():
 
 
 if __name__ == "__main__":
-    TrimFileExample(False)
-    TrimFileExample(True)
+    # TrimFileExample(False)
+    # TrimFileExample(True)
     NewFileExample()

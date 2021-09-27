@@ -45,7 +45,7 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
 //    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
 //    io::CopcReader reader(in_stream);
 //
-//    auto copc = reader.GetCopcHeader();
+//    auto copc = reader.GetCopcInfo();
 //
 //    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
 //

@@ -14,9 +14,9 @@ TEST_CASE("Reader tests", "[Reader]")
 
         FileReader reader("test/data/autzen-classified.copc.laz");
 
-        SECTION("GetCopcHeader Test")
+        SECTION("GetCopcInfo Test")
         {
-            auto copc = reader.GetCopcHeader();
+            auto copc = reader.GetCopcInfo();
             REQUIRE(copc.span == 0);
             REQUIRE(copc.root_hier_offset == 93169718);
             REQUIRE(copc.root_hier_size == 8896);
@@ -53,9 +53,9 @@ TEST_CASE("Reader tests", "[Reader]")
 
         Reader reader(&in_stream);
 
-        SECTION("GetCopcHeader Test")
+        SECTION("GetCopcInfo Test")
         {
-            auto copc = reader.GetCopcHeader();
+            auto copc = reader.GetCopcInfo();
             REQUIRE(copc.span == 0);
             REQUIRE(copc.root_hier_offset == 93169718);
             REQUIRE(copc.root_hier_size == 8896);

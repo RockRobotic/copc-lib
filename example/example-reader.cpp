@@ -10,7 +10,7 @@ void ReaderExample()
     FileReader reader("test/data/autzen-classified.copc.laz");
 
     // We can get the CopcData struct
-    auto copc_vlr = reader.GetCopcHeader();
+    auto copc_vlr = reader.GetCopcInfo();
     cout << "CopcData: " << endl;
     cout << "\tSpan: " << copc_vlr.span << endl
          << "\tRoot Offset: " << copc_vlr.root_hier_offset << endl

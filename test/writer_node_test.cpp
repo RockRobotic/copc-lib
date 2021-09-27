@@ -27,8 +27,8 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 32);
 
         auto node = reader.FindNode(VoxelKey::BaseKey());
         REQUIRE(node.IsValid());
@@ -59,8 +59,8 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
 
         std::string ostr = out_stream.str();
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 32 * 3);
 
         {
             auto node = reader.FindNode(VoxelKey::BaseKey());
@@ -122,8 +122,8 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         */
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 32 * 3);
 
         {
             auto sub_node = reader.FindNode(VoxelKey(2, 2, 2, 2));
@@ -172,8 +172,8 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 32);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 32);
 
         auto node = reader.FindNode(VoxelKey::BaseKey());
         REQUIRE(node.IsValid());
@@ -207,8 +207,8 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
 
         std::string ostr = out_stream.str();
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 32 * 3);
 
         {
             auto sub_node = reader.FindNode(VoxelKey::BaseKey());
@@ -273,8 +273,8 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         */
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcHeader().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcHeader().root_hier_size == 32 * 3);
+        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.GetCopcInfo().root_hier_size == 32 * 3);
 
         {
             auto sub_node = reader.FindNode(VoxelKey(2, 2, 2, 2));
