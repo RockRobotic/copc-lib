@@ -105,7 +105,7 @@ void WriterInternal::WriteExtents(las::LasHeader &head14)
 {
     out_stream_.seekp(0, std::ios::end);
     auto offset = static_cast<uint64_t>(out_stream_.tellp());
-    copc_data_.extent_vlr_offset = offset;
+    copc_data_.extent_vlr_offset = offset + evlr_header::Size;
     copc_data_.extent_vlr_size = file_->GetCopcExtentsVlr().size();
 
     evlr_header h{0, "entwine", 10000, (uint64_t)file_->GetCopcExtentsVlr().size(), "COPC extents"};

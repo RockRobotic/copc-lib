@@ -1,6 +1,5 @@
 #include <cassert>
 #include <cstdint>
-#include <limits>
 #include <random>
 
 #include <copc-lib/geometry/vector3.hpp>
@@ -167,59 +166,13 @@ void NewFileExample()
         writer.AddNode(page, sub_page.key, points);
     }
 
-    std::vector<las::CopcExtent> extents(las::PointBaseNumberDimensions(cfg.point_format_id) + cfg.NumExtraBytes(),
-                                         {0, 0});
-    extents[0].minimum = -1.0;
-    extents[0].maximum = 1;
-
-    extents[1].minimum = 0;
-    extents[1].maximum = 0;
-
-    extents[2].minimum = -std::numeric_limits<double>::max();
-    extents[2].maximum = std::numeric_limits<double>::max();
-
-    writer.SetExtents(extents);
-
-    if (writer.GetCopcExtents()[0].minimum != extents[0].minimum)
-        throw std::runtime_error("writer_error");
-    if (writer.GetCopcExtents()[0].maximum != extents[0].maximum)
-        throw std::runtime_error("writer_error");
-
-    if (writer.GetCopcExtents()[1].minimum != extents[1].minimum)
-        throw std::runtime_error("writer_error");
-    if (writer.GetCopcExtents()[1].maximum != extents[1].maximum)
-        throw std::runtime_error("writer_error");
-
-    if (writer.GetCopcExtents()[2].minimum != extents[2].minimum)
-        throw std::runtime_error("writer_error");
-    if (writer.GetCopcExtents()[2].maximum != extents[2].maximum)
-        throw std::runtime_error("writer_error");
-
     // Make sure we call close to finish writing the file!
     writer.Close();
-
-    // Now, let's test our new file
-    FileReader new_reader("test/data/new-copc.copc.laz");
-
-    if (new_reader.GetCopcExtents()[0].minimum != extents[0].minimum)
-        throw std::runtime_error("reader_error");
-    if (new_reader.GetCopcExtents()[0].maximum != extents[0].maximum)
-        throw std::runtime_error("reader_error");
-
-    if (new_reader.GetCopcExtents()[1].minimum != extents[1].minimum)
-        throw std::runtime_error("reader_error");
-    if (new_reader.GetCopcExtents()[1].maximum != extents[1].maximum)
-        throw std::runtime_error("reader_error");
-
-    if (new_reader.GetCopcExtents()[2].minimum != extents[2].minimum)
-        throw std::runtime_error("reader_error");
-    if (new_reader.GetCopcExtents()[2].maximum != extents[2].maximum)
-        throw std::runtime_error("reader_error");
 }
 
 int main()
 {
-    //    TrimFileExample(false);
-    //    TrimFileExample(true);
+    TrimFileExample(false);
+    TrimFileExample(true);
     NewFileExample();
 }

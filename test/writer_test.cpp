@@ -77,43 +77,36 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.GetCopcInfo().span == 256);
         }
 
-        //        SECTION("Extents")
-        //        {
-        //            string file_path = "test/data/writer_test.copc.laz";
-        //
-        //            Writer::LasConfig cfg(6);
-        //            FileWriter writer(file_path, cfg);
-        //
-        //            std::vector<las::CopcExtent>
-        //            extents(las::PointBaseNumberDimensions(cfg.point_format_id)+cfg.NumExtraBytes(),{0,0});
-        //            extents[0].minimum = -1.0;
-        //            extents[0].maximum = 1;
-        //
-        //            extents[1].minimum = 0;
-        //            extents[1].maximum = 0;
-        //
-        //            extents[2].minimum = -std::numeric_limits<double>::max();
-        //            extents[2].maximum = std::numeric_limits<double>::max();
-        //
-        //            writer.SetExtents(extents);
-        //
-        //            REQUIRE(writer.GetCopcExtents()[0].minimum == extents[0].minimum);
-        //            REQUIRE(writer.GetCopcExtents()[0].maximum == extents[0].maximum);
-        //            REQUIRE(writer.GetCopcExtents()[1].minimum == extents[1].minimum);
-        //            REQUIRE(writer.GetCopcExtents()[1].maximum == extents[1].maximum);
-        //            REQUIRE(writer.GetCopcExtents()[2].minimum == extents[2].minimum);
-        //            REQUIRE(writer.GetCopcExtents()[2].maximum == extents[2].maximum);
-        //
-        //            writer.Close();
-        //
-        //            FileReader reader(file_path);
-        //            REQUIRE(reader.GetCopcExtents()[0].minimum == extents[0].minimum);
-        //            REQUIRE(reader.GetCopcExtents()[0].maximum == extents[0].maximum);
-        //            REQUIRE(reader.GetCopcExtents()[1].minimum == extents[1].minimum);
-        //            REQUIRE(reader.GetCopcExtents()[1].maximum == extents[1].maximum);
-        //            REQUIRE(reader.GetCopcExtents()[2].minimum == extents[2].minimum);
-        //            REQUIRE(reader.GetCopcExtents()[2].maximum == extents[2].maximum);
-        //        }
+        SECTION("Extents")
+        {
+            string file_path = "test/data/writer_test.copc.laz";
+
+            Writer::LasConfig cfg(6);
+            FileWriter writer(file_path, cfg);
+
+            std::vector<las::CopcExtent> extents(
+                las::PointBaseNumberDimensions(cfg.point_format_id) + cfg.NumExtraBytes(), {0, 0});
+            extents[0].minimum = -1.0;
+            extents[0].maximum = 1;
+
+            extents[1].minimum = -std::numeric_limits<double>::max();
+            extents[1].maximum = std::numeric_limits<double>::max();
+
+            writer.SetExtents(extents);
+
+            REQUIRE(writer.GetCopcExtents()[0].minimum == extents[0].minimum);
+            REQUIRE(writer.GetCopcExtents()[0].maximum == extents[0].maximum);
+            REQUIRE(writer.GetCopcExtents()[1].minimum == extents[1].minimum);
+            REQUIRE(writer.GetCopcExtents()[1].maximum == extents[1].maximum);
+
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetCopcExtents()[0].minimum == extents[0].minimum);
+            REQUIRE(reader.GetCopcExtents()[0].maximum == extents[0].maximum);
+            REQUIRE(reader.GetCopcExtents()[1].minimum == extents[1].minimum);
+            REQUIRE(reader.GetCopcExtents()[1].maximum == extents[1].maximum);
+        }
 
         SECTION("WKT")
         {
