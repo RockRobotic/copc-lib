@@ -188,35 +188,35 @@ las::Points Reader::GetAllPoints()
     return out;
 }
 
-std::vector<Node> Reader::GetNodesWithinBox(const Box &box)
+std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double min_resolution)
 {
     std::vector<Node> out;
 
     auto header = GetLasHeader();
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Within(box, header))
+        if (node.key.Within(header, box) && node.key.Resolution(header) > min_resolution)
             out.push_back(node);
     }
 
     return out;
 }
 
-std::vector<Node> Reader::GetNodesIntersectBox(const Box &box)
+std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double min_resolution)
 {
     std::vector<Node> out;
 
     auto header = GetLasHeader();
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Intersects(box, header))
+        if (node.key.Intersects(header, box) && node.key.Resolution(header) > min_resolution)
             out.push_back(node);
     }
 
     return out;
 }
 
-las::Points Reader::GetPointsWithinBox(const Box &box)
+las::Points Reader::GetPointsWithinBox(const Box &box, double min_resolution)
 {
     auto header = GetLasHeader();
     auto out = las::Points(header);
@@ -224,12 +224,20 @@ las::Points Reader::GetPointsWithinBox(const Box &box)
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
     {
-        // If node fits in Box
-        if (node.key.Intersects(box, header))
+        if (node.key.Resolution(header) > min_resolution)
         {
-            // Add points that fit in the box
-            auto points = GetPoints(node);
-            out.AddPoints(points.GetWithin(box));
+            // If node fits in Box
+            if (node.key.Within(header, box))
+            {
+                // If the node is within the box add all points
+                out.AddPoints(GetPoints(node));
+            }
+            else if (node.key.Intersects(header, box))
+            {
+                // If the node only crosses the box then get subset of points within box
+                auto points = GetPoints(node);
+                out.AddPoints(points.GetWithin(box));
+            }
         }
     }
     return out;

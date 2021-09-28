@@ -99,7 +99,16 @@ def BoundsTrimFileExample():
     root_page = writer.GetRootPage()
 
     for node in reader.GetAllChildren():
-        if node.key.Intersects(box, old_header):
+        if node.key.Within(old_header, box):
+            # If node is within the box then add all points (without decompressing)
+            writer.AddNodeCompressed(
+                root_page,
+                node.key,
+                reader.GetPointDataCompressed(node),
+                node.point_count,
+            )
+        elif node.key.Intersects(old_header, box):
+            # If node only crosses the box then decompress points data and get subset of points that are within the box
             points = reader.GetPoints(node).GetWithin(box)
             writer.AddNode(root_page, node.key, copc.Points(points).Pack())
 
@@ -137,11 +146,14 @@ def ResolutionTrimFileExample():
     # The root page is automatically created and added for us
     root_page = writer.GetRootPage()
 
-    nodes = reader.GetNodesDownToResolution(resolution)
-    for node in nodes:
-        writer.AddNodeCompressed(
-            root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
-        )
+    for node in reader.GetAllChildren():
+        if node.key.Resolution(old_header) >= resolution:
+            writer.AddNodeCompressed(
+                root_page,
+                node.key,
+                reader.GetPointDataCompressed(node),
+                node.point_count,
+            )
 
     # Make sure we call close to finish writing the file!
     writer.Close()

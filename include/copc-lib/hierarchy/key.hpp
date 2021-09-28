@@ -46,12 +46,14 @@ class VoxelKey
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;
 
+    // Spatial query functions
+    // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
     double Resolution(const las::LasHeader &header) const;
-
-    bool Intersects(const Box &box, const las::LasHeader &header) const;
-    bool Contains(const Box &vec, const las::LasHeader &header) const;
-    bool Contains(const Vector3 &point, const las::LasHeader &header) const;
-    bool Within(const Box &box, const las::LasHeader &header) const;
+    bool Intersects(const las::LasHeader &header, const Box &box) const;
+    bool Contains(const las::LasHeader &header, const Box &vec) const;
+    bool Contains(const las::LasHeader &header, const Vector3 &point) const;
+    bool Within(const las::LasHeader &header, const Box &box) const;
+    bool Crosses(const las::LasHeader &header, const Box &box) const;
 
     int32_t d;
     int32_t x;

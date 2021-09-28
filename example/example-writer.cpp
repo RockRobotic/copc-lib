@@ -101,8 +101,16 @@ void BoundsTrimFileExample()
 
         for (const auto &node : reader.GetAllChildren())
         {
-            if (node.key.Intersects(box, old_header))
+
+            if (node.key.Within(old_header, box))
             {
+                // If node is within the box then add all points (without decompressing)
+                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+            }
+            else if (node.key.Intersects(old_header, box))
+            {
+                // If node only crosses the box then decompress points data and get subset of points that are within the
+                // box
                 auto points = reader.GetPoints(node).GetWithin(box);
                 writer.AddNode(root_page, node.key, las::Points(points).Pack());
             }
@@ -115,7 +123,7 @@ void BoundsTrimFileExample()
     // Now, let's test our new file
     FileReader new_reader("test/data/autzen-bounds-trimmed.copc.laz");
 
-    // Let's go through each point and make sure they fit in the within the Box
+    // Let's go through each point and make sure they fit within the Box
     for (const auto &node : new_reader.GetAllChildren())
     {
         auto points = new_reader.GetPoints(node);
@@ -142,10 +150,12 @@ void ResolutionTrimFileExample()
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
 
-        auto nodes = reader.GetNodesDownToResolution(resolution);
-        for (const auto &node : nodes)
+        for (const auto &node : reader.GetAllChildren())
         {
-            writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+            if (node.key.Resolution(old_header) >= resolution)
+            {
+                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+            }
         }
 
         // Make sure we call close to finish writing the file!

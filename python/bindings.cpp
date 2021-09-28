@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -58,9 +59,10 @@ PYBIND11_MODULE(copclib, m)
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
         .def("Resolution", &VoxelKey::Resolution, py::arg("las_header"))
         .def("Intersects", &VoxelKey::Intersects)
-        .def("Contains", py::overload_cast<const Box &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
-        .def("Contains", py::overload_cast<const Vector3 &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
+        .def("Contains", py::overload_cast<const las::LasHeader &, const Box &>(&VoxelKey::Contains, py::const_))
+        .def("Contains", py::overload_cast<const las::LasHeader &, const Vector3 &>(&VoxelKey::Contains, py::const_))
         .def("Within", &VoxelKey::Within)
+        .def("Crosses", &VoxelKey::Crosses)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
     py::implicitly_convertible<py::tuple, VoxelKey>();
@@ -355,12 +357,15 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
         .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren))
         .def("GetAllPoints", &Reader::GetAllPoints)
-        .def("GetNodesWithinBox", &Reader::GetNodesWithinBox)
-        .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox)
-        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox)
-        .def("GetDepthWithResolution", &Reader::GetDepthWithResolution)
-        .def("GetNodesWithResolution", &Reader::GetNodesWithResolution)
-        .def("GetNodesDownToResolution", &Reader::GetNodesDownToResolution);
+        .def("GetNodesWithinBox", &Reader::GetNodesWithinBox, py::arg("box"),
+             py::arg("min_resolution") = std::numeric_limits<double>::min())
+        .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox, py::arg("box"),
+             py::arg("min_resolution") = std::numeric_limits<double>::min())
+        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox, py::arg("box"),
+             py::arg("min_resolution") = std::numeric_limits<double>::min())
+        .def("GetDepthWithResolution", &Reader::GetDepthWithResolution, py::arg("resolution"))
+        .def("GetNodesWithResolution", &Reader::GetNodesWithResolution, py::arg("resolution"))
+        .def("GetNodesDownToResolution", &Reader::GetNodesDownToResolution, py::arg("resolution"));
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),

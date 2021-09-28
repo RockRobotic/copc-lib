@@ -69,15 +69,19 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
 
 double VoxelKey::Resolution(const las::LasHeader &header) const { return header.GetSpan() / std::pow(2, d); }
 
-bool VoxelKey::Intersects(const Box &box, const las::LasHeader &header) const
+bool VoxelKey::Intersects(const las::LasHeader &header, const Box &box) const
 {
     return Box(*this, header).Intersects(box);
 }
-bool VoxelKey::Contains(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Contains(box); }
-bool VoxelKey::Contains(const Vector3 &point, const las::LasHeader &header) const
+bool VoxelKey::Contains(const las::LasHeader &header, const Box &box) const { return Box(*this, header).Contains(box); }
+bool VoxelKey::Contains(const las::LasHeader &header, const Vector3 &point) const
 {
     return Box(*this, header).Contains(point);
 }
-bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
+bool VoxelKey::Within(const las::LasHeader &header, const Box &box) const { return Box(*this, header).Within(box); }
+bool VoxelKey::Crosses(const las::LasHeader &header, const Box &box) const
+{
+    return Box(*this, header).Intersects(box) && !Box(*this, header).Within(box);
+}
 
 } // namespace copc

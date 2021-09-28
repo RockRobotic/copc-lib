@@ -2,6 +2,7 @@
 #define COPCLIB_IO_READER_H_
 
 #include <istream>
+#include <limits>
 #include <string>
 
 #include <copc-lib/copc/file.hpp>
@@ -41,9 +42,10 @@ class Reader : public BaseIO
     las::Points GetAllPoints();
 
     // Spatial query functions
-    std::vector<Node> GetNodesWithinBox(const Box &box);
-    std::vector<Node> GetNodesIntersectBox(const Box &box);
-    las::Points GetPointsWithinBox(const Box &box);
+    // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
+    std::vector<Node> GetNodesWithinBox(const Box &box, double min_resolution = std::numeric_limits<double>::min());
+    std::vector<Node> GetNodesIntersectBox(const Box &box, double min_resolution = std::numeric_limits<double>::min());
+    las::Points GetPointsWithinBox(const Box &box, double min_resolution = std::numeric_limits<double>::min());
     int32_t GetDepthWithResolution(double resolution) const;
     std::vector<Node> GetNodesWithResolution(double resolution);
     std::vector<Node> GetNodesDownToResolution(double resolution);
