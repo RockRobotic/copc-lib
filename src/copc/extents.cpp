@@ -3,6 +3,38 @@
 namespace copc
 {
 
+CopcExtent::CopcExtent(double minimum, double maximum) : las::CopcExtentsVlr::CopcExtent(minimum, maximum)
+{
+    if (minimum > maximum)
+        throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+}
+
+CopcExtent::CopcExtent(const std::vector<double> &vec)
+{
+    if (vec.size() != 2)
+        throw std::runtime_error("CopcExtent: Vector size must be 2.");
+
+    if (vec[0] > vec[1])
+        throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+    minimum = vec[0];
+    maximum = vec[1];
+}
+
+CopcExtent::CopcExtent(const las::CopcExtentsVlr::CopcExtent &other)
+{
+    if (other.minimum > other.maximum)
+        throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+    minimum = other.minimum;
+    maximum = other.maximum;
+}
+
+CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_extra_bytes)
+    : point_format_id(point_format_id), extra_bytes(num_extra_bytes, {0, 0})
+{
+    if (point_format_id < 6 || point_format_id > 8)
+        throw std::runtime_error("Supported point formats are 6 to 8.");
+}
+
 CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_extra_bytes)
     : point_format_id(point_format_id), extra_bytes(num_extra_bytes, {0, 0})
 {
