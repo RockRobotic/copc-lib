@@ -25,7 +25,7 @@
 #     with pytest.raises(RuntimeError):
 #         copc.CopcExtents(5)
 #         copc.CopcExtents(9)
-#         copc.CopcExtents(std::vector<las::CopcExtent>(3),point_format_id,num_extra_bytes)
+#         copc.CopcExtents(std::vector<CopcExtent>(3),point_format_id,num_extra_bytes)
 #
 #     # ToCopcExtents
 #
@@ -37,12 +37,12 @@
 #     # FromCopcExtents
 #     copc.CopcExtents stats{point_format_id,num_extra_bytes}
 #
-#     extents = std::vector<las::CopcExtent>(copc.CopcExtents::NumberOfExtents(point_format_id,num_extra_bytes),{1,1})
+#     extents = std::vector<CopcExtent>(copc.CopcExtents::NumberOfExtents(point_format_id,num_extra_bytes),{1,1})
 #
 #     stats.FromCopcExtents(extents)
 #
 #     assert stats.x.minimum == 1
 #     assert stats.x.maximum == 1
 #
-#     REQUIRE_THROWS(stats.FromCopcExtents(std::vector<las::CopcExtent>(3)))
+#     REQUIRE_THROWS(stats.FromCopcExtents(std::vector<CopcExtent>(3)))
 #

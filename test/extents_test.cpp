@@ -46,13 +46,13 @@ TEST_CASE("COPC Stats", "[CopcExtents]")
         CopcExtents extents{point_format_id, num_extra_bytes};
 
         auto extent_vec =
-            std::vector<las::CopcExtent>(CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes), {1, 1});
+            std::vector<CopcExtent>(CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes), {1, 1});
 
         extents.SetCopcExtents(extent_vec);
 
         REQUIRE(extents.x.minimum == 1);
         REQUIRE(extents.x.maximum == 1);
 
-        REQUIRE_THROWS(extents.SetCopcExtents(std::vector<las::CopcExtent>(3)));
+        REQUIRE_THROWS(extents.SetCopcExtents(std::vector<CopcExtent>(3)));
     }
 }

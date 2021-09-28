@@ -16,39 +16,6 @@ using EbVlr = lazperf::eb_vlr;
 using VlrHeader = lazperf::vlr_header;
 using CopcExtentsVlr = lazperf::copc_extents_vlr;
 
-class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
-{
-  public:
-    CopcExtent() : lazperf::copc_extents_vlr::CopcExtent(0, 0){};
-
-    CopcExtent(double minimum, double maximum) : lazperf::copc_extents_vlr::CopcExtent(minimum, maximum)
-    {
-        if (minimum > maximum)
-            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
-    };
-
-    CopcExtent(const std::vector<double> &vec)
-    {
-        if (vec.size() != 2)
-            throw std::runtime_error("CopcExtent: Vector size must be 2.");
-
-        if (vec[0] > vec[1])
-            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
-        minimum = vec[0];
-        maximum = vec[1];
-    };
-
-    CopcExtent(const lazperf::copc_extents_vlr::CopcExtent &other)
-    {
-        if (other.minimum > other.maximum)
-            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
-        minimum = other.minimum;
-        maximum = other.maximum;
-    };
-
-    lazperf::copc_extents_vlr::CopcExtent ToLazPerf() const { return {minimum, maximum}; }
-};
-
 } // namespace copc::las
 
 namespace lazperf

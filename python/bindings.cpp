@@ -130,8 +130,9 @@ PYBIND11_MODULE(copclib, m)
             "__truediv__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
         .def(
             "__floordiv__",
-            [](const Vector3 &vec, const double &d)
-            { return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d)); },
+            [](const Vector3 &vec, const double &d) {
+                return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d));
+            },
             py::is_operator())
         .def(
             "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
@@ -240,8 +241,7 @@ PYBIND11_MODULE(copclib, m)
     using DiffType = ssize_t;
     using SizeType = size_t;
 
-    auto wrap_i = [](DiffType i, SizeType n)
-    {
+    auto wrap_i = [](DiffType i, SizeType n) {
         if (i < 0)
             i += n;
         if (i < 0 || (SizeType)i >= n)
@@ -335,15 +335,15 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
 
-    py::class_<las::CopcExtent>(m, "CopcExtent")
+    py::class_<CopcExtent>(m, "CopcExtent")
         .def(py::init<>())
         .def(py::init<double, double>())
         .def(py::init<const std::vector<double> &>())
-        .def_readwrite("minimum", &las::CopcExtent::minimum)
-        .def_readwrite("maximum", &las::CopcExtent::maximum);
+        .def_readwrite("minimum", &CopcExtent::minimum)
+        .def_readwrite("maximum", &CopcExtent::maximum);
 
-    py::implicitly_convertible<py::list, las::CopcExtent>();
-    py::implicitly_convertible<py::tuple, las::CopcExtent>();
+    py::implicitly_convertible<py::list, CopcExtent>();
+    py::implicitly_convertible<py::tuple, CopcExtent>();
 
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())

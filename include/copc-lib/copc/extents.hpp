@@ -9,6 +9,39 @@
 namespace copc
 {
 
+class CopcExtent : public las::CopcExtentsVlr::CopcExtent
+{
+  public:
+    CopcExtent() : las::CopcExtentsVlr::CopcExtent(0, 0){};
+
+    CopcExtent(double minimum, double maximum) : las::CopcExtentsVlr::CopcExtent(minimum, maximum)
+    {
+        if (minimum > maximum)
+            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+    };
+
+    CopcExtent(const std::vector<double> &vec)
+    {
+        if (vec.size() != 2)
+            throw std::runtime_error("CopcExtent: Vector size must be 2.");
+
+        if (vec[0] > vec[1])
+            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+        minimum = vec[0];
+        maximum = vec[1];
+    };
+
+    CopcExtent(const las::CopcExtentsVlr::CopcExtent &other)
+    {
+        if (other.minimum > other.maximum)
+            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+        minimum = other.minimum;
+        maximum = other.maximum;
+    };
+
+    las::CopcExtentsVlr::CopcExtent ToLazPerf() const { return {minimum, maximum}; }
+};
+
 class CopcExtents
 {
   public:
@@ -23,30 +56,30 @@ class CopcExtents
 
     las::CopcExtentsVlr ToCopcExtentsVlr() const;
 
-    void SetCopcExtents(const std::vector<las::CopcExtent> &extents);
+    void SetCopcExtents(const std::vector<CopcExtent> &extents);
 
     static int NumberOfExtents(int8_t point_format_id, uint16_t num_extra_bytes);
 
     int8_t point_format_id;
-    las::CopcExtent x{};
-    las::CopcExtent y{};
-    las::CopcExtent z{};
-    las::CopcExtent intensity{};
-    las::CopcExtent return_number{};
-    las::CopcExtent number_of_returns{};
-    las::CopcExtent scanner_channel{};
-    las::CopcExtent scan_direction_flag{};
-    las::CopcExtent edge_of_flight_line{};
-    las::CopcExtent classification{};
-    las::CopcExtent user_data{};
-    las::CopcExtent scan_angle{};
-    las::CopcExtent point_source_id{};
-    las::CopcExtent gps_time{};
-    las::CopcExtent red{};
-    las::CopcExtent green{};
-    las::CopcExtent blue{};
-    las::CopcExtent nir{};
-    std::vector<las::CopcExtent> extra_bytes;
+    CopcExtent x{};
+    CopcExtent y{};
+    CopcExtent z{};
+    CopcExtent intensity{};
+    CopcExtent return_number{};
+    CopcExtent number_of_returns{};
+    CopcExtent scanner_channel{};
+    CopcExtent scan_direction_flag{};
+    CopcExtent edge_of_flight_line{};
+    CopcExtent classification{};
+    CopcExtent user_data{};
+    CopcExtent scan_angle{};
+    CopcExtent point_source_id{};
+    CopcExtent gps_time{};
+    CopcExtent red{};
+    CopcExtent green{};
+    CopcExtent blue{};
+    CopcExtent nir{};
+    std::vector<CopcExtent> extra_bytes;
 };
 } // namespace copc
 #endif // COPCLIB_COPC_EXTENTS_H_

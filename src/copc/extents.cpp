@@ -77,7 +77,7 @@ las::CopcExtentsVlr CopcExtents::ToCopcExtentsVlr() const
         vlr.items.push_back(extent.ToLazPerf());
     return vlr;
 }
-void CopcExtents::SetCopcExtents(const std::vector<las::CopcExtent> &extents)
+void CopcExtents::SetCopcExtents(const std::vector<CopcExtent> &extents)
 {
     if (extents.size() != NumberOfExtents(point_format_id, extra_bytes.size()))
         throw std::runtime_error("Number of extents incorrect.");
