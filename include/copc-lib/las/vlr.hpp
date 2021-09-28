@@ -18,13 +18,13 @@ using CopcExtentsVlr = lazperf::copc_extents_vlr;
 
 class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
 {
+  public:
+    CopcExtent() : lazperf::copc_extents_vlr::CopcExtent(0, 0){};
 
-    CopcExtent(double minimum, double maximum)
+    CopcExtent(double minimum, double maximum) : lazperf::copc_extents_vlr::CopcExtent(minimum, maximum)
     {
         if (minimum > maximum)
             throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
-        this->minimum = minimum;
-        this->maximum = maximum;
     };
 
     CopcExtent(const std::vector<double> &vec)
@@ -37,6 +37,16 @@ class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
         minimum = vec[0];
         maximum = vec[1];
     };
+
+    CopcExtent(const lazperf::copc_extents_vlr::CopcExtent &other)
+    {
+        if (other.minimum > other.maximum)
+            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+        minimum = other.minimum;
+        maximum = other.maximum;
+    };
+
+    lazperf::copc_extents_vlr::CopcExtent ToLazPerf() const { return {minimum, maximum}; }
 };
 
 } // namespace copc::las

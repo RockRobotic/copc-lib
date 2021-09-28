@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/las/file.hpp>
 #include <copc-lib/las/utils.hpp>
 #include <copc-lib/las/vlr.hpp>
@@ -16,38 +17,31 @@ const int COPC_OFFSET = 429;
 class CopcFile : public las::LasFile
 {
   public:
-    CopcFile(const las::LasHeader &header, const las::CopcInfoVlr &copc_info, const las::CopcExtentsVlr &copc_extents,
+    CopcFile(const las::LasHeader &header, const las::CopcInfoVlr &copc_info, const CopcExtents &copc_extents,
              const las::WktVlr &wkt, const las::EbVlr &eb)
         : LasFile(header, eb), copc_info_(copc_info), copc_extents_(copc_extents), wkt_(wkt){};
-    CopcFile(const las::LasHeader &header, int span, const std::string &wkt, const las::EbVlr &eb) : LasFile(header, eb)
+    CopcFile(const las::LasHeader &header, int span, const std::string &wkt, const las::EbVlr &eb)
+        : LasFile(header, eb), copc_extents_(header.point_format_id, eb.items.size())
     {
         this->wkt_.wkt = wkt;
         this->copc_info_.span = span;
-        this->copc_extents_.items = std::vector<las::CopcExtent>(
-            las::PointBaseNumberDimensions(header.point_format_id) + eb.items.size(), {0, 0});
     };
 
     // WKT string if defined, else empty
     std::string GetWkt() const { return wkt_.wkt; }
 
-    // CopcData
+    // CopcInfo
     las::CopcInfoVlr GetCopcInfoVlr() const { return copc_info_; }
 
-    // CopcInfo
-    las::CopcExtentsVlr GetCopcExtentsVlr() const { return copc_extents_; }
+    // CopcExtents
+    CopcExtents GetCopcExtents() const { return copc_extents_; }
 
-    void SetCopcExtents(const std::vector<las::CopcExtent> &extents)
-    {
-        // Check that the size of extents matches the point format id and number of EBs
-        if (extents.size() != (las::PointBaseNumberDimensions(header_.point_format_id) + eb_.items.size()))
-            throw std::runtime_error("Wrong number of COPC extents.");
-        copc_extents_.items = extents;
-    }
+    void SetCopcExtents(const CopcExtents &extents) { copc_extents_ = extents; }
 
   private:
     las::WktVlr wkt_;
     las::CopcInfoVlr copc_info_;
-    las::CopcExtentsVlr copc_extents_;
+    CopcExtents copc_extents_;
 };
 } // namespace copc
 #endif // COPCLIB_COPC_FILE_H_

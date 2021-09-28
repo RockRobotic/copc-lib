@@ -72,37 +72,28 @@ def test_writer_config():
     cfg = copc.LasConfig(6)
     writer = copc.FileWriter(file_path, cfg)
 
-    extents = [copc.CopcExtent(0, 0) for _ in range(len(writer.GetCopcExtents()))]
+    extents = writer.GetCopcExtents()
 
-    extents[0].minimum = -1.0
-    extents[0].maximum = 1
+    extents.x.minimum = -1.0
+    extents.x.maximum = 1
 
-    extents[1].minimum = -float_info.max
-    extents[1].maximum = float_info.max
+    extents.y.minimum = -float_info.max
+    extents.y.maximum = float_info.max
 
     writer.SetCopcExtents(extents)
 
-    assert writer.GetCopcExtents()[0].minimum == extents[0].minimum
-    assert writer.GetCopcExtents()[0].maximum == extents[0].maximum
-    assert writer.GetCopcExtents()[1].minimum == extents[1].minimum
-    assert writer.GetCopcExtents()[1].maximum == extents[1].maximum
-
-    # Test checks for right extent size
-    extents.append(copc.CopcExtent(0, 0))
-    with pytest.raises(RuntimeError):
-        assert writer.SetCopcExtents(extents)
-
-    extents = extents[:-2]
-    with pytest.raises(RuntimeError):
-        assert writer.SetCopcExtents(extents)
+    assert writer.GetCopcExtents().x.minimum == extents.x.minimum
+    assert writer.GetCopcExtents().x.maximum == extents.x.maximum
+    assert writer.GetCopcExtents().y.minimum == extents.y.minimum
+    assert writer.GetCopcExtents().y.maximum == extents.y.maximum
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcExtents()[0].minimum == extents[0].minimum
-    assert reader.GetCopcExtents()[0].maximum == extents[0].maximum
-    assert reader.GetCopcExtents()[1].minimum == extents[1].minimum
-    assert reader.GetCopcExtents()[1].maximum == extents[1].maximum
+    assert reader.GetCopcExtents().x.minimum == extents.x.minimum
+    assert reader.GetCopcExtents().x.maximum == extents.x.maximum
+    assert reader.GetCopcExtents().y.minimum == extents.y.minimum
+    assert reader.GetCopcExtents().y.maximum == extents.y.maximum
 
     # WKT
     cfg = copc.LasConfig(0)

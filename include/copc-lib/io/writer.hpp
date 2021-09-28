@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 
+#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/geometry/box.hpp>
 #include <copc-lib/io/base_io.hpp>
@@ -113,13 +114,8 @@ class Writer : public BaseIO
         this->file_->SetPointsByReturn(points_by_return_14);
     }
 
-    // Return number of COPC extents based on Point Format ID and number of Extra Bytes
-    int NumberCopcExtents()
-    {
-        return las::PointBaseNumberDimensions(this->file_->GetLasHeader().point_format_id) +
-               this->file_->GetLasHeader().NumExtraBytes();
-    }
-    void SetCopcExtents(const std::vector<las::CopcExtent> &extents) { this->file_->SetCopcExtents(extents); }
+    void SetCopcExtents(const CopcExtents &extents) { this->file_->SetCopcExtents(extents); }
+
     virtual ~Writer() { writer_->Close(); }
 
   protected:

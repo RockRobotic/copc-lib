@@ -1,3 +1,4 @@
+#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/laz/decompressor.hpp>
@@ -57,10 +58,11 @@ las::CopcInfoVlr Reader::ReadCopcInfo()
     return copc_info;
 }
 
-las::CopcExtentsVlr Reader::ReadCopcExtents(const las::CopcInfoVlr &copc_data)
+CopcExtents Reader::ReadCopcExtents(const las::CopcInfoVlr &copc_data)
 {
     this->in_stream_->seekg(copc_data.extent_vlr_offset);
-    las::CopcExtentsVlr copc_extents = las::CopcExtentsVlr::create(*this->in_stream_, copc_data.extent_vlr_size);
+    auto copc_extents = CopcExtents(las::CopcExtentsVlr::create(*this->in_stream_, copc_data.extent_vlr_size),
+                                    this->GetLasHeader().point_format_id, this->GetLasHeader().NumExtraBytes());
     return copc_extents;
 }
 

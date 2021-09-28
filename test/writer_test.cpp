@@ -3,6 +3,7 @@
 #include <string>
 
 #include <catch2/catch.hpp>
+#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
@@ -84,36 +85,28 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer::LasConfig cfg(6);
             FileWriter writer(file_path, cfg);
 
-            std::vector<las::CopcExtent> extents(writer.GetCopcExtents().size(), {0, 0});
-            extents[0].minimum = -1.0;
-            extents[0].maximum = 1;
+            auto extents = writer.GetCopcExtents();
+            extents.x.minimum = -1.0;
+            extents.x.maximum = 1;
 
-            extents[1].minimum = -std::numeric_limits<double>::max();
-            extents[1].maximum = std::numeric_limits<double>::max();
+            extents.y.minimum = -std::numeric_limits<double>::max();
+            extents.y.maximum = std::numeric_limits<double>::max();
 
             writer.SetCopcExtents(extents);
 
-            REQUIRE(writer.GetCopcExtents()[0].minimum == extents[0].minimum);
-            REQUIRE(writer.GetCopcExtents()[0].maximum == extents[0].maximum);
-            REQUIRE(writer.GetCopcExtents()[1].minimum == extents[1].minimum);
-            REQUIRE(writer.GetCopcExtents()[1].maximum == extents[1].maximum);
-
-            // Test checks for right extent size
-            extents.emplace_back(0, 0);
-            REQUIRE_THROWS(writer.SetCopcExtents(extents));
-
-            extents.pop_back();
-            extents.pop_back();
-            REQUIRE_THROWS(writer.SetCopcExtents(extents));
+            REQUIRE(writer.GetCopcExtents().x.minimum == extents.x.minimum);
+            REQUIRE(writer.GetCopcExtents().x.maximum == extents.x.maximum);
+            REQUIRE(writer.GetCopcExtents().y.minimum == extents.y.minimum);
+            REQUIRE(writer.GetCopcExtents().y.maximum == extents.y.maximum);
 
             writer.Close();
 
             // Test reading of extents
             FileReader reader(file_path);
-            REQUIRE(reader.GetCopcExtents()[0].minimum == extents[0].minimum);
-            REQUIRE(reader.GetCopcExtents()[0].maximum == extents[0].maximum);
-            REQUIRE(reader.GetCopcExtents()[1].minimum == extents[1].minimum);
-            REQUIRE(reader.GetCopcExtents()[1].maximum == extents[1].maximum);
+            REQUIRE(reader.GetCopcExtents().x.minimum == extents.x.minimum);
+            REQUIRE(reader.GetCopcExtents().x.maximum == extents.x.maximum);
+            REQUIRE(reader.GetCopcExtents().y.minimum == extents.y.minimum);
+            REQUIRE(reader.GetCopcExtents().y.maximum == extents.y.maximum);
         }
 
         SECTION("WKT")

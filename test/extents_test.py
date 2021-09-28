@@ -9,35 +9,35 @@
 #     # Constructor {
 #     # Empty constructor
 #
-#     stats = copc.copc.CopcStats(point_format_id, num_extra_bytes)
+#     stats = copc.copc.CopcExtents(point_format_id, num_extra_bytes)
 #     assert stats.point_format_id == point_format_id
 #     assert stats.extra_bytes.size() == num_extra_bytes
 #
 #     # Filled Constructor
 #
-#     extents = [copc.CopcExtent(copc.CopcStats.NumberOfExtents(point_format_id,num_extra_bytes))
-#     stats = copc.CopcStats(extents, point_format_id, num_extra_bytes)
+#     extents = [copc.CopcExtent(copc.CopcExtents.NumberOfExtents(point_format_id,num_extra_bytes))
+#     stats = copc.CopcExtents(extents, point_format_id, num_extra_bytes)
 #     assert stats.point_format_id == point_format_id
 #     assert stats.extra_bytes.size() == num_extra_bytes
 #     assert stats.x.minimum == 1
 #     assert stats.x.maximum == 1
 #     # Point format checks
 #     with pytest.raises(RuntimeError):
-#         copc.CopcStats(5)
-#         copc.CopcStats(9)
-#         copc.CopcStats(std::vector<las::CopcExtent>(3),point_format_id,num_extra_bytes)
+#         copc.CopcExtents(5)
+#         copc.CopcExtents(9)
+#         copc.CopcExtents(std::vector<las::CopcExtent>(3),point_format_id,num_extra_bytes)
 #
 #     # ToCopcExtents
 #
-#     copc.CopcStats stats{point_format_id,num_extra_bytes}
+#     copc.CopcExtents stats{point_format_id,num_extra_bytes}
 #
 #     extents = stats.ToCopcExtents()
-#     assert extents.size() == copc.CopcStats::NumberOfExtents(point_format_id, num_extra_bytes)
+#     assert extents.size() == copc.CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes)
 #
 #     # FromCopcExtents
-#     copc.CopcStats stats{point_format_id,num_extra_bytes}
+#     copc.CopcExtents stats{point_format_id,num_extra_bytes}
 #
-#     extents = std::vector<las::CopcExtent>(copc.CopcStats::NumberOfExtents(point_format_id,num_extra_bytes),{1,1})
+#     extents = std::vector<las::CopcExtent>(copc.CopcExtents::NumberOfExtents(point_format_id,num_extra_bytes),{1,1})
 #
 #     stats.FromCopcExtents(extents)
 #

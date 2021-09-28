@@ -1,6 +1,7 @@
 #ifndef COPCLIB_IO_BASE_H_
 #define COPCLIB_IO_BASE_H_
 
+#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/copc/file.hpp>
 #include <copc-lib/hierarchy/internal/hierarchy.hpp>
 #include <copc-lib/hierarchy/node.hpp>
@@ -21,7 +22,7 @@ class BaseIO
     // CopcInfoEVLR
     las::CopcInfoVlr GetCopcInfo() const { return this->file_->GetCopcInfoVlr(); }
     // CopcExtents
-    std::vector<las::CopcExtent> GetCopcExtents() const { return this->file_->GetCopcExtentsVlr().items; }
+    CopcExtents GetCopcExtents() const { return this->file_->GetCopcExtents(); }
     // Las header
     las::LasHeader GetLasHeader() const { return this->file_->GetLasHeader(); }
     // EB Vlr
