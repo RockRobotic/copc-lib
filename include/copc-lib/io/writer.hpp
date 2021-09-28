@@ -12,6 +12,7 @@
 #include <copc-lib/io/internal/writer_internal.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/points.hpp>
+#include <copc-lib/las/utils.hpp>
 
 namespace copc
 {
@@ -110,6 +111,13 @@ class Writer : public BaseIO
     void SetPointsByReturn(const std::array<uint64_t, 15> &points_by_return_14)
     {
         this->file_->SetPointsByReturn(points_by_return_14);
+    }
+
+    // Return number of COPC extents based on Point Format ID and number of Extra Bytes
+    int NumberCopcExtents()
+    {
+        return las::PointBaseNumberDimensions(this->file_->GetLasHeader().point_format_id) +
+               this->file_->GetLasHeader().NumExtraBytes();
     }
     void SetCopcExtents(const std::vector<las::CopcExtent> &extents) { this->file_->SetCopcExtents(extents); }
     virtual ~Writer() { writer_->Close(); }

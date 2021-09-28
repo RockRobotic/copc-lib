@@ -84,8 +84,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer::LasConfig cfg(6);
             FileWriter writer(file_path, cfg);
 
-            std::vector<las::CopcExtent> extents(
-                las::PointBaseNumberDimensions(cfg.point_format_id) + cfg.NumExtraBytes(), {0, 0});
+            std::vector<las::CopcExtent> extents(writer.GetCopcExtents().size(), {0, 0});
             extents[0].minimum = -1.0;
             extents[0].maximum = 1;
 
@@ -99,8 +98,17 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(writer.GetCopcExtents()[1].minimum == extents[1].minimum);
             REQUIRE(writer.GetCopcExtents()[1].maximum == extents[1].maximum);
 
+            // Test checks for right extent size
+            extents.emplace_back(0, 0);
+            REQUIRE_THROWS(writer.SetCopcExtents(extents));
+
+            extents.pop_back();
+            extents.pop_back();
+            REQUIRE_THROWS(writer.SetCopcExtents(extents));
+
             writer.Close();
 
+            // Test reading of extents
             FileReader reader(file_path);
             REQUIRE(reader.GetCopcExtents()[0].minimum == extents[0].minimum);
             REQUIRE(reader.GetCopcExtents()[0].maximum == extents[0].maximum);

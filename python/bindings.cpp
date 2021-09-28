@@ -339,8 +339,6 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("minimum", &las::CopcExtent::minimum)
         .def_readwrite("maximum", &las::CopcExtent::maximum);
 
-    m.def("PointBaseNumberDimensions", &las::PointBaseNumberDimensions);
-
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())
         .def("Close", &FileReader::Close)
@@ -371,6 +369,7 @@ PYBIND11_MODULE(copclib, m)
         .def("FindNode", &Writer::FindNode)
         .def("GetWkt", &Writer::GetWkt)
         .def("GetCopcInfo", &Writer::GetCopcInfo)
+        .def("NumberCopcExtents", &Writer::NumberCopcExtents)
         .def("GetCopcExtents", &Writer::GetCopcExtents)
         .def("SetCopcExtents", &Writer::SetCopcExtents)
         .def("GetLasHeader", &Writer::GetLasHeader)

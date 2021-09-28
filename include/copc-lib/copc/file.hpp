@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 #include <copc-lib/las/file.hpp>
 #include <copc-lib/las/utils.hpp>
@@ -22,6 +23,8 @@ class CopcFile : public las::LasFile
     {
         this->wkt_.wkt = wkt;
         this->copc_info_.span = span;
+        this->copc_extents_.items = std::vector<las::CopcExtent>(
+            las::PointBaseNumberDimensions(header.point_format_id) + eb.items.size(), {0, 0});
     };
 
     // WKT string if defined, else empty
@@ -37,7 +40,7 @@ class CopcFile : public las::LasFile
     {
         // Check that the size of extents matches the point format id and number of EBs
         if (extents.size() != (las::PointBaseNumberDimensions(header_.point_format_id) + eb_.items.size()))
-            throw std::runtime_error("Wrong number of extents.");
+            throw std::runtime_error("Wrong number of COPC extents.");
         copc_extents_.items = extents;
     }
 

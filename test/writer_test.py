@@ -72,12 +72,7 @@ def test_writer_config():
     cfg = copc.LasConfig(6)
     writer = copc.FileWriter(file_path, cfg)
 
-    extents = [
-        copc.CopcExtent(0, 0)
-        for i in range(
-            copc.PointBaseNumberDimensions(cfg.point_format_id) + cfg.NumExtraBytes()
-        )
-    ]
+    extents = [copc.CopcExtent(0, 0) for _ in range(len(writer.GetCopcExtents()))]
 
     extents[0].minimum = -1.0
     extents[0].maximum = 1
@@ -91,6 +86,15 @@ def test_writer_config():
     assert writer.GetCopcExtents()[0].maximum == extents[0].maximum
     assert writer.GetCopcExtents()[1].minimum == extents[1].minimum
     assert writer.GetCopcExtents()[1].maximum == extents[1].maximum
+
+    # Test checks for right extent size
+    extents.append(copc.CopcExtent(0, 0))
+    with pytest.raises(RuntimeError):
+        assert writer.SetCopcExtents(extents)
+
+    extents = extents[:-2]
+    with pytest.raises(RuntimeError):
+        assert writer.SetCopcExtents(extents)
 
     writer.Close()
 
