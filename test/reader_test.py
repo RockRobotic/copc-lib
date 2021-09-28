@@ -150,3 +150,20 @@ def test_spatial_query_functions():
     ## Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
     subset_points = reader.GetPointsWithinBox(copc.Box(637190, 851109, 637390, 851309))
     assert len(subset_points) == 22902
+
+    # GetDepthWithResolutio
+    assert reader.GetDepthWithResolution(100) == 5
+    with pytest.raises(RuntimeError):
+        reader.GetDepthWithResolution(0)
+
+    # GetNodesWithResolution
+    subset_nodes = reader.GetNodesWithResolution(500)
+    assert len(subset_nodes) == 48
+    with pytest.raises(RuntimeError):
+        reader.GetDepthWithResolution(0)
+
+    # GetNodesDownToResolution
+    subset_nodes = reader.GetNodesDownToResolution(500)
+    assert len(subset_nodes) == 65
+    with pytest.raises(RuntimeError):
+        reader.GetDepthWithResolution(0)

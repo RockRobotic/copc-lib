@@ -56,6 +56,7 @@ PYBIND11_MODULE(copclib, m)
         .def("GetParent", &VoxelKey::GetParent)
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
+        .def("Resolution", &VoxelKey::Resolution, py::arg("las_header"))
         .def("Intersects", &VoxelKey::Intersects)
         .def("Contains", py::overload_cast<const Box &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
         .def("Contains", py::overload_cast<const Vector3 &, const las::LasHeader &>(&VoxelKey::Contains, py::const_))
@@ -268,6 +269,7 @@ PYBIND11_MODULE(copclib, m)
         .def("CreatePoint", &las::Points::CreatePoint)
         .def("ToPointFormat", &las::Points::ToPointFormat, py::arg("point_format_id"))
         .def("Within", &las::Points::Within, py::arg("box"))
+        .def("GetWithin", &las::Points::GetWithin, py::arg("box"))
         .def("Pack", py::overload_cast<>(&las::Points::Pack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const las::LasHeader &>(&las::Points::Unpack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
@@ -355,7 +357,10 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllPoints", &Reader::GetAllPoints)
         .def("GetNodesWithinBox", &Reader::GetNodesWithinBox)
         .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox)
-        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox);
+        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox)
+        .def("GetDepthWithResolution", &Reader::GetDepthWithResolution)
+        .def("GetNodesWithResolution", &Reader::GetNodesWithResolution)
+        .def("GetNodesDownToResolution", &Reader::GetNodesDownToResolution);
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),

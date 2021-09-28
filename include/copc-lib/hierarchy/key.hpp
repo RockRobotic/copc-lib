@@ -46,6 +46,8 @@ class VoxelKey
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;
 
+    double Resolution(const las::LasHeader &header) const;
+
     bool Intersects(const Box &box, const las::LasHeader &header) const;
     bool Contains(const Box &vec, const las::LasHeader &header) const;
     bool Contains(const Vector3 &point, const las::LasHeader &header) const;

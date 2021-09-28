@@ -1,3 +1,6 @@
+#include <cmath>
+#include <stdexcept>
+
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/laz/decompressor.hpp>
@@ -229,6 +232,48 @@ las::Points Reader::GetPointsWithinBox(const Box &box)
             out.AddPoints(points.GetWithin(box));
         }
     }
+    return out;
+}
+
+int32_t Reader::GetDepthWithResolution(double resolution) const
+{
+    if (resolution <= 0)
+        throw std::runtime_error("Query resolution must be greater than 0.");
+    return static_cast<int32_t>(
+        std::floor(std::max(0.0, std::log(GetLasHeader().GetSpan() / resolution) / std::log(2))));
+}
+
+std::vector<Node> Reader::GetNodesWithResolution(double resolution)
+{
+    if (resolution <= 0)
+        throw std::runtime_error("Query resolution must be greater than 0.");
+    auto target_depth = GetDepthWithResolution(resolution);
+
+    std::vector<Node> out;
+
+    for (const auto &node : GetAllChildren())
+    {
+        if (node.key.d == target_depth)
+            out.push_back(node);
+    }
+
+    return out;
+}
+
+std::vector<Node> Reader::GetNodesDownToResolution(double resolution)
+{
+    if (resolution <= 0)
+        throw std::runtime_error("Query resolution must be greater than 0.");
+    auto target_depth = GetDepthWithResolution(resolution);
+
+    std::vector<Node> out;
+
+    for (const auto &node : GetAllChildren())
+    {
+        if (node.key.d <= target_depth)
+            out.push_back(node);
+    }
+
     return out;
 }
 

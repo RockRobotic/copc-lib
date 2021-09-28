@@ -284,6 +284,23 @@ def test_within():
     assert not points.Within(copc.Box(0, 0, 0, 5, 5, 5))
 
 
+def test_get_within():
+
+    points = copc.Points(3, (1, 1, 1), copc.Vector3.DefaultOffset())
+
+    # generate points
+    for i in range(2000):
+        p = points.CreatePoint()
+        p.X = random.uniform(0, 5)
+        p.Y = random.uniform(0, 5)
+        p.Z = random.uniform(0, 5)
+        points.AddPoint(p)
+
+    box = copc.Box(0, 0, 0, 2.5, 2.5, 2.5)
+    points = points.GetWithin(box)
+    assert copc.Points(points).Within(box)
+
+
 def test_points_accessors():
     points = copc.Points(
         3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4

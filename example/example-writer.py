@@ -75,6 +75,85 @@ def TrimFileExample(compressor_example_flag):
     new_reader.Close()
 
 
+# In this example, we'll filter the points in the autzen dataset based on bounds.
+def BoundsTrimFileExample():
+    # We'll get our point data from this file
+    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+    old_header = reader.GetLasHeader()
+
+    # Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    box = copc.Box(637190, 851109, 637390, 851309)
+
+    # Copy the header to the new file
+    cfg = copc.LasConfig(old_header, reader.GetExtraByteVlr())
+
+    # Now, we can create our actual writer, with an optional `span` and `wkt`:
+    writer = copc.FileWriter(
+        "../test/data/autzen-bounds-trimmed.copc.laz",
+        cfg,
+        reader.GetCopcHeader().span,
+        reader.GetWkt(),
+    )
+
+    # The root page is automatically created and added for us
+    root_page = writer.GetRootPage()
+
+    for node in reader.GetAllChildren():
+        if node.key.Intersects(box, old_header):
+            points = reader.GetPoints(node).GetWithin(box)
+            writer.AddNode(root_page, node.key, copc.Points(points).Pack())
+
+    # Make sure we call close to finish writing the file!
+    writer.Close()
+
+    # Now, let's test our new file
+    new_reader = copc.FileReader("../test/data/autzen-bounds-trimmed.copc.laz")
+
+    # Let's go through each point and make sure they fit in the within the Box
+    for node in new_reader.GetAllChildren():
+        points = new_reader.GetPoints(node)
+        assert points.Within(box)
+
+
+# In this example, we'll filter the points in the autzen dataset based on resolution.
+def ResolutionTrimFileExample():
+    # We'll get our point data from this file
+    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+    old_header = reader.GetLasHeader()
+
+    resolution = 1000
+
+    # Copy the header to the new file
+    cfg = copc.LasConfig(old_header, reader.GetExtraByteVlr())
+
+    # Now, we can create our actual writer, with an optional `span` and `wkt`:
+    writer = copc.FileWriter(
+        "../test/data/autzen-resolution-trimmed.copc.laz",
+        cfg,
+        reader.GetCopcHeader().span,
+        reader.GetWkt(),
+    )
+
+    # The root page is automatically created and added for us
+    root_page = writer.GetRootPage()
+
+    nodes = reader.GetNodesDownToResolution(resolution)
+    for node in nodes:
+        writer.AddNodeCompressed(
+            root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
+        )
+
+    # Make sure we call close to finish writing the file!
+    writer.Close()
+
+    # Now, let's test our new file
+    new_reader = copc.FileReader("../test/data/autzen-resolution-trimmed.copc.laz")
+
+    # Let's go through each node we've written and make sure the resolution is correct
+    for node in new_reader.GetAllChildren():
+        assert node.key.Resolution(old_header) >= resolution
+
+
 # constants
 MIN_BOUNDS = copc.Vector3(-2000, -5000, 20)  # Argument Constructor
 MAX_BOUNDS = copc.Vector3([5000, 1034, 125])  # List Constructor
@@ -185,4 +264,6 @@ def NewFileExample():
 if __name__ == "__main__":
     TrimFileExample(False)
     TrimFileExample(True)
+    BoundsTrimFileExample()
+    ResolutionTrimFileExample()
     NewFileExample()

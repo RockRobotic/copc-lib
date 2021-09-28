@@ -3,6 +3,7 @@
 #include <random>
 
 #include <copc-lib/geometry/vector3.hpp>
+#include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/header.hpp>
@@ -75,6 +76,89 @@ void TrimFileExample(bool compressor_example_flag)
             std::vector<char> uncompressed_points =
                 laz::Decompressor::DecompressBytes(compressed_points, header, node.point_count);
         }
+    }
+}
+
+// In this example, we'll filter the points in the autzen dataset based on bounds.
+void BoundsTrimFileExample()
+{
+    // We'll get our point data from this file
+    FileReader reader("test/data/autzen-classified.copc.laz");
+    auto old_header = reader.GetLasHeader();
+
+    // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    Box box(637190, 851109, 637390, 851309);
+    {
+        // Copy the header to the new file
+        Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
+
+        // Now, we can create our actual writer, with an optional `span` and `wkt`:
+        FileWriter writer("test/data/autzen-bounds-trimmed.copc.laz", cfg, reader.GetCopcHeader().span,
+                          reader.GetWkt());
+
+        // The root page is automatically created and added for us
+        Page root_page = writer.GetRootPage();
+
+        for (const auto &node : reader.GetAllChildren())
+        {
+            if (node.key.Intersects(box, old_header))
+            {
+                auto points = reader.GetPoints(node).GetWithin(box);
+                writer.AddNode(root_page, node.key, las::Points(points).Pack());
+            }
+        }
+
+        // Make sure we call close to finish writing the file!
+        writer.Close();
+    }
+
+    // Now, let's test our new file
+    FileReader new_reader("test/data/autzen-bounds-trimmed.copc.laz");
+
+    // Let's go through each point and make sure they fit in the within the Box
+    for (const auto &node : new_reader.GetAllChildren())
+    {
+        auto points = new_reader.GetPoints(node);
+        assert(points.Within(box));
+    }
+}
+
+// In this example, we'll filter the points in the autzen dataset based on resolution.
+void ResolutionTrimFileExample()
+{
+    // We'll get our point data from this file
+    FileReader reader("test/data/autzen-classified.copc.laz");
+    auto old_header = reader.GetLasHeader();
+
+    double resolution = 1000;
+    {
+        // Copy the header to the new file
+        Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
+
+        // Now, we can create our actual writer, with an optional `span` and `wkt`:
+        FileWriter writer("test/data/autzen-resolution-trimmed.copc.laz", cfg, reader.GetCopcHeader().span,
+                          reader.GetWkt());
+
+        // The root page is automatically created and added for us
+        Page root_page = writer.GetRootPage();
+
+        auto nodes = reader.GetNodesDownToResolution(resolution);
+        for (const auto &node : nodes)
+        {
+            writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+        }
+
+        // Make sure we call close to finish writing the file!
+        writer.Close();
+    }
+
+    // Now, let's test our new file
+    FileReader new_reader("test/data/autzen-resolution-trimmed.copc.laz");
+
+    // Let's go through each node we've written and make sure the resolution is correct
+    for (const auto &node : new_reader.GetAllChildren())
+    {
+        assert(node.key.Resolution(old_header) >= resolution);
     }
 }
 
@@ -174,5 +258,7 @@ int main()
 {
     TrimFileExample(false);
     TrimFileExample(true);
+    BoundsTrimFileExample();
+    ResolutionTrimFileExample();
     NewFileExample();
 }

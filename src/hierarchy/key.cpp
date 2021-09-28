@@ -67,6 +67,8 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     return false;
 }
 
+double VoxelKey::Resolution(const las::LasHeader &header) const { return header.GetSpan() / std::pow(2, d); }
+
 bool VoxelKey::Intersects(const Box &box, const las::LasHeader &header) const
 {
     return Box(*this, header).Intersects(box);

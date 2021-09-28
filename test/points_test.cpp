@@ -314,4 +314,28 @@ TEST_CASE("Points tests", "[Point]")
 
         REQUIRE(!points.Within(copc::Box(0, 0, 0, 5, 5, 5)));
     }
+
+    SECTION("GetWithin")
+    {
+        auto points = Points(3, {1, 1, 1}, copc::Vector3::DefaultOffset());
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<double> dist(0.0, 5.0);
+
+        // generate points
+        int num_points = 2000;
+        for (int i = 0; i < num_points; i++)
+        {
+            auto p = points.CreatePoint();
+            p->X(dist(gen));
+            p->Y(dist(gen));
+            p->Z(dist(gen));
+            points.AddPoint(p);
+        }
+        auto box = copc::Box(0, 0, 0, 2.5, 2.5, 2.5);
+        points = points.GetWithin(box);
+
+        REQUIRE(points.Within(box));
+    }
 }
