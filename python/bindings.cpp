@@ -8,6 +8,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
+#include <copc-lib/copc/stats.hpp>
 #include <copc-lib/geometry/box.hpp>
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
@@ -336,8 +337,12 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<las::CopcExtent>(m, "CopcExtent")
         .def(py::init<double, double>())
+        .def(py::init<const std::vector<double> &>())
         .def_readwrite("minimum", &las::CopcExtent::minimum)
         .def_readwrite("maximum", &las::CopcExtent::maximum);
+
+    py::implicitly_convertible<py::list, las::CopcExtent>();
+    py::implicitly_convertible<py::tuple, las::CopcExtent>();
 
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())
@@ -512,4 +517,32 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("eb_vlr_size", &las::CopcInfoVlr::eb_vlr_size);
 
     py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>());
+
+    py::class_<CopcStats>(m, "CopcStats")
+        .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
+        .def(py::init<const std::vector<las::CopcExtent> &, int8_t, uint16_t>(), py::arg("extents"),
+             py::arg("point_format_id"), py::arg("num_extra_bytes") = 0)
+        .def("FromCopcExtents", &CopcStats::FromCopcExtents)
+        .def("ToCopcExtents", &CopcStats::ToCopcExtents)
+        .def_static("NumberOfExtents", &CopcStats::NumberOfExtents)
+        .def_readwrite("point_format_id", &CopcStats::point_format_id)
+        .def_readwrite("x", &CopcStats::x)
+        .def_readwrite("y", &CopcStats::y)
+        .def_readwrite("z", &CopcStats::z)
+        .def_readwrite("intensity", &CopcStats::intensity)
+        .def_readwrite("return_number", &CopcStats::return_number)
+        .def_readwrite("number_of_returns", &CopcStats::number_of_returns)
+        .def_readwrite("scanner_channel", &CopcStats::scanner_channel)
+        .def_readwrite("scan_direction_flag", &CopcStats::scan_direction_flag)
+        .def_readwrite("edge_of_flight_line", &CopcStats::edge_of_flight_line)
+        .def_readwrite("classification", &CopcStats::classification)
+        .def_readwrite("user_data", &CopcStats::user_data)
+        .def_readwrite("scan_angle", &CopcStats::scan_angle)
+        .def_readwrite("point_source_id", &CopcStats::point_source_id)
+        .def_readwrite("gps_time", &CopcStats::gps_time)
+        .def_readwrite("red", &CopcStats::red)
+        .def_readwrite("green", &CopcStats::green)
+        .def_readwrite("blue", &CopcStats::blue)
+        .def_readwrite("nir", &CopcStats::nir)
+        .def_readwrite("extra_bytes", &CopcStats::extra_bytes);
 }

@@ -183,6 +183,6 @@ def NewFileExample():
 
 
 if __name__ == "__main__":
-    # TrimFileExample(False)
-    # TrimFileExample(True)
+    TrimFileExample(False)
+    TrimFileExample(True)
     NewFileExample()

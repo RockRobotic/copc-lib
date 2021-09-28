@@ -2,6 +2,7 @@
 #define COPCLIB_LAS_VLR_H_
 
 #include <cstring>
+#include <stdexcept>
 #include <vector>
 
 #include "lazperf/vlr.hpp"
@@ -14,7 +15,29 @@ using CopcInfoVlr = lazperf::copc_info_vlr;
 using EbVlr = lazperf::eb_vlr;
 using VlrHeader = lazperf::vlr_header;
 using CopcExtentsVlr = lazperf::copc_extents_vlr;
-using CopcExtent = lazperf::copc_extents_vlr::CopcExtent;
+
+class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
+{
+
+    CopcExtent(double minimum, double maximum)
+    {
+        if (minimum > maximum)
+            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+        this->minimum = minimum;
+        this->maximum = maximum;
+    };
+
+    CopcExtent(const std::vector<double> &vec)
+    {
+        if (vec.size() != 2)
+            throw std::runtime_error("CopcExtent: Vector size must be 2.");
+
+        if (vec[0] > vec[1])
+            throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+        minimum = vec[0];
+        maximum = vec[1];
+    };
+};
 
 } // namespace copc::las
 
