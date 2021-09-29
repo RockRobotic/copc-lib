@@ -137,6 +137,18 @@ void NewFileExample()
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:
     FileWriter writer("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT");
 
+    // Set the COPC Extents
+    auto extents = writer.GetCopcExtents();
+
+    extents.x.minimum = cfg.min.x;
+    extents.x.maximum = cfg.max.x;
+    extents.y.minimum = cfg.min.y;
+    extents.y.maximum = cfg.max.y;
+    extents.z.minimum = cfg.min.z;
+    extents.z.maximum = cfg.max.z;
+
+    writer.SetCopcExtents(extents);
+
     // The root page is automatically created
     Page root_page = writer.GetRootPage();
 
@@ -175,5 +187,5 @@ int main()
     // TODO[Leo]: (Extents) Update this once we have updated copc test file
     //    TrimFileExample(false);
     //    TrimFileExample(true);
-    //    NewFileExample();
+    NewFileExample();
 }
