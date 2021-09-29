@@ -1,7 +1,7 @@
 #include <cstring>
 
-#include "copc-lib/hierarchy/internal/page.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
+#include "copc-lib/hierarchy/internal/page.hpp"
 #include "copc-lib/io/internal/writer_internal.hpp"
 #include "copc-lib/io/writer.hpp"
 #include "copc-lib/las/point.hpp"
