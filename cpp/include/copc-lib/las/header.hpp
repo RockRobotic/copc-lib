@@ -6,6 +6,7 @@
 #include <limits>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 #include "copc-lib/geometry/vector3.hpp"
 #include <lazperf/header.hpp>
