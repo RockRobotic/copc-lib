@@ -9,7 +9,7 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 The quickest way to get started with copc-lib is to install its conda package:
 
 ```bash
-conda install -c RockRobotic copc-lib
+conda install -c RockRobotic -c conda-forge copc-lib
 ```
 
 ## Build from source
@@ -53,7 +53,7 @@ find_package(copc-lib REQUIRED)
 find_package(lazperf REQUIRED)
 
 add_executable(funlib fun-main.cpp)
-target_link_libraries(funlib copc-lib LAZPERF::lazperf)
+target_link_libraries(funlib COPCLIB::copc-lib LAZPERF::lazperf)
 ```
 
 ### Python
@@ -79,7 +79,8 @@ for point in points.Get():
 - [x] Add writer for COPC data
 - [x] Python bindings
 - [x] JavaScript bindings (not planned, see below)
-- [ ] Conda and pip packages
+- [x] Conda package
+- [ ] Pip package
 - [ ] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 
 ## Helpful Links
