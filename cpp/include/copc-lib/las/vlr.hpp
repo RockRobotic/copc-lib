@@ -1,8 +1,8 @@
 #ifndef COPCLIB_LAS_VLR_H_
 #define COPCLIB_LAS_VLR_H_
 
-#include <lazperf/vlr.hpp>
 #include <cstring>
+#include <lazperf/vlr.hpp>
 
 namespace copc::las
 {

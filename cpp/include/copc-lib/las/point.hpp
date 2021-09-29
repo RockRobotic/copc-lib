@@ -4,10 +4,9 @@
 #include <sstream>
 #include <vector>
 
+#include "copc-lib/hierarchy/key.hpp"
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/las/utils.hpp"
-#include "copc-lib/hierarchy/key.hpp"
-
 
 namespace copc::las
 {
