@@ -59,7 +59,8 @@ class Reader : public BaseIO
     // Finds and loads the COPC vlr
     las::CopcInfoVlr ReadCopcInfo();
     // Finds and loads the COPC vlr
-    CopcExtents ReadCopcExtents(const las::CopcInfoVlr &copc_data);
+    CopcExtents ReadCopcExtents(const las::CopcInfoVlr &copc_data, const las::LasHeader &header,
+                                const las::EbVlr &eb_vlr);
     // Finds and loads the WKT vlr
     las::WktVlr ReadWktData(const las::CopcInfoVlr &copc_data);
     // finds and loads EB vlr

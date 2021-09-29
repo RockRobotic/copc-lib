@@ -183,6 +183,8 @@ def NewFileExample():
 
 
 if __name__ == "__main__":
-    TrimFileExample(False)
-    TrimFileExample(True)
-    NewFileExample()
+    # TODO[Leo]: (Extents) Update this once we have updated copc test file
+    # TrimFileExample(False)
+    # TrimFileExample(True)
+    # NewFileExample()
+    pass

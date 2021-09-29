@@ -29,7 +29,11 @@ class Writer : public BaseIO
         // LasConfig()= default;
         LasConfig(const int8_t &point_format_id, const Vector3 &scale = {DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE},
                   const Vector3 &offset = {0, 0, 0})
-            : point_format_id(point_format_id), scale(scale), offset(offset){};
+            : point_format_id(point_format_id), scale(scale), offset(offset)
+        {
+            if (point_format_id < 6 || point_format_id > 8)
+                throw std::runtime_error("LasConfig: Supported point formats are 6 to 8.");
+        };
         // Allow for "copying" a lasheader from one file to another
         LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_);
 

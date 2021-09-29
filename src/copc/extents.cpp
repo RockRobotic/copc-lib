@@ -32,17 +32,17 @@ CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_extra_bytes)
     : point_format_id(point_format_id), extra_bytes(num_extra_bytes, {0, 0})
 {
     if (point_format_id < 6 || point_format_id > 8)
-        throw std::runtime_error("Supported point formats are 6 to 8.");
+        throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 }
 
 CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_extra_bytes)
     : point_format_id(point_format_id), extra_bytes(num_extra_bytes, {0, 0})
 {
     if (point_format_id < 6 || point_format_id > 8)
-        throw std::runtime_error("Supported point formats are 6 to 8.");
+        throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 
-    if (vlr.size() != NumberOfExtents(point_format_id, extra_bytes.size()))
-        throw std::runtime_error("Number of extents incorrect.");
+    if (vlr.items.size() != NumberOfExtents(point_format_id, extra_bytes.size()))
+        throw std::runtime_error("CopcExtents: Number of extents incorrect.");
 
     x = vlr.items[0];
     y = vlr.items[1];
@@ -112,7 +112,7 @@ las::CopcExtentsVlr CopcExtents::ToCopcExtentsVlr() const
 void CopcExtents::SetCopcExtents(const std::vector<CopcExtent> &extents)
 {
     if (extents.size() != NumberOfExtents(point_format_id, extra_bytes.size()))
-        throw std::runtime_error("Number of extents incorrect.");
+        throw std::runtime_error("SetCopcExtents: Number of extents incorrect.");
 
     x = extents[0];
     y = extents[1];
@@ -143,6 +143,42 @@ void CopcExtents::SetCopcExtents(const std::vector<CopcExtent> &extents)
         eb_start_id = 18;
     }
     extra_bytes.assign(extents.begin() + eb_start_id, extents.end());
+}
+
+std::vector<CopcExtent> CopcExtents::GetCopcExtents() const
+{
+    std::vector<CopcExtent> extents(NumberOfExtents(point_format_id, extra_bytes.size()));
+
+    extents[0] = x;
+    extents[1] = y;
+    extents[2] = z;
+    extents[3] = intensity;
+    extents[4] = return_number;
+    extents[5] = number_of_returns;
+    extents[6] = scanner_channel;
+    extents[7] = scan_direction_flag;
+    extents[8] = edge_of_flight_line;
+    extents[9] = classification;
+    extents[10] = user_data;
+    extents[11] = scan_angle;
+    extents[12] = point_source_id;
+    extents[13] = gps_time;
+    int eb_start_id = 14;
+
+    if (point_format_id > 6)
+    {
+        extents[14] = red;
+        extents[15] = green;
+        extents[16] = blue;
+        eb_start_id = 17;
+    }
+    if (point_format_id == 8)
+    {
+        extents[17] = nir;
+        eb_start_id = 18;
+    }
+    std::copy(extra_bytes.begin(), extra_bytes.end(), extents.begin() + eb_start_id);
+    return extents;
 }
 
 int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_extra_bytes)

@@ -131,6 +131,9 @@ copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVl
     creation_year = config.creation_year;
     point_format_id = config.point_format_id;
 
+    if (point_format_id < 6 || point_format_id > 8)
+        throw std::runtime_error("LasConfig: Supported point formats are 6 to 8.");
+
     guid_ = config.GUID();
     system_identifier_ = config.SystemIdentifier();
     generating_software_ = config.GeneratingSoftware();

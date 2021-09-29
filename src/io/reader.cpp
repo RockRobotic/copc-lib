@@ -20,9 +20,9 @@ void Reader::InitReader()
 
     std::map<uint64_t, las::VlrHeader> vlrs = ReadVlrs();
     auto copc_info = ReadCopcInfo();
-    auto copc_extents = ReadCopcExtents(copc_info);
     auto wkt = ReadWktData(copc_info);
     auto eb = ReadExtraByteVlr(vlrs);
+    auto copc_extents = ReadCopcExtents(copc_info, header, eb);
 
     this->file_ = std::make_shared<CopcFile>(header, copc_info, copc_extents, wkt, eb);
     this->file_->vlrs = vlrs;
@@ -58,12 +58,17 @@ las::CopcInfoVlr Reader::ReadCopcInfo()
     return copc_info;
 }
 
-CopcExtents Reader::ReadCopcExtents(const las::CopcInfoVlr &copc_data)
+CopcExtents Reader::ReadCopcExtents(const las::CopcInfoVlr &copc_data, const las::LasHeader &header,
+                                    const las::EbVlr &eb_vlr)
 {
+    // TODO[Leo]: (Extents) Update this once we have updated copc test file
+    if (header.point_format_id < 6 || header.point_format_id > 8)
+        return {7, static_cast<uint16_t>(eb_vlr.items.size())};
+
     this->in_stream_->seekg(copc_data.extent_vlr_offset);
-    auto copc_extents = CopcExtents(las::CopcExtentsVlr::create(*this->in_stream_, copc_data.extent_vlr_size),
-                                    this->GetLasHeader().point_format_id, this->GetLasHeader().NumExtraBytes());
-    return copc_extents;
+
+    return {las::CopcExtentsVlr::create(*this->in_stream_, copc_data.extent_vlr_size), header.point_format_id,
+            static_cast<uint16_t>(eb_vlr.items.size())};
 }
 
 las::WktVlr Reader::ReadWktData(const las::CopcInfoVlr &copc_data)

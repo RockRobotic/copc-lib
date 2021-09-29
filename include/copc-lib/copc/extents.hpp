@@ -20,20 +20,29 @@ class CopcExtent : public las::CopcExtentsVlr::CopcExtent
 
     CopcExtent(const las::CopcExtentsVlr::CopcExtent &other);
 
+    // Convert to lazperf CopcExtent
     las::CopcExtentsVlr::CopcExtent ToLazPerf() const { return {minimum, maximum}; }
 };
 
 class CopcExtents
 {
   public:
+    // Empty constructor
     CopcExtents(int8_t point_format_id, uint16_t num_extra_bytes = 0);
 
+    // VLR constructor
     CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_extra_bytes = 0);
 
+    // Convert to lazperf vlr
     las::CopcExtentsVlr ToCopcExtentsVlr() const;
 
+    // Get all extents as a vector
+    std::vector<CopcExtent> GetCopcExtents() const;
+
+    // Set all extents from vector
     void SetCopcExtents(const std::vector<CopcExtent> &extents);
 
+    // Return the total number of extents
     static int NumberOfExtents(int8_t point_format_id, uint16_t num_extra_bytes);
 
     int8_t point_format_id;

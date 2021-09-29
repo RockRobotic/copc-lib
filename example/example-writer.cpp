@@ -172,7 +172,8 @@ void NewFileExample()
 
 int main()
 {
-    TrimFileExample(false);
-    TrimFileExample(true);
-    NewFileExample();
+    // TODO[Leo]: (Extents) Update this once we have updated copc test file
+    //    TrimFileExample(false);
+    //    TrimFileExample(true);
+    //    NewFileExample();
 }

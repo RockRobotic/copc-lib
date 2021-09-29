@@ -105,7 +105,6 @@ void WriterInternal::WriteExtents(las::LasHeader &head14)
 {
 
     auto vlr = file_->GetCopcExtents().ToCopcExtentsVlr();
-
     out_stream_.seekp(0, std::ios::end);
     auto offset = static_cast<uint64_t>(out_stream_.tellp());
     copc_data_.extent_vlr_offset = offset + evlr_header::Size;
