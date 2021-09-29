@@ -1,4 +1,6 @@
 #include "copc-lib/geometry/box.hpp"
+#include "copc-lib/hierarchy/key.hpp"
+#include "copc-lib/las/header.hpp"
 
 namespace copc
 {

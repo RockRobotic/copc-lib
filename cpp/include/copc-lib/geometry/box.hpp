@@ -5,8 +5,6 @@
 #include <vector>
 
 #include "copc-lib/geometry/vector3.hpp"
-#include "copc-lib/hierarchy/key.hpp"
-#include "copc-lib/las/header.hpp"
 
 namespace copc
 {
