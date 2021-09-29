@@ -4,7 +4,7 @@ import pytest
 
 def test_writer_config():
     # Given a valid file path
-    file_path = "data/writer_test.copc.laz"
+    file_path = "writer_test.copc.laz"
 
     # Default config
     cfg = copc.LasConfig(0)
@@ -80,7 +80,7 @@ def test_writer_config():
     assert reader.GetWkt() == "TEST_WKT"
 
     # Copy
-    orig = copc.FileReader("data/autzen-classified.copc.laz")
+    orig = copc.FileReader("autzen-classified.copc.laz")
 
     cfg = copc.LasConfig(orig.GetLasHeader(), orig.GetExtraByteVlr())
     writer = copc.FileWriter(file_path, cfg)
@@ -139,7 +139,7 @@ def test_writer_config():
 
 def test_writer_pages():
     # Given a valid file path
-    file_path = "data/writer_test.copc.laz"
+    file_path = "writer_test.copc.laz"
 
     # Root Page
     writer = copc.FileWriter(file_path, copc.LasConfig(0))
@@ -187,9 +187,9 @@ def test_writer_pages():
 
 def test_writer_copy():
     # Given a valid file path
-    file_path = "data/writer_test.copc.laz"
+    file_path = "writer_test.copc.laz"
 
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
 
     cfg = copc.LasConfig(reader.GetLasHeader(), reader.GetExtraByteVlr())
     writer = copc.FileWriter(file_path, cfg)

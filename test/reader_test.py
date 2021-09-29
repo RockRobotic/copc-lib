@@ -4,7 +4,7 @@ import pytest
 
 def test_reader():
     # Given a valid file path
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
 
     # GetLasHeader Test
     copc_header = reader.GetCopcHeader()
@@ -34,7 +34,7 @@ def test_reader():
 
 def test_find_key():
     # Given a valid file path
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
 
     key = copc.VoxelKey.BaseKey()
     hier_entry = reader.FindNode(key)
@@ -52,7 +52,7 @@ def test_find_key():
 
 
 def test_get_all_children():
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
 
     # Get root key
     nodes = reader.GetAllChildren()
@@ -74,7 +74,7 @@ def test_get_all_children():
 
 
 def test_point_error_handling():
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
 
     invalid_node = copc.Node()
     with pytest.raises(RuntimeError):

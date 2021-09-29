@@ -1,0 +1,48 @@
+package:
+  name: copc-lib
+  version: 1.2.0
+
+source:
+  git_url: https://github.com/CCInc/copc-lib.git
+  git_depth: -1 # (Defaults to -1/not shallow)
+
+requirements:
+  build:
+    - setuptools
+    - cmake
+    - Catch2
+    - pybind11
+    - laz-perf >=2.1.0
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - python  {{ python }}
+  run:
+    - python  {{ python }}
+    - laz-perf >=2.1.0
+
+test:
+  source_files:
+    - test/CMakeLists.txt
+    - test/*.cpp
+    - test/*.py
+    - test/data/*.h
+    - example/CMakeLists.txt
+    - example/*.cpp
+    - example/*.py
+    - cmake
+  requires:
+    - cmake
+    - pytest
+    - Catch2
+    - pybind11
+    - laz-perf >=2.1.0
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - python {{ python }}
+
+about:
+  home: https://github.com/RockRobotics/copc-lib.git
+  license: BSD
+  license_file: LICENSE.md
+  summary: copc-lib provides an easy-to-use interface for reading and creating Cloud Optimized Point Clouds 

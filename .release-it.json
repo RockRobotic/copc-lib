@@ -8,7 +8,7 @@
   },
   "plugins": {
     "@release-it/bumper": {
-      "out": [ "setup.py", "CMakeLists.txt" ]
+      "out": [ "setup.py", "CMakeLists.txt", ".github/workflows/conda/meta.yaml" ]
     }
   }
 }

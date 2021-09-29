@@ -4,7 +4,7 @@ import copclib as copc
 
 def test_las_header():
 
-    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
     las_header = reader.GetLasHeader()
 
     assert las_header.file_source_id == las_header.file_source_id

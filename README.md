@@ -6,27 +6,36 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 
 ## Installation
 
-### Dependencies
-copc-lib depends on laz-perf 2.1.0 or greater. See the [laz-perf repo](https://github.com/hobu/laz-perf) for installation instructions.
+The quickest way to get started with copc-lib is to install its conda package:
 
-### Build & Install
-With the dependencies installed, we can now build copc-lib. Note that you need to clone this repo with the `--recurse-submodules` flag, so that all dependencies get included.
+```bash
+conda install -c RockRobotic copc-lib
+```
+
+## Build from source
+
+### Dependencies
+
+copc-lib has the following dependencies:
+- [laz-perf](https://github.com/hobu/laz-perf) >= 2.1.0
+- Catch2
+- Pybind11
 
 ### C++
 
 ```bash
-git clone --recurse-submodules https://github.com/RockRobotic/copc-lib.git
+git clone https://github.com/RockRobotic/copc-lib.git
 cd copc-lib
 mkdir build && cd build
 cmake ..
-make
-sudo make install
+cmake --build .
+sudo cmake --install .
 ```
 
 ### Python
 
 ```bash
-git clone --recurse-submodules https://github.com/RockRobotic/copc-lib.git
+git clone https://github.com/RockRobotic/copc-lib.git
 pip install ./copc-lib
 ```
 
@@ -52,7 +61,7 @@ target_link_libraries(funlib copc-lib LAZPERF::lazperf)
 import copclib as copc
 
 # Create a reader object
-reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+reader = copc.FileReader("autzen-classified.copc.laz")
 
 # Get the node metadata from the hierarchy
 node = reader.FindNode(copc.VoxelKey(0, 0, 0, 0))
