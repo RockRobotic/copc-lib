@@ -1,4 +1,7 @@
+from sys import float_info
+
 import copclib as copc
+import pytest
 
 
 def test_key_validity():
@@ -71,3 +74,49 @@ def test_get_parents():
     get_parents_non_inclusive = test_keys[0].GetParents(False)
     assert len(get_parents_non_inclusive) == len(test_keys) - 1
     assert get_parents_non_inclusive == test_keys_exclusive
+
+
+def test_key_spatial_functions():
+
+    # Make a LasHeader with span 2
+    header = copc.LasHeader()
+    header.min = (0, 0, 0)
+    header.max = (2, 2, 2)
+
+    # Intersects
+    ## Contains
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.1, 1.1, 1.1, 1.9, 1.9, 1.9), header)
+    ## Crosses
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 1.5, 1.5, 2.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 1.5, 0.5, 2.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((1.5, 0.5, 1.5, 2.5, 2.5, 2.5), header)
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((0.5, 1.5, 1.5, 2.5, 2.5, 2.5), header)
+    ## Equals
+    assert copc.VoxelKey(1, 0, 0, 0).Intersects((0, 0, 0, 1, 1, 1), header)
+    ## Touches
+    assert copc.VoxelKey(1, 0, 0, 0).Intersects((1, 1, 1, 2, 2, 2), header)
+    ## Within
+    assert copc.VoxelKey(1, 1, 1, 1).Intersects((0, 0, 0, 4, 4, 4), header)
+    ## Outside
+    assert not copc.VoxelKey(1, 0, 0, 0).Intersects((1, 1, 1.1, 2, 2, 2), header)
+
+    # Contains box
+    assert copc.VoxelKey(0, 0, 0, 0).Contains((0, 0, 0, 1, 1, 1), header)
+    assert not copc.VoxelKey(2, 0, 0, 0).Contains((0, 0, 0, 1, 1, 1), header)
+    ## A box contains itself
+    assert copc.VoxelKey(0, 0, 0, 0).Contains(
+        (0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header
+    )
+
+    # Contains vector
+    assert copc.VoxelKey(0, 0, 0, 0).Contains((1, 1, 1), header)
+    assert not copc.VoxelKey(0, 0, 0, 0).Contains((2.1, 1, 1), header)
+
+    # Within
+    assert copc.VoxelKey(1, 1, 1, 1).Within(
+        (0.99, 0.99, 0.99, 2.01, 2.01, 2.01), header
+    )
+    ## A box is within itself
+    assert copc.VoxelKey(0, 0, 0, 0).Within(
+        (0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header
+    )

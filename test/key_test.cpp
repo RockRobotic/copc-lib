@@ -1,5 +1,10 @@
+#include <limits>
+
 #include <catch2/catch.hpp>
+#include <copc-lib/geometry/box.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/hierarchy/key.hpp>
+#include <copc-lib/las/header.hpp>
 
 using namespace copc;
 
@@ -63,4 +68,54 @@ TEST_CASE("GetParents Checks", "[Key]")
     std::vector<VoxelKey> getParentsNonInclusive = testKeys[0].GetParents(false);
     REQUIRE(getParentsNonInclusive.size() == testKeys.size() - 1);
     REQUIRE_THAT(getParentsNonInclusive, Catch::Matchers::Equals(testKeysExclusive));
+}
+
+TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
+{
+    // Make a LasHeader with span 2
+    auto header = las::LasHeader();
+    header.min = Vector3(0, 0, 0);
+    header.max = Vector3(2, 2, 2);
+
+    SECTION("Intersects")
+    {
+        // Contains
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.1, 1.1, 1.1, 1.9, 1.9, 1.9), header));
+        // Crosses
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 1.5, 2.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 0.5, 2.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 0.5, 1.5, 2.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0.5, 1.5, 1.5, 2.5, 2.5, 2.5), header));
+        // Equals
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0, 0, 0, 1, 1, 1), header));
+        // Touches
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(1, 1, 1, 2, 2, 2), header));
+        // Within
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0, 0, 0, 4, 4, 4), header));
+        // Outside
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(1, 1, 1.1, 2, 2, 2), header));
+    }
+
+    SECTION("Contains box")
+    {
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
+        REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
+        // A box contains itself
+        REQUIRE(
+            VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header));
+    }
+
+    SECTION("Contains vector")
+    {
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Vector3(1, 1, 1), header));
+        REQUIRE(!VoxelKey(0, 0, 0, 0).Contains(Vector3(2.1, 1, 1), header));
+    }
+
+    SECTION("Within")
+    {
+        REQUIRE(VoxelKey(1, 1, 1, 1).Within(Box(0.99, 0.99, 0.99, 2.01, 2.01, 2.01), header));
+        // A box is within itself
+        REQUIRE(
+            VoxelKey(0, 0, 0, 0).Within(Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header));
+    }
 }

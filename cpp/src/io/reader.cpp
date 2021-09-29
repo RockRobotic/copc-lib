@@ -176,6 +176,63 @@ std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
     return out;
 }
 
+las::Points Reader::GetAllPoints()
+{
+    auto out = las::Points(GetLasHeader());
+
+    // Get all nodes in octree
+    for (const auto &node : GetAllChildren())
+        out.AddPoints(GetPoints(node));
+    return out;
+}
+
+std::vector<Node> Reader::GetNodesWithinBox(const Box &box)
+{
+    std::vector<Node> out;
+
+    auto header = GetLasHeader();
+    for (const auto &node : GetAllChildren())
+    {
+        if (node.key.Within(box, header))
+            out.push_back(node);
+    }
+
+    return out;
+}
+
+std::vector<Node> Reader::GetNodesIntersectBox(const Box &box)
+{
+    std::vector<Node> out;
+
+    auto header = GetLasHeader();
+    for (const auto &node : GetAllChildren())
+    {
+        if (node.key.Intersects(box, header))
+            out.push_back(node);
+    }
+
+    return out;
+}
+
+las::Points Reader::GetPointsWithinBox(const Box &box)
+{
+    auto header = GetLasHeader();
+    auto out = las::Points(header);
+
+    // Get all nodes in octree
+    for (const auto &node : GetAllChildren())
+    {
+        // If node fits in Box
+        if (node.key.Intersects(box, header))
+        {
+            // Add points that fit in the box
+            auto points = GetPoints(node);
+            out.AddPoints(points.GetWithin(box));
+        }
+    }
+    return out;
+}
+
 las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     for (auto &[offset, vlr_header] : vlrs)

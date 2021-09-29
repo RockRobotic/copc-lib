@@ -1,5 +1,6 @@
 import copclib as copc
 import pytest
+import math
 
 
 def test_reader():
@@ -73,6 +74,13 @@ def test_get_all_children():
     assert len(nodes) == 0
 
 
+# TODO[Leo]: Make this test optional
+
+# def test_get_all_points():
+#     reader = copc.FileReader("autzen-classified.copc.laz")
+#     assert len(reader.GetAllPoints()) == reader.GetLasHeader().point_count
+
+
 def test_point_error_handling():
     reader = copc.FileReader("autzen-classified.copc.laz")
 
@@ -95,3 +103,50 @@ def test_point_error_handling():
     with pytest.raises(RuntimeError):
         reader.GetPointDataCompressed(invalid_node)
     reader.GetPointDataCompressed(valid_node)
+
+
+def test_spatial_query_functions():
+
+    reader = copc.FileReader("autzen-classified.copc.laz")
+
+    # GetNodesWithinBox
+
+    ## Check that no nodes fit in a zero-sized box
+    subset_nodes = reader.GetNodesWithinBox(copc.Box().ZeroBox())
+    assert len(subset_nodes) == 0
+
+    ## Check that all nodes fit in a max-sized box
+    subset_nodes = reader.GetNodesWithinBox(copc.Box().MaxBox())
+    all_nodes = reader.GetAllChildren()
+    assert len(subset_nodes) == len(all_nodes)
+
+    # GetNodesIntersectBox
+
+    ## Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    subset_nodes = reader.GetNodesIntersectBox(copc.Box(637190, 851109, 637390, 851309))
+    assert len(subset_nodes) == 13
+
+    # GetPointsWithinBox
+
+    ## Check that no points fit in a zero-sized box
+    subset_points = reader.GetPointsWithinBox(copc.Box().ZeroBox())
+    assert len(subset_points) == 0
+
+    # TODO[Leo]: Make this test optional
+    ## Check that all points fit in a box sized from header
+    # header = reader.GetLasHeader()
+    # subset_points = reader.GetPointsWithinBox(
+    #     copc.Box(
+    #         math.floor(header.min.x),
+    #         math.floor(header.min.y),
+    #         math.floor(header.min.z),
+    #         math.ceil(header.max.x),
+    #         math.ceil(header.max.y),
+    #         math.ceil(header.max.z),
+    #     )
+    # )
+    # assert len(subset_points) == header.point_count
+
+    ## Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    subset_points = reader.GetPointsWithinBox(copc.Box(637190, 851109, 637390, 851309))
+    assert len(subset_points) == 22902

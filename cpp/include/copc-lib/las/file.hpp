@@ -6,6 +6,8 @@
 
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/las/vlr.hpp"
+#include "copc-lib/geometry/vector3.hpp"
+
 
 namespace copc::las
 {

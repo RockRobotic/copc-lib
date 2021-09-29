@@ -1,5 +1,6 @@
 import copclib as copc
 import pytest
+import random
 
 
 def test_points_constructor():
@@ -258,6 +259,29 @@ def test_points_group_accessors():
     assert last_point.X == 1
     assert last_point.Y == 2
     assert last_point.Z == 3
+
+
+def test_within():
+
+    points = copc.Points(3, (1, 1, 1), copc.Vector3.DefaultOffset())
+
+    # generate points
+    for i in range(2000):
+        p = points.CreatePoint()
+        p.X = random.uniform(0, 5)
+        p.Y = random.uniform(0, 5)
+        p.Z = random.uniform(0, 5)
+        points.AddPoint(p)
+
+    assert points.Within(copc.Box(0, 0, 0, 5, 5, 5))
+
+    p = points.CreatePoint()
+    p.X = random.uniform(0, 5)
+    p.Y = random.uniform(0, 5)
+    p.Z = 6
+    points.AddPoint(p)
+
+    assert not points.Within(copc.Box(0, 0, 0, 5, 5, 5))
 
 
 def test_points_accessors():

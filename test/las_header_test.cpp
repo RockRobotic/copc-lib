@@ -1,3 +1,5 @@
+#include <vector>
+
 #include <catch2/catch.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/las/header.hpp>
@@ -41,5 +43,21 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
         REQUIRE(las_header_orig.evlr_offset == las_header.evlr_offset);
         REQUIRE(las_header_orig.evlr_count == las_header.evlr_count);
         REQUIRE(las_header_orig.points_by_return_14 == las_header.points_by_return_14);
+    }
+}
+
+TEST_CASE("GetBounds", "[LasHeader]")
+{
+    GIVEN("A valid file_path")
+    {
+        FileReader reader("autzen-classified.copc.laz");
+        auto las_header = reader.GetLasHeader();
+        auto box = las_header.GetBounds();
+        REQUIRE(box.x_min == las_header.min.x);
+        REQUIRE(box.y_min == las_header.min.y);
+        REQUIRE(box.z_min == las_header.min.z);
+        REQUIRE(box.x_max == las_header.max.x);
+        REQUIRE(box.y_max == las_header.max.y);
+        REQUIRE(box.z_max == las_header.max.z);
     }
 }

@@ -1,9 +1,9 @@
-#include <cfloat>
 #include <limits>
 #include <sstream>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/las/header.hpp>
+#include <copc-lib/geometry/box.hpp>
+#include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/las/point.hpp>
 
 using namespace copc::las;
@@ -34,16 +34,16 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point0 = Point(0);
         // Position
-        point0.UnscaledX(INT32_MAX);
-        point0.UnscaledY(INT32_MAX);
-        point0.UnscaledZ(INT32_MAX);
-        REQUIRE(point0.UnscaledX() == INT32_MAX);
-        REQUIRE(point0.UnscaledY() == INT32_MAX);
-        REQUIRE(point0.UnscaledZ() == INT32_MAX);
+        point0.UnscaledX(std::numeric_limits<int32_t>::max());
+        point0.UnscaledY(std::numeric_limits<int32_t>::max());
+        point0.UnscaledZ(std::numeric_limits<int32_t>::max());
+        REQUIRE(point0.UnscaledX() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point0.UnscaledY() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point0.UnscaledZ() == std::numeric_limits<int32_t>::max());
 
         // Intensity
-        point0.Intensity(UINT16_MAX);
-        REQUIRE(point0.Intensity() == UINT16_MAX);
+        point0.Intensity(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point0.Intensity() == std::numeric_limits<uint16_t>::max());
 
         // Return Number
         point0.ReturnNumber(7);
@@ -88,8 +88,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point0.Withheld() == true);
 
         // Classification Bitfield
-        point0.ClassificationBitFields(UINT8_MAX);
-        REQUIRE(point0.ClassificationBitFields() == UINT8_MAX);
+        point0.ClassificationBitFields(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point0.ClassificationBitFields() == std::numeric_limits<uint8_t>::max());
         point0.ClassificationBitFields(78);
         REQUIRE(point0.Classification() == 14);
         REQUIRE(point0.Synthetic() == false);
@@ -104,12 +104,12 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.ScanAngleRank(-91));
 
         // User Data
-        point0.UserData(UINT8_MAX);
-        REQUIRE(point0.UserData() == UINT8_MAX);
+        point0.UserData(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point0.UserData() == std::numeric_limits<uint8_t>::max());
 
         // Point Source ID
-        point0.PointSourceID(UINT16_MAX);
-        REQUIRE(point0.PointSourceID() == UINT16_MAX);
+        point0.PointSourceID(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point0.PointSourceID() == std::numeric_limits<uint16_t>::max());
 
         REQUIRE(point0.PointRecordLength() == 20);
 
@@ -118,71 +118,73 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point0.ExtendedFlagsBitFields());
         REQUIRE_THROWS(point0.ScannerChannel(0));
         REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.NIR(UINT16_MAX));
+        REQUIRE_THROWS(point0.NIR(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.NIR());
-        REQUIRE_THROWS(point0.Red(UINT16_MAX));
+        REQUIRE_THROWS(point0.Red(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.Red());
-        REQUIRE_THROWS(point0.Green(UINT16_MAX));
+        REQUIRE_THROWS(point0.Green(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.Green());
-        REQUIRE_THROWS(point0.Blue(UINT16_MAX));
+        REQUIRE_THROWS(point0.Blue(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.Blue());
-        REQUIRE_THROWS(point0.GPSTime(DBL_MAX));
+        REQUIRE_THROWS(point0.GPSTime(std::numeric_limits<double>::max()));
         REQUIRE_THROWS(point0.GPSTime());
-        REQUIRE_THROWS(point0.ExtendedScanAngle(INT16_MAX));
+        REQUIRE_THROWS(point0.ExtendedScanAngle(std::numeric_limits<int16_t>::max()));
         REQUIRE_THROWS(point0.ExtendedScanAngle());
         REQUIRE_THROWS(point0.Overlap(true));
         REQUIRE_THROWS(point0.Overlap());
-        REQUIRE_THROWS(point0.ExtendedReturnsBitFields(UINT8_MAX));
+        REQUIRE_THROWS(point0.ExtendedReturnsBitFields(std::numeric_limits<uint8_t>::max()));
         REQUIRE_THROWS(point0.ExtendedReturnsBitFields());
-        REQUIRE_THROWS(point0.ExtendedFlagsBitFields(UINT8_MAX));
+        REQUIRE_THROWS(point0.ExtendedFlagsBitFields(std::numeric_limits<uint8_t>::max()));
         REQUIRE_THROWS(point0.ExtendedFlagsBitFields());
         REQUIRE_NOTHROW(point0.ToString());
 
         auto point1 = Point(1);
 
-        point1.GPSTime(DBL_MAX);
-        REQUIRE(point1.GPSTime() == DBL_MAX);
+        point1.GPSTime(std::numeric_limits<double>::max());
+        REQUIRE(point1.GPSTime() == std::numeric_limits<double>::max());
         REQUIRE(point1.PointRecordLength() == 28);
 
-        REQUIRE_THROWS(point0.Red(UINT16_MAX));
+        REQUIRE_THROWS(point0.Red(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.Red());
-        REQUIRE_THROWS(point0.Green(UINT16_MAX));
+        REQUIRE_THROWS(point0.Green(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.Green());
-        REQUIRE_THROWS(point0.Blue(UINT16_MAX));
+        REQUIRE_THROWS(point0.Blue(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.Blue());
-        REQUIRE_THROWS(point0.NIR(UINT16_MAX));
+        REQUIRE_THROWS(point0.NIR(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point0.NIR());
 
         auto point2 = Point(2);
         REQUIRE(point2.PointRecordLength() == 26);
 
-        point2.Red(UINT16_MAX);
-        REQUIRE(point2.Red() == UINT16_MAX);
-        point2.Green(UINT16_MAX);
-        REQUIRE(point2.Green() == UINT16_MAX);
-        point2.Blue(UINT16_MAX);
-        REQUIRE(point2.Blue() == UINT16_MAX);
+        point2.Red(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point2.Red() == std::numeric_limits<uint16_t>::max());
+        point2.Green(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point2.Green() == std::numeric_limits<uint16_t>::max());
+        point2.Blue(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point2.Blue() == std::numeric_limits<uint16_t>::max());
 
-        point2.RGB(UINT16_MAX / 2, UINT16_MAX / 2, UINT16_MAX / 2);
-        REQUIRE(point2.Red() == UINT16_MAX / 2);
-        REQUIRE(point2.Green() == UINT16_MAX / 2);
-        REQUIRE(point2.Blue() == UINT16_MAX / 2);
+        point2.RGB(std::numeric_limits<uint16_t>::max() / 2, std::numeric_limits<uint16_t>::max() / 2,
+                   std::numeric_limits<uint16_t>::max() / 2);
+        REQUIRE(point2.Red() == std::numeric_limits<uint16_t>::max() / 2);
+        REQUIRE(point2.Green() == std::numeric_limits<uint16_t>::max() / 2);
+        REQUIRE(point2.Blue() == std::numeric_limits<uint16_t>::max() / 2);
 
-        REQUIRE_THROWS(point2.GPSTime(DBL_MAX));
+        REQUIRE_THROWS(point2.GPSTime(std::numeric_limits<double>::max()));
         REQUIRE_THROWS(point2.GPSTime());
-        REQUIRE_THROWS(point2.NIR(UINT16_MAX));
+        REQUIRE_THROWS(point2.NIR(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point2.NIR());
 
         auto point3 = Point(3);
         REQUIRE(point3.PointRecordLength() == 34);
 
-        REQUIRE_NOTHROW(point3.GPSTime(DBL_MAX));
+        REQUIRE_NOTHROW(point3.GPSTime(std::numeric_limits<double>::max()));
         REQUIRE_NOTHROW(point3.GPSTime());
-        REQUIRE_NOTHROW(point3.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        REQUIRE_NOTHROW(point3.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
+                                   std::numeric_limits<uint16_t>::max()));
         REQUIRE_NOTHROW(point3.Red());
         REQUIRE_NOTHROW(point3.Green());
         REQUIRE_NOTHROW(point3.Blue());
-        REQUIRE_THROWS(point3.NIR(UINT16_MAX));
+        REQUIRE_THROWS(point3.NIR(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point3.NIR());
     }
 
@@ -190,20 +192,20 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point6 = Point(6);
         // Position
-        point6.UnscaledX(INT32_MAX);
-        point6.UnscaledY(INT32_MAX);
-        point6.UnscaledZ(INT32_MAX);
-        REQUIRE(point6.UnscaledX() == INT32_MAX);
-        REQUIRE(point6.UnscaledY() == INT32_MAX);
-        REQUIRE(point6.UnscaledZ() == INT32_MAX);
+        point6.UnscaledX(std::numeric_limits<int32_t>::max());
+        point6.UnscaledY(std::numeric_limits<int32_t>::max());
+        point6.UnscaledZ(std::numeric_limits<int32_t>::max());
+        REQUIRE(point6.UnscaledX() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point6.UnscaledY() == std::numeric_limits<int32_t>::max());
+        REQUIRE(point6.UnscaledZ() == std::numeric_limits<int32_t>::max());
 
         // Intensity
-        point6.Intensity(UINT16_MAX);
-        REQUIRE(point6.Intensity() == UINT16_MAX);
+        point6.Intensity(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point6.Intensity() == std::numeric_limits<uint16_t>::max());
 
         // Return BitField
-        point6.ExtendedReturnsBitFields(UINT8_MAX);
-        REQUIRE(point6.ExtendedReturnsBitFields() == UINT8_MAX);
+        point6.ExtendedReturnsBitFields(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.ExtendedReturnsBitFields() == std::numeric_limits<uint8_t>::max());
 
         // Return Number
         point6.ReturnNumber(0);
@@ -220,8 +222,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.NumberOfReturns(16));
 
         // Flags
-        point6.ExtendedFlagsBitFields(UINT8_MAX);
-        REQUIRE(point6.ExtendedFlagsBitFields() == UINT8_MAX);
+        point6.ExtendedFlagsBitFields(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.ExtendedFlagsBitFields() == std::numeric_limits<uint8_t>::max());
 
         // Synthetic
         point6.Synthetic(false);
@@ -267,8 +269,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.EdgeOfFlightLineFlag() == false);
 
         // Classification
-        point6.Classification(UINT8_MAX);
-        REQUIRE(point6.Classification() == UINT8_MAX);
+        point6.Classification(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.Classification() == std::numeric_limits<uint8_t>::max());
         point6.Classification(0);
         REQUIRE(point6.Classification() == 0);
 
@@ -283,50 +285,52 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.ExtendedScanAngle(30001));
 
         // User Data
-        point6.UserData(UINT8_MAX);
-        REQUIRE(point6.UserData() == UINT8_MAX);
+        point6.UserData(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.UserData() == std::numeric_limits<uint8_t>::max());
 
         // Point Source ID
-        point6.PointSourceID(UINT16_MAX);
-        REQUIRE(point6.PointSourceID() == UINT16_MAX);
+        point6.PointSourceID(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point6.PointSourceID() == std::numeric_limits<uint16_t>::max());
 
         // GPS Time
-        point6.GPSTime(DBL_MAX);
-        REQUIRE(point6.GPSTime() == DBL_MAX);
+        point6.GPSTime(std::numeric_limits<double>::max());
+        REQUIRE(point6.GPSTime() == std::numeric_limits<double>::max());
 
         // Point Record Length
         REQUIRE(point6.PointRecordLength() == 30);
 
         // Checks
-        REQUIRE_THROWS(point6.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX));
+        REQUIRE_THROWS(point6.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
+                                  std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point6.Red());
         REQUIRE_THROWS(point6.Green());
         REQUIRE_THROWS(point6.Blue());
-        REQUIRE_THROWS(point6.NIR(UINT16_MAX));
+        REQUIRE_THROWS(point6.NIR(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point6.NIR());
         REQUIRE_THROWS(point6.ScanAngleRank());
         REQUIRE_THROWS(point6.ScanAngleRank(INT8_MAX));
-        REQUIRE_THROWS(point6.ReturnsScanDirEofBitFields(UINT8_MAX));
+        REQUIRE_THROWS(point6.ReturnsScanDirEofBitFields(std::numeric_limits<uint8_t>::max()));
         REQUIRE_THROWS(point6.ReturnsScanDirEofBitFields());
-        REQUIRE_THROWS(point6.ClassificationBitFields(UINT8_MAX));
+        REQUIRE_THROWS(point6.ClassificationBitFields(std::numeric_limits<uint8_t>::max()));
         REQUIRE_THROWS(point6.ClassificationBitFields());
         REQUIRE_NOTHROW(point6.ToString());
 
         auto point7 = Point(7);
 
-        point7.RGB(UINT16_MAX, UINT16_MAX, UINT16_MAX);
-        REQUIRE(point7.Red() == UINT16_MAX);
-        REQUIRE(point7.Green() == UINT16_MAX);
-        REQUIRE(point7.Blue() == UINT16_MAX);
+        point7.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
+                   std::numeric_limits<uint16_t>::max());
+        REQUIRE(point7.Red() == std::numeric_limits<uint16_t>::max());
+        REQUIRE(point7.Green() == std::numeric_limits<uint16_t>::max());
+        REQUIRE(point7.Blue() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.PointRecordLength() == 36);
 
-        REQUIRE_THROWS(point7.NIR(UINT16_MAX));
+        REQUIRE_THROWS(point7.NIR(std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point7.NIR());
 
         auto point8 = Point(8);
 
-        point8.NIR(UINT16_MAX);
-        REQUIRE(point8.NIR() == UINT16_MAX);
+        point8.NIR(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point8.NIR() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point8.PointRecordLength() == 38);
     }
 
@@ -825,5 +829,24 @@ TEST_CASE("Point tests", "[Point]")
                 REQUIRE_THROWS(point.X(0));
             }
         }
+    }
+    SECTION("Within")
+    {
+        auto point = Point(3, {1, 1, 1}, copc::Vector3::DefaultOffset());
+
+        point.X(5);
+        point.Y(5);
+        point.Z(5);
+
+        REQUIRE(point.Within(copc::Box::MaxBox()));
+        REQUIRE(!point.Within(copc::Box::ZeroBox()));
+
+        // 2D box
+        REQUIRE(point.Within(copc::Box(0, 0, 5, 5)));
+        REQUIRE(!point.Within(copc::Box(6, 0, 10, 5)));
+
+        // 3D box
+        REQUIRE(point.Within(copc::Box(0, 0, 0, 5, 5, 5)));
+        REQUIRE(!point.Within(copc::Box(6, 0, 0, 10, 5, 5)));
     }
 }

@@ -6,6 +6,8 @@
 
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/las/utils.hpp"
+#include "copc-lib/hierarchy/key.hpp"
+
 
 namespace copc::las
 {
@@ -434,6 +436,9 @@ class Point
 
     bool operator==(const Point &other) const;
     bool operator!=(const Point &other) const { return !(*this == other); };
+
+    bool Within(const Box &box) const;
+
     std::string ToString() const;
 
     static std::shared_ptr<Point> Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
