@@ -3,6 +3,8 @@ set(LIBRARY_TARGET_NAME copc-lib)
 # Only public header files go here.
 set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/copc/file.hpp
+        include/${LIBRARY_TARGET_NAME}/geometry/box.hpp
+        include/${LIBRARY_TARGET_NAME}/geometry/vector3.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/entry.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/key.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/node.hpp
@@ -25,6 +27,7 @@ set(${LIBRARY_TARGET_NAME}_SRC
         include/${LIBRARY_TARGET_NAME}/hierarchy/internal/page.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/internal/hierarchy.hpp
         include/${LIBRARY_TARGET_NAME}/io/internal/writer_internal.hpp
+        src/geometry/box.cpp
         src/hierarchy/key.cpp
         src/hierarchy/page.cpp
         src/io/base_io.cpp
