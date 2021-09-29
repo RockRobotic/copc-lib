@@ -47,7 +47,7 @@ class CMakeBuild(build_ext):
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
             "-DPYTHON_EXECUTABLE={}".format(sys.executable),
             "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
-            "-DONLY_PYTHON=ON",  # not used on MSVC, but no harm
+            "-DONLY_PYTHON=ON",  # IMPORTANT pass this to cmakelists so that it doesn't override output path
         ]
         build_args = []
         # Adding CMake arguments set as environment variable

@@ -3,7 +3,7 @@ package:
   version: 1.2.0
 
 source:
-  git_url: https://github.com/CCInc/copc-lib.git
+  git_url: https://github.com/RockRobotic/copc-lib
   git_depth: -1 # (Defaults to -1/not shallow)
 
 requirements:
@@ -42,7 +42,7 @@ test:
     - python {{ python }}
 
 about:
-  home: https://github.com/RockRobotics/copc-lib.git
+  home: https://github.com/RockRobotic/copc-lib
   license: BSD
   license_file: LICENSE.md
   summary: copc-lib provides an easy-to-use interface for reading and creating Cloud Optimized Point Clouds 
