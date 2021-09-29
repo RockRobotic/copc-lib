@@ -114,7 +114,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes));
     }
 
-    SECTION("SetCopcExtents")
+    SECTION("Set/GetCopcExtents")
     {
         CopcExtents extents{point_format_id, num_extra_bytes};
 
@@ -123,9 +123,17 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
         extents.SetCopcExtents(extent_vec);
 
-        REQUIRE(extents.x.minimum == 1);
-        REQUIRE(extents.x.maximum == 1);
+        for (const auto &extent : extents.GetCopcExtents())
+        {
+            REQUIRE(extent.minimum == 1);
+            REQUIRE(extent.maximum == 1);
+        }
 
-        REQUIRE_THROWS(extents.SetCopcExtents(std::vector<CopcExtent>(3)));
+        // Test checks on size
+        extent_vec.pop_back();
+        REQUIRE_THROWS(extents.SetCopcExtents(extent_vec));
+        extent_vec.emplace_back(1, 1);
+        extent_vec.emplace_back(1, 1);
+        REQUIRE_THROWS(extents.SetCopcExtents(extent_vec));
     }
 }

@@ -16,14 +16,12 @@ VoxelKey VoxelKey::Bisect(const uint64_t &direction) const
     VoxelKey key(*this);
     ++key.d;
 
-    auto step(
-        [&key, direction](uint8_t i)
-        {
-            key.IdAt(i) *= 2;
-            const bool positive(direction & (((uint64_t)1) << i));
-            if (positive)
-                ++key.IdAt(i);
-        });
+    auto step([&key, direction](uint8_t i) {
+        key.IdAt(i) *= 2;
+        const bool positive(direction & (((uint64_t)1) << i));
+        if (positive)
+            ++key.IdAt(i);
+    });
 
     for (uint8_t i(0); i < 3; ++i)
         step(i);

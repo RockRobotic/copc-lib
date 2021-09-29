@@ -130,8 +130,9 @@ PYBIND11_MODULE(copclib, m)
             "__truediv__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
         .def(
             "__floordiv__",
-            [](const Vector3 &vec, const double &d)
-            { return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d)); },
+            [](const Vector3 &vec, const double &d) {
+                return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d));
+            },
             py::is_operator())
         .def(
             "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
@@ -240,8 +241,7 @@ PYBIND11_MODULE(copclib, m)
     using DiffType = ssize_t;
     using SizeType = size_t;
 
-    auto wrap_i = [](DiffType i, SizeType n)
-    {
+    auto wrap_i = [](DiffType i, SizeType n) {
         if (i < 0)
             i += n;
         if (i < 0 || (SizeType)i >= n)
@@ -492,6 +492,7 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("creation_day", &Writer::LasConfig::creation_day)
         .def_readwrite("creation_year", &Writer::LasConfig::creation_year)
         .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
+        .def_readwrite("extra_bytes", &Writer::LasConfig::extra_bytes)
         .def_readwrite("scale", &Writer::LasConfig::scale)
         .def_readwrite("offset", &Writer::LasConfig::offset)
         .def_readwrite("max", &Writer::LasConfig::max)
@@ -540,5 +541,7 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("green", &CopcExtents::green)
         .def_readwrite("blue", &CopcExtents::blue)
         .def_readwrite("nir", &CopcExtents::nir)
-        .def_readwrite("extra_bytes", &CopcExtents::extra_bytes);
+        .def_readwrite("extra_bytes", &CopcExtents::extra_bytes)
+        .def("GetCopcExtents", &CopcExtents::GetCopcExtents)
+        .def("SetCopcExtents", &CopcExtents::SetCopcExtents);
 }
