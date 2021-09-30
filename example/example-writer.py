@@ -127,10 +127,10 @@ def BoundsTrimFileExample():
 # In this example, we'll filter the points in the autzen dataset based on resolution.
 def ResolutionTrimFileExample():
     # We'll get our point data from this file
-    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+    reader = copc.FileReader("../test/data/autzen-classified-new.copc.laz")
     old_header = reader.GetLasHeader()
 
-    resolution = 1000
+    resolution = 10
 
     # Copy the header to the new file
     cfg = copc.LasConfig(old_header, reader.GetExtraByteVlr())
@@ -147,7 +147,10 @@ def ResolutionTrimFileExample():
     root_page = writer.GetRootPage()
 
     for node in reader.GetAllChildren():
-        if node.key.Resolution(old_header) >= resolution:
+        if (
+            node.key.Resolution(writer.GetLasHeader(), writer.GetCopcHeader())
+            >= resolution
+        ):
             writer.AddNodeCompressed(
                 root_page,
                 node.key,
@@ -161,9 +164,11 @@ def ResolutionTrimFileExample():
     # Now, let's test our new file
     new_reader = copc.FileReader("../test/data/autzen-resolution-trimmed.copc.laz")
 
+    new_las_header = new_reader.GetLasHeader()
+    new_copc_header = new_reader.GetCopcHeader()
     # Let's go through each node we've written and make sure the resolution is correct
     for node in new_reader.GetAllChildren():
-        assert node.key.Resolution(old_header) >= resolution
+        assert node.key.Resolution(new_las_header, new_copc_header) >= resolution
 
 
 # constants

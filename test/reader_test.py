@@ -107,7 +107,7 @@ def test_point_error_handling():
 
 def test_spatial_query_functions():
 
-    reader = copc.FileReader("data/autzen-classified.copc.laz")
+    reader = copc.FileReader("data/autzen-classified-new.copc.laz")
 
     # GetNodesWithinBox
 
@@ -152,18 +152,18 @@ def test_spatial_query_functions():
     assert len(subset_points) == 22902
 
     # GetDepthWithResolutio
-    assert reader.GetDepthWithResolution(100) == 5
+    assert reader.GetDepthWithResolution(1) == 3
     with pytest.raises(RuntimeError):
         reader.GetDepthWithResolution(0)
 
     # GetNodesWithResolution
-    subset_nodes = reader.GetNodesWithResolution(500)
+    subset_nodes = reader.GetNodesWithResolution(1)
     assert len(subset_nodes) == 48
     with pytest.raises(RuntimeError):
         reader.GetDepthWithResolution(0)
 
     # GetNodesDownToResolution
-    subset_nodes = reader.GetNodesDownToResolution(500)
+    subset_nodes = reader.GetNodesDownToResolution(1)
     assert len(subset_nodes) == 65
     with pytest.raises(RuntimeError):
         reader.GetDepthWithResolution(0)

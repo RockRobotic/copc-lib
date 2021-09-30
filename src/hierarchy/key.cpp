@@ -67,7 +67,12 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     return false;
 }
 
-double VoxelKey::Resolution(const las::LasHeader &header) const { return header.GetSpan() / std::pow(2, d); }
+double VoxelKey::Resolution(const las::LasHeader &header, const las::CopcVlr &copc_info) const
+{
+    if (copc_info.span <= 0)
+        throw std::runtime_error("VoxelKey::Resolution: Octree span must be greater than 0.");
+    return (header.max.x - header.min.x) / copc_info.span / std::pow(2, d);
+}
 
 bool VoxelKey::Intersects(const las::LasHeader &header, const Box &box) const
 {

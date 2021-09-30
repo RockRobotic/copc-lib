@@ -10,6 +10,7 @@
 
 #include <copc-lib/geometry/box.hpp>
 #include <copc-lib/geometry/vector3.hpp>
+#include <copc-lib/las/vlr.hpp>
 
 namespace copc
 {
@@ -48,12 +49,13 @@ class VoxelKey
 
     // Spatial query functions
     // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
-    double Resolution(const las::LasHeader &header) const;
     bool Intersects(const las::LasHeader &header, const Box &box) const;
     bool Contains(const las::LasHeader &header, const Box &vec) const;
     bool Contains(const las::LasHeader &header, const Vector3 &point) const;
     bool Within(const las::LasHeader &header, const Box &box) const;
     bool Crosses(const las::LasHeader &header, const Box &box) const;
+
+    double Resolution(const las::LasHeader &header, const las::CopcVlr &copc_info) const;
 
     int32_t d;
     int32_t x;

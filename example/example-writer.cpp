@@ -135,10 +135,10 @@ void BoundsTrimFileExample()
 void ResolutionTrimFileExample()
 {
     // We'll get our point data from this file
-    FileReader reader("test/data/autzen-classified.copc.laz");
+    FileReader reader("test/data/autzen-classified-new.copc.laz");
     auto old_header = reader.GetLasHeader();
 
-    double resolution = 1000;
+    double resolution = 10;
     {
         // Copy the header to the new file
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
@@ -152,7 +152,7 @@ void ResolutionTrimFileExample()
 
         for (const auto &node : reader.GetAllChildren())
         {
-            if (node.key.Resolution(old_header) >= resolution)
+            if (node.key.Resolution(writer.GetLasHeader(), writer.GetCopcHeader()) >= resolution)
             {
                 writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
             }
@@ -165,10 +165,13 @@ void ResolutionTrimFileExample()
     // Now, let's test our new file
     FileReader new_reader("test/data/autzen-resolution-trimmed.copc.laz");
 
+    auto new_header = new_reader.GetLasHeader();
+    auto new_copc_info = new_reader.GetCopcHeader();
+
     // Let's go through each node we've written and make sure the resolution is correct
     for (const auto &node : new_reader.GetAllChildren())
     {
-        assert(node.key.Resolution(old_header) >= resolution);
+        assert(node.key.Resolution(new_header, new_copc_info) >= resolution);
     }
 }
 

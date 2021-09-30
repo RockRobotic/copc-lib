@@ -191,7 +191,7 @@ TEST_CASE("Point Error Handling Test", "[Reader]")
 
 TEST_CASE("Spatial Query Functions", "[Reader]")
 {
-    FileReader reader("test/data/autzen-classified.copc.laz");
+    FileReader reader("test/data/autzen-classified-new.copc.laz");
 
     SECTION("GetNodesWithinBox")
     {
@@ -239,20 +239,20 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
 
     SECTION("GetDepthWithResolution")
     {
-        REQUIRE(reader.GetDepthWithResolution(100) == 5);
+        REQUIRE(reader.GetDepthWithResolution(1) == 3);
         REQUIRE_THROWS(reader.GetDepthWithResolution(0));
     }
 
     SECTION("GetNodesWithResolution")
     {
-        auto subset_nodes = reader.GetNodesWithResolution(500);
+        auto subset_nodes = reader.GetNodesWithResolution(1);
         REQUIRE(subset_nodes.size() == 48);
         REQUIRE_THROWS(reader.GetDepthWithResolution(0));
     }
 
     SECTION("GetNodesDownToResolution")
     {
-        auto subset_nodes = reader.GetNodesDownToResolution(500);
+        auto subset_nodes = reader.GetNodesDownToResolution(1);
         REQUIRE(subset_nodes.size() == 65);
         REQUIRE_THROWS(reader.GetDepthWithResolution(0));
     }
