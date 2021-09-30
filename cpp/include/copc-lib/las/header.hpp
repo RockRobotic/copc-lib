@@ -1,12 +1,12 @@
 #ifndef COPCLIB_LAS_HEADER_H_
 #define COPCLIB_LAS_HEADER_H_
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <limits>
 #include <sstream>
 #include <string>
-#include <algorithm>
 
 #include "copc-lib/geometry/vector3.hpp"
 #include <lazperf/header.hpp>
