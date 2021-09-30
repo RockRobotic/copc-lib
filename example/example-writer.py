@@ -13,11 +13,11 @@ def TrimFileExample(compressor_example_flag):
     # Copy the header to the new file
     cfg = copc.LasHeaderConfig(old_header, reader.GetExtraByteVlr())
 
-    # Now, we can create our actual writer, with an optional `span` and `wkt`:
+    # Now, we can create our actual writer, with an optional `spacing` and `wkt`:
     writer = copc.FileWriter(
         "../test/data/autzen-trimmed.copc.laz",
         cfg,
-        reader.GetCopcInfo().span,
+        reader.GetCopcInfo().spacing,
         reader.GetWkt(),
     )
 
@@ -147,7 +147,7 @@ def NewFileExample():
         (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z,
     ]
 
-    # Now, we can create our COPC writer, with an optional `span` and `wkt`:
+    # Now, we can create our COPC writer, with an optional `spacing` and `wkt`:
     writer = copc.FileWriter("../test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT")
 
     # The root page is automatically created

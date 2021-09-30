@@ -12,7 +12,7 @@ void ReaderExample()
     // We can get the CopcData struct
     auto copc_vlr = reader.GetCopcInfo();
     cout << "CopcData: " << endl;
-    cout << "\tSpan: " << copc_vlr.span << endl
+    cout << "\tSpacing: " << copc_vlr.spacing << endl
          << "\tRoot Offset: " << copc_vlr.root_hier_offset << endl
          << "\tRoot Size: " << copc_vlr.root_hier_size << endl;
 

@@ -66,7 +66,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             writer.Close();
         }
 
-        SECTION("COPC Span")
+        SECTION("COPC Spacing")
         {
             string file_path = "test/data/writer_test.copc.laz";
 
@@ -75,13 +75,13 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 FileWriter writer(file_path, cfg, 256);
 
                 // todo: use Reader to check all of these
-                auto span = writer.GetCopcInfo().span;
-                REQUIRE(span == 256);
+                auto spacing = writer.GetCopcInfo().spacing;
+                REQUIRE(spacing == 256);
 
                 writer.Close();
             }
             FileReader reader(file_path);
-            REQUIRE(reader.GetCopcInfo().span == 256);
+            REQUIRE(reader.GetCopcInfo().spacing == 256);
         }
 
         SECTION("Extents")
@@ -209,7 +209,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(f.header().offset.z == -40.8);
         }
 
-        SECTION("COPC Span")
+        SECTION("COPC Spacing")
         {
             stringstream out_stream;
 
@@ -217,13 +217,13 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Writer writer(out_stream, cfg, 256);
 
             // todo: use Reader to check all of these
-            auto span = writer.GetCopcInfo().span;
-            REQUIRE(span == 256);
+            auto spacing = writer.GetCopcInfo().spacing;
+            REQUIRE(spacing == 256);
 
             writer.Close();
 
             Reader reader(&out_stream);
-            REQUIRE(reader.GetCopcInfo().span == 256);
+            REQUIRE(reader.GetCopcInfo().spacing == 256);
         }
 
         SECTION("WKT")

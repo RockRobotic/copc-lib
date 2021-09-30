@@ -375,7 +375,7 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasHeaderConfig const &, const int &, const std::string &>(),
-             py::arg("file_path"), py::arg("config"), py::arg("span") = 0, py::arg("wkt") = "")
+             py::arg("file_path"), py::arg("config"), py::arg("spacing") = 0, py::arg("wkt") = "")
         .def("FindNode", &Writer::FindNode)
         .def("GetWkt", &Writer::GetWkt)
         .def("GetCopcInfo", &Writer::GetCopcInfo)
@@ -515,16 +515,14 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &Writer::LasHeaderConfig::ToString)
         .def("__repr__", &Writer::LasHeaderConfig::ToString);
 
-    py::class_<las::CopcInfoVlr>(m, "CopcVlr")
-        .def_readwrite("span", &las::CopcInfoVlr::span)
+    py::class_<las::CopcInfoVlr>(m, "CopcInfoVlr")
+        .def_readwrite("center_x", &las::CopcInfoVlr::center_x)
+        .def_readwrite("center_y", &las::CopcInfoVlr::center_y)
+        .def_readwrite("center_z", &las::CopcInfoVlr::center_z)
+        .def_readwrite("halfsize", &las::CopcInfoVlr::halfsize)
         .def_readwrite("root_hier_offset", &las::CopcInfoVlr::root_hier_offset)
         .def_readwrite("root_hier_size", &las::CopcInfoVlr::root_hier_size)
-        .def_readwrite("laz_vlr_offset", &las::CopcInfoVlr::laz_vlr_offset)
-        .def_readwrite("laz_vlr_size", &las::CopcInfoVlr::laz_vlr_size)
-        .def_readwrite("wkt_vlr_offset", &las::CopcInfoVlr::wkt_vlr_offset)
-        .def_readwrite("wkt_vlr_size", &las::CopcInfoVlr::wkt_vlr_size)
-        .def_readwrite("eb_vlr_offset", &las::CopcInfoVlr::eb_vlr_offset)
-        .def_readwrite("eb_vlr_size", &las::CopcInfoVlr::eb_vlr_size);
+        .def_readwrite("spacing", &las::CopcInfoVlr::spacing);
 
     py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>());
 

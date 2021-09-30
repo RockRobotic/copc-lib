@@ -57,18 +57,18 @@ def test_writer_config():
 
     writer.Close()
 
-    # COPC Span
+    # COPC Spacing
 
     cfg = copc.LasHeaderConfig(6)
     writer = copc.FileWriter(file_path, cfg, 256)
 
     # todo: use Reader to check all of these
-    assert writer.GetCopcInfo().span == 256
+    assert writer.GetCopcInfo().spacing == 256
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcInfo().span == 256
+    assert reader.GetCopcInfo().spacing == 256
 
     # Extents
     cfg = copc.LasHeaderConfig(6)

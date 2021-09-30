@@ -86,7 +86,7 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     laz_header.write(out_stream_);
 
     // Write the COPC Info VLR.
-    copc_data_.span = file_->GetCopcInfoVlr().span;
+    copc_data_.spacing = file_->GetCopcInfoVlr().spacing;
     copc_data_.header().write(out_stream_);
     copc_data_.write(out_stream_);
 
@@ -107,8 +107,6 @@ void WriterInternal::WriteExtents(las::LasHeader &head14)
     auto vlr = file_->GetCopcExtents().ToCopcExtentsVlr();
     out_stream_.seekp(0, std::ios::end);
     auto offset = static_cast<uint64_t>(out_stream_.tellp());
-    copc_data_.extent_vlr_offset = offset + evlr_header::Size;
-    copc_data_.extent_vlr_size = vlr.size();
 
     evlr_header h{0, "entwine", 10000, (uint64_t)vlr.size(), "COPC extents"};
 
@@ -129,8 +127,6 @@ void WriterInternal::WriteWkt(las::LasHeader &head14)
 
     out_stream_.seekp(0, std::ios::end);
     auto offset = static_cast<uint64_t>(out_stream_.tellp());
-    copc_data_.wkt_vlr_offset = offset + evlr_header::Size;
-    copc_data_.wkt_vlr_size = vlr.size();
 
     h.write(out_stream_);
     vlr.write(out_stream_);

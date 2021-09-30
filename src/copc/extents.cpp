@@ -9,7 +9,7 @@ CopcExtent::CopcExtent(double minimum, double maximum) : las::CopcExtentsVlr::Co
         throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
 }
 
-CopcExtent::CopcExtent(const std::vector<double> &vec)
+CopcExtent::CopcExtent(const std::vector<double> &vec) : las::CopcExtentsVlr::CopcExtent(0, 0)
 {
     if (vec.size() != 2)
         throw std::runtime_error("CopcExtent: Vector size must be 2.");
@@ -21,11 +21,10 @@ CopcExtent::CopcExtent(const std::vector<double> &vec)
 }
 
 CopcExtent::CopcExtent(const las::CopcExtentsVlr::CopcExtent &other)
+    : las::CopcExtentsVlr::CopcExtent(other.minimum, other.maximum)
 {
     if (other.minimum > other.maximum)
         throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
-    minimum = other.minimum;
-    maximum = other.maximum;
 }
 
 CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_extra_bytes)

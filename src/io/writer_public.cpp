@@ -5,11 +5,11 @@
 namespace copc
 {
 
-void Writer::InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, const int &span,
+void Writer::InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, const int &spacing,
                         const std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
-    this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
+    this->file_ = std::make_shared<CopcFile>(header, spacing, wkt, config.extra_bytes);
     this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file_, this->hierarchy_);
 }

@@ -23,8 +23,8 @@ void TrimFileExample(bool compressor_example_flag)
         // Copy the header to the new file
         Writer::LasHeaderConfig cfg(old_header, reader.GetExtraByteVlr());
 
-        // Now, we can create our actual writer, with an optional `span` and `wkt`:
-        FileWriter writer("test/data/autzen-trimmed.copc.laz", cfg, reader.GetCopcInfo().span, reader.GetWkt());
+        // Now, we can create our actual writer, with an optional `spacing` and `wkt`:
+        FileWriter writer("test/data/autzen-trimmed.copc.laz", cfg, reader.GetCopcInfo().spacing, reader.GetWkt());
 
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
@@ -134,7 +134,7 @@ void NewFileExample()
     cfg.max = Vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
                       (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
-    // Now, we can create our COPC writer, with an optional `span` and `wkt`:
+    // Now, we can create our COPC writer, with an optional `spacing` and `wkt`:
     FileWriter writer("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT");
 
     // Set the COPC Extents

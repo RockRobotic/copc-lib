@@ -8,7 +8,7 @@ def reader_example():
     # We can get the CopcData struct
     copc_vlr = reader.GetCopcInfo()
     print("CopcData: ")
-    print("\tSpan: %d" % copc_vlr.span)
+    print("\tSpacing: %d" % copc_vlr.spacing)
     print("\tRoot Offset: %d" % copc_vlr.root_hier_offset)
     print("\tRoot Size: %d" % copc_vlr.root_hier_size)
 

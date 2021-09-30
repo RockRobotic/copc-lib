@@ -20,11 +20,11 @@ class CopcFile : public las::LasFile
     CopcFile(const las::LasHeader &header, const las::CopcInfoVlr &copc_info, const CopcExtents &copc_extents,
              const las::WktVlr &wkt, const las::EbVlr &eb)
         : LasFile(header, eb), copc_info_(copc_info), copc_extents_(copc_extents), wkt_(wkt){};
-    CopcFile(const las::LasHeader &header, int span, const std::string &wkt, const las::EbVlr &eb)
+    CopcFile(const las::LasHeader &header, int spacing, const std::string &wkt, const las::EbVlr &eb)
         : LasFile(header, eb), copc_extents_(header.point_format_id, eb.items.size())
     {
         this->wkt_.wkt = wkt;
-        this->copc_info_.span = span;
+        this->copc_info_.spacing = spacing;
     };
 
     // WKT string if defined, else empty

@@ -16,16 +16,14 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetCopcInfo Test")
         {
-            auto copc = reader.GetCopcInfo();
-            REQUIRE(copc.span == 0);
-            REQUIRE(copc.root_hier_offset == 93169718);
-            REQUIRE(copc.root_hier_size == 8896);
-            REQUIRE(copc.laz_vlr_offset == 643);
-            REQUIRE(copc.laz_vlr_size == 58);
-            REQUIRE(copc.wkt_vlr_offset == 755);
-            REQUIRE(copc.wkt_vlr_size == 993);
-            REQUIRE(copc.eb_vlr_offset == 1802);
-            REQUIRE(copc.eb_vlr_size == 384);
+            auto copc_info = reader.GetCopcInfo();
+            REQUIRE(copc_info.center_x == 0);
+            REQUIRE(copc_info.center_y == 0);
+            REQUIRE(copc_info.center_z == 0);
+            REQUIRE(copc_info.halfsize == 0);
+            REQUIRE(copc_info.spacing == 0);
+            REQUIRE(copc_info.root_hier_offset == 93169718);
+            REQUIRE(copc_info.root_hier_size == 8896);
         }
 
         SECTION("GetHeader Test")
@@ -55,16 +53,14 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetCopcInfo Test")
         {
-            auto copc = reader.GetCopcInfo();
-            REQUIRE(copc.span == 0);
-            REQUIRE(copc.root_hier_offset == 93169718);
-            REQUIRE(copc.root_hier_size == 8896);
-            REQUIRE(copc.laz_vlr_offset == 643);
-            REQUIRE(copc.laz_vlr_size == 58);
-            REQUIRE(copc.wkt_vlr_offset == 755);
-            REQUIRE(copc.wkt_vlr_size == 993);
-            REQUIRE(copc.eb_vlr_offset == 1802);
-            REQUIRE(copc.eb_vlr_size == 384);
+            auto copc_info = reader.GetCopcInfo();
+            REQUIRE(copc_info.center_x == 0);
+            REQUIRE(copc_info.center_y == 0);
+            REQUIRE(copc_info.center_z == 0);
+            REQUIRE(copc_info.halfsize == 0);
+            REQUIRE(copc_info.spacing == 0);
+            REQUIRE(copc_info.root_hier_offset == 93169718);
+            REQUIRE(copc_info.root_hier_size == 8896);
         }
 
         SECTION("GetHeader Test")
