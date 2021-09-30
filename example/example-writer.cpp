@@ -16,7 +16,7 @@ using namespace std;
 void TrimFileExample(bool compressor_example_flag)
 {
     // We'll get our point data from this file
-    FileReader reader("test/data/autzen-classified.copc.laz");
+    FileReader reader("autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
 
     {
@@ -24,7 +24,7 @@ void TrimFileExample(bool compressor_example_flag)
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
-        FileWriter writer("test/data/autzen-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
+        FileWriter writer("autzen-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
 
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
@@ -59,7 +59,7 @@ void TrimFileExample(bool compressor_example_flag)
     }
 
     // Now, let's test our new file
-    FileReader new_reader("test/data/autzen-trimmed.copc.laz");
+    FileReader new_reader("autzen-trimmed.copc.laz");
 
     // Let's go through each node we've written and make sure it matches the original
     for (const auto &node : new_reader.GetAllChildren())
@@ -135,7 +135,7 @@ void NewFileExample()
                       (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
 
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:
-    FileWriter writer("test/data/new-copc.copc.laz", cfg, 256, "TEST_WKT");
+    FileWriter writer("new-copc.copc.laz", cfg, 256, "TEST_WKT");
 
     // The root page is automatically created
     Page root_page = writer.GetRootPage();
