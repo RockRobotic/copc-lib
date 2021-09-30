@@ -5,7 +5,8 @@
 namespace copc
 {
 
-void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt)
+void Writer::InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, const int &span,
+                        const std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
     this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
@@ -99,7 +100,7 @@ int Writer::NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items
     return out;
 }
 
-las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
+las::LasHeader Writer::HeaderFromConfig(LasHeaderConfig const &config)
 {
     las::LasHeader h;
     h.file_source_id = config.file_source_id;
@@ -123,7 +124,7 @@ las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
     return h;
 }
 
-copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_)
+copc::Writer::LasHeaderConfig::LasHeaderConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes)
 {
     file_source_id = config.file_source_id;
     global_encoding = config.global_encoding;
@@ -145,6 +146,6 @@ copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVl
     min = config.min;
 
     points_by_return_14 = config.points_by_return_14;
-    extra_bytes = extra_bytes_;
+    this->extra_bytes = extra_bytes;
 }
 } // namespace copc

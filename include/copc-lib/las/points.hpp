@@ -44,7 +44,6 @@ class Points
     // Add points functions
     void AddPoint(const std::shared_ptr<Point> &point);
     void AddPoints(Points points);
-    // TODO[Leo]: Add this to tests
     void AddPoints(std::vector<std::shared_ptr<Point>> points);
 
     // Point functions

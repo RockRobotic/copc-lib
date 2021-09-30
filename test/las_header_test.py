@@ -12,3 +12,5 @@ def test_get_bounds():
     assert box.x_max == las_header.max.x
     assert box.y_max == las_header.max.y
     assert box.z_max == las_header.max.z
+
+    str(las_header)

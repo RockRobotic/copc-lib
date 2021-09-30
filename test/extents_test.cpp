@@ -43,7 +43,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
     {
         string file_path = "test/data/writer_test.copc.laz";
 
-        Writer::LasConfig cfg(7);
+        Writer::LasHeaderConfig cfg(7);
         las::EbVlr eb_vlr(1);
         eb_vlr.items[0].data_type = 29; // byte size 12
         cfg.extra_bytes = eb_vlr;
@@ -76,7 +76,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
     {
         string file_path = "test/data/writer_test.copc.laz";
 
-        Writer::LasConfig cfg(7);
+        Writer::LasHeaderConfig cfg(7);
         las::EbVlr eb_vlr(1);
         eb_vlr.items[0].data_type = 29; // byte size 12
         cfg.extra_bytes = eb_vlr;

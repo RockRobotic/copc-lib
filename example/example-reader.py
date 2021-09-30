@@ -22,7 +22,7 @@ def reader_example():
     # Get the WKT string
     print("WKT: %s" % reader.GetWkt())
 
-    load_key = copc.VoxelKey(4, 11, 9, 0)
+    load_key = (4, 11, 9, 0)
 
     # FindNode will automatically load the minimum pages needed
     # to find the key you request
@@ -43,7 +43,7 @@ def reader_example():
 
     # We can also get the raw compressed data if we want to decompress it ourselves:
 
-    loadKey = copc.VoxelKey(4, 11, 9, 0)
+    loadKey = (4, 11, 9, 0)
 
     node = reader.FindNode(loadKey)
     if not node.IsValid():

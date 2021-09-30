@@ -8,6 +8,7 @@
 
 namespace copc::las
 {
+Box LasHeaderBase::GetBounds() const { return Box(min.x, min.y, min.z, max.x, max.y, max.z); }
 
 uint16_t LasHeader::NumExtraBytes() const { return ComputeNumExtraBytes(point_format_id, point_record_length); }
 
@@ -93,7 +94,5 @@ lazperf::header14 LasHeader::ToLazPerf() const
     std::copy(std::begin(points_by_return_14), std::end(points_by_return_14), std::begin(h.points_by_return_14));
     return h;
 }
-
-Box LasHeader::GetBounds() const { return Box(min.x, min.y, min.z, max.x, max.y, max.z); }
 
 } // namespace copc::las

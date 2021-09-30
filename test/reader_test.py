@@ -37,14 +37,14 @@ def test_find_key():
     # Given a valid file path
     reader = copc.FileReader("data/autzen-classified.copc.laz")
 
-    key = copc.VoxelKey.BaseKey()
+    key = copc.VoxelKey().BaseKey()
     hier_entry = reader.FindNode(key)
 
     assert hier_entry.IsValid() == True
     assert hier_entry.key == key
     assert hier_entry.point_count == 61022
 
-    key = copc.VoxelKey(5, 9, 7, 0)
+    key = (5, 9, 7, 0)  # Test implicit conversion of key to tuple
     hier_entry = reader.FindNode(key)
 
     assert hier_entry.IsValid() == True
@@ -60,17 +60,17 @@ def test_get_all_children():
     assert len(nodes) == 278
 
     # Get an invalid key
-    nodes = reader.GetAllChildren(copc.VoxelKey.InvalidKey())
+    nodes = reader.GetAllChildren(copc.VoxelKey().InvalidKey())
     assert len(nodes) == 0
 
     # Get an existing key
-    nodes = reader.GetAllChildren(copc.VoxelKey(5, 9, 7, 0))
+    nodes = reader.GetAllChildren((5, 9, 7, 0))
     assert len(nodes) == 1
     assert nodes[0].IsValid()
-    assert nodes[0].key == copc.VoxelKey(5, 9, 7, 0)
+    assert nodes[0].key == [5, 9, 7, 0]  # Test implicit conversion of key to list
 
     # Get a non-existing key
-    nodes = reader.GetAllChildren(copc.VoxelKey(20, 20, 20, 20))
+    nodes = reader.GetAllChildren((20, 20, 20, 20))
     assert len(nodes) == 0
 
 
@@ -87,7 +87,7 @@ def test_point_error_handling():
     invalid_node = copc.Node()
     with pytest.raises(RuntimeError):
         reader.GetPointData(node=invalid_node)
-    valid_node = reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
+    valid_node = reader.FindNode((5, 9, 7, 0))
     reader.GetPointData(valid_node)
 
     assert len(reader.GetPointData(key=invalid_node.key)) == 0

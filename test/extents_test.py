@@ -25,7 +25,7 @@ def test_copc_extents():
 
     file_path = "../test/data/writer_test.copc.laz"
 
-    cfg = copc.LasConfig(7)
+    cfg = copc.LasHeaderConfig(7)
     eb_vlr = copc.EbVlr(1)
     cfg.extra_bytes = eb_vlr
     writer = copc.FileWriter(file_path, cfg, 256)

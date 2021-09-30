@@ -1,13 +1,14 @@
 #ifndef COPCLIB_LAZ_COMPRESS_H_
 #define COPCLIB_LAZ_COMPRESS_H_
 
+#include <istream>
+#include <stdexcept>
+#include <vector>
+
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/utils.hpp>
 
 #include <lazperf/filestream.hpp>
-
-#include <istream>
-#include <vector>
 
 using namespace lazperf;
 

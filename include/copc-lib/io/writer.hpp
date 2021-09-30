@@ -23,75 +23,46 @@ class Writer : public BaseIO
 {
   public:
     // Header config for creating a new file
-    struct LasConfig
+    struct LasHeaderConfig : public las::LasHeaderBase
     {
-        // Not sure we should allow default constructor
-        // LasConfig()= default;
-        LasConfig(const int8_t &point_format_id, const Vector3 &scale = {DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE},
-                  const Vector3 &offset = {0, 0, 0})
-            : point_format_id(point_format_id), scale(scale), offset(offset)
+        LasHeaderConfig(const int8_t &point_format_id, const Vector3 &scale = Vector3::DefaultScale(),
+                        const Vector3 &offset = Vector3::DefaultOffset())
+            : LasHeaderBase(point_format_id, scale, offset)
         {
             if (point_format_id < 6 || point_format_id > 8)
                 throw std::runtime_error("LasConfig: Supported point formats are 6 to 8.");
         };
         // Allow for "copying" a lasheader from one file to another
-        LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_);
+        LasHeaderConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes);
 
-        // Getters/Setters for string attributes
-        void GUID(const std::string &guid)
+        std::string ToString() const
         {
-            if (guid.size() > 16)
-                throw std::runtime_error("GUID length must be <= 16.");
-            guid_ = guid;
+            std::stringstream ss;
+            ss << "LasConfig:" << std::endl;
+            ss << "\tFile Source ID: " << file_source_id << std::endl;
+            ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
+            ss << "\tGUID: " << GUID() << std::endl;
+            ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
+            ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
+            ss << "\tCreation (DD/YYYY): (" << creation_day << "/" << creation_year << ")" << std::endl;
+            ss << "\tPoint Format ID: " << static_cast<int>(point_format_id) << std::endl;
+            ss << "\tScale: " << scale.ToString() << std::endl;
+            ss << "\tOffset: " << offset.ToString() << std::endl;
+            ss << "\tMax: " << max.ToString() << std::endl;
+            ss << "\tMin: " << min.ToString() << std::endl;
+            ss << "\tPoints By Return:" << std::endl;
+            for (int i = 0; i < points_by_return_14.size(); i++)
+                ss << "\t\t [" << i << "]: " << points_by_return_14[i] << std::endl;
+            ss << "\tNumber of Extra Bytes: " << NumExtraBytes() << std::endl;
+            return ss.str();
         }
-        std::string GUID() const { return guid_; }
-
-        void SystemIdentifier(const std::string &system_identifier)
-        {
-            if (system_identifier.size() > 32)
-                throw std::runtime_error("System Identifier length must be <= 32.");
-            system_identifier_ = system_identifier;
-        }
-        std::string SystemIdentifier() const { return system_identifier_; }
-
-        void GeneratingSoftware(const std::string &generating_software)
-        {
-            if (generating_software.size() > 32)
-                throw std::runtime_error("System Identifier length must be <= 32.");
-            generating_software_ = generating_software;
-        }
-        std::string GeneratingSoftware() const { return generating_software_; }
 
         uint16_t NumExtraBytes() const { return extra_bytes.items.size(); }
 
-        uint16_t file_source_id{};
-        uint16_t global_encoding{};
-
-        uint16_t creation_day{};
-        uint16_t creation_year{};
-
-        // default to 0
-        int8_t point_format_id{};
-
         las::EbVlr extra_bytes;
-
-        // xyz scale/offset
-        Vector3 scale{0.01, 0.01, 0.01};
-        Vector3 offset{0, 0, 0};
-        // xyz min/max for las header
-        Vector3 max{0, 0, 0};
-        Vector3 min{0, 0, 0};
-
-        // # of points per return 0-14
-        std::array<uint64_t, 15> points_by_return_14{};
-
-      private:
-        std::string guid_{};
-        std::string system_identifier_{};
-        std::string generating_software_{};
     };
 
-    Writer(std::ostream &out_stream, LasConfig const &config, int span = 0, const std::string &wkt = "")
+    Writer(std::ostream &out_stream, LasHeaderConfig const &config, int span = 0, const std::string &wkt = "")
     {
         InitWriter(out_stream, config, span, wkt);
     }
@@ -102,9 +73,8 @@ class Writer : public BaseIO
     virtual void Close() { writer_->Close(); }
 
     // Adds a node to a given page
-    Node AddNode(Page &page, const VoxelKey &key, las::Points &points); // TODO[Leo]: Add this to tests
-    Node AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed,
-                           uint64_t point_count); // TODO[Leo]: Add this to tests
+    Node AddNode(Page &page, const VoxelKey &key, las::Points &points);
+    Node AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed, uint64_t point_count);
     Node AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed);
 
     // Adds a subpage to a given page
@@ -134,9 +104,9 @@ class Writer : public BaseIO
     };
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitWriter(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt);
-    // Converts the lasconfig object into an actual LasHeader
-    static las::LasHeader HeaderFromConfig(LasConfig const &config);
+    void InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, const int &span, const std::string &wkt);
+    // Converts the LasHeaderConfig object into an actual LasHeader
+    static las::LasHeader HeaderFromConfig(LasHeaderConfig const &config);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
     static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
@@ -144,7 +114,8 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, LasConfig const &config, const int &span = 0, const std::string &wkt = "")
+    FileWriter(const std::string &file_path, LasHeaderConfig const &config, const int &span = 0,
+               const std::string &wkt = "")
     {
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
         InitWriter(f_stream_, config, span, wkt);

@@ -43,16 +43,17 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<VoxelKey>(m, "VoxelKey")
         .def(py::init<>())
-        .def(py::init<int32_t, int32_t, int32_t, int32_t>(), py::arg("d"), py::arg("x"), py::arg("y"), py::arg("z"))
+        .def(py::init<const int32_t &, const int32_t &, const int32_t &, const int32_t &>(), py::arg("d"), py::arg("x"),
+             py::arg("y"), py::arg("z"))
+        .def(py::init<const std::vector<int32_t> &>(), py::arg("list"))
         .def(py::self == py::self)
-        .def(py::self != py::self)
         .def_readwrite("d", &VoxelKey::d)
         .def_readwrite("x", &VoxelKey::x)
         .def_readwrite("y", &VoxelKey::y)
         .def_readwrite("z", &VoxelKey::z)
         .def("IsValid", &VoxelKey::IsValid)
-        .def("BaseKey", &VoxelKey::BaseKey)
-        .def("InvalidKey", &VoxelKey::InvalidKey)
+        .def_static("BaseKey", &VoxelKey::BaseKey)
+        .def_static("InvalidKey", &VoxelKey::InvalidKey)
         .def("Bisect", &VoxelKey::Bisect)
         .def("GetParent", &VoxelKey::GetParent)
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
@@ -63,6 +64,8 @@ PYBIND11_MODULE(copclib, m)
         .def("Within", &VoxelKey::Within)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
+
+    py::implicitly_convertible<py::list, VoxelKey>();
     py::implicitly_convertible<py::tuple, VoxelKey>();
 
     py::class_<Box>(m, "Box")
@@ -116,8 +119,8 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<Vector3>(m, "Vector3")
         .def(py::init<>())
-        .def(py::init<const double &, const double &, const double &>())
-        .def(py::init<const std::vector<double> &>())
+        .def(py::init<const double &, const double &, const double &>(), py::arg("x"), py::arg("y"), py::arg("z"))
+        .def(py::init<const std::vector<double> &>(), py::arg("list"))
         .def_readwrite("x", &Vector3::x)
         .def_readwrite("y", &Vector3::y)
         .def_readwrite("z", &Vector3::z)
@@ -130,8 +133,9 @@ PYBIND11_MODULE(copclib, m)
             "__truediv__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
         .def(
             "__floordiv__",
-            [](const Vector3 &vec, const double &d)
-            { return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d)); },
+            [](const Vector3 &vec, const double &d) {
+                return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d));
+            },
             py::is_operator())
         .def(
             "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
@@ -146,6 +150,7 @@ PYBIND11_MODULE(copclib, m)
             [](const py::tuple &t) { // __setstate__
                 return Vector3(t[0].cast<double>(), t[1].cast<double>(), t[2].cast<double>());
             }));
+
     py::implicitly_convertible<py::list, Vector3>();
     py::implicitly_convertible<py::tuple, Vector3>();
 
@@ -240,8 +245,7 @@ PYBIND11_MODULE(copclib, m)
     using DiffType = ssize_t;
     using SizeType = size_t;
 
-    auto wrap_i = [](DiffType i, SizeType n)
-    {
+    auto wrap_i = [](DiffType i, SizeType n) {
         if (i < 0)
             i += n;
         if (i < 0 || (SizeType)i >= n)
@@ -370,7 +374,7 @@ PYBIND11_MODULE(copclib, m)
         .def("GetPointsWithinBox", &Reader::GetPointsWithinBox);
 
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),
+        .def(py::init<const std::string &, Writer::LasHeaderConfig const &, const int &, const std::string &>(),
              py::arg("file_path"), py::arg("config"), py::arg("span") = 0, py::arg("wkt") = "")
         .def("FindNode", &Writer::FindNode)
         .def("GetWkt", &Writer::GetWkt)
@@ -413,8 +417,8 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
                       py::overload_cast<const std::string &>(&las::LasHeader::GUID))
-        .def_readwrite("version_minor", &las::LasHeader::version_minor)
         .def_readwrite("version_major", &las::LasHeader::version_major)
+        .def_readwrite("version_minor", &las::LasHeader::version_minor)
         .def_property("system_identifier", py::overload_cast<>(&las::LasHeader::SystemIdentifier, py::const_),
                       py::overload_cast<const std::string &>(&las::LasHeader::SystemIdentifier))
         .def_property("generating_software", py::overload_cast<>(&las::LasHeader::GeneratingSoftware, py::const_),
@@ -439,6 +443,8 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
         .def_readwrite("point_count_14", &las::LasHeader::point_count)
         .def_readwrite("points_by_return_14", &las::LasHeader::points_by_return_14)
+        .def("__str__", &las::LasHeader::ToString)
+        .def("__repr__", &las::LasHeader::ToString)
         .def(py::pickle(
             [](const las::LasHeader &h) { // __getstate__
                 /* Return a tuple that fully encodes the state of the object */
@@ -483,28 +489,31 @@ PYBIND11_MODULE(copclib, m)
                 return h;
             }));
 
-    py::class_<Writer::LasConfig>(m, "LasConfig")
+    py::class_<Writer::LasHeaderConfig>(m, "LasHeaderConfig")
         .def(py::init<const int8_t &, const Vector3 &, const Vector3 &>(), py::arg("point_format_id"),
              py::arg("scale") = Vector3::DefaultScale(), py::arg("offset") = Vector3::DefaultOffset())
         .def(py::init<const las::LasHeader &, const las::EbVlr &>())
-        .def_readwrite("file_source_id", &Writer::LasConfig::file_source_id)
-        .def_readwrite("global_encoding", &Writer::LasConfig::global_encoding)
-        .def_readwrite("creation_day", &Writer::LasConfig::creation_day)
-        .def_readwrite("creation_year", &Writer::LasConfig::creation_year)
-        .def_readwrite("point_format_id", &Writer::LasConfig::point_format_id)
-        .def_readwrite("extra_bytes", &Writer::LasConfig::extra_bytes)
-        .def_readwrite("scale", &Writer::LasConfig::scale)
-        .def_readwrite("offset", &Writer::LasConfig::offset)
-        .def_readwrite("max", &Writer::LasConfig::max)
-        .def_readwrite("min", &Writer::LasConfig::min)
-        .def_readwrite("points_by_return_14", &Writer::LasConfig::points_by_return_14)
-        .def_property("guid", py::overload_cast<>(&Writer::LasConfig::GUID, py::const_),
-                      py::overload_cast<const std::string &>(&Writer::LasConfig::GUID))
-        .def_property("system_identifier", py::overload_cast<>(&Writer::LasConfig::SystemIdentifier, py::const_),
-                      py::overload_cast<const std::string &>(&Writer::LasConfig::SystemIdentifier))
-        .def_property("generating_software", py::overload_cast<>(&Writer::LasConfig::GeneratingSoftware, py::const_),
-                      py::overload_cast<const std::string &>(&Writer::LasConfig::GeneratingSoftware))
-        .def("NumExtraBytes", &Writer::LasConfig::NumExtraBytes);
+        .def_readwrite("file_source_id", &Writer::LasHeaderConfig::file_source_id)
+        .def_readwrite("global_encoding", &Writer::LasHeaderConfig::global_encoding)
+        .def_readwrite("creation_day", &Writer::LasHeaderConfig::creation_day)
+        .def_readwrite("creation_year", &Writer::LasHeaderConfig::creation_year)
+        .def_readwrite("point_format_id", &Writer::LasHeaderConfig::point_format_id)
+        .def_readwrite("extra_bytes", &Writer::LasHeaderConfig::extra_bytes)
+        .def_readwrite("scale", &Writer::LasHeaderConfig::scale)
+        .def_readwrite("offset", &Writer::LasHeaderConfig::offset)
+        .def_readwrite("max", &Writer::LasHeaderConfig::max)
+        .def_readwrite("min", &Writer::LasHeaderConfig::min)
+        .def_readwrite("points_by_return_14", &Writer::LasHeaderConfig::points_by_return_14)
+        .def_property("guid", py::overload_cast<>(&Writer::LasHeaderConfig::GUID, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasHeaderConfig::GUID))
+        .def_property("system_identifier", py::overload_cast<>(&Writer::LasHeaderConfig::SystemIdentifier, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasHeaderConfig::SystemIdentifier))
+        .def_property("generating_software",
+                      py::overload_cast<>(&Writer::LasHeaderConfig::GeneratingSoftware, py::const_),
+                      py::overload_cast<const std::string &>(&Writer::LasHeaderConfig::GeneratingSoftware))
+        .def("NumExtraBytes", &Writer::LasHeaderConfig::NumExtraBytes)
+        .def("__str__", &Writer::LasHeaderConfig::ToString)
+        .def("__repr__", &Writer::LasHeaderConfig::ToString);
 
     py::class_<las::CopcInfoVlr>(m, "CopcVlr")
         .def_readwrite("span", &las::CopcInfoVlr::span)

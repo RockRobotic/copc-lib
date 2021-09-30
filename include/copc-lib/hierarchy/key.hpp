@@ -23,8 +23,13 @@ class Box;
 class VoxelKey
 {
   public:
-    VoxelKey(int32_t d, int32_t x, int32_t y, int32_t z) : d(d), x(x), y(y), z(z) {}
+    VoxelKey(const int32_t &d, const int32_t &x, const int32_t &y, const int32_t &z) : d(d), x(x), y(y), z(z) {}
     VoxelKey() : VoxelKey(-1, -1, -1, -1) {}
+    VoxelKey(const std::vector<int32_t> &vec) : d(vec[0]), x(vec[1]), y(vec[2]), z(vec[3])
+    {
+        if (vec.size() != 4)
+            throw std::runtime_error("Vector size must be 4.");
+    };
 
     static VoxelKey InvalidKey() { return VoxelKey(); }
     static VoxelKey BaseKey() { return VoxelKey(0, 0, 0, 0); }

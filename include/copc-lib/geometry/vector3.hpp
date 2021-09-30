@@ -29,7 +29,7 @@ struct Vector3
     Vector3 operator+(const double &d) const { return Vector3(x + d, y + d, z + d); }
     Vector3 operator-(const double &d) const { return Vector3(x - d, y - d, z - d); }
 
-    std::string ToString()
+    std::string ToString() const
     {
         std::stringstream ss;
         ss << "Vector3: x=" << x << ", y=" << y << ", z=" << z;

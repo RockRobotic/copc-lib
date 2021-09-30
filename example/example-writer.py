@@ -11,7 +11,7 @@ def TrimFileExample(compressor_example_flag):
     old_header = reader.GetLasHeader()
 
     # Copy the header to the new file
-    cfg = copc.LasConfig(old_header, reader.GetExtraByteVlr())
+    cfg = copc.LasHeaderConfig(old_header, reader.GetExtraByteVlr())
 
     # Now, we can create our actual writer, with an optional `span` and `wkt`:
     writer = copc.FileWriter(
@@ -103,8 +103,8 @@ def RandomPoints(key, point_format_id):
 
     points = copc.Points(
         point_format_id,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
+        copc.Vector3().DefaultScale(),
+        copc.Vector3().DefaultOffset(),
     )
     for i in range(NUM_POINTS):
         # Create a point with a given point format
@@ -133,7 +133,7 @@ def RandomPoints(key, point_format_id):
 def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
-    cfg = copc.LasConfig(8, [1, 1, 1], [0, 0, 0])
+    cfg = copc.LasHeaderConfig(8, [1, 1, 1], [0, 0, 0])
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
     cfg.min = [
@@ -162,7 +162,7 @@ def NewFileExample():
     # We can also add pages in the same way, as long as the Key we specify
     # is a child of the parent page
 
-    page = writer.AddSubPage(root_page, copc.VoxelKey(1, 1, 1, 0))
+    page = writer.AddSubPage(root_page, (1, 1, 1, 0))
 
     # Once our page is created, we can add nodes to it like before
     key = copc.VoxelKey(1, 1, 1, 0)
@@ -174,7 +174,7 @@ def NewFileExample():
     writer.AddNode(page, key, points)
 
     # We can nest subpages as much as we want, as long as they are children of the parent
-    sub_page = writer.AddSubPage(page, copc.VoxelKey(3, 4, 4, 2))
+    sub_page = writer.AddSubPage(page, (3, 4, 4, 2))
     points = RandomPoints(sub_page.key, cfg.point_format_id)
     writer.AddNode(page, sub_page.key, points)
 
