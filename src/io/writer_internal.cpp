@@ -1,13 +1,13 @@
 #include <cstring>
+#include <stdexcept>
 
 #include <lazperf/filestream.hpp>
 #include <lazperf/lazperf.hpp>
 
+#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/io/internal/writer_internal.hpp>
 #include <copc-lib/las/utils.hpp>
 #include <copc-lib/laz/compressor.hpp>
-
-using namespace lazperf;
 
 namespace copc::Internal
 {
@@ -16,10 +16,20 @@ WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<C
                                std::shared_ptr<Hierarchy> hierarchy)
     : out_stream_(out_stream), file_(file), hierarchy_(hierarchy)
 {
-    // are extra bytes allowed to be an EVLR? If so we should just move it to be an EVLR
-    // but I don't know...
+    size_t extents_offset = CopcExtents(file_->GetLasHeader().point_format_id, file_->GetExtraBytes().items.size())
+                                .ToCopcExtentsVlr()
+                                .size() +
+                            las::VlrHeader::Size;
+
+    size_t wkt_offset = file_->GetWkt().size();
+    if (wkt_offset > 0)
+        wkt_offset += las::VlrHeader::Size;
+
     size_t eb_offset = file_->GetExtraBytes().size();
-    OFFSET_TO_POINT_DATA += eb_offset + las::VlrHeader().Size;
+    if (eb_offset > 0)
+        eb_offset += las::VlrHeader::Size;
+
+    OFFSET_TO_POINT_DATA += extents_offset + wkt_offset + eb_offset;
     // reserve enough space for the header & VLRs in the file
     char out_arr[FIRST_CHUNK_OFFSET()];
     std::memset(out_arr, 0, sizeof(out_arr));
@@ -35,17 +45,14 @@ void WriterInternal::Close()
     auto head14 = file_->GetLasHeader();
     WriteChunkTable();
 
-    // Write COPC Extents VLR.
-    WriteExtents(head14);
-
-    // Always write the wkt for now, since it sets evlr_offset
-    // if (!file_->GetWkt().empty())
-    WriteWkt(head14);
+    // Set hierarchy evlr
+    out_stream_.seekp(0, std::ios::end);
+    head14.evlr_offset = static_cast<int64_t>(out_stream_.tellp());
+    head14.evlr_count += hierarchy_->seen_pages_.size();
 
     // Page writing must be done in a postorder traversal because each parent
     // has to write the offset of all of its children, which we don't know in advance
     WritePageTree(hierarchy_->seen_pages_[VoxelKey::BaseKey()]);
-    head14.evlr_count += hierarchy_->seen_pages_.size();
 
     WriteHeader(head14);
 
@@ -63,7 +70,7 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
 
     // point_format_id and point_record_length  are set on open().
     laz_header.header_size = laz_header.sizeFromVersion();
-    laz_header.vlr_count = 2; // copc + laz
+    laz_header.vlr_count = 3; // copc_info + copc_extent + laz
 
     laz_header.point_format_id |= (1 << 7);
     laz_header.point_offset = OFFSET_TO_POINT_DATA;
@@ -73,11 +80,14 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
     {
         laz_header.vlr_count++;
     }
+    if (!file_->GetWkt().empty())
+    {
+        laz_header.vlr_count++;
+    }
 
-    if (laz_header.point_count_14 > (std::numeric_limits<uint32_t>::max)())
-        laz_header.point_count = 0;
-    else
-        laz_header.point_count = (uint32_t)laz_header.point_count_14;
+    // This is always zero since we are limited to point format 6-8
+    laz_header.point_count = 0;
+
     // Set the WKT bit.
     laz_header.global_encoding |= (1 << 4);
 
@@ -85,58 +95,56 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
 
     laz_header.write(out_stream_);
 
+    std::cout << "laz header " << out_stream_.tellp() << std::endl;
+
     // Write the COPC Info VLR.
     copc_data_.spacing = file_->GetCopcInfoVlr().spacing;
     copc_data_.header().write(out_stream_);
     copc_data_.write(out_stream_);
 
+    std::cout << "copc info " << out_stream_.tellp() << std::endl;
+
+    // Write the COPC Extents VLR.
+    auto extents_vlr = file_->GetCopcExtents().ToCopcExtentsVlr();
+    extents_vlr.header().write(out_stream_);
+    extents_vlr.write(out_stream_);
+
+    std::cout << "copc extents " << out_stream_.tellp() << std::endl;
+
+    // Write the LAZ VLR
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
 
+    std::cout << "laz vlr " << out_stream_.tellp() << std::endl;
+
+    // Write optional WKT VLR
+    if (!file_->GetWkt().empty())
+    {
+        lazperf::wkt_vlr wkt_vlr(file_->GetWkt());
+        wkt_vlr.header().write(out_stream_);
+        wkt_vlr.write(out_stream_);
+    }
+
+    std::cout << "wkt vlr " << out_stream_.tellp() << std::endl;
+
+    // Write optional Extra Byte VLR
     if (head14.NumExtraBytes())
     {
         auto ebVlr = this->file_->GetExtraBytes();
         ebVlr.header().write(out_stream_);
         ebVlr.write(out_stream_);
     }
-}
 
-void WriterInternal::WriteExtents(las::LasHeader &head14)
-{
+    std::cout << "eb vlr " << out_stream_.tellp() << " : offset to pt data" << OFFSET_TO_POINT_DATA << std::endl;
 
-    auto vlr = file_->GetCopcExtents().ToCopcExtentsVlr();
-    out_stream_.seekp(0, std::ios::end);
-    auto offset = static_cast<uint64_t>(out_stream_.tellp());
-
-    evlr_header h{0, "entwine", 10000, (uint64_t)vlr.size(), "COPC extents"};
-
-    // Write the COPC Extents EVLR
-    h.write(out_stream_);
-    vlr.write(out_stream_);
-
-    head14.evlr_offset = offset;
-    head14.evlr_count++;
-}
-
-void WriterInternal::WriteWkt(las::LasHeader &head14)
-{
-    auto wkt = file_->GetWkt();
-    evlr_header h{0, "LASF_Projection", 2112, (uint64_t)wkt.size(), ""};
-
-    wkt_vlr vlr(wkt);
-
-    out_stream_.seekp(0, std::ios::end);
-    auto offset = static_cast<uint64_t>(out_stream_.tellp());
-
-    h.write(out_stream_);
-    vlr.write(out_stream_);
-
-    head14.evlr_count++;
+    // Make sure that we haven't gone over allocated size
+    if (static_cast<int64_t>(out_stream_.tellp()) > OFFSET_TO_POINT_DATA)
+        throw std::runtime_error("WriterInternal::WriteHeader: LasHeader + VLRs are bigger than offset to point data.");
 }
 
 void WriterInternal::WriteChunkTable()
 {
-    // move to the end of the file to start emitting our compresed table
+    // move to the end of the file to start emitting our compressed table
     out_stream_.seekp(0, std::ios::end);
 
     // take note of where we're writing the chunk table, we need this later
@@ -205,7 +213,7 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     auto page_size = page->nodes.size() * 32;
     page_size += page->sub_pages.size() * 32;
 
-    evlr_header h{0, "entwine", 1000, page_size, page->key.ToString()};
+    evlr_header h{0, "copc", 1000, page_size, page->key.ToString()};
 
     out_stream_.seekp(0, std::ios::end);
     h.write(out_stream_);

@@ -27,7 +27,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         // Vlr Constructor
         {
             auto vlr = las::CopcExtentsVlr();
-            vlr.items.resize(CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes));
+            vlr.items.resize(CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes), {0, 0});
             CopcExtents extents{vlr, point_format_id, num_extra_bytes};
             REQUIRE(extents.point_format_id == point_format_id);
             REQUIRE(extents.extra_bytes.size() == num_extra_bytes);
@@ -44,14 +44,15 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         string file_path = "test/data/writer_test.copc.laz";
 
         Writer::LasHeaderConfig cfg(7);
-        las::EbVlr eb_vlr(1);
+        las::EbVlr eb_vlr(2);
         eb_vlr.items[0].data_type = 29; // byte size 12
+        eb_vlr.items[1].data_type = 29; // byte size 12
         cfg.extra_bytes = eb_vlr;
         FileWriter writer(file_path, cfg, 256);
 
         auto extents = writer.GetCopcExtents();
         REQUIRE(extents.point_format_id == 7);
-        REQUIRE(extents.extra_bytes.size() == 1);
+        REQUIRE(extents.extra_bytes.size() == 2);
 
         writer.Close();
 
@@ -60,12 +61,12 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         extents = reader.GetCopcExtents();
 
         REQUIRE(extents.point_format_id == 7);
-        REQUIRE(extents.extra_bytes.size() == 1);
+        REQUIRE(extents.extra_bytes.size() == 2);
 
         REQUIRE(extents.x.minimum == 0);
         REQUIRE(extents.y.minimum == 0);
 
-        for (const auto &extent : extents.GetCopcExtents())
+        for (const auto &extent : extents.Extents())
         {
             REQUIRE(extent.minimum == 0);
             REQUIRE(extent.maximum == 0);
@@ -114,16 +115,16 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes));
     }
 
-    SECTION("Set/GetCopcExtents")
+    SECTION("Set/Extents")
     {
         CopcExtents extents{point_format_id, num_extra_bytes};
 
         auto extent_vec =
             std::vector<CopcExtent>(CopcExtents::NumberOfExtents(point_format_id, num_extra_bytes), {1, 1});
 
-        extents.SetCopcExtents(extent_vec);
+        extents.Extents(extent_vec);
 
-        for (const auto &extent : extents.GetCopcExtents())
+        for (const auto &extent : extents.Extents())
         {
             REQUIRE(extent.minimum == 1);
             REQUIRE(extent.maximum == 1);
@@ -131,9 +132,9 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
         // Test checks on size
         extent_vec.pop_back();
-        REQUIRE_THROWS(extents.SetCopcExtents(extent_vec));
+        REQUIRE_THROWS(extents.Extents(extent_vec));
         extent_vec.emplace_back(1, 1);
         extent_vec.emplace_back(1, 1);
-        REQUIRE_THROWS(extents.SetCopcExtents(extent_vec));
+        REQUIRE_THROWS(extents.Extents(extent_vec));
     }
 }

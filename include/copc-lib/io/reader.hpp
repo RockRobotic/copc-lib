@@ -56,13 +56,14 @@ class Reader : public BaseIO
     void InitReader();
     // Reads file VLRs into vlrs_
     std::map<uint64_t, las::VlrHeader> ReadVlrs();
+    // Reads file EVLRs into evlrs_
+    std::map<uint64_t, las::EvlrHeader> ReadEvlrs();
     // Finds and loads the COPC vlr
     las::CopcInfoVlr ReadCopcInfo();
     // Finds and loads the COPC vlr
-    CopcExtents ReadCopcExtents(const las::CopcInfoVlr &copc_data, const las::LasHeader &header,
-                                const las::EbVlr &eb_vlr);
+    CopcExtents ReadCopcExtents(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr);
     // Finds and loads the WKT vlr
-    las::WktVlr ReadWktData(const las::CopcInfoVlr &copc_data);
+    las::WktVlr ReadWktData(const std::map<uint64_t, las::VlrHeader> &vlrs);
     // finds and loads EB vlr
     las::EbVlr ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
 

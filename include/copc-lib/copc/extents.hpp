@@ -37,10 +37,10 @@ class CopcExtents
     las::CopcExtentsVlr ToCopcExtentsVlr() const;
 
     // Get all extents as a vector
-    std::vector<CopcExtent> GetCopcExtents() const;
+    std::vector<CopcExtent> Extents() const;
 
     // Set all extents from vector
-    void SetCopcExtents(const std::vector<CopcExtent> &extents);
+    void Extents(const std::vector<CopcExtent> &extents);
 
     // Return the total number of extents
     static int NumberOfExtents(int8_t point_format_id, uint16_t num_extra_bytes);

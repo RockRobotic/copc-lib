@@ -15,7 +15,8 @@ class LasFile
   public:
     LasFile(const LasHeader &header, const las::EbVlr &eb) : header_(header), eb_(eb){};
 
-    std::map<uint64_t, las::VlrHeader> vlrs; // maps from absolute offsets to VLR entries
+    std::map<uint64_t, las::VlrHeader> vlrs;   // maps from absolute offsets to VLR entries
+    std::map<uint64_t, las::EvlrHeader> evlrs; // maps from absolute offsets to EVLR entries
     LasHeader GetLasHeader() const { return header_; }
 
     // Extra bytes

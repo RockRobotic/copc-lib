@@ -16,7 +16,7 @@ using namespace std;
 void TrimFileExample(bool compressor_example_flag)
 {
     // We'll get our point data from this file
-    FileReader reader("test/data/autzen-classified.copc.laz");
+    FileReader reader("test/data/autzen-classified-new.copc.laz");
     auto old_header = reader.GetLasHeader();
 
     {
@@ -185,7 +185,7 @@ void NewFileExample()
 int main()
 {
     // TODO[Leo]: (Extents) Update this once we have updated copc test file
-    //    TrimFileExample(false);
-    //    TrimFileExample(true);
+    TrimFileExample(false);
+    TrimFileExample(true);
     NewFileExample();
 }

@@ -108,10 +108,10 @@ las::CopcExtentsVlr CopcExtents::ToCopcExtentsVlr() const
         vlr.items.push_back(extent.ToLazPerf());
     return vlr;
 }
-void CopcExtents::SetCopcExtents(const std::vector<CopcExtent> &extents)
+void CopcExtents::Extents(const std::vector<CopcExtent> &extents)
 {
     if (extents.size() != NumberOfExtents(point_format_id, extra_bytes.size()))
-        throw std::runtime_error("SetCopcExtents: Number of extents incorrect.");
+        throw std::runtime_error("Extents: Number of extents incorrect.");
 
     x = extents[0];
     y = extents[1];
@@ -144,7 +144,7 @@ void CopcExtents::SetCopcExtents(const std::vector<CopcExtent> &extents)
     extra_bytes.assign(extents.begin() + eb_start_id, extents.end());
 }
 
-std::vector<CopcExtent> CopcExtents::GetCopcExtents() const
+std::vector<CopcExtent> CopcExtents::Extents() const
 {
     std::vector<CopcExtent> extents(NumberOfExtents(point_format_id, extra_bytes.size()));
 

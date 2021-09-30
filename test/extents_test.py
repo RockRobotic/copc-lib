@@ -85,16 +85,16 @@ def test_copc_extents():
         )
     ]
 
-    extents.SetCopcExtents(extent_vec)
+    extents.extents = extent_vec
 
-    for extent in extents.GetCopcExtents():
+    for extent in extents.extents:
         assert extent.minimum == 1
         assert extent.maximum == 1
 
     # Test checks on size
     with pytest.raises(RuntimeError):
-        extents.SetCopcExtents(extent_vec[:-1])
+        extents.extents = extent_vec[:-1]
 
     extent_vec.append((1, 1))
     with pytest.raises(RuntimeError):
-        extents.SetCopcExtents(extent_vec)
+        extents.extents = extent_vec
