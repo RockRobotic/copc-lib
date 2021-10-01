@@ -41,8 +41,8 @@ For common use cases, see the `example` and `test` folders for full examples.
 copc-lib is compatible with CMake. Assuming copc-lib and lazperf are installed on the system, you can link with them in your `CMakeLists.txt`:
 
 ```CMake
-find_package(copc-lib REQUIRED)
-find_package(lazperf REQUIRED)
+find_package(COPCLIB REQUIRED)
+find_package(LAZPERF REQUIRED)
 
 add_executable(funlib fun-main.cpp)
 target_link_libraries(funlib COPCLIB::copc-lib LAZPERF::lazperf)
