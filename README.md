@@ -4,29 +4,30 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 
 *Note: This library is in beta and API may change*
 
-## Installation
+## Build from source
 
 ### Dependencies
-copc-lib depends on laz-perf 2.1.0 or greater. See the [laz-perf repo](https://github.com/hobu/laz-perf) for installation instructions.
 
-### Build & Install
-With the dependencies installed, we can now build copc-lib. Note that you need to clone this repo with the `--recurse-submodules` flag, so that all dependencies get included.
+copc-lib has the following dependencies:
+- [laz-perf](https://github.com/hobu/laz-perf) >= 2.1.0
+- Catch2
+- Pybind11
 
 ### C++
 
 ```bash
-git clone --recurse-submodules https://github.com/RockRobotic/copc-lib.git
+git clone https://github.com/RockRobotic/copc-lib.git
 cd copc-lib
 mkdir build && cd build
 cmake ..
-make
-sudo make install
+cmake --build .
+sudo cmake --install .
 ```
 
 ### Python
 
 ```bash
-git clone --recurse-submodules https://github.com/RockRobotic/copc-lib.git
+git clone https://github.com/RockRobotic/copc-lib.git
 pip install ./copc-lib
 ```
 
@@ -40,19 +41,40 @@ For common use cases, see the `example` and `test` folders for full examples.
 copc-lib is compatible with CMake. Assuming copc-lib and lazperf are installed on the system, you can link with them in your `CMakeLists.txt`:
 
 ```CMake
-find_package(copc-lib REQUIRED)
-find_package(lazperf REQUIRED)
+find_package(COPCLIB REQUIRED)
+find_package(LAZPERF REQUIRED)
 
 add_executable(funlib fun-main.cpp)
-target_link_libraries(funlib copc-lib LAZPERF::lazperf)
+target_link_libraries(funlib COPCLIB::copc-lib LAZPERF::lazperf)
 ```
+
+#### Example Files & Unit Tests
+To build the copc-lib examples and unit tests along with the main library, you must enable them:
+
+```bash
+mkdir build && cd build
+cmake .. -DWITH_TESTS_AND_EXAMPLES=ON
+cmake --build .
+```
+
+Then, you can run the unit tests and the examples:
+
+```bash
+ctest # All tests should pass
+
+cd bin
+./example_reader
+./example_writer
+```
+
+Alternatively, you can build the test and example files from their respective CMakeLists, assuming copc-lib is already installed.
 
 ### Python
 ```python
 import copclib as copc
 
 # Create a reader object
-reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+reader = copc.FileReader("autzen-classified.copc.laz")
 
 # Get the node metadata from the hierarchy
 node = reader.FindNode(copc.VoxelKey(0, 0, 0, 0))

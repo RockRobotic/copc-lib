@@ -25,7 +25,7 @@ def test_vector3():
 
 def test_las_header():
 
-    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
     las_header = reader.GetLasHeader()
 
     las_header_other = pickle.loads(pickle.dumps(las_header, -1))

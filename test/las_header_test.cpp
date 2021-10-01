@@ -10,7 +10,7 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
 {
     GIVEN("A valid file_path")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
         auto las_header = reader.GetLasHeader();
         auto lazperf_header = las_header.ToLazPerf();
         auto las_header_orig = las::LasHeader::FromLazPerf(lazperf_header);
@@ -50,7 +50,7 @@ TEST_CASE("GetBounds", "[LasHeader]")
 {
     GIVEN("A valid file_path")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
         auto las_header = reader.GetLasHeader();
         auto box = las_header.GetBounds();
         REQUIRE(box.x_min == las_header.min.x);
