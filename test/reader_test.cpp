@@ -226,8 +226,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
             //                                                               std::ceil(header.max.y),
             //                                                               std::ceil(header.max.z)));
             //            REQUIRE(subset_points.Get().size() == header.point_count);
-        }
-        {
+        } {
             // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
             auto subset_points = reader.GetPointsWithinBox(Box(637190, 851109, 637390, 851309));
             REQUIRE(subset_points.Get().size() == 22902);

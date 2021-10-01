@@ -51,15 +51,14 @@ class LasHeaderBase
 
     virtual std::string ToString() const = 0;
 
-    // TODO[Leo]: Check with Chris if we can remove some things here
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
     uint16_t creation_day{};
     uint16_t creation_year{};
 
-    // default to 0
-    int8_t point_format_id{};
+    // Defaults to 6
+    int8_t point_format_id{6};
 
     // xyz scale/offset
     Vector3 scale{Vector3::DefaultScale()};
@@ -69,7 +68,7 @@ class LasHeaderBase
     Vector3 min{};
 
     // # of points per return 0-14
-    std::array<uint64_t, 15> points_by_return_14{};
+    std::array<uint64_t, 15> points_by_return{};
 
   protected:
     LasHeaderBase() = default;
@@ -85,61 +84,26 @@ class LasHeaderBase
 class LasHeader : public LasHeaderBase
 {
   public:
-    LasHeader(){};
+    LasHeader() = default;
     uint16_t NumExtraBytes() const;
 
     static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf() const;
 
-    std::string ToString() const
-    {
-        std::stringstream ss;
-        ss << "LasHeader:" << std::endl;
-        ss << "\tFile Source ID: " << file_source_id << std::endl;
-        ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
-        ss << "\tGUID: " << GUID() << std::endl;
-        ss << "\tVersion: " << static_cast<int>(version_major) << "." << static_cast<int>(version_minor) << std::endl;
-        ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
-        ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
-        ss << "\tCreation (DD/YYYY): (" << creation_day << "/" << creation_year << ")" << std::endl;
-        ss << "\tHeader Size: " << header_size << std::endl;
-        ss << "\tPoint Offset: " << point_offset << std::endl;
-        ss << "\tVLR Count: " << vlr_count << std::endl;
-        ss << "\tPoint Format ID: " << static_cast<int>(point_format_id) << std::endl;
-        ss << "\tPoint Record Length: " << point_record_length << std::endl;
-        ss << "\tPoint Count: " << point_count << std::endl;
-        ss << "\tScale: " << scale.ToString() << std::endl;
-        ss << "\tOffset: " << offset.ToString() << std::endl;
-        ss << "\tMax: " << max.ToString() << std::endl;
-        ss << "\tMin: " << min.ToString() << std::endl;
-        ss << "\tWave Offset: " << wave_offset << std::endl;
-        ss << "\tEVLR Offset: " << evlr_offset << std::endl;
-        ss << "\tEVLR count: " << evlr_count << std::endl;
-        ss << "\tPoints By Return:" << std::endl;
-        for (int i = 0; i < points_by_return_14.size(); i++)
-            ss << "\t\t[" << i << "]: " << points_by_return_14[i] << std::endl;
-        return ss.str();
-    }
+    std::string ToString() const;
 
-    uint8_t version_major{1};
-    uint8_t version_minor{4};
+    const uint8_t version_major{1};
+    const uint8_t version_minor{4};
 
-    uint16_t header_size{};
+    const uint16_t header_size{375};
     uint32_t point_offset{};
     uint32_t vlr_count{};
 
     uint16_t point_record_length{};
 
-    uint32_t point_count{};
-    std::array<uint32_t, 5> points_by_return{};
-
-    uint64_t wave_offset{0};
-
-    uint64_t evlr_offset{0};
-    uint32_t evlr_count{0};
-    uint64_t point_count_14{0};
-
-    static const size_t size = 375; // Size of header for LAS 1.4
+    uint64_t evlr_offset{};
+    uint32_t evlr_count{};
+    uint64_t point_count{};
 };
 
 } // namespace las

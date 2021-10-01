@@ -283,7 +283,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             REQUIRE(writer.GetLasHeader().min == min1);
             REQUIRE(writer.GetLasHeader().max == max1);
-            REQUIRE(writer.GetLasHeader().points_by_return_14 == std::array<uint64_t, 15>{0});
+            REQUIRE(writer.GetLasHeader().points_by_return == std::array<uint64_t, 15>{0});
 
             writer.SetMin(min2);
             writer.SetMax(max2);
@@ -291,14 +291,14 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             REQUIRE(writer.GetLasHeader().min == min2);
             REQUIRE(writer.GetLasHeader().max == max2);
-            REQUIRE(writer.GetLasHeader().points_by_return_14 == points_by_return);
+            REQUIRE(writer.GetLasHeader().points_by_return == points_by_return);
 
             writer.Close();
 
             Reader reader(&out_stream);
             REQUIRE(reader.GetLasHeader().min == min2);
             REQUIRE(reader.GetLasHeader().max == max2);
-            REQUIRE(reader.GetLasHeader().points_by_return_14 == points_by_return);
+            REQUIRE(reader.GetLasHeader().points_by_return == points_by_return);
         }
     }
 }

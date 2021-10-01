@@ -60,62 +60,48 @@ void WriterInternal::Close()
 }
 
 // Writes the LAS header and VLRs
-void WriterInternal::WriteHeader(las::LasHeader &head14)
+void WriterInternal::WriteHeader(las::LasHeader &header)
 {
+    laz_vlr lazVlr(header.point_format_id, header.NumExtraBytes(), VARIABLE_CHUNK_SIZE);
 
-    // Convert back to lazperf header for writing
-    auto laz_header = head14.ToLazPerf();
+    header.vlr_count = 3; // copc_info + copc_extent + laz
 
-    laz_vlr lazVlr(laz_header.point_format_id, laz_header.ebCount(), VARIABLE_CHUNK_SIZE);
+    header.point_offset = OFFSET_TO_POINT_DATA;
+    header.point_count = point_count_;
 
-    // point_format_id and point_record_length  are set on open().
-    laz_header.header_size = laz_header.sizeFromVersion();
-    laz_header.vlr_count = 3; // copc_info + copc_extent + laz
-
-    laz_header.point_format_id |= (1 << 7);
-    laz_header.point_offset = OFFSET_TO_POINT_DATA;
-    laz_header.point_count_14 = point_count_14_;
-
-    if (laz_header.ebCount())
+    if (header.NumExtraBytes())
     {
-        laz_header.vlr_count++;
+        header.vlr_count++;
     }
     if (!file_->GetWkt().empty())
     {
-        laz_header.vlr_count++;
+        header.vlr_count++;
     }
 
-    // This is always zero since we are limited to point format 6-8
-    laz_header.point_count = 0;
-
     // Set the WKT bit.
-    laz_header.global_encoding |= (1 << 4);
+    header.global_encoding |= (1 << 4);
 
     out_stream_.seekp(0);
 
-    laz_header.write(out_stream_);
+    // Convert back to lazperf header for writing
+    auto laz_header = header.ToLazPerf();
+    laz_header.point_format_id |= (1 << 7); // Do the lazperf trick
 
-    std::cout << "laz header " << out_stream_.tellp() << std::endl;
+    laz_header.write(out_stream_);
 
     // Write the COPC Info VLR.
     copc_data_.spacing = file_->GetCopcInfoVlr().spacing;
     copc_data_.header().write(out_stream_);
     copc_data_.write(out_stream_);
 
-    std::cout << "copc info " << out_stream_.tellp() << std::endl;
-
     // Write the COPC Extents VLR.
     auto extents_vlr = file_->GetCopcExtents().ToCopcExtentsVlr();
     extents_vlr.header().write(out_stream_);
     extents_vlr.write(out_stream_);
 
-    std::cout << "copc extents " << out_stream_.tellp() << std::endl;
-
     // Write the LAZ VLR
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
-
-    std::cout << "laz vlr " << out_stream_.tellp() << std::endl;
 
     // Write optional WKT VLR
     if (!file_->GetWkt().empty())
@@ -125,17 +111,13 @@ void WriterInternal::WriteHeader(las::LasHeader &head14)
         wkt_vlr.write(out_stream_);
     }
 
-    std::cout << "wkt vlr " << out_stream_.tellp() << std::endl;
-
     // Write optional Extra Byte VLR
-    if (head14.NumExtraBytes())
+    if (header.NumExtraBytes())
     {
         auto ebVlr = this->file_->GetExtraBytes();
         ebVlr.header().write(out_stream_);
         ebVlr.write(out_stream_);
     }
-
-    std::cout << "eb vlr " << out_stream_.tellp() << " : offset to pt data" << OFFSET_TO_POINT_DATA << std::endl;
 
     // Make sure that we haven't gone over allocated size
     if (static_cast<int64_t>(out_stream_.tellp()) > OFFSET_TO_POINT_DATA)
@@ -190,7 +172,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool 
     else
         point_count = laz::Compressor::CompressBytes(out_stream_, file_->GetLasHeader(), in);
 
-    point_count_14_ += point_count;
+    point_count_ += point_count;
 
     auto endpos = out_stream_.tellp();
     if (endpos <= 0)

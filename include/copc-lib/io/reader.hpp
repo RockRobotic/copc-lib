@@ -55,9 +55,9 @@ class Reader : public BaseIO
     // Constructor helper function, initializes the file and hierarchy
     void InitReader();
     // Reads file VLRs into vlrs_
-    std::map<uint64_t, las::VlrHeader> ReadVlrs();
+    std::map<uint64_t, las::VlrHeader> ReadVlrHeaders();
     // Reads file EVLRs into evlrs_
-    std::map<uint64_t, las::EvlrHeader> ReadEvlrs();
+    std::map<uint64_t, las::EvlrHeader> ReadEvlrHeaders();
     // Finds and loads the COPC vlr
     las::CopcInfoVlr ReadCopcInfo();
     // Finds and loads the COPC vlr

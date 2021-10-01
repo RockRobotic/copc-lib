@@ -27,7 +27,7 @@ class LasFile
     void SetMax(const Vector3 &max) { header_.max = max; }
     void SetPointsByReturn(const std::array<uint64_t, 15> &points_by_return_14)
     {
-        header_.points_by_return_14 = points_by_return_14;
+        header_.points_by_return = points_by_return_14;
     }
 
   protected:

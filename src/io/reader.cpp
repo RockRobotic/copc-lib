@@ -19,8 +19,8 @@ void Reader::InitReader()
     auto header = las::LasHeader::FromLazPerf(reader_->header());
 
     // Load vlrs and evlrs
-    auto vlrs = ReadVlrs();
-    auto evlrs = ReadEvlrs();
+    auto vlrs = ReadVlrHeaders();
+    auto evlrs = ReadEvlrHeaders();
 
     auto copc_info = ReadCopcInfo();
     auto wkt = ReadWktData(vlrs);
@@ -34,7 +34,7 @@ void Reader::InitReader()
     hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
 }
 
-std::map<uint64_t, las::VlrHeader> Reader::ReadVlrs()
+std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
 {
     std::map<uint64_t, las::VlrHeader> out;
 
@@ -55,7 +55,7 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrs()
     return out;
 }
 
-std::map<uint64_t, las::EvlrHeader> Reader::ReadEvlrs()
+std::map<uint64_t, las::EvlrHeader> Reader::ReadEvlrHeaders()
 {
     std::map<uint64_t, las::EvlrHeader> out;
 

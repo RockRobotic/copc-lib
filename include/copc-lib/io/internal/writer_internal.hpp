@@ -41,9 +41,9 @@ class WriterInternal
     std::shared_ptr<Hierarchy> hierarchy_;
 
     std::vector<lazperf::chunk> chunks_;
-    uint64_t point_count_14_ = 0;
+    uint64_t point_count_ = 0;
 
-    void WriteHeader(las::LasHeader &head14);
+    void WriteHeader(las::LasHeader &header);
     void WriteChunkTable();
     void WritePage(const std::shared_ptr<PageInternal> &page);
 

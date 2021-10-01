@@ -1,6 +1,7 @@
 #include <copc-lib/las/header.hpp>
 
 #include <cstring>
+#include <stdexcept>
 
 #include <copc-lib/geometry/box.hpp>
 #include <copc-lib/las/utils.hpp>
@@ -18,18 +19,20 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.file_source_id = header.file_source_id;
     h.global_encoding = header.global_encoding;
     h.guid_ = header.guid;
-    h.version_major = header.version.major;
-    h.version_minor = header.version.minor;
+    if (header.version.major != 1 || header.version.minor != 4)
+        throw std::runtime_error("LasHeader::FromLazPerf: Header version needs to be 1.4");
     h.system_identifier_ = header.system_identifier;
     h.generating_software_ = header.generating_software;
     h.creation_day = header.creation.day;
     h.creation_year = header.creation.year;
-    h.header_size = header.header_size;
+    if (header.header_size != 375)
+        throw std::runtime_error("LasHeader::FromLazPerf: Header size must be 375.");
     h.point_offset = header.point_offset;
     h.vlr_count = header.vlr_count;
+    if (header.point_format_id < 6 || header.point_format_id > 8)
+        throw std::runtime_error("LasHeader::FromLazPerf: Supported point formats are 6 to 8.");
     h.point_format_id = static_cast<int8_t>(header.point_format_id);
     h.point_record_length = header.point_record_length;
-    h.point_count = header.point_count;
     std::copy(std::begin(header.points_by_return), std::end(header.points_by_return), std::begin(h.points_by_return));
     h.scale.x = header.scale.x;
     h.scale.y = header.scale.y;
@@ -43,12 +46,11 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.min.y = header.miny;
     h.max.z = header.maxz;
     h.min.z = header.minz;
-    h.wave_offset = header.wave_offset;
     h.evlr_offset = header.evlr_offset;
     h.evlr_count = header.evlr_count;
-    h.point_count_14 = header.point_count_14;
+    h.point_count = header.point_count_14;
     std::copy(std::begin(header.points_by_return_14), std::end(header.points_by_return_14),
-              std::begin(h.points_by_return_14));
+              std::begin(h.points_by_return));
     return h;
 }
 lazperf::header14 LasHeader::ToLazPerf() const
@@ -68,8 +70,8 @@ lazperf::header14 LasHeader::ToLazPerf() const
     h.vlr_count = vlr_count;
     h.point_format_id = point_format_id;
     h.point_record_length = point_record_length;
-    h.point_count = point_count;
-    std::copy(std::begin(points_by_return), std::end(points_by_return), std::begin(h.points_by_return));
+    h.point_count = 0;
+    std::fill(h.points_by_return, h.points_by_return + 5, 0); // Fill with zeros
 
     h.offset.x = offset.x;
     h.offset.y = offset.y;
@@ -86,13 +88,42 @@ lazperf::header14 LasHeader::ToLazPerf() const
     h.maxz = max.z;
     h.minz = min.z;
 
-    h.wave_offset = wave_offset;
+    h.wave_offset = 0;
     h.evlr_offset = evlr_offset;
     h.evlr_count = evlr_count;
-    h.point_count_14 = point_count_14;
+    h.point_count_14 = point_count;
 
-    std::copy(std::begin(points_by_return_14), std::end(points_by_return_14), std::begin(h.points_by_return_14));
+    std::copy(std::begin(points_by_return), std::end(points_by_return), std::begin(h.points_by_return_14));
     return h;
+}
+
+std::string LasHeader::ToString() const
+{
+    std::stringstream ss;
+    ss << "LasHeader:" << std::endl;
+    ss << "\tFile Source ID: " << file_source_id << std::endl;
+    ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
+    ss << "\tGUID: " << GUID() << std::endl;
+    ss << "\tVersion: " << static_cast<int>(version_major) << "." << static_cast<int>(version_minor) << std::endl;
+    ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
+    ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
+    ss << "\tCreation (Day/Year): (" << creation_day << "/" << creation_year << ")" << std::endl;
+    ss << "\tHeader Size: " << header_size << std::endl;
+    ss << "\tPoint Offset: " << point_offset << std::endl;
+    ss << "\tVLR Count: " << vlr_count << std::endl;
+    ss << "\tPoint Format ID: " << static_cast<int>(point_format_id) << std::endl;
+    ss << "\tPoint Record Length: " << point_record_length << std::endl;
+    ss << "\tPoint Count: " << point_count << std::endl;
+    ss << "\tScale: " << scale.ToString() << std::endl;
+    ss << "\tOffset: " << offset.ToString() << std::endl;
+    ss << "\tMax: " << max.ToString() << std::endl;
+    ss << "\tMin: " << min.ToString() << std::endl;
+    ss << "\tEVLR Offset: " << evlr_offset << std::endl;
+    ss << "\tEVLR count: " << evlr_count << std::endl;
+    ss << "\tPoints By Return:" << std::endl;
+    for (int i = 0; i < points_by_return.size(); i++)
+        ss << "\t\t[" << i << "]: " << points_by_return[i] << std::endl;
+    return ss.str();
 }
 
 } // namespace copc::las

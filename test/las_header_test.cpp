@@ -39,10 +39,8 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
         REQUIRE(las_header_origin.offset.z == las_header.offset.z);
         REQUIRE(las_header_origin.max == las_header.max);
         REQUIRE(las_header_origin.min == las_header.min);
-        REQUIRE(las_header_origin.wave_offset == las_header.wave_offset);
         REQUIRE(las_header_origin.evlr_offset == las_header.evlr_offset);
         REQUIRE(las_header_origin.evlr_count == las_header.evlr_count);
-        REQUIRE(las_header_origin.points_by_return_14 == las_header.points_by_return_14);
 
         las_header_origin.ToString();
     }
