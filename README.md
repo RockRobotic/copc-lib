@@ -48,6 +48,27 @@ add_executable(funlib fun-main.cpp)
 target_link_libraries(funlib COPCLIB::copc-lib LAZPERF::lazperf)
 ```
 
+#### Example Files & Unit Tests
+To build the copc-lib examples and unit tests along with the main library, you must enable them:
+
+```bash
+mkdir build && cd build
+cmake .. -DWITH_TESTS_AND_EXAMPLES=ON
+cmake --build .
+```
+
+Then, you can run the unit tests and the examples:
+
+```bash
+ctest # All tests should pass
+
+cd bin
+./example_reader
+./example_writer
+```
+
+Alternatively, you can build the test and example files from their respective CMakeLists, assuming copc-lib is already installed.
+
 ### Python
 ```python
 import copclib as copc
