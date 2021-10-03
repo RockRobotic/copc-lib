@@ -87,7 +87,10 @@ void BoundsTrimFileExample()
     auto old_header = reader.GetLasHeader();
 
     // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-    Box box(637190, 851109, 637390, 851309);
+
+    auto middle = (old_header.max + old_header.min) / 2;
+    Box box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200);
+
     {
         // Copy the header to the new file
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());

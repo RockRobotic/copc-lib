@@ -230,31 +230,30 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
             //                                                               std::ceil(header.max.y),
             //                                                               std::ceil(header.max.z)));
             //            REQUIRE(subset_points.Get().size() == header.point_count);
-        }
-        {
+        } {
             // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
             auto subset_points = reader.GetPointsWithinBox(Box(637190, 851109, 637390, 851309));
             REQUIRE(subset_points.Get().size() == 22902);
         }
     }
 
-    SECTION("GetDepthWithResolution")
+    SECTION("GetDepthAtResolution")
     {
-        REQUIRE(reader.GetDepthWithResolution(1) == 3);
-        REQUIRE_THROWS(reader.GetDepthWithResolution(0));
+        REQUIRE(reader.GetDepthAtResolution(1) == 3);
+        REQUIRE_THROWS(reader.GetDepthAtResolution(0));
     }
 
-    SECTION("GetNodesWithResolution")
+    SECTION("GetNodesAtResolution")
     {
-        auto subset_nodes = reader.GetNodesWithResolution(1);
+        auto subset_nodes = reader.GetNodesAtResolution(1);
         REQUIRE(subset_nodes.size() == 48);
-        REQUIRE_THROWS(reader.GetDepthWithResolution(0));
+        REQUIRE_THROWS(reader.GetDepthAtResolution(0));
     }
 
-    SECTION("GetNodesDownToResolution")
+    SECTION("GetNodesWithinResolution")
     {
-        auto subset_nodes = reader.GetNodesDownToResolution(1);
+        auto subset_nodes = reader.GetNodesWithinResolution(1);
         REQUIRE(subset_nodes.size() == 65);
-        REQUIRE_THROWS(reader.GetDepthWithResolution(0));
+        REQUIRE_THROWS(reader.GetDepthAtResolution(0));
     }
 }

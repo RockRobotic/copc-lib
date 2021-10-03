@@ -151,19 +151,19 @@ def test_spatial_query_functions():
     subset_points = reader.GetPointsWithinBox(copc.Box(637190, 851109, 637390, 851309))
     assert len(subset_points) == 22902
 
-    # GetDepthWithResolutio
-    assert reader.GetDepthWithResolution(1) == 3
+    # GetDepthAtResolution
+    assert reader.GetDepthAtResolution(1) == 3
     with pytest.raises(RuntimeError):
-        reader.GetDepthWithResolution(0)
+        reader.GetDepthAtResolution(0)
 
-    # GetNodesWithResolution
-    subset_nodes = reader.GetNodesWithResolution(1)
+    # GetNodesAtResolution
+    subset_nodes = reader.GetNodesAtResolution(1)
     assert len(subset_nodes) == 48
     with pytest.raises(RuntimeError):
-        reader.GetDepthWithResolution(0)
+        reader.GetDepthAtResolution(0)
 
-    # GetNodesDownToResolution
-    subset_nodes = reader.GetNodesDownToResolution(1)
+    # GetNodesWithinResolution
+    subset_nodes = reader.GetNodesWithinResolution(1)
     assert len(subset_nodes) == 65
     with pytest.raises(RuntimeError):
-        reader.GetDepthWithResolution(0)
+        reader.GetDepthAtResolution(0)

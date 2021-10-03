@@ -46,9 +46,9 @@ class Reader : public BaseIO
     std::vector<Node> GetNodesWithinBox(const Box &box, double min_resolution = std::numeric_limits<double>::min());
     std::vector<Node> GetNodesIntersectBox(const Box &box, double min_resolution = std::numeric_limits<double>::min());
     las::Points GetPointsWithinBox(const Box &box, double min_resolution = std::numeric_limits<double>::min());
-    int32_t GetDepthWithResolution(double resolution) const;
-    std::vector<Node> GetNodesWithResolution(double resolution);
-    std::vector<Node> GetNodesDownToResolution(double resolution);
+    int32_t GetDepthAtResolution(double resolution) const;
+    std::vector<Node> GetNodesAtResolution(double resolution);
+    std::vector<Node> GetNodesWithinResolution(double resolution);
 
   protected:
     Reader() = default;

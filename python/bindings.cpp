@@ -126,14 +126,31 @@ PYBIND11_MODULE(copclib, m)
         .def_static("DefaultScale", &Vector3::DefaultScale)
         .def_static("DefaultOffset", &Vector3::DefaultOffset)
         .def(py::self == py::self)
+        // Vector3 operations
+        .def(
+            "__mul__", [](const Vector3 &vec, const Vector3 &other) { return vec * other; }, py::is_operator())
+        .def(
+            "__truediv__", [](const Vector3 &vec, const Vector3 &other) { return vec / other; }, py::is_operator())
+        .def(
+            "__floordiv__",
+            [](const Vector3 &vec, const Vector3 &other) {
+                return Vector3(std::floor(vec.x / other.x), std::floor(vec.y / other.y), std::floor(vec.z / other.z));
+            },
+            py::is_operator())
+        .def(
+            "__add__", [](const Vector3 &vec, const Vector3 &other) { return vec + other; }, py::is_operator())
+        .def(
+            "__sub__", [](const Vector3 &vec, const Vector3 &other) { return vec - other; }, py::is_operator())
+        // Double operations
         .def(
             "__mul__", [](const Vector3 &vec, const double &d) { return vec * d; }, py::is_operator())
         .def(
             "__truediv__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
         .def(
             "__floordiv__",
-            [](const Vector3 &vec, const double &d)
-            { return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d)); },
+            [](const Vector3 &vec, const double &d) {
+                return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d));
+            },
             py::is_operator())
         .def(
             "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
@@ -242,8 +259,7 @@ PYBIND11_MODULE(copclib, m)
     using DiffType = ssize_t;
     using SizeType = size_t;
 
-    auto wrap_i = [](DiffType i, SizeType n)
-    {
+    auto wrap_i = [](DiffType i, SizeType n) {
         if (i < 0)
             i += n;
         if (i < 0 || (SizeType)i >= n)
@@ -363,9 +379,9 @@ PYBIND11_MODULE(copclib, m)
              py::arg("min_resolution") = std::numeric_limits<double>::min())
         .def("GetPointsWithinBox", &Reader::GetPointsWithinBox, py::arg("box"),
              py::arg("min_resolution") = std::numeric_limits<double>::min())
-        .def("GetDepthWithResolution", &Reader::GetDepthWithResolution, py::arg("resolution"))
-        .def("GetNodesWithResolution", &Reader::GetNodesWithResolution, py::arg("resolution"))
-        .def("GetNodesDownToResolution", &Reader::GetNodesDownToResolution, py::arg("resolution"));
+        .def("GetDepthAtResolution", &Reader::GetDepthAtResolution, py::arg("resolution"))
+        .def("GetNodesAtResolution", &Reader::GetNodesAtResolution, py::arg("resolution"))
+        .def("GetNodesWithinResolution", &Reader::GetNodesWithinResolution, py::arg("resolution"));
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),
