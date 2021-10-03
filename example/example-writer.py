@@ -78,7 +78,7 @@ def TrimFileExample(compressor_example_flag):
 # In this example, we'll filter the points in the autzen dataset based on bounds.
 def BoundsTrimFileExample():
     # We'll get our point data from this file
-    reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
     old_header = reader.GetLasHeader()
 
     # Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
@@ -89,7 +89,7 @@ def BoundsTrimFileExample():
 
     # Now, we can create our actual writer, with an optional `span` and `wkt`:
     writer = copc.FileWriter(
-        "../test/data/autzen-bounds-trimmed.copc.laz",
+        "autzen-bounds-trimmed.copc.laz",
         cfg,
         reader.GetCopcHeader().span,
         reader.GetWkt(),
@@ -116,7 +116,7 @@ def BoundsTrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader("../test/data/autzen-bounds-trimmed.copc.laz")
+    new_reader = copc.FileReader("autzen-bounds-trimmed.copc.laz")
 
     # Let's go through each point and make sure they fit in the within the Box
     for node in new_reader.GetAllChildren():
@@ -127,7 +127,7 @@ def BoundsTrimFileExample():
 # In this example, we'll filter the points in the autzen dataset based on resolution.
 def ResolutionTrimFileExample():
     # We'll get our point data from this file
-    reader = copc.FileReader("../test/data/autzen-classified-new.copc.laz")
+    reader = copc.FileReader("autzen-classified-new.copc.laz")
     old_header = reader.GetLasHeader()
 
     resolution = 10
@@ -137,7 +137,7 @@ def ResolutionTrimFileExample():
 
     # Now, we can create our actual writer, with an optional `span` and `wkt`:
     writer = copc.FileWriter(
-        "../test/data/autzen-resolution-trimmed.copc.laz",
+        "autzen-resolution-trimmed.copc.laz",
         cfg,
         reader.GetCopcHeader().span,
         reader.GetWkt(),
@@ -162,7 +162,7 @@ def ResolutionTrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader("../test/data/autzen-resolution-trimmed.copc.laz")
+    new_reader = copc.FileReader("autzen-resolution-trimmed.copc.laz")
 
     new_las_header = new_reader.GetLasHeader()
     new_copc_header = new_reader.GetCopcHeader()

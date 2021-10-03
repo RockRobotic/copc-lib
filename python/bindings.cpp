@@ -148,8 +148,9 @@ PYBIND11_MODULE(copclib, m)
             "__truediv__", [](const Vector3 &vec, const double &d) { return vec / d; }, py::is_operator())
         .def(
             "__floordiv__",
-            [](const Vector3 &vec, const double &d)
-            { return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d)); },
+            [](const Vector3 &vec, const double &d) {
+                return Vector3(std::floor(vec.x / d), std::floor(vec.y / d), std::floor(vec.z / d));
+            },
             py::is_operator())
         .def(
             "__add__", [](const Vector3 &vec, const double &d) { return vec + d; }, py::is_operator())
@@ -258,8 +259,7 @@ PYBIND11_MODULE(copclib, m)
     using DiffType = ssize_t;
     using SizeType = size_t;
 
-    auto wrap_i = [](DiffType i, SizeType n)
-    {
+    auto wrap_i = [](DiffType i, SizeType n) {
         if (i < 0)
             i += n;
         if (i < 0 || (SizeType)i >= n)

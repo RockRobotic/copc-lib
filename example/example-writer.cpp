@@ -83,7 +83,7 @@ void TrimFileExample(bool compressor_example_flag)
 void BoundsTrimFileExample()
 {
     // We'll get our point data from this file
-    FileReader reader("test/data/autzen-classified.copc.laz");
+    FileReader reader("autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
 
     // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
@@ -96,8 +96,7 @@ void BoundsTrimFileExample()
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
-        FileWriter writer("test/data/autzen-bounds-trimmed.copc.laz", cfg, reader.GetCopcHeader().span,
-                          reader.GetWkt());
+        FileWriter writer("autzen-bounds-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
 
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
@@ -124,7 +123,7 @@ void BoundsTrimFileExample()
     }
 
     // Now, let's test our new file
-    FileReader new_reader("test/data/autzen-bounds-trimmed.copc.laz");
+    FileReader new_reader("autzen-bounds-trimmed.copc.laz");
 
     // Let's go through each point and make sure they fit within the Box
     for (const auto &node : new_reader.GetAllChildren())
@@ -138,7 +137,7 @@ void BoundsTrimFileExample()
 void ResolutionTrimFileExample()
 {
     // We'll get our point data from this file
-    FileReader reader("test/data/autzen-classified-new.copc.laz");
+    FileReader reader("autzen-classified-new.copc.laz");
     auto old_header = reader.GetLasHeader();
 
     double resolution = 10;
@@ -147,8 +146,7 @@ void ResolutionTrimFileExample()
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
-        FileWriter writer("test/data/autzen-resolution-trimmed.copc.laz", cfg, reader.GetCopcHeader().span,
-                          reader.GetWkt());
+        FileWriter writer("autzen-resolution-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
 
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
@@ -166,7 +164,7 @@ void ResolutionTrimFileExample()
     }
 
     // Now, let's test our new file
-    FileReader new_reader("test/data/autzen-resolution-trimmed.copc.laz");
+    FileReader new_reader("autzen-resolution-trimmed.copc.laz");
 
     auto new_header = new_reader.GetLasHeader();
     auto new_copc_info = new_reader.GetCopcHeader();
