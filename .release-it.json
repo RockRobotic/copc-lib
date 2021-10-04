@@ -1,7 +1,8 @@
 {
   "github": {
     "release": true,
-    "releaseName": "Version ${version}"
+    "releaseName": "Version ${version}",
+    "releaseNotes": ".github/workflows/generate-release-notes.sh ${latestVersion} ${version}"
   },
   "git": {
     "commitMessage": "[RELEASE]: copc-lib v${version}"
@@ -9,6 +10,11 @@
   "plugins": {
     "@release-it/bumper": {
       "out": [ "setup.py", "CMakeLists.txt" ]
+    },
+    "@release-it/keep-a-changelog": {
+      "filename": "CHANGELOG.md",
+      "addUnreleased": true,
+      "addVersionUrl": true
     }
   }
 }
