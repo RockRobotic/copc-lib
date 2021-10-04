@@ -13,9 +13,20 @@ namespace copc::las
 using WktVlr = lazperf::wkt_vlr;
 using CopcInfoVlr = lazperf::copc_info_vlr;
 using EbVlr = lazperf::eb_vlr;
-using VlrHeader = lazperf::vlr_header;
-using EvlrHeader = lazperf::evlr_header;
 using CopcExtentsVlr = lazperf::copc_extents_vlr;
+
+class VlrHeader : public lazperf::evlr_header
+{
+  public:
+    bool evlr_flag;
+
+    VlrHeader(const lazperf::evlr_header &evlr_header) : evlr_flag(true), lazperf::evlr_header(evlr_header){};
+    VlrHeader(const lazperf::vlr_header &vlr_header);
+    VlrHeader(const VlrHeader &vlr_header);
+
+    lazperf::vlr_header ToLazperfVlrHeader() const;
+    lazperf::evlr_header ToLazperfEvlrHeader() const;
+};
 
 } // namespace copc::las
 

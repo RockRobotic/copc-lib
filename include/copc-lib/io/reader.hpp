@@ -54,18 +54,18 @@ class Reader : public BaseIO
 
     // Constructor helper function, initializes the file and hierarchy
     void InitReader();
-    // Reads file VLRs into vlrs_
+    // Reads file VLRs and EVLRs into vlrs_
     std::map<uint64_t, las::VlrHeader> ReadVlrHeaders();
-    // Reads file EVLRs into evlrs_
-    std::map<uint64_t, las::EvlrHeader> ReadEvlrHeaders();
+    // Fetchs the map key for a query vlr user and record IDs
+    uint64_t FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id, uint16_t record_id);
     // Finds and loads the COPC vlr
-    las::CopcInfoVlr ReadCopcInfo();
+    las::CopcInfoVlr ReadCopcInfoVlr();
     // Finds and loads the COPC vlr
-    CopcExtents ReadCopcExtents(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr);
+    CopcExtents ReadCopcExtentsVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr);
     // Finds and loads the WKT vlr
-    las::WktVlr ReadWktData(const std::map<uint64_t, las::VlrHeader> &vlrs);
-    // finds and loads EB vlr
-    las::EbVlr ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
+    las::WktVlr ReadWKTVlr(const std::map<uint64_t, las::VlrHeader> &vlrs);
+    // Finds and loads EB vlr
+    las::EbVlr ReadExtraBytesVlr(const std::map<uint64_t, las::VlrHeader> &vlrs);
 
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override;
 };

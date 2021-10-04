@@ -4,6 +4,7 @@
 #include <copc-lib/laz/decompressor.hpp>
 
 #include <lazperf/readers.hpp>
+#include <lazperf/vlr.hpp>
 
 namespace copc
 {
@@ -20,17 +21,15 @@ void Reader::InitReader()
 
     // Load vlrs and evlrs
     auto vlrs = ReadVlrHeaders();
-    auto evlrs = ReadEvlrHeaders();
 
-    auto copc_info = ReadCopcInfo();
-    auto wkt = ReadWktData(vlrs);
-    auto eb = ReadExtraByteVlr(vlrs);
-    auto copc_extents = ReadCopcExtents(vlrs, eb);
+    auto copc_info = ReadCopcInfoVlr();
+    auto wkt = ReadWKTVlr(vlrs);
+    auto eb = ReadExtraBytesVlr(vlrs);
+    auto copc_extents = ReadCopcExtentsVlr(vlrs, eb);
     //    auto copc_extents = CopcExtents(7,eb.items.size());
 
     file_ = std::make_shared<CopcFile>(header, copc_info, copc_extents, wkt, eb);
     file_->vlrs = vlrs;
-    file_->evlrs = evlrs;
 
     hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
 }
@@ -43,84 +42,87 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
     in_stream_->seekg(reader_->header().header_size);
 
     // Iterate through all vlr's and add them to the `vlrs` list
-    size_t count = 0;
-    while (count < reader_->header().vlr_count && in_stream_->good() && !in_stream_->eof())
+    for (int i = 0; i < reader_->header().vlr_count; i++)
     {
         uint64_t cur_pos = in_stream_->tellg();
-        las::VlrHeader h = las::VlrHeader::create(*in_stream_);
-        out[cur_pos] = h;
+        auto h = las::VlrHeader(lazperf::vlr_header::create(*in_stream_));
+        out.insert({cur_pos, h});
 
         in_stream_->seekg(h.data_length, std::ios::cur); // jump foward
-        count++;
     }
-    return out;
-}
 
-std::map<uint64_t, las::EvlrHeader> Reader::ReadEvlrHeaders()
-{
-    std::map<uint64_t, las::EvlrHeader> out;
-
-    // Move stream to beginning of VLRs
+    // Move stream to beginning of EVLRs
     in_stream_->seekg(reader_->header().evlr_offset);
 
-    // Iterate through all evlr's and add them to the `evlrs` list
-    size_t count = 0;
-
-    while (count < reader_->header().evlr_count && in_stream_->good() && !in_stream_->eof())
+    // Iterate through all vlr's and add them to the `vlrs` list
+    for (int i = 0; i < reader_->header().evlr_count; i++)
     {
         uint64_t cur_pos = in_stream_->tellg();
-        las::EvlrHeader h = las::EvlrHeader::create(*in_stream_);
-        out[cur_pos] = h;
+        auto h = las::VlrHeader(lazperf::evlr_header::create(*in_stream_));
+        out.insert({cur_pos, h});
 
         in_stream_->seekg(h.data_length, std::ios::cur); // jump foward
-        count++;
     }
+
     return out;
 }
 
-las::CopcInfoVlr Reader::ReadCopcInfo()
+las::CopcInfoVlr Reader::ReadCopcInfoVlr()
 {
     in_stream_->seekg(COPC_OFFSET);
-    auto copc_info = las::CopcInfoVlr::create(*in_stream_);
-    //    auto copc_info_old = lazperf::copc_vlr::create(*in_stream_);
-    //
-    //    las::CopcInfoVlr copc_info;
-    //    copc_info.root_hier_size = copc_info_old.root_hier_size;
-    //    copc_info.root_hier_offset = copc_info_old.root_hier_offset;
-    //    copc_info.spacing = 16;
-
-    return copc_info;
+    return las::CopcInfoVlr::create(*in_stream_);
 }
 
-CopcExtents Reader::ReadCopcExtents(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr)
+CopcExtents Reader::ReadCopcExtentsVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr)
 {
+    auto offset = FetchVlr(vlrs, "copc", 10000);
+    auto pair = vlrs.find(offset);
 
-    // TODO[Leo]: (Extents) Update this once we have updated copc test file
-    if (reader_->header().point_format_id < 6 || reader_->header().point_format_id > 8)
-        return {7, static_cast<uint16_t>(eb_vlr.items.size())};
-
-    for (auto &[offset, vlr_header] : vlrs)
+    if (pair != vlrs.end())
     {
-        if (vlr_header.user_id == "copc" && vlr_header.record_id == 10000)
-        {
-            in_stream_->seekg(offset + las::VlrHeader::Size);
-            return CopcExtents(las::CopcExtentsVlr::create(*in_stream_, vlr_header.data_length),
-                               static_cast<int8_t>(reader_->header().point_format_id),
-                               static_cast<uint16_t>(eb_vlr.items.size()));
-        }
+        in_stream_->seekg(offset + lazperf::vlr_header::Size);
+        return CopcExtents(las::CopcExtentsVlr::create(*in_stream_, pair->second.data_length),
+                           static_cast<int8_t>(reader_->header().point_format_id),
+                           static_cast<uint16_t>(eb_vlr.items.size()));
     }
     return CopcExtents(static_cast<int8_t>(reader_->header().point_format_id),
                        static_cast<uint16_t>(eb_vlr.items.size()));
 }
 
-las::WktVlr Reader::ReadWktData(const std::map<uint64_t, las::VlrHeader> &vlrs)
+las::WktVlr Reader::ReadWKTVlr(const std::map<uint64_t, las::VlrHeader> &vlrs)
+{
+    auto offset = FetchVlr(vlrs, "LASF_Projection", 2112);
+    auto pair = vlrs.find(offset);
+
+    if (pair != vlrs.end())
+    {
+        in_stream_->seekg(offset + lazperf::vlr_header::Size);
+        return las::WktVlr::create(*in_stream_, pair->second.data_length);
+    }
+    return {};
+}
+
+las::EbVlr Reader::ReadExtraBytesVlr(const std::map<uint64_t, las::VlrHeader> &vlrs)
+{
+    auto offset = FetchVlr(vlrs, "LASF_Spec", 4);
+    auto pair = vlrs.find(offset);
+
+    if (pair != vlrs.end())
+    {
+        in_stream_->seekg(offset + lazperf::vlr_header::Size);
+        return las::EbVlr::create(*in_stream_, pair->second.data_length);
+    }
+    return {};
+}
+
+uint64_t Reader::FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
+                          uint16_t record_id)
 {
     for (auto &[offset, vlr_header] : vlrs)
     {
-        if (vlr_header.user_id == "LASF_Projection" && vlr_header.record_id == 2112)
+        if (vlr_header.user_id == user_id && vlr_header.record_id == record_id)
         {
-            in_stream_->seekg(offset + las::VlrHeader::Size);
-            return las::WktVlr::create(*in_stream_, vlr_header.data_length);
+            return offset;
         }
     }
     return {};
@@ -293,19 +295,6 @@ las::Points Reader::GetPointsWithinBox(const Box &box)
         }
     }
     return out;
-}
-
-las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
-{
-    for (auto &[offset, vlr_header] : vlrs)
-    {
-        if (vlr_header.user_id == "LASF_Spec" && vlr_header.record_id == 4)
-        {
-            in_stream_->seekg(offset + las::VlrHeader::Size);
-            return las::EbVlr::create(*in_stream_, vlr_header.data_length);
-        }
-    }
-    return {};
 }
 
 } // namespace copc

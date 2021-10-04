@@ -16,7 +16,6 @@ namespace copc
 class Box;
 namespace las
 {
-using VlrHeader = lazperf::vlr_header;
 // Base class for LasHeaderConfig and LasHeader
 class LasHeaderBase
 {

@@ -3,6 +3,7 @@
 
 #include <lazperf/filestream.hpp>
 #include <lazperf/lazperf.hpp>
+#include <lazperf/vlr.hpp>
 
 #include <copc-lib/copc/extents.hpp>
 #include <copc-lib/io/internal/writer_internal.hpp>
@@ -17,13 +18,13 @@ void WriterInternal::ComputeOffsetLength()
 
     size_t extents_offset =
         CopcExtents::GetByteSize(file_->GetLasHeader().point_format_id, file_->GetExtraBytes().items.size()) +
-        las::VlrHeader::Size;
+        lazperf::vlr_header::Size;
 
-    size_t wkt_offset = file_->GetWkt().size() + las::VlrHeader::Size;
+    size_t wkt_offset = file_->GetWkt().size() + lazperf::vlr_header::Size;
 
     size_t eb_offset = file_->GetExtraBytes().size();
     if (eb_offset > 0)
-        eb_offset += las::VlrHeader::Size;
+        eb_offset += lazperf::vlr_header::Size;
 
     OFFSET_TO_POINT_DATA += extents_offset + wkt_offset + eb_offset;
 }
