@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **[Python/C++]** Add spatial function `Within` to `Point`, `Points`
 - **[Python/C++]** Add query functions `GetNodesWithinBox` and `GetPointsWithinBox` to Reader
 - **[C++]** Support for Windows build
+- **[General]** Add CHANGELOG.md to track changes
 
 ### Changed
 - **[Python]** `VoxelKey` is implicitly convertible to a python tuple
