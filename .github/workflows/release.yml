@@ -18,7 +18,7 @@ jobs:
         run: |
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-      - run: npm install --global release-it @release-it/bumper
+      - run: npm install --global release-it @release-it/bumper @release-it/keep-a-changelog
       - run: release-it --ci --increment "${{ github.event.inputs.releaseLevel }}"
         env:
           GITHUB_TOKEN: ${{ secrets.ADMIN_CI }}
