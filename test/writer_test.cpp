@@ -92,18 +92,18 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             FileWriter writer(file_path, cfg);
 
             auto extents = writer.GetCopcExtents();
-            extents.x.minimum = -1.0;
-            extents.x.maximum = 1;
+            extents.X()->minimum = -1.0;
+            extents.X()->maximum = 1;
 
-            extents.y.minimum = -std::numeric_limits<double>::max();
-            extents.y.maximum = std::numeric_limits<double>::max();
+            extents.Y()->minimum = -std::numeric_limits<double>::max();
+            extents.Y()->maximum = std::numeric_limits<double>::max();
 
             writer.SetCopcExtents(extents);
 
-            REQUIRE(writer.GetCopcExtents().x.minimum == extents.x.minimum);
-            REQUIRE(writer.GetCopcExtents().x.maximum == extents.x.maximum);
-            REQUIRE(writer.GetCopcExtents().y.minimum == extents.y.minimum);
-            REQUIRE(writer.GetCopcExtents().y.maximum == extents.y.maximum);
+            REQUIRE(writer.GetCopcExtents().X()->minimum == extents.X()->minimum);
+            REQUIRE(writer.GetCopcExtents().X()->maximum == extents.X()->maximum);
+            REQUIRE(writer.GetCopcExtents().Y()->minimum == extents.Y()->minimum);
+            REQUIRE(writer.GetCopcExtents().Y()->maximum == extents.Y()->maximum);
 
             writer.Close();
 

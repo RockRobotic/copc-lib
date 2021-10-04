@@ -140,12 +140,12 @@ void NewFileExample()
     // Set the COPC Extents
     auto extents = writer.GetCopcExtents();
 
-    extents.x.minimum = cfg.min.x;
-    extents.x.maximum = cfg.max.x;
-    extents.y.minimum = cfg.min.y;
-    extents.y.maximum = cfg.max.y;
-    extents.z.minimum = cfg.min.z;
-    extents.z.maximum = cfg.max.z;
+    extents.X()->minimum = cfg.min.x;
+    extents.X()->maximum = cfg.max.x;
+    extents.Y()->minimum = cfg.min.y;
+    extents.Y()->maximum = cfg.max.y;
+    extents.Z()->minimum = cfg.min.z;
+    extents.Z()->maximum = cfg.max.z;
 
     writer.SetCopcExtents(extents);
 
