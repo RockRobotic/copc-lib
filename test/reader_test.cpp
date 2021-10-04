@@ -21,8 +21,8 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE(copc_info.center_y == 0);
             REQUIRE(copc_info.center_z == 0);
             REQUIRE(copc_info.halfsize == 0);
-            REQUIRE(copc_info.spacing == 0);
-            REQUIRE(copc_info.root_hier_offset == 93169718);
+            REQUIRE(copc_info.spacing == 16.0);
+            REQUIRE(copc_info.root_hier_offset == 94789784);
             REQUIRE(copc_info.root_hier_size == 8896);
         }
 
@@ -30,9 +30,9 @@ TEST_CASE("Reader tests", "[Reader]")
         {
             auto header = reader.GetLasHeader();
             REQUIRE(header.header_size == 375);
-            REQUIRE(header.point_format_id == 3);
+            REQUIRE(header.point_format_id == 7);
             REQUIRE(header.point_count == 10653336);
-            REQUIRE(header.point_record_length == 36);
+            REQUIRE(header.point_record_length == 38);
             REQUIRE(header.NumExtraBytes() == 2);
         }
 
@@ -58,8 +58,8 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE(copc_info.center_y == 0);
             REQUIRE(copc_info.center_z == 0);
             REQUIRE(copc_info.halfsize == 0);
-            REQUIRE(copc_info.spacing == 0);
-            REQUIRE(copc_info.root_hier_offset == 93169718);
+            REQUIRE(copc_info.spacing == 16.0);
+            REQUIRE(copc_info.root_hier_offset == 94789784);
             REQUIRE(copc_info.root_hier_size == 8896);
         }
 
@@ -67,7 +67,7 @@ TEST_CASE("Reader tests", "[Reader]")
         {
             auto header = reader.GetLasHeader();
             REQUIRE(header.header_size == 375);
-            REQUIRE(header.point_format_id == 3);
+            REQUIRE(header.point_format_id == 7);
             REQUIRE(header.point_count == 10653336);
         }
 

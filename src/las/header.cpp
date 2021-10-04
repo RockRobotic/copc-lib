@@ -1,6 +1,7 @@
 #include <copc-lib/las/header.hpp>
 
 #include <cstring>
+#include <limits>
 #include <stdexcept>
 
 #include <copc-lib/geometry/box.hpp>
@@ -70,7 +71,11 @@ lazperf::header14 LasHeader::ToLazPerf() const
     h.vlr_count = vlr_count;
     h.point_format_id = point_format_id;
     h.point_record_length = point_record_length;
-    h.point_count = 0;
+    // Set the legacy point count as per LAS specs
+    if (point_count > (std::numeric_limits<uint32_t>::max)())
+        h.point_count = 0;
+    else
+        h.point_count = (uint32_t)point_count;
     std::fill(h.points_by_return, h.points_by_return + 5, 0); // Fill with zeros
 
     h.offset.x = offset.x;

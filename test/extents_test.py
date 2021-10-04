@@ -30,7 +30,7 @@ def test_copc_extents():
     cfg.extra_bytes = eb_vlr
     writer = copc.FileWriter(file_path, cfg, 256)
 
-    extents = writer.GetCopcExtents()
+    extents = writer.extents
     assert extents.point_format_id == 7
     assert len(extents.extra_bytes) == 1
 
@@ -38,7 +38,7 @@ def test_copc_extents():
 
     reader = copc.FileReader(file_path)
 
-    extents = reader.GetCopcExtents()
+    extents = reader.extents
 
     assert extents.point_format_id == 7
     assert len(extents.extra_bytes) == 1
@@ -46,14 +46,14 @@ def test_copc_extents():
     assert extents.x.minimum == 0
     assert extents.y.minimum == 0
 
-    for extent in extents.GetCopcExtents():
+    for extent in extents.extents:
         assert extent.minimum == 0
         assert extent.maximum == 0
 
     #### Default Extents ####
     writer = copc.FileWriter(file_path, cfg, 256)
 
-    extents = writer.GetCopcExtents()
+    extents = writer.extents
 
     extents.x.minimum = -float_info.max
     extents.x.maximum = float_info.max
@@ -61,13 +61,13 @@ def test_copc_extents():
     extents.extra_bytes[0].minimum = -float_info.max
     extents.extra_bytes[0].maximum = float_info.max
 
-    writer.SetCopcExtents(extents)
+    writer.extents = extents
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
 
-    extents = reader.GetCopcExtents()
+    extents = reader.extents
 
     assert extents.x.minimum == -float_info.max
     assert extents.x.maximum == float_info.max

@@ -26,6 +26,7 @@ void Reader::InitReader()
     auto wkt = ReadWktData(vlrs);
     auto eb = ReadExtraByteVlr(vlrs);
     auto copc_extents = ReadCopcExtents(vlrs, eb);
+    //    auto copc_extents = CopcExtents(7,eb.items.size());
 
     file_ = std::make_shared<CopcFile>(header, copc_info, copc_extents, wkt, eb);
     file_->vlrs = vlrs;
@@ -80,7 +81,14 @@ std::map<uint64_t, las::EvlrHeader> Reader::ReadEvlrHeaders()
 las::CopcInfoVlr Reader::ReadCopcInfo()
 {
     in_stream_->seekg(COPC_OFFSET);
-    las::CopcInfoVlr copc_info = las::CopcInfoVlr::create(*in_stream_);
+    auto copc_info = las::CopcInfoVlr::create(*in_stream_);
+    //    auto copc_info_old = lazperf::copc_vlr::create(*in_stream_);
+    //
+    //    las::CopcInfoVlr copc_info;
+    //    copc_info.root_hier_size = copc_info_old.root_hier_size;
+    //    copc_info.root_hier_offset = copc_info_old.root_hier_offset;
+    //    copc_info.spacing = 16;
+
     return copc_info;
 }
 
@@ -96,11 +104,13 @@ CopcExtents Reader::ReadCopcExtents(const std::map<uint64_t, las::VlrHeader> &vl
         if (vlr_header.user_id == "copc" && vlr_header.record_id == 10000)
         {
             in_stream_->seekg(offset + las::VlrHeader::Size);
-            return {las::CopcExtentsVlr::create(*in_stream_, vlr_header.data_length),
-                    static_cast<int8_t>(reader_->header().point_format_id), static_cast<uint16_t>(eb_vlr.items.size())};
+            return CopcExtents(las::CopcExtentsVlr::create(*in_stream_, vlr_header.data_length),
+                               static_cast<int8_t>(reader_->header().point_format_id),
+                               static_cast<uint16_t>(eb_vlr.items.size()));
         }
     }
-    return {static_cast<int8_t>(reader_->header().point_format_id), static_cast<uint16_t>(eb_vlr.items.size())};
+    return CopcExtents(static_cast<int8_t>(reader_->header().point_format_id),
+                       static_cast<uint16_t>(eb_vlr.items.size()));
 }
 
 las::WktVlr Reader::ReadWktData(const std::map<uint64_t, las::VlrHeader> &vlrs)

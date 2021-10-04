@@ -351,11 +351,11 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<std::string &>())
         .def("Close", &FileReader::Close)
         .def("FindNode", &Reader::FindNode, py::arg("key"))
-        .def("GetWkt", &Reader::GetWkt)
-        .def("GetCopcInfo", &Reader::GetCopcInfo)
-        .def("Extents", &Reader::GetCopcExtents)
-        .def("GetLasHeader", &Reader::GetLasHeader)
-        .def("GetExtraByteVlr", &Reader::GetExtraByteVlr)
+        .def_property_readonly("wkt", &Reader::GetWkt)
+        .def_property_readonly("copc_info_vlr", &Reader::GetCopcInfo)
+        .def_property_readonly("extents", &Reader::GetCopcExtents)
+        .def_property_readonly("las_header", &Reader::GetLasHeader)
+        .def_property_readonly("extra_bytes_vlr", &Reader::GetExtraByteVlr)
         .def("GetPointData", py::overload_cast<const Node &>(&Reader::GetPointData), py::arg("node"))
         .def("GetPointData", py::overload_cast<const VoxelKey &>(&Reader::GetPointData), py::arg("key"))
         .def("GetPoints", py::overload_cast<const Node &>(&Reader::GetPoints), py::arg("node"))
@@ -375,12 +375,11 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const std::string &, Writer::LasHeaderConfig const &, const int &, const std::string &>(),
              py::arg("file_path"), py::arg("config"), py::arg("spacing") = 0, py::arg("wkt") = "")
         .def("FindNode", &Writer::FindNode)
-        .def("GetWkt", &Writer::GetWkt)
-        .def("GetCopcInfo", &Writer::GetCopcInfo)
-        .def("Extents", &Writer::GetCopcExtents)
-        .def("Extents", &Writer::SetCopcExtents)
-        .def("GetLasHeader", &Writer::GetLasHeader)
-        .def("GetExtraByteVlr", &Writer::GetExtraByteVlr)
+        .def_property_readonly("wkt", &Writer::GetWkt)
+        .def_property_readonly("copc_info_vlr", &Writer::GetCopcInfo)
+        .def_property_readonly("las_header", &Writer::GetLasHeader)
+        .def_property_readonly("extra_bytes_vlr", &Writer::GetExtraByteVlr)
+        .def_property("extents", &Writer::GetCopcExtents, &Writer::SetCopcExtents)
         .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &FileWriter::Close)
         .def("AddNode", py::overload_cast<Page &, const VoxelKey &, las::Points &>(&Writer::AddNode), py::arg("page"),
@@ -446,7 +445,7 @@ PYBIND11_MODULE(copclib, m)
                                       h.min, h.evlr_offset, h.evlr_count, h.point_count, h.points_by_return);
             },
             [](py::tuple t) { // __setstate__
-                if (t.size() != 25)
+                if (t.size() != 19)
                     throw std::runtime_error("Invalid state!");
 
                 /* Create a new C++ instance */

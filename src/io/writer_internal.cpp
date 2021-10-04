@@ -12,24 +12,29 @@
 namespace copc::Internal
 {
 
-WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcFile> &file,
-                               std::shared_ptr<Hierarchy> hierarchy)
-    : out_stream_(out_stream), file_(file), hierarchy_(hierarchy)
+void WriterInternal::ComputeOffsetLength()
 {
-    size_t extents_offset = CopcExtents(file_->GetLasHeader().point_format_id, file_->GetExtraBytes().items.size())
-                                .ToCopcExtentsVlr()
-                                .size() +
-                            las::VlrHeader::Size;
 
-    size_t wkt_offset = file_->GetWkt().size();
-    if (wkt_offset > 0)
-        wkt_offset += las::VlrHeader::Size;
+    size_t extents_offset =
+        CopcExtents::GetByteSize(file_->GetLasHeader().point_format_id, file_->GetExtraBytes().items.size()) +
+        las::VlrHeader::Size;
+
+    size_t wkt_offset = file_->GetWkt().size() + las::VlrHeader::Size;
 
     size_t eb_offset = file_->GetExtraBytes().size();
     if (eb_offset > 0)
         eb_offset += las::VlrHeader::Size;
 
     OFFSET_TO_POINT_DATA += extents_offset + wkt_offset + eb_offset;
+}
+
+WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcFile> &file,
+                               std::shared_ptr<Hierarchy> hierarchy)
+    : out_stream_(out_stream), file_(file), hierarchy_(hierarchy)
+{
+    // Update OFFSET_TO_POINT_DATA based on WKT and Extents
+    ComputeOffsetLength();
+
     // reserve enough space for the header & VLRs in the file
     char out_arr[FIRST_CHUNK_OFFSET()];
     std::memset(out_arr, 0, sizeof(out_arr));
@@ -64,16 +69,12 @@ void WriterInternal::WriteHeader(las::LasHeader &header)
 {
     laz_vlr lazVlr(header.point_format_id, header.NumExtraBytes(), VARIABLE_CHUNK_SIZE);
 
-    header.vlr_count = 3; // copc_info + copc_extent + laz
+    header.vlr_count = 4; // copc_info + copc_extent + laz + wkt
 
     header.point_offset = OFFSET_TO_POINT_DATA;
     header.point_count = point_count_;
 
     if (header.NumExtraBytes())
-    {
-        header.vlr_count++;
-    }
-    if (!file_->GetWkt().empty())
     {
         header.vlr_count++;
     }
@@ -103,13 +104,10 @@ void WriterInternal::WriteHeader(las::LasHeader &header)
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
 
-    // Write optional WKT VLR
-    if (!file_->GetWkt().empty())
-    {
-        lazperf::wkt_vlr wkt_vlr(file_->GetWkt());
-        wkt_vlr.header().write(out_stream_);
-        wkt_vlr.write(out_stream_);
-    }
+    // Write WKT VLR
+    lazperf::wkt_vlr wkt_vlr(file_->GetWkt());
+    wkt_vlr.header().write(out_stream_);
+    wkt_vlr.write(out_stream_);
 
     // Write optional Extra Byte VLR
     if (header.NumExtraBytes())

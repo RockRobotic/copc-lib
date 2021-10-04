@@ -45,6 +45,9 @@ class CopcExtents
     // Return the total number of extents
     static int NumberOfExtents(int8_t point_format_id, uint16_t num_extra_bytes);
 
+    // Return the size in bytes of the extents
+    static size_t GetByteSize(int8_t point_format_id, uint16_t num_extra_bytes);
+
     int8_t point_format_id;
     CopcExtent x{};
     CopcExtent y{};

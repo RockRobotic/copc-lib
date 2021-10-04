@@ -6,21 +6,21 @@ def reader_example():
     reader = copc.FileReader("../test/data/autzen-classified.copc.laz")
 
     # We can get the CopcData struct
-    copc_vlr = reader.GetCopcInfo()
+    copc_vlr = reader.copc_info_vlr
     print("CopcData: ")
     print("\tSpacing: %d" % copc_vlr.spacing)
     print("\tRoot Offset: %d" % copc_vlr.root_hier_offset)
     print("\tRoot Size: %d" % copc_vlr.root_hier_size)
 
     # Get the Las Header
-    las_header = reader.GetLasHeader()
+    las_header = reader.las_header
     print()
     print("Las Header:")
     print("\tPoint Format: %d" % las_header.point_format_id)
     print("\tPoint Count: %d" % las_header.point_count)
 
     # Get the WKT string
-    print("WKT: %s" % reader.GetWkt())
+    print("WKT: %s" % reader.wkt)
 
     load_key = (4, 11, 9, 0)
 

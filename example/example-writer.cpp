@@ -16,7 +16,7 @@ using namespace std;
 void TrimFileExample(bool compressor_example_flag)
 {
     // We'll get our point data from this file
-    FileReader reader("test/data/autzen-classified-new.copc.laz");
+    FileReader reader("test/data/autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
 
     {

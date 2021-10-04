@@ -11,7 +11,7 @@ def test_writer_config():
     cfg = copc.LasHeaderConfig(6)
     writer = copc.FileWriter(file_path, cfg)
 
-    las_header = writer.GetLasHeader()
+    las_header = writer.las_header
     assert las_header.scale == [0.01, 0.01, 0.01]
     assert las_header.offset == [0.0, 0.0, 0.0]
     assert las_header.point_format_id == 6
@@ -49,7 +49,7 @@ def test_writer_config():
 
     writer = copc.FileWriter(file_path, cfg)
 
-    las_header = writer.GetLasHeader()
+    las_header = writer.las_header
     assert las_header.file_source_id == 200
     assert las_header.point_format_id == 8
     assert las_header.scale == [2.0, 3.0, 4.0]
@@ -60,21 +60,21 @@ def test_writer_config():
     # COPC Spacing
 
     cfg = copc.LasHeaderConfig(6)
-    writer = copc.FileWriter(file_path, cfg, 256)
+    writer = copc.FileWriter(file_path, cfg, 10)
 
     # todo: use Reader to check all of these
-    assert writer.GetCopcInfo().spacing == 256
+    assert writer.copc_info_vlr.spacing == 10
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcInfo().spacing == 256
+    assert reader.copc_info_vlr.spacing == 10
 
     # Extents
     cfg = copc.LasHeaderConfig(6)
     writer = copc.FileWriter(file_path, cfg)
 
-    extents = writer.GetCopcExtents()
+    extents = writer.extents
 
     extents.x.minimum = -1.0
     extents.x.maximum = 1
@@ -82,55 +82,54 @@ def test_writer_config():
     extents.y.minimum = -float_info.max
     extents.y.maximum = float_info.max
 
-    writer.SetCopcExtents(extents)
+    writer.extents = extents
 
-    assert writer.GetCopcExtents().x.minimum == extents.x.minimum
-    assert writer.GetCopcExtents().x.maximum == extents.x.maximum
-    assert writer.GetCopcExtents().y.minimum == extents.y.minimum
-    assert writer.GetCopcExtents().y.maximum == extents.y.maximum
+    assert writer.extents.x.minimum == extents.x.minimum
+    assert writer.extents.x.maximum == extents.x.maximum
+    assert writer.extents.y.minimum == extents.y.minimum
+    assert writer.extents.y.maximum == extents.y.maximum
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcExtents().x.minimum == extents.x.minimum
-    assert reader.GetCopcExtents().x.maximum == extents.x.maximum
-    assert reader.GetCopcExtents().y.minimum == extents.y.minimum
-    assert reader.GetCopcExtents().y.maximum == extents.y.maximum
+    assert reader.extents.x.minimum == extents.x.minimum
+    assert reader.extents.x.maximum == extents.x.maximum
+    assert reader.extents.y.minimum == extents.y.minimum
+    assert reader.extents.y.maximum == extents.y.maximum
 
     # WKT
     cfg = copc.LasHeaderConfig(6)
     writer = copc.FileWriter(file_path, cfg, 256, "TEST_WKT")
 
-    # todo: use Reader to check all of these
-    assert writer.GetWkt() == "TEST_WKT"
+    assert writer.wkt == "TEST_WKT"
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetWkt() == "TEST_WKT"
+    assert reader.wkt == "TEST_WKT"
 
     # Copy
     # TODO[Leo]: (Extents) Update this once we have updated copc test file
     # orig = copc.FileReader("data/autzen-classified.copc.laz")
     #
-    # cfg = copc.LasHeaderConfig(orig.GetLasHeader(), orig.GetExtraByteVlr())
+    # cfg = copc.LasHeaderConfig(orig.las_header, orig.extra_bytes_vlr)
     # writer = copc.FileWriter(file_path, cfg)
     # writer.Close()
     #
     # reader = copc.FileReader(file_path)
-    # assert reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id
-    # assert reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding
-    # assert reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day
-    # assert reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year
-    # assert reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id
-    # assert reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id
+    # assert reader.las_header.file_source_id == orig.las_header.file_source_id
+    # assert reader.las_header.global_encoding == orig.las_header.global_encoding
+    # assert reader.las_header.creation_day == orig.las_header.creation_day
+    # assert reader.las_header.creation_year == orig.las_header.creation_year
+    # assert reader.las_header.file_source_id == orig.las_header.file_source_id
+    # assert reader.las_header.point_format_id == orig.las_header.point_format_id
     # assert (
-    #     reader.GetLasHeader().point_record_length
-    #     == orig.GetLasHeader().point_record_length
+    #     reader.las_header.point_record_length
+    #     == orig.las_header.point_record_length
     # )
-    # assert reader.GetLasHeader().point_count == 0
-    # assert reader.GetLasHeader().scale == reader.GetLasHeader().scale
-    # assert reader.GetLasHeader().offset == reader.GetLasHeader().offset
+    # assert reader.las_header.point_count == 0
+    # assert reader.las_header.scale == reader.las_header.scale
+    # assert reader.las_header.offset == reader.las_header.offset
 
     # Update
     min1 = (-800, 300, 800)
@@ -144,10 +143,9 @@ def test_writer_config():
     cfg.max = max1
     writer = copc.FileWriter(file_path, cfg, 256, "TEST_WKT")
 
-    # todo: use Reader to check all of these
-    assert writer.GetLasHeader().min == min1
-    assert writer.GetLasHeader().max == max1
-    assert writer.GetLasHeader().points_by_return_14 == [0] * 15
+    assert writer.las_header.min == min1
+    assert writer.las_header.max == max1
+    assert writer.las_header.points_by_return == [0] * 15
 
     with pytest.raises(TypeError):
         writer.SetPointsByReturn([20] * 800)
@@ -156,16 +154,16 @@ def test_writer_config():
     writer.SetMax(max2)
     writer.SetPointsByReturn(points_by_return)
 
-    assert writer.GetLasHeader().min == min2
-    assert writer.GetLasHeader().max == max2
-    assert writer.GetLasHeader().points_by_return_14 == points_by_return
+    assert writer.las_header.min == min2
+    assert writer.las_header.max == max2
+    assert writer.las_header.points_by_return == points_by_return
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetLasHeader().min == min2
-    assert reader.GetLasHeader().max == max2
-    assert reader.GetLasHeader().points_by_return_14 == points_by_return
+    assert reader.las_header.min == min2
+    assert reader.las_header.max == max2
+    assert reader.las_header.points_by_return == points_by_return
 
 
 def test_writer_pages():
@@ -190,8 +188,8 @@ def test_writer_pages():
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcInfo().root_hier_offset > 0
-    assert reader.GetCopcInfo().root_hier_size == 0
+    assert reader.copc_info_vlr.root_hier_offset > 0
+    assert reader.copc_info_vlr.root_hier_size == 0
     assert not reader.FindNode(key=copc.VoxelKey().InvalidKey()).IsValid()
 
     # Nested page
@@ -211,8 +209,8 @@ def test_writer_pages():
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.GetCopcInfo().root_hier_offset > 0
-    assert reader.GetCopcInfo().root_hier_size == 32
+    assert reader.copc_info_vlr.root_hier_offset > 0
+    assert reader.copc_info_vlr.root_hier_size == 32
     assert not reader.FindNode(copc.VoxelKey().InvalidKey()).IsValid()
 
 
@@ -223,7 +221,7 @@ def test_writer_pages():
 #
 #     reader = copc.FileReader("data/autzen-classified.copc.laz")
 #
-#     cfg = copc.LasHeaderConfig(reader.GetLasHeader(), reader.GetExtraByteVlr())
+#     cfg = copc.LasHeaderConfig(reader.las_header, reader.extra_bytes_vlr)
 #     writer = copc.FileWriter(file_path, cfg)
 #
 #     root_page = writer.GetRootPage()

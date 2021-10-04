@@ -8,25 +8,24 @@ def test_reader():
     reader = copc.FileReader("data/autzen-classified.copc.laz")
 
     # GetLasHeader Test
-    copc_info = reader.GetCopcInfo()
+    copc_info = reader.copc_info_vlr
     assert copc_info.center_x == 0
     assert copc_info.center_y == 0
     assert copc_info.center_z == 0
     assert copc_info.halfsize == 0
-    assert copc_info.spacing == 0
-    assert copc_info.root_hier_offset == 93169718
+    assert copc_info.spacing == 16.0
+    assert copc_info.root_hier_offset == 94789784
     assert copc_info.root_hier_size == 8896
 
     # GetLasHeader Test
-    header = reader.GetLasHeader()
-    assert header.header_size == 375
-    assert header.point_format_id == 3
+    header = reader.las_header
+    assert header.point_format_id == 7
     assert header.point_count == 10653336
-    assert header.point_record_length == 36
+    assert header.point_record_length == 38
     assert header.num_extra_bytes == 2
 
     # WKT Test
-    wkt = reader.GetWkt()
+    wkt = reader.wkt
     assert len(wkt) > 0
     assert wkt.startswith("COMPD_CS[")
 
@@ -65,7 +64,7 @@ def test_get_all_children():
     nodes = reader.GetAllChildren((5, 9, 7, 0))
     assert len(nodes) == 1
     assert nodes[0].IsValid()
-    assert nodes[0].key == [5, 9, 7, 0]  # Test implicit conversion of key to list
+    assert nodes[0].key == (5, 9, 7, 0)  # Test implicit conversion of key to tuple
 
     # Get a non-existing key
     nodes = reader.GetAllChildren((20, 20, 20, 20))
@@ -76,7 +75,7 @@ def test_get_all_children():
 
 # def test_get_all_points():
 #     reader = copc.FileReader("data/autzen-classified.copc.laz")
-#     assert len(reader.GetAllPoints()) == reader.GetLasHeader().point_count
+#     assert len(reader.GetAllPoints()) == reader.las_header.point_count
 
 
 def test_point_error_handling():
@@ -132,7 +131,7 @@ def test_spatial_query_functions():
 
     # TODO[Leo]: Make this test optional
     ## Check that all points fit in a box sized from header
-    # header = reader.GetLasHeader()
+    # header = reader.las_header
     # subset_points = reader.GetPointsWithinBox(
     #     copc.Box(
     #         math.floor(header.min.x),

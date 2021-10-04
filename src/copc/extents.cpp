@@ -27,15 +27,15 @@ CopcExtent::CopcExtent(const las::CopcExtentsVlr::CopcExtent &other)
         throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
 }
 
-CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_extra_bytes)
-    : point_format_id(point_format_id), extra_bytes(num_extra_bytes, {0, 0})
+CopcExtents::CopcExtents(int8_t point_format_id, uint16_t eb_count)
+    : point_format_id(point_format_id), extra_bytes(eb_count, {0, 0})
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 }
 
-CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_extra_bytes)
-    : point_format_id(point_format_id), extra_bytes(num_extra_bytes, {0, 0})
+CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t eb_count)
+    : point_format_id(point_format_id), extra_bytes(eb_count, {0, 0})
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
@@ -180,9 +180,14 @@ std::vector<CopcExtent> CopcExtents::Extents() const
     return extents;
 }
 
-int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_extra_bytes)
+int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t eb_count)
 {
-    return las::PointBaseNumberDimensions(point_format_id) + num_extra_bytes;
+    return las::PointBaseNumberDimensions(point_format_id) + eb_count;
+}
+
+size_t CopcExtents::GetByteSize(int8_t point_format_id, uint16_t eb_count)
+{
+    return CopcExtents(point_format_id, eb_count).ToCopcExtentsVlr().size();
 }
 
 } // namespace copc
