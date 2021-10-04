@@ -5,7 +5,7 @@ import random
 
 def test_points_constructor():
     points = copc.Points(
-        3, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset(), 4
+        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
     assert points.PointFormatID == 3
     assert points.PointRecordLength == 38
@@ -13,8 +13,8 @@ def test_points_constructor():
 
     point1 = copc.Points(
         3,
-        copc.Vector3().DefaultScale(),
-        copc.Vector3().DefaultOffset(),
+        copc.Vector3.DefaultScale(),
+        copc.Vector3.DefaultOffset(),
         num_extra_bytes=4,
     ).CreatePoint()
     point1.UnscaledX = 11
@@ -25,14 +25,14 @@ def test_points_constructor():
         point1,
         copc.Points(
             3,
-            copc.Vector3().DefaultScale(),
-            copc.Vector3().DefaultOffset(),
+            copc.Vector3.DefaultScale(),
+            copc.Vector3.DefaultOffset(),
             num_extra_bytes=4,
         ).CreatePoint(),
         copc.Points(
             3,
-            copc.Vector3().DefaultScale(),
-            copc.Vector3().DefaultOffset(),
+            copc.Vector3.DefaultScale(),
+            copc.Vector3.DefaultOffset(),
             num_extra_bytes=4,
         ).CreatePoint(),
     ]
@@ -51,12 +51,12 @@ def test_points_constructor():
 
 def test_adding_point_to_points():
     points = copc.Points(
-        3, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset(), 0
+        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 0
     )
     point = copc.Points(
         3,
-        copc.Vector3().DefaultScale(),
-        copc.Vector3().DefaultOffset(),
+        copc.Vector3.DefaultScale(),
+        copc.Vector3.DefaultOffset(),
         num_extra_bytes=0,
     ).CreatePoint()
     point.UnscaledX = 11
@@ -72,8 +72,8 @@ def test_adding_point_to_points():
 
     point = copc.Points(
         3,
-        copc.Vector3().DefaultScale(),
-        copc.Vector3().DefaultOffset(),
+        copc.Vector3.DefaultScale(),
+        copc.Vector3.DefaultOffset(),
         num_extra_bytes=0,
     ).CreatePoint()
     point.UnscaledX = 22
@@ -89,8 +89,8 @@ def test_adding_point_to_points():
     # Test check on point format
     point = copc.Points(
         6,
-        copc.Vector3().DefaultScale(),
-        copc.Vector3().DefaultOffset(),
+        copc.Vector3.DefaultScale(),
+        copc.Vector3.DefaultOffset(),
         num_extra_bytes=0,
     ).CreatePoint()
     with pytest.raises(RuntimeError):
@@ -99,8 +99,8 @@ def test_adding_point_to_points():
     # Test check on extra bytes
     point = copc.Points(
         3,
-        copc.Vector3().DefaultScale(),
-        copc.Vector3().DefaultOffset(),
+        copc.Vector3.DefaultScale(),
+        copc.Vector3.DefaultOffset(),
         num_extra_bytes=1,
     ).CreatePoint()
     with pytest.raises(RuntimeError):
@@ -112,8 +112,8 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 3,
-                copc.Vector3().DefaultScale(),
-                copc.Vector3().DefaultOffset(),
+                copc.Vector3.DefaultScale(),
+                copc.Vector3.DefaultOffset(),
                 num_extra_bytes=4,
             ).CreatePoint()
             for _ in range(10)
@@ -123,8 +123,8 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 3,
-                copc.Vector3().DefaultScale(),
-                copc.Vector3().DefaultOffset(),
+                copc.Vector3.DefaultScale(),
+                copc.Vector3.DefaultOffset(),
                 num_extra_bytes=4,
             ).CreatePoint()
             for _ in range(10)
@@ -140,8 +140,8 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 6,
-                copc.Vector3().DefaultScale(),
-                copc.Vector3().DefaultOffset(),
+                copc.Vector3.DefaultScale(),
+                copc.Vector3.DefaultOffset(),
                 num_extra_bytes=4,
             ).CreatePoint()
             for _ in range(10)
@@ -155,8 +155,8 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 3,
-                copc.Vector3().DefaultScale(),
-                copc.Vector3().DefaultOffset(),
+                copc.Vector3.DefaultScale(),
+                copc.Vector3.DefaultOffset(),
                 num_extra_bytes=1,
             ).CreatePoint()
             for _ in range(10)
@@ -171,8 +171,8 @@ def test_points_format_conversion():
         [
             copc.Points(
                 3,
-                copc.Vector3().DefaultScale(),
-                copc.Vector3().DefaultOffset(),
+                copc.Vector3.DefaultScale(),
+                copc.Vector3.DefaultOffset(),
                 num_extra_bytes=4,
             ).CreatePoint()
             for _ in range(10)
@@ -214,7 +214,7 @@ def test_points_iterator():
 
 def test_points_group_accessors():
     points = copc.Points(
-        3, copc.Vector3().DefaultScale(), copc.Vector3().DefaultOffset(), 4
+        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
 
     # generate points

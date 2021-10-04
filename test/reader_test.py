@@ -34,7 +34,7 @@ def test_find_key():
     # Given a valid file path
     reader = copc.FileReader("data/autzen-classified.copc.laz")
 
-    key = copc.VoxelKey().BaseKey()
+    key = copc.VoxelKey.BaseKey()
     hier_entry = reader.FindNode(key)
 
     assert hier_entry.IsValid() == True
@@ -57,7 +57,7 @@ def test_get_all_children():
     assert len(nodes) == 278
 
     # Get an invalid key
-    nodes = reader.GetAllChildren(copc.VoxelKey().InvalidKey())
+    nodes = reader.GetAllChildren(copc.VoxelKey.InvalidKey())
     assert len(nodes) == 0
 
     # Get an existing key
@@ -109,11 +109,11 @@ def test_spatial_query_functions():
     # GetNodesWithinBox
 
     ## Check that no nodes fit in a zero-sized box
-    subset_nodes = reader.GetNodesWithinBox(copc.Box().ZeroBox())
+    subset_nodes = reader.GetNodesWithinBox(copc.Box.ZeroBox())
     assert len(subset_nodes) == 0
 
     ## Check that all nodes fit in a max-sized box
-    subset_nodes = reader.GetNodesWithinBox(copc.Box().MaxBox())
+    subset_nodes = reader.GetNodesWithinBox(copc.Box.MaxBox())
     all_nodes = reader.GetAllChildren()
     assert len(subset_nodes) == len(all_nodes)
 
@@ -126,7 +126,7 @@ def test_spatial_query_functions():
     # GetPointsWithinBox
 
     ## Check that no points fit in a zero-sized box
-    subset_points = reader.GetPointsWithinBox(copc.Box().ZeroBox())
+    subset_points = reader.GetPointsWithinBox(copc.Box.ZeroBox())
     assert len(subset_points) == 0
 
     # TODO[Leo]: Make this test optional
