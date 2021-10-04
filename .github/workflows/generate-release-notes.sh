@@ -8,7 +8,7 @@ try:
         changelogContent = file.read()
 
     unreleasedTitle = "## [Unreleased]"
-    previousReleaseTitle = "$1"[1:]
+    previousReleaseTitle = "$1"
     previousReleaseTitle = "## [%s]" % (previousReleaseTitle)
     startIndex = changelogContent.index(unreleasedTitle) + len(unreleasedTitle)
     endIndex = changelogContent.index(previousReleaseTitle, startIndex)
@@ -22,6 +22,6 @@ END
 echo
 echo "<details> <summary>Commit History</summary>"
 echo
-git log --pretty=format:"* %s (%h)" $1...HEAD
+git log --pretty=format:"* %s (%h)" v$1...HEAD
 echo
 echo "</details>"
