@@ -48,6 +48,7 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.point_count_14 = header.point_count_14;
     std::copy(std::begin(header.points_by_return_14), std::end(header.points_by_return_14),
               std::begin(h.points_by_return_14));
+
     return h;
 }
 lazperf::header14 LasHeader::ToLazPerf() const

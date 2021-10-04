@@ -2,7 +2,18 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1  # Use the ref you want to point at
     hooks:
-    -   id: end-of-file-fixer
+    - id: trailing-whitespace
+      name: (Common) Remove trailing whitespaces
+    - id: end-of-file-fixer
+      name: (Common) Remove extra EOF newlines
+    - id: check-yaml
+      name: (YAML) Check syntax
+
+-   repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.7
+    hooks:
+      - id: mdformat
+        name: (Markdown) Format with mdformat
 
 -   repo: git://github.com/pocc/pre-commit-hooks
     rev: v1.3.4

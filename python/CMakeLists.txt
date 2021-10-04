@@ -9,7 +9,7 @@ pybind11_add_module(${COPC_PYTHON_LIB} bindings.cpp)
 target_link_libraries(${COPC_PYTHON_LIB} PRIVATE COPCLIB::copc-lib)
 
 if(WITH_TESTS_AND_EXAMPLES)
-    set_target_properties(${COPC_PYTHON_LIB} PROPERTIES 
+    set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
                                                         # have the python lib output to the python build dir
                                                         # not the /lib dir
                                                         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -25,7 +25,7 @@ if(WITH_TESTS_AND_EXAMPLES)
     file(GLOB COPC_PYTHON_FILES
             ${CMAKE_SOURCE_DIR}/test/*.py
             ${CMAKE_SOURCE_DIR}/example/*.py
-    )   
+    )
 
     # copy all the python scripts into the build folder
     foreach(filename ${COPC_PYTHON_FILES})
