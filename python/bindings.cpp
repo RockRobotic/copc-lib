@@ -58,6 +58,8 @@ PYBIND11_MODULE(copclib, m)
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
         .def("Resolution", &VoxelKey::Resolution, py::arg("las_header"), py::arg("copc_header"))
+        .def_static("GetDepthResolution", &VoxelKey::GetDepthResolution, py::arg("depth"), py::arg("las_header"),
+                    py::arg("copc_header"))
         .def("Intersects", &VoxelKey::Intersects)
         .def("Contains", py::overload_cast<const las::LasHeader &, const Box &>(&VoxelKey::Contains, py::const_))
         .def("Contains", py::overload_cast<const las::LasHeader &, const Vector3 &>(&VoxelKey::Contains, py::const_))
@@ -373,12 +375,9 @@ PYBIND11_MODULE(copclib, m)
         .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
         .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren))
         .def("GetAllPoints", &Reader::GetAllPoints)
-        .def("GetNodesWithinBox", &Reader::GetNodesWithinBox, py::arg("box"),
-             py::arg("min_resolution") = std::numeric_limits<double>::min())
-        .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox, py::arg("box"),
-             py::arg("min_resolution") = std::numeric_limits<double>::min())
-        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox, py::arg("box"),
-             py::arg("min_resolution") = std::numeric_limits<double>::min())
+        .def("GetNodesWithinBox", &Reader::GetNodesWithinBox, py::arg("box"), py::arg("min_resolution") = 0)
+        .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox, py::arg("box"), py::arg("min_resolution") = 0)
+        .def("GetPointsWithinBox", &Reader::GetPointsWithinBox, py::arg("box"), py::arg("min_resolution") = 0)
         .def("GetDepthAtResolution", &Reader::GetDepthAtResolution, py::arg("resolution"))
         .def("GetNodesAtResolution", &Reader::GetNodesAtResolution, py::arg("resolution"))
         .def("GetNodesWithinResolution", &Reader::GetNodesWithinResolution, py::arg("resolution"));

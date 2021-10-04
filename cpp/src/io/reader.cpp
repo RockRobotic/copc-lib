@@ -195,9 +195,11 @@ std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double min_resolutio
 
     auto header = GetLasHeader();
     auto copc_info = GetCopcHeader();
+    auto max_depth = GetDepthAtResolution(min_resolution);
+
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Within(header, box) && node.key.Resolution(header, copc_info) >= min_resolution)
+        if (node.key.Within(header, box) && node.key.d <= max_depth)
             out.push_back(node);
     }
 
@@ -210,9 +212,12 @@ std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double min_resolu
 
     auto header = GetLasHeader();
     auto copc_info = GetCopcHeader();
+    auto max_depth = GetDepthAtResolution(min_resolution);
+
+    // Get all nodes in octree
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Intersects(header, box) && node.key.Resolution(header, copc_info) >= min_resolution)
+        if (node.key.Intersects(header, box) && node.key.d <= max_depth)
             out.push_back(node);
     }
 
@@ -223,12 +228,13 @@ las::Points Reader::GetPointsWithinBox(const Box &box, double min_resolution)
 {
     auto header = GetLasHeader();
     auto copc_info = GetCopcHeader();
+    auto max_depth = GetDepthAtResolution(min_resolution);
     auto out = las::Points(header);
 
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Resolution(header, copc_info) >= min_resolution)
+        if (node.key.d <= max_depth)
         {
             // If node fits in Box
             if (node.key.Within(header, box))
@@ -247,21 +253,29 @@ las::Points Reader::GetPointsWithinBox(const Box &box, double min_resolution)
     return out;
 }
 
-int32_t Reader::GetDepthAtResolution(double resolution) const
+int32_t Reader::GetDepthAtResolution(double resolution)
 {
+    // If query resolution is <=0 return the octree's max depth
     if (resolution <= 0)
-        throw std::runtime_error("Reader::GetDepthAtResolution: Query resolution must be greater than 0.");
+    {
+        int32_t max_depth = 0;
+        // Get all nodes in octree
+        for (const auto &node : GetAllChildren())
+        {
+            if (node.key.d > max_depth)
+                max_depth++;
+        }
+        return max_depth;
+    }
     if (GetCopcHeader().span <= 0)
         throw std::runtime_error("Reader::GetDepthAtResolution: Octree span must be greater than 0.");
 
     auto root_resolution = (GetLasHeader().max.x - GetLasHeader().min.x) / GetCopcHeader().span;
-    return static_cast<int32_t>(std::floor(std::max(0.0, std::log(root_resolution / resolution) / std::log(2))));
+    return static_cast<int32_t>(std::ceil(std::max(0.0, std::log(root_resolution / resolution) / std::log(2))));
 }
 
 std::vector<Node> Reader::GetNodesAtResolution(double resolution)
 {
-    if (resolution <= 0)
-        throw std::runtime_error("Query resolution must be greater than 0.");
     auto target_depth = GetDepthAtResolution(resolution);
 
     std::vector<Node> out;
@@ -277,8 +291,6 @@ std::vector<Node> Reader::GetNodesAtResolution(double resolution)
 
 std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
 {
-    if (resolution <= 0)
-        throw std::runtime_error("Query resolution must be greater than 0.");
     auto target_depth = GetDepthAtResolution(resolution);
 
     std::vector<Node> out;

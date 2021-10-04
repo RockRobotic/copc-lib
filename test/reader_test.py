@@ -109,27 +109,30 @@ def test_spatial_query_functions():
 
     reader = copc.FileReader("autzen-classified-new.copc.laz")
 
+    # Make horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    middle = (reader.GetLasHeader().max + reader.GetLasHeader().min) / 2
+    middle_box = (middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200)
+
     # GetNodesWithinBox
 
     ## Check that no nodes fit in a zero-sized box
-    subset_nodes = reader.GetNodesWithinBox(copc.Box().ZeroBox())
+    subset_nodes = reader.GetNodesWithinBox(copc.Box.ZeroBox())
     assert len(subset_nodes) == 0
 
     ## Check that all nodes fit in a max-sized box
-    subset_nodes = reader.GetNodesWithinBox(copc.Box().MaxBox())
+    subset_nodes = reader.GetNodesWithinBox(copc.Box.MaxBox())
     all_nodes = reader.GetAllChildren()
     assert len(subset_nodes) == len(all_nodes)
 
     # GetNodesIntersectBox
 
-    ## Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-    subset_nodes = reader.GetNodesIntersectBox(copc.Box(637190, 851109, 637390, 851309))
+    subset_nodes = reader.GetNodesIntersectBox(middle_box)
     assert len(subset_nodes) == 13
 
     # GetPointsWithinBox
 
     ## Check that no points fit in a zero-sized box
-    subset_points = reader.GetPointsWithinBox(copc.Box().ZeroBox())
+    subset_points = reader.GetPointsWithinBox(copc.Box.ZeroBox())
     assert len(subset_points) == 0
 
     # TODO[Leo]: Make this test optional
@@ -147,23 +150,20 @@ def test_spatial_query_functions():
     # )
     # assert len(subset_points) == header.point_count
 
-    ## Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-    subset_points = reader.GetPointsWithinBox(copc.Box(637190, 851109, 637390, 851309))
-    assert len(subset_points) == 22902
+    subset_points = reader.GetPointsWithinBox(middle_box)
+    assert len(subset_points) == 91178
 
     # GetDepthAtResolution
-    assert reader.GetDepthAtResolution(1) == 3
-    with pytest.raises(RuntimeError):
-        reader.GetDepthAtResolution(0)
+    assert reader.GetDepthAtResolution(1) == 4
+    assert reader.GetDepthAtResolution(0) == 5
 
     # GetNodesAtResolution
     subset_nodes = reader.GetNodesAtResolution(1)
-    assert len(subset_nodes) == 48
-    with pytest.raises(RuntimeError):
-        reader.GetDepthAtResolution(0)
+    assert len(subset_nodes) == 192
+    for node in reader.GetNodesAtResolution(0):
+        assert node.key.d == 5
 
     # GetNodesWithinResolution
     subset_nodes = reader.GetNodesWithinResolution(1)
-    assert len(subset_nodes) == 65
-    with pytest.raises(RuntimeError):
-        reader.GetDepthAtResolution(0)
+    assert len(subset_nodes) == 257
+    assert len(reader.GetNodesWithinResolution(0)) == len(reader.GetAllChildren())

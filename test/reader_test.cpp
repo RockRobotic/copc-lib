@@ -193,6 +193,10 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
 {
     FileReader reader("autzen-classified-new.copc.laz");
 
+    // Make horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    auto middle = (reader.GetLasHeader().max + reader.GetLasHeader().min) / 2;
+    Box middle_box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200);
+
     SECTION("GetNodesWithinBox")
     {
         // Check that no nodes fit in a zero-sized box
@@ -207,8 +211,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
 
     SECTION("GetNodesIntersectBox")
     {
-        // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-        auto subset_nodes = reader.GetNodesIntersectBox(Box(637190, 851109, 637390, 851309));
+        auto subset_nodes = reader.GetNodesIntersectBox(middle_box);
         REQUIRE(subset_nodes.size() == 13);
     }
 
@@ -232,28 +235,29 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
             //            REQUIRE(subset_points.Get().size() == header.point_count);
         } {
             // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-            auto subset_points = reader.GetPointsWithinBox(Box(637190, 851109, 637390, 851309));
-            REQUIRE(subset_points.Get().size() == 22902);
+            auto subset_points = reader.GetPointsWithinBox(middle_box);
+            REQUIRE(subset_points.Get().size() == 91178);
         }
     }
 
     SECTION("GetDepthAtResolution")
     {
-        REQUIRE(reader.GetDepthAtResolution(1) == 3);
-        REQUIRE_THROWS(reader.GetDepthAtResolution(0));
+        REQUIRE(reader.GetDepthAtResolution(1) == 4);
+        REQUIRE(reader.GetDepthAtResolution(0) == 5);
     }
 
     SECTION("GetNodesAtResolution")
     {
         auto subset_nodes = reader.GetNodesAtResolution(1);
-        REQUIRE(subset_nodes.size() == 48);
-        REQUIRE_THROWS(reader.GetDepthAtResolution(0));
+        REQUIRE(subset_nodes.size() == 192);
+        for (const auto &node : reader.GetNodesAtResolution(0))
+            REQUIRE(node.key.d == 5);
     }
 
     SECTION("GetNodesWithinResolution")
     {
         auto subset_nodes = reader.GetNodesWithinResolution(1);
-        REQUIRE(subset_nodes.size() == 65);
-        REQUIRE_THROWS(reader.GetDepthAtResolution(0));
+        REQUIRE(subset_nodes.size() == 257);
+        REQUIRE(reader.GetNodesWithinResolution(0).size() == reader.GetAllChildren().size());
     }
 }

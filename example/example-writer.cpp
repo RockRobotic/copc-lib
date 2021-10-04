@@ -151,9 +151,11 @@ void ResolutionTrimFileExample()
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
 
+        auto max_depth = reader.GetDepthAtResolution(resolution);
+
         for (const auto &node : reader.GetAllChildren())
         {
-            if (node.key.Resolution(writer.GetLasHeader(), writer.GetCopcHeader()) >= resolution)
+            if (node.key.d <= max_depth)
             {
                 writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
             }
@@ -169,11 +171,9 @@ void ResolutionTrimFileExample()
     auto new_header = new_reader.GetLasHeader();
     auto new_copc_info = new_reader.GetCopcHeader();
 
-    // Let's go through each node we've written and make sure the resolution is correct
-    for (const auto &node : new_reader.GetAllChildren())
-    {
-        assert(node.key.Resolution(new_header, new_copc_info) >= resolution);
-    }
+    // Let's make sure the max resolution is at least as much as we requested
+    auto max_depth = new_reader.GetDepthAtResolution(0);
+    assert(VoxelKey::GetDepthResolution(max_depth, new_header, new_copc_info) <= resolution);
 }
 
 // constants

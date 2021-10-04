@@ -145,12 +145,10 @@ def ResolutionTrimFileExample():
 
     # The root page is automatically created and added for us
     root_page = writer.GetRootPage()
+    max_depth = reader.GetDepthAtResolution(resolution)
 
     for node in reader.GetAllChildren():
-        if (
-            node.key.Resolution(writer.GetLasHeader(), writer.GetCopcHeader())
-            >= resolution
-        ):
+        if node.key.d <= max_depth:
             writer.AddNodeCompressed(
                 root_page,
                 node.key,
@@ -166,9 +164,12 @@ def ResolutionTrimFileExample():
 
     new_las_header = new_reader.GetLasHeader()
     new_copc_header = new_reader.GetCopcHeader()
-    # Let's go through each node we've written and make sure the resolution is correct
-    for node in new_reader.GetAllChildren():
-        assert node.key.Resolution(new_las_header, new_copc_header) >= resolution
+    # Let's make sure the max resolution is at least as much as we requested
+    max_depth = new_reader.GetDepthAtResolution(0)
+    assert (
+        copc.VoxelKey.GetDepthResolution(max_depth, new_las_header, new_copc_header)
+        <= resolution
+    )
 
 
 # constants
