@@ -26,7 +26,6 @@ void Reader::InitReader()
     auto wkt = ReadWKTVlr(vlrs);
     auto eb = ReadExtraBytesVlr(vlrs);
     auto copc_extents = ReadCopcExtentsVlr(vlrs, eb);
-    //    auto copc_extents = CopcExtents(7,eb.items.size());
 
     file_ = std::make_shared<CopcFile>(header, copc_info, copc_extents, wkt, eb);
     file_->vlrs = vlrs;
