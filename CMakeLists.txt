@@ -122,6 +122,7 @@ include(AddUninstallTarget)
 
 # Build Submodules
 if (WITH_TESTS_AND_EXAMPLES)
+    set(BaseAutzenFilePath "${CMAKE_SOURCE_DIR}/test/data/autzen-classified.copc.laz") # TEMPORARY!!!!!!!!!!!!!! REMOVE ME
     add_subdirectory(test)
     add_subdirectory(example)
 endif()
