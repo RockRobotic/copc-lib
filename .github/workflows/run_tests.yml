@@ -1,0 +1,70 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, macos-10.15, windows-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - name: Checkout Copclib
+      uses: actions/checkout@v2
+
+    - name: Set up Conda for Python ${{ matrix.python-version }}
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Free up disk space
+      if: ${{ runner.os == 'Linux' }}
+      run: |
+        sudo rm -rf /usr/share/dotnet
+
+    - name: Install dependencies
+      run: |
+        conda install -c conda-forge "laz-perf>=2.1.0" Catch2 pybind11 --yes
+        python -m pip install --upgrade pip
+        pip install pytest wheel
+      shell:
+        bash -l {0}
+
+    - name: Build Copclib Python Bindings
+      run: |
+        pip install .
+      shell:
+        bash -l {0}
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: cmake -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS_AND_EXAMPLES=ON -DWITH_PYTHON=OFF
+      shell:
+        bash -l {0}
+
+    - name: Build
+      # Build your program with the given configuration
+      run: cmake --build "${{github.workspace}}/build" --config ${{env.BUILD_TYPE}}
+      shell:
+        bash -l {0}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+      shell:
+        bash -l {0}

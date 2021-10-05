@@ -12,7 +12,7 @@ TEST_CASE("Reader tests", "[Reader]")
     GIVEN("A valid file path")
     {
 
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         SECTION("GetCopcInfo Test")
         {
@@ -47,7 +47,7 @@ TEST_CASE("Reader tests", "[Reader]")
     GIVEN("A valid input stream")
     {
         fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        in_stream.open("autzen-classified.copc.laz", ios::in | ios::binary);
 
         Reader reader(&in_stream);
 
@@ -84,7 +84,7 @@ TEST_CASE("FindKey Check", "[Reader]")
 {
     GIVEN("A valid file path")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         auto key = VoxelKey::BaseKey();
         auto hier_entry = reader.FindNode(key);
@@ -106,7 +106,7 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader]")
 {
     GIVEN("A valid file path")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         auto eb_vlr = reader.GetExtraByteVlr();
         REQUIRE(eb_vlr.items.size() == 2);
@@ -123,7 +123,7 @@ TEST_CASE("GetAllChildren Test", "[Reader]")
 {
     GIVEN("A valid file path")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         {
             // Get root key
@@ -156,7 +156,7 @@ TEST_CASE("GetAllChildren Test", "[Reader]")
 // TODO[Leo]: Make this test optional
 TEST_CASE("GetAllPoints Test", "[Reader]")
 {
-    //    FileReader reader("test/data/autzen-classified.copc.laz");
+    //    FileReader reader("autzen-classified.copc.laz");
     //    REQUIRE(reader.GetAllPoints().Get().size() == reader.GetLasHeader().point_count);
 }
 
@@ -164,7 +164,7 @@ TEST_CASE("Point Error Handling Test", "[Reader]")
 {
     GIVEN("A valid file path")
     {
-        FileReader reader("test/data/autzen-classified.copc.laz");
+        FileReader reader("autzen-classified.copc.laz");
 
         Node invalid_node;
         REQUIRE_THROWS(reader.GetPointData(invalid_node));
@@ -187,7 +187,7 @@ TEST_CASE("Point Error Handling Test", "[Reader]")
 
 TEST_CASE("Spatial Query Functions", "[Reader]")
 {
-    FileReader reader("test/data/autzen-classified.copc.laz");
+    FileReader reader("autzen-classified.copc.laz");
 
     SECTION("GetNodesWithinBox")
     {
@@ -226,7 +226,8 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
             //                                                               std::ceil(header.max.y),
             //                                                               std::ceil(header.max.z)));
             //            REQUIRE(subset_points.Get().size() == header.point_count);
-        } {
+        }
+        {
             // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
             auto subset_points = reader.GetPointsWithinBox(Box(637190, 851109, 637390, 851309));
             REQUIRE(subset_points.Get().size() == 22902);

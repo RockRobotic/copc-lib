@@ -7,7 +7,7 @@ using namespace std;
 void ReaderExample()
 {
     // Create a reader object
-    FileReader reader("test/data/autzen-classified.copc.laz");
+    FileReader reader("autzen-classified.copc.laz");
 
     // We can get the CopcData struct
     auto copc_vlr = reader.GetCopcInfo();

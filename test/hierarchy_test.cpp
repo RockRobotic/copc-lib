@@ -13,7 +13,7 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
     GIVEN("A valid input stream")
     {
         fstream in_stream;
-        in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+        in_stream.open("autzen-classified.copc.laz", ios::in | ios::binary);
         Reader reader(&in_stream);
 
         auto key = VoxelKey(0, 0, 0, 0);
@@ -42,7 +42,7 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
 // TEST_CASE("LoadChildren Checks", "[Hierarchy]")
 //{
 //    fstream in_stream;
-//    in_stream.open("test/data/autzen-classified.copc.laz", ios::in | ios::binary);
+//    in_stream.open("autzen-classified.copc.laz", ios::in | ios::binary);
 //    io::CopcReader reader(in_stream);
 //
 //    auto copc = reader.GetCopcInfo();

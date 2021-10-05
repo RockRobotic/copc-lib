@@ -1,118 +1,131 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(copc-lib VERSION 1.2.0)
+cmake_minimum_required(VERSION 3.15)
 
-find_package(lazperf REQUIRED)
+# ref https://github.com/robotology/how-to-export-cpp-library/blob/master/CMakeLists.txt
+project(COPCLIB
+        LANGUAGES CXX C
+        VERSION 1.3.0)
 
-set (COPC_SHARED_LIB copc-lib)
-set (COPC_STATIC_LIB copc-lib-s)
-set (COPC_PYTHON_LIB copclib)
+# Defines the CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR and many other useful macros.
+# See https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
+include(GNUInstallDirs)
 
+### Options
+# Shared/Dynamic or Static library?
+option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
+
+option(WITH_TESTS_AND_EXAMPLES "Build test and example files." OFF)
+option(WITH_PYTHON "Build python bindings." OFF)
+option(ONLY_PYTHON "Build only python bindings, for setup.py env" OFF)
+
+if (ONLY_PYTHON)
+    set(WITH_PYTHON ON)
+    set(WITH_TESTS_AND_EXAMPLES OFF)
+    set(BUILD_SHARED_LIBS ON)
+endif()
+
+# Control where libraries and executables are placed during the build.
+# With the following settings executables are placed in <the top level of the
+# build tree>/bin and libraries/archives in <top level of the build tree>/lib.
+# This is particularly useful to run ctests on libraries built on Windows
+# machines: tests, which are executables, are placed in the same folders of
+# dlls, which are treated as executables as well, so that they can properly
+# find the libraries to run. This is a because of missing RPATH on Windows.
+
+# setup.py already sets CMAKE_LIBRARY_OUTPUT_DIRECTORY, we don't want to override it
+if (NOT ONLY_PYTHON)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}")
+
+    # For windows, remove the Release/ and Debug/ pathes
+    foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+        string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+        set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} )
+        set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} )
+        set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} )
+    endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+endif()
+
+# To build shared libraries in Windows, we set CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS to TRUE.
+# See https://cmake.org/cmake/help/v3.4/variable/CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS.html
+# See https://blog.kitware.com/create-dlls-on-windows-without-declspec-using-new-cmake-export-all-feature/
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+# Under MSVC, we set CMAKE_DEBUG_POSTFIX to "d" to add a trailing "d" to library
+# built in debug mode. In this Windows user can compile, build and install the
+# library in both Release and Debug configuration avoiding naming clashes in the
+# installation directories.
+if(MSVC)
+    set(CMAKE_DEBUG_POSTFIX "d")
+endif()
+
+# Required C++ versioning
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON)
 
-include_directories(include)
+# We use
+# - InstallBasicPackageFiles (http://robotology.github.io/ycm/gh-pages/v0.8/module/InstallBasicPackageFiles.html)
+# - AddUninstallTarget (http://robotology.github.io/ycm/gh-pages/v0.8/module/AddUninstallTarget.html)
+# - AddInstallRPATHSupport (http://robotology.github.io/ycm/gh-pages/v0.8/module/AddInstallRPATHSupport.html)
+# from YCM. Files are under the cmake subdirectory.
+# See https://github.com/robotology/ycm/
+# If you don't want to ship these files with your code (recommended), you can
+# instead depend on YCM.
+# In this case replace the following line with
+# find_package(YCM REQUIRED)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-file(GLOB_RECURSE SRCS
-        src/*.cpp
-        )
-
-if (NOT EMSCRIPTEN)
-    add_library(${COPC_SHARED_LIB} SHARED ${SRCS})
-    target_link_libraries(${COPC_SHARED_LIB} LAZPERF::lazperf)
-    target_include_directories(${COPC_SHARED_LIB} INTERFACE $<INSTALL_INTERFACE:include>)
+if(WITH_TESTS_AND_EXAMPLES)
+    enable_testing()
 endif()
 
-add_library(${COPC_STATIC_LIB} STATIC ${SRCS})
-target_link_libraries(${COPC_STATIC_LIB} LAZPERF::lazperf)
+# Find required packages
+find_package(LAZPERF 2.1.0 REQUIRED)
 
-# Choose package components
-set(WITH_TESTS TRUE CACHE BOOL "Choose if unit tests should be built")
-set(WITH_EXAMPLES TRUE CACHE BOOL "Choose if examples should be built")
-set(WITH_PYTHON TRUE CACHE BOOL "Choose if python bindings should be built")
+# Enable RPATH support for installed binaries and libraries
+include(AddInstallRPATHSupport)
+add_install_rpath_support(BIN_DIRS "${CMAKE_INSTALL_FULL_BINDIR}"
+                          LIB_DIRS "${CMAKE_INSTALL_FULL_LIBDIR}"
+                          INSTALL_NAME_DIR "${CMAKE_INSTALL_FULL_LIBDIR}"
+                          USE_LINK_PATH)
 
-if (WITH_TESTS OR WITH_EXAMPLES OR WITH_PYTHON)
-    set(AutzenFilePath "${CMAKE_BINARY_DIR}/test/data/autzen-classified.copc.laz")
-    if(NOT EXISTS ${AutzenFilePath})
-        message(STATUS "Downloading test files")
-        file (DOWNLOAD
-        "https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
-        ${AutzenFilePath}
-        )
-    endif()
+### Compile- and install-related commands.
+add_subdirectory(cpp)
 
-    add_executable(example_reader "example/example-reader.cpp")
-    target_link_libraries(example_reader ${COPC_SHARED_LIB})
-    add_executable(example_writer "example/example-writer.cpp")
-    target_link_libraries(example_writer ${COPC_SHARED_LIB})
-endif()
+# Create and install CMake configuration files for your project that are
+# necessary to for other projects to call find_package(LibTemplateCMake).
+#
+# Note that it is extremely important to use exactly the project name while
+# installing configuration files (you can use PROJECT_NAME variable to avoid
+# any possible error). This is required to allow find_package() to properly
+# look for the installed library in system path, in particular in Windows when
+# the installation is performed in the default path.
+#
+# install_basic_package_files() comes with many input parameters to customize
+# the configuration files. The parameters used in the following call provide
+# basic versions of CMake configuration files.
+# See install_basic_package_files() documentation found in ./cmake folder.
+#
+# Note that if your library depends from other libraries, you are probably
+# required to used the install_basic_package_files() DEPENDENCIES option.
+include(InstallBasicPackageFiles)
+install_basic_package_files(${PROJECT_NAME}
+                            VERSION ${${PROJECT_NAME}_VERSION}
+                            COMPATIBILITY AnyNewerVersion
+                            VARS_PREFIX ${PROJECT_NAME}
+                            DEPENDENCIES "LAZPERF 2.1.0 REQUIRED"
+                            FIRST_TARGET copc-lib
+                            NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+# Add the uninstall target
+include(AddUninstallTarget)
 
-if(WITH_TESTS)
-    add_subdirectory(lib/Catch2)
-
-    file(GLOB TEST_SRCS
-            test/*.cpp
-            )
-
-    add_executable(tests ${TEST_SRCS})
-    target_link_libraries(tests ${COPC_SHARED_LIB} Catch2::Catch2)
-
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/Catch2/contrib")
-    include(CTest)
-    include(Catch)
-    catch_discover_tests(tests)
-
-    add_test(NAME example_reader COMMAND example_reader)
-    add_test(NAME example_writer COMMAND example_writer)
+# Build Submodules
+if (WITH_TESTS_AND_EXAMPLES)
+    add_subdirectory(test)
+    add_subdirectory(example)
 endif()
 
 if(WITH_PYTHON)
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/test/data/autzen-classified.copc.laz")
-        message(STATUS "Copying test files")
-        file(COPY "${AutzenFilePath}" 
-            DESTINATION "${CMAKE_SOURCE_DIR}/test/data")
-    endif()
-
-    add_subdirectory(lib/pybind11)
-    pybind11_add_module(${COPC_PYTHON_LIB} ${SRCS} python/bindings.cpp)
-    target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${COPC_STATIC_LIB})
-    target_compile_definitions(${COPC_PYTHON_LIB} PRIVATE VERSION_INFO=${EXAMPLE_VERSION_INFO})
-    if(WITH_TESTS)
-        add_test(NAME python-tests
-                COMMAND ${PYTHON_EXECUTABLE} -m pytest "${CMAKE_SOURCE_DIR}/test"
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test"
-                )
-        add_test(NAME example_reader_py
-                COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/example/example-reader.py"
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/example"
-                )
-        add_test(NAME example_writer_py
-                COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_SOURCE_DIR}/example/example-writer.py"
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/example"
-                )
-    endif()
-endif()
-
-# Install
-set(include_dest "include/copc-lib")
-set(lib_dest "lib/cmake/copc-lib")
-
-if (NOT EMSCRIPTEN)
-
-    ## Targets
-    install(TARGETS ${COPC_SHARED_LIB} EXPORT ${COPC_SHARED_LIB} LIBRARY DESTINATION lib)
-    ## Export
-    install(FILES cmake/copc-lib-config.cmake DESTINATION ${lib_dest})
-    install(EXPORT ${COPC_SHARED_LIB} DESTINATION "${lib_dest}")
-    ## Headers
-    file(GLOB_RECURSE HDRS
-            include/*.hpp
-            )
-    ### Reproduce the folder hierarchy of include/* in destination
-    foreach(HDR IN LISTS HDRS)
-        get_filename_component(FILE_DIR ${HDR} DIRECTORY)
-        file(RELATIVE_PATH REL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include" "${FILE_DIR}")
-        install(FILES ${HDR} DESTINATION "include/${REL_PATH}")
-    endforeach()
-
+    add_subdirectory(python)
 endif()
