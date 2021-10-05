@@ -62,7 +62,3 @@ share/python-wheels/
 MANIFEST
 
 /CMakeSettings.json
-/test/data/autzen-classified.copc.laz
-/test/data/writer_test.copc.laz
-/test/data/autzen-trimmed.copc.laz
-/test/data/new-copc.copc.laz
