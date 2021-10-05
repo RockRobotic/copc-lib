@@ -7,7 +7,7 @@ macro(download_test_files OUT_PATH)
 		else()
 			message(STATUS "Downloading test files to ${OUT_PATH}")
 			file (DOWNLOAD
-				"https://github.com/PDAL/data/raw/62e514b6484ec59cd48bb48d5c6fe8a00216a6ac/autzen/autzen-classified.copc.laz"
+				"https://cloudfront.rockrobotic.com/public/laz-examples/copc/v1/autzen-classified.copc.laz"
 				${OUT_PATH}
 			)
 
