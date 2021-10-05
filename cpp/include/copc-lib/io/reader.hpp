@@ -45,14 +45,19 @@ class Reader : public BaseIO
     // Helper function to get all points from the root
     las::Points GetAllPoints();
 
-    // Spatial query functions
-    // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
-    std::vector<Node> GetNodesWithinBox(const Box &box, double min_resolution = 0);
-    std::vector<Node> GetNodesIntersectBox(const Box &box, double min_resolution = 0);
-    las::Points GetPointsWithinBox(const Box &box, double min_resolution = 0);
+    // Resolution query functions
+    // The resulting resolution may not be exactly this value: the minimum possible resolution that is at least as
+    // precise as the requested resolution will be selected. Therefore the result may be a bit more precise than
+    // requested.
     int32_t GetDepthAtResolution(double resolution);
     std::vector<Node> GetNodesAtResolution(double resolution);
     std::vector<Node> GetNodesWithinResolution(double resolution);
+
+    // Spatial query functions
+    // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
+    std::vector<Node> GetNodesWithinBox(const Box &box, double resolution = 0);
+    std::vector<Node> GetNodesIntersectBox(const Box &box, double resolution = 0);
+    las::Points GetPointsWithinBox(const Box &box, double resolution = 0);
 
   protected:
     Reader() = default;

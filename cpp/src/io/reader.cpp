@@ -189,13 +189,13 @@ las::Points Reader::GetAllPoints()
     return out;
 }
 
-std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double min_resolution)
+std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double resolution)
 {
     std::vector<Node> out;
 
     auto header = GetLasHeader();
     auto copc_info = GetCopcHeader();
-    auto max_depth = GetDepthAtResolution(min_resolution);
+    auto max_depth = GetDepthAtResolution(resolution);
 
     for (const auto &node : GetAllChildren())
     {
@@ -206,13 +206,13 @@ std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double min_resolutio
     return out;
 }
 
-std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double min_resolution)
+std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double resolution)
 {
     std::vector<Node> out;
 
     auto header = GetLasHeader();
     auto copc_info = GetCopcHeader();
-    auto max_depth = GetDepthAtResolution(min_resolution);
+    auto max_depth = GetDepthAtResolution(resolution);
 
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
@@ -224,11 +224,11 @@ std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double min_resolu
     return out;
 }
 
-las::Points Reader::GetPointsWithinBox(const Box &box, double min_resolution)
+las::Points Reader::GetPointsWithinBox(const Box &box, double resolution)
 {
     auto header = GetLasHeader();
     auto copc_info = GetCopcHeader();
-    auto max_depth = GetDepthAtResolution(min_resolution);
+    auto max_depth = GetDepthAtResolution(resolution);
     auto out = las::Points(header);
 
     // Get all nodes in octree

@@ -141,8 +141,9 @@ void ResolutionTrimFileExample()
     auto old_header = reader.GetLasHeader();
 
     double resolution = 10;
-    auto max_depth = reader.GetDepthAtResolution(resolution);
-
+    auto target_depth = reader.GetDepthAtResolution(resolution);
+    // Check that the resolution of the target depth is equal or smaller to the requested resolution.
+    assert(VoxelKey::GetResolutionAtDepth(target_depth, old_header, reader.GetCopcHeader()) <= resolution);
     {
         // Copy the header to the new file
         Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
@@ -155,7 +156,7 @@ void ResolutionTrimFileExample()
 
         for (const auto &node : reader.GetAllChildren())
         {
-            if (node.key.d <= max_depth)
+            if (node.key.d <= target_depth)
             {
                 writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
             }
@@ -174,12 +175,12 @@ void ResolutionTrimFileExample()
     // Let's go through each node we've written and make sure the resolution is correct
     for (const auto &node : new_reader.GetAllChildren())
     {
-        assert(node.key.d <= max_depth);
+        assert(node.key.d <= target_depth);
     }
 
     // Let's make sure the max resolution is at least as much as we requested
-    max_depth = new_reader.GetDepthAtResolution(0);
-    assert(VoxelKey::GetResolutionAtDepth(max_depth, new_header, new_copc_info) <= resolution);
+    auto max_octree_depth = new_reader.GetDepthAtResolution(0);
+    assert(VoxelKey::GetResolutionAtDepth(max_octree_depth, new_header, new_copc_info) <= resolution);
 }
 
 // constants
