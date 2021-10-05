@@ -58,7 +58,7 @@ PYBIND11_MODULE(copclib, m)
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
         .def("Resolution", &VoxelKey::Resolution, py::arg("las_header"), py::arg("copc_header"))
-        .def_static("GetDepthResolution", &VoxelKey::GetDepthResolution, py::arg("depth"), py::arg("las_header"),
+        .def_static("GetResolutionAtDepth", &VoxelKey::GetResolutionAtDepth, py::arg("depth"), py::arg("las_header"),
                     py::arg("copc_header"))
         .def("Intersects", &VoxelKey::Intersects)
         .def("Contains", py::overload_cast<const las::LasHeader &, const Box &>(&VoxelKey::Contains, py::const_))

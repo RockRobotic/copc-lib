@@ -76,7 +76,7 @@ double VoxelKey::Resolution(const las::LasHeader &header, const las::CopcVlr &co
     return (header.max.x - header.min.x) / copc_info.span / std::pow(2, d);
 }
 
-double VoxelKey::GetDepthResolution(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info)
+double VoxelKey::GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info)
 {
     return VoxelKey(d, 0, 0, 0).Resolution(header, copc_info);
 }

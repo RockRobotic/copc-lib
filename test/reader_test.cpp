@@ -245,6 +245,8 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
     {
         REQUIRE(reader.GetDepthAtResolution(2) == 4);
         REQUIRE(reader.GetDepthAtResolution(0) == 5);
+        REQUIRE(reader.GetDepthAtResolution(std::numeric_limits<double>::min()) == 5);
+        REQUIRE(reader.GetDepthAtResolution(std::numeric_limits<double>::max()) == 0);
     }
 
     SECTION("GetNodesAtResolution")

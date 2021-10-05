@@ -162,17 +162,23 @@ def ResolutionTrimFileExample():
     # Now, let's test our new file
     new_reader = copc.FileReader("autzen-resolution-trimmed.copc.laz")
 
-    new_las_header = new_reader.GetLasHeader()
-    new_copc_header = new_reader.GetCopcHeader()
+    new_header = new_reader.GetLasHeader()
+    new_copc_info = new_reader.GetCopcHeader()
+
+    # Let's go through each node we've written and make sure the resolution is correct
+    for node in new_reader.GetAllChildren():
+        assert node.key.d <= max_depth
+
     # Let's make sure the max resolution is at least as much as we requested
     max_depth = new_reader.GetDepthAtResolution(0)
     assert (
-        copc.VoxelKey.GetDepthResolution(max_depth, new_las_header, new_copc_header)
+        copc.VoxelKey.GetResolutionAtDepth(max_depth, new_header, new_copc_info)
         <= resolution
     )
 
+    # constants
 
-# constants
+
 MIN_BOUNDS = copc.Vector3(-2000, -5000, 20)  # Argument Constructor
 MAX_BOUNDS = copc.Vector3([5000, 1034, 125])  # List Constructor
 NUM_POINTS = 3000

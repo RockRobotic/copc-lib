@@ -1,6 +1,6 @@
 import copclib as copc
 import pytest
-import math
+from sys import float_info
 
 
 def test_reader():
@@ -156,6 +156,8 @@ def test_spatial_query_functions():
     # GetDepthAtResolution
     assert reader.GetDepthAtResolution(2) == 4
     assert reader.GetDepthAtResolution(0) == 5
+    assert reader.GetDepthAtResolution(float_info.min) == 5
+    assert reader.GetDepthAtResolution(float_info.max) == 0
 
     # GetNodesAtResolution
     subset_nodes = reader.GetNodesAtResolution(2)

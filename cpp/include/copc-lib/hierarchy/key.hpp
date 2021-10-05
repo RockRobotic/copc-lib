@@ -56,7 +56,7 @@ class VoxelKey
     bool Crosses(const las::LasHeader &header, const Box &box) const;
 
     double Resolution(const las::LasHeader &header, const las::CopcVlr &copc_info) const;
-    static double GetDepthResolution(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info);
+    static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info);
 
     int32_t d;
     int32_t x;
