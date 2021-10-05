@@ -41,7 +41,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
     SECTION("Default Extents")
     {
-        string file_path = "test/data/writer_test.copc.laz";
+        string file_path = "writer_test.copc.laz";
 
         Writer::LasHeaderConfig cfg(7);
         las::EbVlr eb_vlr(2);
@@ -75,7 +75,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
     SECTION("Set Extents")
     {
-        string file_path = "test/data/writer_test.copc.laz";
+        string file_path = "writer_test.copc.laz";
 
         Writer::LasHeaderConfig cfg(7);
         las::EbVlr eb_vlr(1);

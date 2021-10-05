@@ -5,7 +5,7 @@ from sys import float_info
 
 def test_writer_config():
     # Given a valid file path
-    file_path = "data/writer_test.copc.laz"
+    file_path = "writer_test.copc.laz"
 
     # Default config
     cfg = copc.LasHeaderConfig(6)
@@ -110,7 +110,7 @@ def test_writer_config():
 
     # Copy
     # TODO[Leo]: (Extents) Update this once we have updated copc test file
-    # orig = copc.FileReader("data/autzen-classified.copc.laz")
+    # orig = copc.FileReader("autzen-classified.copc.laz")
     #
     # cfg = copc.LasHeaderConfig(orig.las_header, orig.extra_bytes_vlr)
     # writer = copc.FileWriter(file_path, cfg)
@@ -168,7 +168,7 @@ def test_writer_config():
 
 def test_writer_pages():
     # Given a valid file path
-    file_path = "data/writer_test.copc.laz"
+    file_path = "writer_test.copc.laz"
 
     # Root Page
     writer = copc.FileWriter(file_path, copc.LasHeaderConfig(6))
@@ -217,9 +217,9 @@ def test_writer_pages():
 # TODO[Leo]: (Extents) Update this once we have updated copc test file
 # def test_writer_copy():
 #     # Given a valid file path
-#     file_path = "data/writer_test.copc.laz"
+#     file_path = "writer_test.copc.laz"
 #
-#     reader = copc.FileReader("data/autzen-classified.copc.laz")
+#     reader = copc.FileReader("autzen-classified.copc.laz")
 #
 #     cfg = copc.LasHeaderConfig(reader.las_header, reader.extra_bytes_vlr)
 #     writer = copc.FileWriter(file_path, cfg)

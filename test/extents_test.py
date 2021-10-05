@@ -23,7 +23,7 @@ def test_copc_extents():
 
     #### Default Extents ####
 
-    file_path = "../test/data/writer_test.copc.laz"
+    file_path = "writer_test.copc.laz"
 
     cfg = copc.LasHeaderConfig(7)
     eb_vlr = copc.EbVlr(1)
