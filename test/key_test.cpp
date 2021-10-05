@@ -118,4 +118,17 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
         REQUIRE(
             VoxelKey(0, 0, 0, 0).Within(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
     }
+
+    SECTION("Crosses")
+    {
+        // Two touching boxes are also crossing
+        REQUIRE(VoxelKey(1, 0, 0, 0).Crosses(header, Box(1, 1, 1, 2, 2, 2)));
+        // Crossing on all axis
+        REQUIRE(VoxelKey(1, 0, 0, 0).Crosses(header, Box(0.5, 0.5, 0.5, 1.5, 1.5, 1.5)));
+        // Within
+        REQUIRE(
+            !VoxelKey(0, 0, 0, 0).Crosses(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        // Outside
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Crosses(header, Box(1.1, 1.1, 1.1, 2, 2, 2)));
+    }
 }

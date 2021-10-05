@@ -120,3 +120,15 @@ def test_key_spatial_functions():
     assert copc.VoxelKey(0, 0, 0, 0).Within(
         header, (0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())
     )
+
+    # Crosses
+    ## Two touching boxes are also crossing
+    assert copc.VoxelKey(1, 0, 0, 0).Crosses(header, (1, 1, 1, 2, 2, 2))
+    ## Crossing on all axis
+    assert copc.VoxelKey(1, 0, 0, 0).Crosses(header, (0.5, 0.5, 0.5, 1.5, 1.5, 1.5))
+    ## Within
+    assert not copc.VoxelKey(0, 0, 0, 0).Crosses(
+        header, (0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())
+    )
+    ## Outside
+    assert not copc.VoxelKey(1, 0, 0, 0).Crosses(header, (1.1, 1.1, 1.1, 2, 2, 2))
