@@ -2,10 +2,10 @@
 #define COPCLIB_IO_BASE_H_
 
 #include "copc-lib/copc/extents.hpp"
+#include "copc-lib/copc/file.hpp"
 #include "copc-lib/hierarchy/node.hpp"
 #include "copc-lib/hierarchy/page.hpp"
 #include "copc-lib/las/vlr.hpp"
-#include "copc-lib/copc/file.hpp"
 
 namespace copc
 {

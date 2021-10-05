@@ -7,8 +7,8 @@
 
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/las/file.hpp"
-#include "copc-lib/las/vlr.hpp"
 #include "copc-lib/las/utils.hpp"
+#include "copc-lib/las/vlr.hpp"
 
 namespace copc
 {

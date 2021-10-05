@@ -62,11 +62,11 @@ class Writer : public BaseIO
     void SetMax(const Vector3 &max) { this->file_->SetMax(max); }
     void SetPointsByReturn(const std::array<uint64_t, 15> &points_by_return_14)
     {
-        this->file_->SetPointsByReturn(points_by_return_14);    }
+        this->file_->SetPointsByReturn(points_by_return_14);
+    }
     void SetCopcExtents(const CopcExtents &extents) { this->file_->SetCopcExtents(extents); }
-    
-    virtual ~Writer();
 
+    virtual ~Writer();
 
   protected:
     Writer() = default;

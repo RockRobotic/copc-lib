@@ -191,4 +191,4 @@ void FileWriter::Close()
     f_stream_.close();
 } // namespace copc
 
-}
+} // namespace copc
