@@ -120,7 +120,7 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="copclib",
-    version="1.2.0",
+    version="1.3.0",
     author="Rock Robotic Inc.",
     author_email="support@rockrobotic.com",
     description="A python interface to Cloud-Optimized Point Clouds (COPC)",
