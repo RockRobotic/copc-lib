@@ -9,7 +9,7 @@ def test_reader():
 
     # GetLasHeader Test
     copc_header = reader.GetCopcHeader()
-    assert copc_header.span == 0
+    assert copc_header.span == 128
     assert copc_header.root_hier_offset == 93169718
     assert copc_header.root_hier_size == 8896
     assert copc_header.laz_vlr_offset == 643
@@ -107,7 +107,7 @@ def test_point_error_handling():
 
 def test_spatial_query_functions():
 
-    reader = copc.FileReader("autzen-classified-new.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
 
     # Make horizontal 2D box of [200,200] roughly in the middle of the point cloud.
     middle = (reader.GetLasHeader().max + reader.GetLasHeader().min) / 2

@@ -127,7 +127,7 @@ def BoundsTrimFileExample():
 # In this example, we'll filter the points in the autzen dataset based on resolution.
 def ResolutionTrimFileExample():
     # We'll get our point data from this file
-    reader = copc.FileReader("autzen-classified-new.copc.laz")
+    reader = copc.FileReader("autzen-classified.copc.laz")
     old_header = reader.GetLasHeader()
 
     resolution = 10

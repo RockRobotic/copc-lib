@@ -17,7 +17,7 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetCopc Test")
         {
             auto copc = reader.GetCopcHeader();
-            REQUIRE(copc.span == 0);
+            REQUIRE(copc.span == 128);
             REQUIRE(copc.root_hier_offset == 93169718);
             REQUIRE(copc.root_hier_size == 8896);
             REQUIRE(copc.laz_vlr_offset == 643);
@@ -56,7 +56,7 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetCopc Test")
         {
             auto copc = reader.GetCopcHeader();
-            REQUIRE(copc.span == 0);
+            REQUIRE(copc.span == 128);
             REQUIRE(copc.root_hier_offset == 93169718);
             REQUIRE(copc.root_hier_size == 8896);
             REQUIRE(copc.laz_vlr_offset == 643);
@@ -191,7 +191,7 @@ TEST_CASE("Point Error Handling Test", "[Reader]")
 
 TEST_CASE("Spatial Query Functions", "[Reader]")
 {
-    FileReader reader("autzen-classified-new.copc.laz");
+    FileReader reader("autzen-classified.copc.laz");
 
     // Make horizontal 2D box of [200,200] roughly in the middle of the point cloud.
     auto middle = (reader.GetLasHeader().max + reader.GetLasHeader().min) / 2;

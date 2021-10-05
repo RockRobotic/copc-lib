@@ -137,7 +137,7 @@ void BoundsTrimFileExample()
 void ResolutionTrimFileExample()
 {
     // We'll get our point data from this file
-    FileReader reader("autzen-classified-new.copc.laz");
+    FileReader reader("autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
 
     double resolution = 10;
