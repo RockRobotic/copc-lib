@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **\[Python/C++\]** Add spatial function `Crosses` to `VoxelKey`
+- **\[Python/C++\]** Add resolution function `Resolution` and `GetResolutionAtDepth` to `VoxelKey`
+- **\[Python/C++\]** Add `Vector3` operators to `Vector3`
+- **\[Python/C++\]** Add resolution query functions `GetDepthAtResolution`, `GetNodesAtResolution` and `GetNodesWithinResolution` to `Reader`
+- **\[Python/C++\]** Add `BoundsTrimFileExample` and `ResolutionTrimFileExample` to example-writer files
+### Changed
+
+- **\[Python/C++\]** Change order of arguments in `VoxelKey` spatial functions `Intersects`, `Contains`, and `Within`
+- **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, and `GetPointsWithinBox`. `resolution` can be used to limit the resolution during spatial queries
+- **\[Python/C++\]** Update `span` of `autzen-classified.copc.laz` test file from 0 to 128
+
 ## [1.3.0] - 2021-10-04
 
 ### Added

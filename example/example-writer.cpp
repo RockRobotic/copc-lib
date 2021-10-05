@@ -3,6 +3,7 @@
 #include <random>
 
 #include <copc-lib/geometry/vector3.hpp>
+#include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/header.hpp>
@@ -76,6 +77,110 @@ void TrimFileExample(bool compressor_example_flag)
                 laz::Decompressor::DecompressBytes(compressed_points, header, node.point_count);
         }
     }
+}
+
+// In this example, we'll filter the points in the autzen dataset based on bounds.
+void BoundsTrimFileExample()
+{
+    // We'll get our point data from this file
+    FileReader reader("autzen-classified.copc.laz");
+    auto old_header = reader.GetLasHeader();
+
+    // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+
+    auto middle = (old_header.max + old_header.min) / 2;
+    Box box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200);
+
+    {
+        // Copy the header to the new file
+        Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
+
+        // Now, we can create our actual writer, with an optional `span` and `wkt`:
+        FileWriter writer("autzen-bounds-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
+
+        // The root page is automatically created and added for us
+        Page root_page = writer.GetRootPage();
+
+        for (const auto &node : reader.GetAllChildren())
+        {
+
+            if (node.key.Within(old_header, box))
+            {
+                // If node is within the box then add all points (without decompressing)
+                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+            }
+            else if (node.key.Intersects(old_header, box))
+            {
+                // If node only crosses the box then decompress points data and get subset of points that are within the
+                // box
+                auto points = reader.GetPoints(node).GetWithin(box);
+                writer.AddNode(root_page, node.key, las::Points(points).Pack());
+            }
+        }
+
+        // Make sure we call close to finish writing the file!
+        writer.Close();
+    }
+
+    // Now, let's test our new file
+    FileReader new_reader("autzen-bounds-trimmed.copc.laz");
+
+    // Let's go through each point and make sure they fit within the Box
+    for (const auto &node : new_reader.GetAllChildren())
+    {
+        auto points = new_reader.GetPoints(node);
+        assert(points.Within(box));
+    }
+}
+
+// In this example, we'll filter the points in the autzen dataset based on resolution.
+void ResolutionTrimFileExample()
+{
+    // We'll get our point data from this file
+    FileReader reader("autzen-classified.copc.laz");
+    auto old_header = reader.GetLasHeader();
+
+    double resolution = 10;
+    auto target_depth = reader.GetDepthAtResolution(resolution);
+    // Check that the resolution of the target depth is equal or smaller to the requested resolution.
+    assert(VoxelKey::GetResolutionAtDepth(target_depth, old_header, reader.GetCopcHeader()) <= resolution);
+    {
+        // Copy the header to the new file
+        Writer::LasConfig cfg(old_header, reader.GetExtraByteVlr());
+
+        // Now, we can create our actual writer, with an optional `span` and `wkt`:
+        FileWriter writer("autzen-resolution-trimmed.copc.laz", cfg, reader.GetCopcHeader().span, reader.GetWkt());
+
+        // The root page is automatically created and added for us
+        Page root_page = writer.GetRootPage();
+
+        for (const auto &node : reader.GetAllChildren())
+        {
+            if (node.key.d <= target_depth)
+            {
+                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+            }
+        }
+
+        // Make sure we call close to finish writing the file!
+        writer.Close();
+    }
+
+    // Now, let's test our new file
+    FileReader new_reader("autzen-resolution-trimmed.copc.laz");
+
+    auto new_header = new_reader.GetLasHeader();
+    auto new_copc_info = new_reader.GetCopcHeader();
+
+    // Let's go through each node we've written and make sure the resolution is correct
+    for (const auto &node : new_reader.GetAllChildren())
+    {
+        assert(node.key.d <= target_depth);
+    }
+
+    // Let's make sure the max resolution is at least as much as we requested
+    auto max_octree_depth = new_reader.GetDepthAtResolution(0);
+    assert(VoxelKey::GetResolutionAtDepth(max_octree_depth, new_header, new_copc_info) <= resolution);
 }
 
 // constants
@@ -174,5 +279,7 @@ int main()
 {
     TrimFileExample(false);
     TrimFileExample(true);
+    BoundsTrimFileExample();
+    ResolutionTrimFileExample();
     NewFileExample();
 }

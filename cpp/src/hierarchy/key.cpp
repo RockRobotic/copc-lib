@@ -69,15 +69,31 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     return false;
 }
 
-bool VoxelKey::Intersects(const Box &box, const las::LasHeader &header) const
+double VoxelKey::Resolution(const las::LasHeader &header, const las::CopcVlr &copc_info) const
+{
+    if (copc_info.span <= 0)
+        throw std::runtime_error("VoxelKey::Resolution: Octree span must be greater than 0.");
+    return (header.max.x - header.min.x) / copc_info.span / std::pow(2, d);
+}
+
+double VoxelKey::GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info)
+{
+    return VoxelKey(d, 0, 0, 0).Resolution(header, copc_info);
+}
+
+bool VoxelKey::Intersects(const las::LasHeader &header, const Box &box) const
 {
     return Box(*this, header).Intersects(box);
 }
-bool VoxelKey::Contains(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Contains(box); }
-bool VoxelKey::Contains(const Vector3 &point, const las::LasHeader &header) const
+bool VoxelKey::Contains(const las::LasHeader &header, const Box &box) const { return Box(*this, header).Contains(box); }
+bool VoxelKey::Contains(const las::LasHeader &header, const Vector3 &point) const
 {
     return Box(*this, header).Contains(point);
 }
-bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
+bool VoxelKey::Within(const las::LasHeader &header, const Box &box) const { return Box(*this, header).Within(box); }
+bool VoxelKey::Crosses(const las::LasHeader &header, const Box &box) const
+{
+    return Box(*this, header).Intersects(box) && !Box(*this, header).Within(box);
+}
 
 } // namespace copc

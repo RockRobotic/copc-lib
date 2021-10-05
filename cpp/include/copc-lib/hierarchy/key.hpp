@@ -10,6 +10,7 @@
 
 #include "copc-lib/geometry/box.hpp"
 #include "copc-lib/geometry/vector3.hpp"
+#include "copc-lib/las/vlr.hpp"
 
 namespace copc
 {
@@ -46,10 +47,16 @@ class VoxelKey
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;
 
-    bool Intersects(const Box &box, const las::LasHeader &header) const;
-    bool Contains(const Box &vec, const las::LasHeader &header) const;
-    bool Contains(const Vector3 &point, const las::LasHeader &header) const;
-    bool Within(const Box &box, const las::LasHeader &header) const;
+    // Spatial query functions
+    // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
+    bool Intersects(const las::LasHeader &header, const Box &box) const;
+    bool Contains(const las::LasHeader &header, const Box &vec) const;
+    bool Contains(const las::LasHeader &header, const Vector3 &point) const;
+    bool Within(const las::LasHeader &header, const Box &box) const;
+    bool Crosses(const las::LasHeader &header, const Box &box) const;
+
+    double Resolution(const las::LasHeader &header, const las::CopcVlr &copc_info) const;
+    static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info);
 
     int32_t d;
     int32_t x;

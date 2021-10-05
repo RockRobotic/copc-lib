@@ -80,42 +80,55 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
     SECTION("Intersects")
     {
         // Contains
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.1, 1.1, 1.1, 1.9, 1.9, 1.9), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(header, Box(1.1, 1.1, 1.1, 1.9, 1.9, 1.9)));
         // Crosses
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 1.5, 2.5, 2.5, 2.5), header));
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 1.5, 0.5, 2.5, 2.5, 2.5), header));
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(1.5, 0.5, 1.5, 2.5, 2.5, 2.5), header));
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0.5, 1.5, 1.5, 2.5, 2.5, 2.5), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(header, Box(1.5, 1.5, 1.5, 2.5, 2.5, 2.5)));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(header, Box(1.5, 1.5, 0.5, 2.5, 2.5, 2.5)));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(header, Box(1.5, 0.5, 1.5, 2.5, 2.5, 2.5)));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(header, Box(0.5, 1.5, 1.5, 2.5, 2.5, 2.5)));
         // Equals
-        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(0, 0, 0, 1, 1, 1), header));
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(header, Box(0, 0, 0, 1, 1, 1)));
         // Touches
-        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(Box(1, 1, 1, 2, 2, 2), header));
+        REQUIRE(VoxelKey(1, 0, 0, 0).Intersects(header, Box(1, 1, 1, 2, 2, 2)));
         // Within
-        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(Box(0, 0, 0, 4, 4, 4), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Intersects(header, Box(0, 0, 0, 4, 4, 4)));
         // Outside
-        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(Box(1, 1, 1.1, 2, 2, 2), header));
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Intersects(header, Box(1, 1, 1.1, 2, 2, 2)));
     }
 
     SECTION("Contains box")
     {
-        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
-        REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(Box(0, 0, 0, 1, 1, 1), header));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, 1, 1, 1)));
+        REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(header, Box(0, 0, 0, 1, 1, 1)));
         // A box contains itself
         REQUIRE(
-            VoxelKey(0, 0, 0, 0).Contains(Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header));
+            VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
     }
 
     SECTION("Contains vector")
     {
-        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(Vector3(1, 1, 1), header));
-        REQUIRE(!VoxelKey(0, 0, 0, 0).Contains(Vector3(2.1, 1, 1), header));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(header, Vector3(1, 1, 1)));
+        REQUIRE(!VoxelKey(0, 0, 0, 0).Contains(header, Vector3(2.1, 1, 1)));
     }
 
     SECTION("Within")
     {
-        REQUIRE(VoxelKey(1, 1, 1, 1).Within(Box(0.99, 0.99, 0.99, 2.01, 2.01, 2.01), header));
+        REQUIRE(VoxelKey(1, 1, 1, 1).Within(header, Box(0.99, 0.99, 0.99, 2.01, 2.01, 2.01)));
         // A box is within itself
         REQUIRE(
-            VoxelKey(0, 0, 0, 0).Within(Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan()), header));
+            VoxelKey(0, 0, 0, 0).Within(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+    }
+
+    SECTION("Crosses")
+    {
+        // Two touching boxes are also crossing
+        REQUIRE(VoxelKey(1, 0, 0, 0).Crosses(header, Box(1, 1, 1, 2, 2, 2)));
+        // Crossing on all axis
+        REQUIRE(VoxelKey(1, 0, 0, 0).Crosses(header, Box(0.5, 0.5, 0.5, 1.5, 1.5, 1.5)));
+        // Within
+        REQUIRE(
+            !VoxelKey(0, 0, 0, 0).Crosses(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        // Outside
+        REQUIRE(!VoxelKey(1, 0, 0, 0).Crosses(header, Box(1.1, 1.1, 1.1, 2, 2, 2)));
     }
 }
