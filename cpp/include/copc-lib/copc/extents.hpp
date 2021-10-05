@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include <copc-lib/las/utils.hpp>
-#include <copc-lib/las/vlr.hpp>
+#include "copc-lib/las/utils.hpp"
+#include "copc-lib/las/vlr.hpp"
 
 namespace copc
 {

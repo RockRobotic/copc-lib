@@ -6,14 +6,12 @@
 #include <stdexcept>
 #include <string>
 
-#include <copc-lib/copc/extents.hpp>
-#include <copc-lib/copc/file.hpp>
-#include <copc-lib/geometry/box.hpp>
-#include <copc-lib/io/base_io.hpp>
-#include <copc-lib/io/internal/writer_internal.hpp>
-#include <copc-lib/las/header.hpp>
-#include <copc-lib/las/points.hpp>
-#include <copc-lib/las/utils.hpp>
+#include "copc-lib/copc/file.hpp"
+#include "copc-lib/geometry/box.hpp"
+#include "copc-lib/io/base_io.hpp"
+#include "copc-lib/las/header.hpp"
+#include "copc-lib/las/points.hpp"
+#include "copc-lib/las/utils.hpp"
 
 namespace copc
 {

@@ -5,11 +5,10 @@
 #include <stdexcept>
 #include <vector>
 
-#include <copc-lib/copc/extents.hpp>
+#include "copc-lib/copc/extents.hpp"
 #include "copc-lib/las/file.hpp"
 #include "copc-lib/las/vlr.hpp"
-#include <copc-lib/las/file.hpp>
-#include <copc-lib/las/utils.hpp>
+#include "copc-lib/las/utils.hpp"
 
 namespace copc
 {

@@ -1,7 +1,8 @@
-#include <copc-lib/copc/extents.hpp>
-#include <copc-lib/io/reader.hpp>
-#include <copc-lib/las/header.hpp>
-#include <copc-lib/laz/decompressor.hpp>
+#include "copc-lib/copc/extents.hpp"
+#include "copc-lib/io/reader.hpp"
+#include "copc-lib/hierarchy/internal/hierarchy.hpp"
+#include "copc-lib/las/header.hpp"
+#include "copc-lib/laz/decompressor.hpp"
 
 #include <lazperf/readers.hpp>
 #include <lazperf/vlr.hpp>

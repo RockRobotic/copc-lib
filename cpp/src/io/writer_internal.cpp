@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <iterator>
 
+#include "copc-lib/copc/extents.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
 #include "copc-lib/io/internal/writer_internal.hpp"
 #include "copc-lib/laz/compressor.hpp"
@@ -9,11 +10,6 @@
 #include <lazperf/filestream.hpp>
 #include <lazperf/lazperf.hpp>
 #include <lazperf/vlr.hpp>
-
-#include <copc-lib/copc/extents.hpp>
-#include <copc-lib/io/internal/writer_internal.hpp>
-#include <copc-lib/las/utils.hpp>
-#include <copc-lib/laz/compressor.hpp>
 
 namespace copc::Internal
 {

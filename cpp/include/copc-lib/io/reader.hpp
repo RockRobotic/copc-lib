@@ -5,8 +5,6 @@
 #include <string>
 
 #include "copc-lib/copc/file.hpp"
-#include "copc-lib/hierarchy/node.hpp"
-#include "copc-lib/hierarchy/page.hpp"
 #include "copc-lib/io/base_io.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/vlr.hpp"
