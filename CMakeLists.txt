@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 # ref https://github.com/robotology/how-to-export-cpp-library/blob/master/CMakeLists.txt
 project(COPCLIB
         LANGUAGES CXX C
-        VERSION 1.2.0)
+        VERSION 1.3.0)
 
 # Defines the CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR and many other useful macros.
 # See https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
