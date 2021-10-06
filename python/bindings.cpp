@@ -65,6 +65,13 @@ PYBIND11_MODULE(copclib, m)
         .def("Contains", py::overload_cast<const las::LasHeader &, const Vector3 &>(&VoxelKey::Contains, py::const_))
         .def("Within", &VoxelKey::Within)
         .def("Crosses", &VoxelKey::Crosses)
+        .def(
+            "__iter__",
+            [](VoxelKey &v) {
+                std::vector<int32_t> dxyz = {v.d, v.x, v.y, v.z};
+                py::make_iterator(dxyz.begin(), dxyz.end());
+            },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
     py::implicitly_convertible<py::tuple, VoxelKey>();
@@ -83,12 +90,21 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("x_max", &Box::x_max)
         .def_readwrite("y_max", &Box::y_max)
         .def_readwrite("z_max", &Box::z_max)
+        .def_property_readonly("min", &Box::Min)
+        .def_property_readonly("max", &Box::Max)
         .def_static("MaxBox", &Box::MaxBox)
         .def_static("ZeroBox", &Box::ZeroBox)
         .def("Intersects", &Box::Intersects)
         .def("Contains", py::overload_cast<const Box &>(&Box::Contains, py::const_))
         .def("Contains", py::overload_cast<const Vector3 &>(&Box::Contains, py::const_))
         .def("Within", &Box::Within)
+        .def(
+            "__iter__",
+            [](Box &b) {
+                std::vector<double> minmax = {b.x_min, b.y_min, b.z_min, b.x_max, b.y_max, b.z_max};
+                py::make_iterator(minmax.begin(), minmax.end());
+            },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("__str__", &Box::ToString)
         .def("__repr__", &Box::ToString);
 
@@ -127,6 +143,13 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("z", &Vector3::z)
         .def_static("DefaultScale", &Vector3::DefaultScale)
         .def_static("DefaultOffset", &Vector3::DefaultOffset)
+        .def(
+            "__iter__",
+            [](Vector3 &v) {
+                std::vector<double> xyz = {v.x, v.y, v.z};
+                py::make_iterator(xyz.begin(), xyz.end());
+            },
+            py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def(py::self == py::self)
         // Vector3 operations
         .def(
