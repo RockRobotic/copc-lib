@@ -67,7 +67,8 @@ PYBIND11_MODULE(copclib, m)
         .def("Crosses", &VoxelKey::Crosses)
         .def(
             "__iter__",
-            [](VoxelKey &v) {
+            [](VoxelKey &v)
+            {
                 std::vector<int32_t> dxyz = {v.d, v.x, v.y, v.z};
                 py::make_iterator(dxyz.begin(), dxyz.end());
             },
@@ -100,7 +101,8 @@ PYBIND11_MODULE(copclib, m)
         .def("Within", &Box::Within)
         .def(
             "__iter__",
-            [](Box &b) {
+            [](Box &b)
+            {
                 std::vector<double> minmax = {b.x_min, b.y_min, b.z_min, b.x_max, b.y_max, b.z_max};
                 py::make_iterator(minmax.begin(), minmax.end());
             },
@@ -145,7 +147,8 @@ PYBIND11_MODULE(copclib, m)
         .def_static("DefaultOffset", &Vector3::DefaultOffset)
         .def(
             "__iter__",
-            [](Vector3 &v) {
+            [](Vector3 &v)
+            {
                 std::vector<double> xyz = {v.x, v.y, v.z};
                 py::make_iterator(xyz.begin(), xyz.end());
             },
