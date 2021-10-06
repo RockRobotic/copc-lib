@@ -303,7 +303,7 @@ def test_get_within():
 
 def test_points_accessors():
     points = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+        7, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
 
     # generate points
@@ -313,19 +313,22 @@ def test_points_accessors():
         p.X = i
         p.Y = i * 3
         p.Z = i - 80
+        p.Classification = i * 255 // num_points
         points.AddPoint(p)
 
-    assert min(points.X) == 0
-    assert max(points.X) == num_points - 1
-    assert min(points.Y) == 0
-    assert max(points.Y) == (num_points - 1) * 3
-    assert min(points.Z) == 0 - 80
-    assert max(points.Z) == (num_points - 1) - 80
+    for i, (x, y, z, classification) in enumerate(
+        zip(points.X, points.Y, points.Z, points.Classification)
+    ):
+        assert x == i
+        assert y == i * 3
+        assert z == i - 80
+        assert classification == i * 255 // num_points
 
     # test slice
     assert points.X[5:10] == [x for x in range(5, 10)]
     assert points.Y[-10:] == [x * 3 for x in range(1990, 2000)]
     assert points.Z[:10] == [x - 80 for x in range(0, 10)]
+    assert points.Classification[:10] == [x * 255 // num_points for x in range(0, 10)]
 
     # test index setter
     for i in range(len(points)):
@@ -333,10 +336,12 @@ def test_points_accessors():
         p.X = 20
         p.Y = 30
         p.Z = 40
+        p.Classification = 50
 
     assert all([x == 20 for x in points.X])
     assert all([y == 30 for y in points.Y])
     assert all([z == 40 for z in points.Z])
+    assert all([classification == 50 for classification in points.Classification])
 
     # test iterator setter
     for p in points:

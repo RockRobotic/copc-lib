@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `Vector3` operators to `Vector3`
 - **\[Python/C++\]** Add resolution query functions `GetDepthAtResolution`, `GetNodesAtResolution` and `GetNodesWithinResolution` to `Reader`
 - **\[Python/C++\]** Add `BoundsTrimFileExample` and `ResolutionTrimFileExample` to example-writer files
+- **\[Python/C++\]** Add `Classification` getter and setter to `Points`
+
 ### Changed
 
 - **\[Python/C++\]** Change order of arguments in `VoxelKey` spatial functions `Intersects`, `Contains`, and `Within`
