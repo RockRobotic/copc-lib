@@ -69,7 +69,7 @@ PYBIND11_MODULE(copclib, m)
             "__iter__",
             [](VoxelKey &v) {
                 std::vector<int32_t> dxyz = {v.d, v.x, v.y, v.z};
-                py::make_iterator(dxyz.begin(), dxyz.end());
+                return py::make_iterator(dxyz.begin(), dxyz.end());
             },
             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("__str__", &VoxelKey::ToString)
@@ -102,7 +102,7 @@ PYBIND11_MODULE(copclib, m)
             "__iter__",
             [](Box &b) {
                 std::vector<double> minmax = {b.x_min, b.y_min, b.z_min, b.x_max, b.y_max, b.z_max};
-                py::make_iterator(minmax.begin(), minmax.end());
+                return py::make_iterator(minmax.begin(), minmax.end());
             },
             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def("__str__", &Box::ToString)
@@ -147,7 +147,7 @@ PYBIND11_MODULE(copclib, m)
             "__iter__",
             [](Vector3 &v) {
                 std::vector<double> xyz = {v.x, v.y, v.z};
-                py::make_iterator(xyz.begin(), xyz.end());
+                return py::make_iterator(xyz.begin(), xyz.end());
             },
             py::keep_alive<0, 1>() /* Essential: keep object alive while iterator exists */)
         .def(py::self == py::self)
