@@ -67,7 +67,24 @@ PYBIND11_MODULE(copclib, m)
         .def("Crosses", &VoxelKey::Crosses)
         .def(py::hash(py::self))
         .def("__str__", &VoxelKey::ToString)
-        .def("__repr__", &VoxelKey::ToString);
+        .def("__repr__", &VoxelKey::ToString)
+        .def(py::pickle(
+            [](const VoxelKey &key) { // __getstate__
+                /* Return a tuple that fully encodes the state of the object */
+                return py::make_tuple(key.d, key.z, key.y, key.z);
+            },
+            [](py::tuple t) { // __setstate__
+                if (t.size() != 4)
+                    throw std::runtime_error("Invalid state!");
+
+                /* Create a new C++ instance */
+                VoxelKey key;
+                key.d = t[0].cast<int32_t>();
+                key.x = t[1].cast<int32_t>();
+                key.y = t[2].cast<int32_t>();
+                key.z = t[3].cast<int32_t>();
+                return key;
+            }));
     py::implicitly_convertible<py::tuple, VoxelKey>();
 
     py::class_<Box>(m, "Box")
@@ -98,7 +115,6 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
-        .def(py::init<Entry>())
         .def_readwrite("point_count", &Node::point_count)
         .def_readwrite("key", &Node::key)
         .def_readwrite("offset", &Node::offset)
@@ -106,7 +122,24 @@ PYBIND11_MODULE(copclib, m)
         .def("IsValid", &Node::IsValid)
         .def("IsPage", &Node::IsPage)
         .def("__str__", &Node::ToString)
-        .def("__repr__", &Node::ToString);
+        .def("__repr__", &Node::ToString)
+        .def(py::pickle(
+            [](const Node &h) { // __getstate__
+                /* Return a tuple that fully encodes the state of the object */
+                return py::make_tuple(h.key, h.offset, h.byte_size, h.point_count);
+            },
+            [](py::tuple t) { // __setstate__
+                if (t.size() != 4)
+                    throw std::runtime_error("Invalid state!");
+
+                /* Create a new C++ instance */
+                Node node;
+                node.key = t[0].cast<VoxelKey>();
+                node.offset = t[1].cast<uint64_t>();
+                node.byte_size = t[2].cast<int32_t>();
+                node.point_count = t[3].cast<int32_t>();
+                return node;
+            }));
 
     py::class_<Page>(m, "Page")
         .def_readwrite("point_count", &Page::point_count)
