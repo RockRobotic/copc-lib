@@ -41,9 +41,6 @@ class Box
 
     std::string ToString() const;
 
-    Vector3 Min() const { return Vector3(x_min, y_min, z_min); }
-    Vector3 Max() const { return Vector3(x_max, y_max, z_max); }
-
     double x_min{};
     double y_min{};
     double z_min{};
