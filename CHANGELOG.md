@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add resolution query functions `GetDepthAtResolution`, `GetNodesAtResolution` and `GetNodesWithinResolution` to `Reader`
 - **\[Python/C++\]** Add `BoundsTrimFileExample` and `ResolutionTrimFileExample` to example-writer files
 - **\[Python/C++\]** Add `Classification` getter and setter to `Points`
-- **\[Python/C++\]** Add `GetAllChildrenPoints` to `Reader`
 - **\[Python/C++\]** Add `GetChildren` to `VoxelKey`
 - **\[Python\]** Make `Node` and `VoxelKey` picklable
 
