@@ -273,7 +273,7 @@ int32_t Reader::GetDepthAtResolution(double resolution)
     if (GetCopcHeader().span <= 0)
         throw std::runtime_error("Reader::GetDepthAtResolution: Octree span must be greater than 0.");
 
-    auto current_resolution = (GetLasHeader().max.x - GetLasHeader().min.x) / GetCopcHeader().span;
+    auto current_resolution = GetLasHeader().GetSpan() / GetCopcHeader().span;
 
     for (int32_t i = 0; i <= max_depth; i++)
     {

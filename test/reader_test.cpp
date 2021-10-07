@@ -243,7 +243,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
 
     SECTION("GetDepthAtResolution")
     {
-        REQUIRE(reader.GetDepthAtResolution(2) == 4);
+        REQUIRE(reader.GetDepthAtResolution(3) == 4);
         REQUIRE(reader.GetDepthAtResolution(0) == 5);
         REQUIRE(reader.GetDepthAtResolution(std::numeric_limits<double>::min()) == 5);
         REQUIRE(reader.GetDepthAtResolution(std::numeric_limits<double>::max()) == 0);
@@ -251,7 +251,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
 
     SECTION("GetNodesAtResolution")
     {
-        auto subset_nodes = reader.GetNodesAtResolution(2);
+        auto subset_nodes = reader.GetNodesAtResolution(3);
         REQUIRE(subset_nodes.size() == 192);
         for (const auto &node : reader.GetNodesAtResolution(0))
             REQUIRE(node.key.d == 5);
@@ -259,7 +259,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
 
     SECTION("GetNodesWithinResolution")
     {
-        auto subset_nodes = reader.GetNodesWithinResolution(2);
+        auto subset_nodes = reader.GetNodesWithinResolution(3);
         REQUIRE(subset_nodes.size() == 257);
         REQUIRE(reader.GetNodesWithinResolution(0).size() == reader.GetAllChildren().size());
     }
