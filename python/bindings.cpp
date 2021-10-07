@@ -65,6 +65,7 @@ PYBIND11_MODULE(copclib, m)
         .def("Contains", py::overload_cast<const las::LasHeader &, const Vector3 &>(&VoxelKey::Contains, py::const_))
         .def("Within", &VoxelKey::Within)
         .def("Crosses", &VoxelKey::Crosses)
+        .def(py::hash(py::self))
         .def("__str__", &VoxelKey::ToString)
         .def("__repr__", &VoxelKey::ToString);
     py::implicitly_convertible<py::tuple, VoxelKey>();
