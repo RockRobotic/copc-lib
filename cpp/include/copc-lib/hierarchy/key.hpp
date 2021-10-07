@@ -36,6 +36,7 @@ class VoxelKey
 
     // Returns the corresponding key depending on direction [0,7]
     VoxelKey Bisect(const uint64_t &direction) const;
+    std::vector<VoxelKey> GetChildren() const;
 
     // The hierarchial parent of this key
     VoxelKey GetParent() const;
