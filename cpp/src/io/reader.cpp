@@ -179,13 +179,16 @@ std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
     return out;
 }
 
-las::Points Reader::GetAllPoints()
+las::Points Reader::GetAllChildrenPoints(const VoxelKey &key, double resolution)
 {
     auto out = las::Points(GetLasHeader());
 
+    auto max_depth = GetDepthAtResolution(resolution);
+
     // Get all nodes in octree
-    for (const auto &node : GetAllChildren())
-        out.AddPoints(GetPoints(node));
+    for (const auto &node : GetAllChildren(key))
+        if (node.key.d <= max_depth)
+            out.AddPoints(GetPoints(node));
     return out;
 }
 

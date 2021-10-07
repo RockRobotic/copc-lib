@@ -15,11 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add resolution query functions `GetDepthAtResolution`, `GetNodesAtResolution` and `GetNodesWithinResolution` to `Reader`
 - **\[Python/C++\]** Add `BoundsTrimFileExample` and `ResolutionTrimFileExample` to example-writer files
 - **\[Python/C++\]** Add `Classification` getter and setter to `Points`
+- **\[Python/C++\]** Add `GetAllChildrenPoints` to `Reader`
 
 ### Changed
 
 - **\[Python/C++\]** Change order of arguments in `VoxelKey` spatial functions `Intersects`, `Contains`, and `Within`
-- **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, and `GetPointsWithinBox`. `resolution` can be used to limit the resolution during spatial queries
+- **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, `GetPointsWithinBox`, and `GetAllPoints` . `resolution` can be used to limit the resolution during spatial queries
 - **\[Python/C++\]** Update `span` of `autzen-classified.copc.laz` test file from 0 to 128
 
 ## [1.3.0] - 2021-10-04
