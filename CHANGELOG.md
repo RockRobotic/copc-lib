@@ -25,7 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Update `span` of `autzen-classified.copc.laz` test file from 0 to 128
 
 ### Fixed
+
 - **\[Python\]** Fix typo in pickling of `Node`
+- **\[Python\]** Fix scale error and reformat `NewFileExample()` in example_writer.py
 
 ## [1.3.0] - 2021-10-04
 
