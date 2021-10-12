@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, `GetPointsWithinBox`, and `GetAllPoints` . `resolution` can be used to limit the resolution during spatial queries
 - **\[Python/C++\]** Update `span` of `autzen-classified.copc.laz` test file from 0 to 128
 
+### Fixed
+- **\[Python\]** Fix typo in pickling of `Node`
+
 ## [1.3.0] - 2021-10-04
 
 ### Added

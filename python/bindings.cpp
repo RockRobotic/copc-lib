@@ -72,7 +72,7 @@ PYBIND11_MODULE(copclib, m)
         .def(py::pickle(
             [](const VoxelKey &key) { // __getstate__
                 /* Return a tuple that fully encodes the state of the object */
-                return py::make_tuple(key.d, key.z, key.y, key.z);
+                return py::make_tuple(key.d, key.x, key.y, key.z);
             },
             [](py::tuple t) { // __setstate__
                 if (t.size() != 4)

@@ -23,7 +23,7 @@ def test_vector3():
 
 def test_node():
     node = copc.Node()
-    node.key = copc.VoxelKey(1, 1, 1, 1)
+    node.key = copc.VoxelKey(1, 2, 3, 4)
     node.offset = 10000
     node.point_count = 4
     node.byte_size = 6
