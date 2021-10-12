@@ -316,6 +316,8 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::vector<double> &>(&las::Points::Z))
         .def_property("Classification", py::overload_cast<>(&las::Points::Classification, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::Classification))
+        .def_property("PointSourceID", py::overload_cast<>(&las::Points::PointSourceID, py::const_),
+                      py::overload_cast<const std::vector<uint8_t> &>(&las::Points::PointSourceID))
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
         .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)

@@ -130,6 +130,7 @@ TEST_CASE("Points tests", "[Point]")
             p->Y(i * 3);
             p->Z(i - 80);
             p->Classification(i * 255 / num_points);
+            p->PointSourceID(i * 255 / num_points);
             points.AddPoint(p);
         }
 
@@ -140,12 +141,14 @@ TEST_CASE("Points tests", "[Point]")
         auto Y = points.Y();
         auto Z = points.Z();
         auto classification = points.Classification();
+        auto point_source_id = points.PointSourceID();
         for (int i = 0; i < num_points; i++)
         {
             REQUIRE(X[i] == i);
             REQUIRE(Y[i] == i * 3);
             REQUIRE(Z[i] == i - 80);
             REQUIRE(classification[i] == i * 255 / num_points);
+            REQUIRE(point_source_id[i] == i * 255 / num_points);
         }
 
         // generate vector of coordinates
@@ -153,11 +156,13 @@ TEST_CASE("Points tests", "[Point]")
         std::vector<double> Yn;
         std::vector<double> Zn;
         std::vector<uint8_t> classification_n;
+        std::vector<uint8_t> point_source_id_n;
 
         REQUIRE_THROWS(points.X(Xn));
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
         REQUIRE_THROWS(points.Classification(classification_n));
+        REQUIRE_THROWS(points.PointSourceID(point_source_id_n));
 
         for (int i = 0; i < num_points - 1; i++)
         {
@@ -165,24 +170,28 @@ TEST_CASE("Points tests", "[Point]")
             Yn.push_back(i + 800);
             Zn.push_back(i * 4);
             classification_n.push_back(i * 255 / 2000);
+            point_source_id_n.push_back(i * 255 / 2000);
         }
 
         REQUIRE_THROWS(points.X(Xn));
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
         REQUIRE_THROWS(points.Classification(classification_n));
+        REQUIRE_THROWS(points.PointSourceID(point_source_id_n));
 
         // add the last point
         Xn.push_back(1);
         Yn.push_back(2);
         Zn.push_back(3);
         classification_n.push_back(255);
+        point_source_id_n.push_back(255);
 
         // test setters
         REQUIRE_NOTHROW(points.X(Xn));
         REQUIRE_NOTHROW(points.Y(Yn));
         REQUIRE_NOTHROW(points.Z(Zn));
         REQUIRE_NOTHROW(points.Classification(classification_n));
+        REQUIRE_NOTHROW(points.PointSourceID(point_source_id_n));
 
         for (int i = 0; i < num_points - 1; i++)
         {
@@ -191,6 +200,7 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(p->Y() == i + 800);
             REQUIRE(p->Z() == i * 4);
             REQUIRE(p->Classification() == i * 255 / 2000);
+            REQUIRE(p->PointSourceID() == i * 255 / 2000);
         }
 
         // test last point
@@ -199,6 +209,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point->Y() == 2);
         REQUIRE(last_point->Z() == 3);
         REQUIRE(last_point->Classification() == 255);
+        REQUIRE(last_point->PointSourceID() == 255);
     }
 
     SECTION("Points Indexers")
