@@ -235,7 +235,7 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
 void NewFileExample()
 {
     // Create our new file with the specified format, scale, and offset
-    Writer::LasConfig cfg(8, {1, 1, 1}, {0, 0, 0});
+    Writer::LasConfig cfg(8, {0.1, 0.1, 0.1}, {50, 50, 50});
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
     cfg.min = MIN_BOUNDS;

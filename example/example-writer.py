@@ -243,7 +243,7 @@ def RandomPoints(key, header, number_points):
 def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
-    cfg = copc.LasConfig(8, [1, 1, 1], [0, 0, 0])
+    cfg = copc.LasConfig(8, [0.1, 0.1, 0.1], [50, 50, 50])
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
     cfg.min = MIN_BOUNDS

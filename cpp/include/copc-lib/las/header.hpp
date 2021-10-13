@@ -60,9 +60,9 @@ class LasHeader
     double ApplyScaleX(double unscaled_value) const { return unscaled_value * scale.x + offset.x; }
     double ApplyScaleY(double unscaled_value) const { return unscaled_value * scale.y + offset.y; }
     double ApplyScaleZ(double unscaled_value) const { return unscaled_value * scale.z + offset.z; }
-    double ApplyInverseScaleX(double scaled_value) const { return scaled_value / scale.x - offset.x; }
-    double ApplyInverseScaleY(double scaled_value) const { return scaled_value / scale.y - offset.y; }
-    double ApplyInverseScaleZ(double scaled_value) const { return scaled_value / scale.z - offset.z; }
+    double ApplyInverseScaleX(double scaled_value) const { return (scaled_value - offset.x) / scale.x; }
+    double ApplyInverseScaleY(double scaled_value) const { return (scaled_value - offset.y) / scale.y; }
+    double ApplyInverseScaleZ(double scaled_value) const { return (scaled_value - offset.z) / scale.z; }
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};
