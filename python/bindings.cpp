@@ -54,6 +54,7 @@ PYBIND11_MODULE(copclib, m)
         .def("BaseKey", &VoxelKey::BaseKey)
         .def("InvalidKey", &VoxelKey::InvalidKey)
         .def("Bisect", &VoxelKey::Bisect)
+        .def("GetChildren", &VoxelKey::GetChildren)
         .def("GetParent", &VoxelKey::GetParent)
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
@@ -65,8 +66,26 @@ PYBIND11_MODULE(copclib, m)
         .def("Contains", py::overload_cast<const las::LasHeader &, const Vector3 &>(&VoxelKey::Contains, py::const_))
         .def("Within", &VoxelKey::Within)
         .def("Crosses", &VoxelKey::Crosses)
+        .def(py::hash(py::self))
         .def("__str__", &VoxelKey::ToString)
-        .def("__repr__", &VoxelKey::ToString);
+        .def("__repr__", &VoxelKey::ToString)
+        .def(py::pickle(
+            [](const VoxelKey &key) { // __getstate__
+                /* Return a tuple that fully encodes the state of the object */
+                return py::make_tuple(key.d, key.x, key.y, key.z);
+            },
+            [](py::tuple t) { // __setstate__
+                if (t.size() != 4)
+                    throw std::runtime_error("Invalid state!");
+
+                /* Create a new C++ instance */
+                VoxelKey key;
+                key.d = t[0].cast<int32_t>();
+                key.x = t[1].cast<int32_t>();
+                key.y = t[2].cast<int32_t>();
+                key.z = t[3].cast<int32_t>();
+                return key;
+            }));
     py::implicitly_convertible<py::tuple, VoxelKey>();
 
     py::class_<Box>(m, "Box")
@@ -97,7 +116,6 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<Node>(m, "Node")
         .def(py::init<>())
-        .def(py::init<Entry>())
         .def_readwrite("point_count", &Node::point_count)
         .def_readwrite("key", &Node::key)
         .def_readwrite("offset", &Node::offset)
@@ -105,7 +123,24 @@ PYBIND11_MODULE(copclib, m)
         .def("IsValid", &Node::IsValid)
         .def("IsPage", &Node::IsPage)
         .def("__str__", &Node::ToString)
-        .def("__repr__", &Node::ToString);
+        .def("__repr__", &Node::ToString)
+        .def(py::pickle(
+            [](const Node &h) { // __getstate__
+                /* Return a tuple that fully encodes the state of the object */
+                return py::make_tuple(h.key, h.offset, h.byte_size, h.point_count);
+            },
+            [](py::tuple t) { // __setstate__
+                if (t.size() != 4)
+                    throw std::runtime_error("Invalid state!");
+
+                /* Create a new C++ instance */
+                Node node;
+                node.key = t[0].cast<VoxelKey>();
+                node.offset = t[1].cast<uint64_t>();
+                node.byte_size = t[2].cast<int32_t>();
+                node.point_count = t[3].cast<int32_t>();
+                return node;
+            }));
 
     py::class_<Page>(m, "Page")
         .def_readwrite("point_count", &Page::point_count)
@@ -279,6 +314,10 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::vector<double> &>(&las::Points::Y))
         .def_property("Z", py::overload_cast<>(&las::Points::Z, py::const_),
                       py::overload_cast<const std::vector<double> &>(&las::Points::Z))
+        .def_property("Classification", py::overload_cast<>(&las::Points::Classification, py::const_),
+                      py::overload_cast<const std::vector<uint8_t> &>(&las::Points::Classification))
+        .def_property("PointSourceID", py::overload_cast<>(&las::Points::PointSourceID, py::const_),
+                      py::overload_cast<const std::vector<uint8_t> &>(&las::Points::PointSourceID))
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
         .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
@@ -373,7 +412,7 @@ PYBIND11_MODULE(copclib, m)
              py::arg("key"))
         .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
         .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren))
-        .def("GetAllPoints", &Reader::GetAllPoints)
+        .def("GetAllPoints", &Reader::GetAllPoints, py::arg("resolution") = 0)
         .def("GetNodesWithinBox", &Reader::GetNodesWithinBox, py::arg("box"), py::arg("resolution") = 0)
         .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox, py::arg("box"), py::arg("resolution") = 0)
         .def("GetPointsWithinBox", &Reader::GetPointsWithinBox, py::arg("box"), py::arg("resolution") = 0)

@@ -36,6 +36,7 @@ class VoxelKey
 
     // Returns the corresponding key depending on direction [0,7]
     VoxelKey Bisect(const uint64_t &direction) const;
+    std::vector<VoxelKey> GetChildren() const;
 
     // The hierarchial parent of this key
     VoxelKey GetParent() const;
@@ -91,9 +92,7 @@ inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b);
 } // namespace copc
 
 // Hash function to allow VoxelKeys as unordered_map keys
-namespace std
-{
-template <> struct hash<copc::VoxelKey>
+template <> struct std::hash<copc::VoxelKey>
 {
     std::size_t operator()(copc::VoxelKey const &k) const noexcept
     {
@@ -104,6 +103,5 @@ template <> struct hash<copc::VoxelKey>
         return h(k1) ^ (h(k2) << 1);
     }
 };
-} // namespace std
 
 #endif // COPCLIB_HIERARCHY_KEY_H_

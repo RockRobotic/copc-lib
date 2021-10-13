@@ -31,6 +31,14 @@ VoxelKey VoxelKey::Bisect(const uint64_t &direction) const
     return key;
 }
 
+std::vector<VoxelKey> VoxelKey::GetChildren() const
+{
+    std::vector<VoxelKey> children(8);
+    for (int i = 0; i < 8; i++)
+        children[i] = Bisect(i);
+    return children;
+}
+
 VoxelKey VoxelKey::GetParent() const
 {
     // If key is valid, return parent, if not, return invalid key

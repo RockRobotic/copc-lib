@@ -37,6 +37,22 @@ TEST_CASE("GetParent Checks", "[Key]")
     REQUIRE(VoxelKey(0, 0, 0, 0).GetParent().IsValid() == false);
 }
 
+TEST_CASE("GetChildren Checks", "[Key]")
+{
+    auto key = VoxelKey::BaseKey();
+    auto children = key.GetChildren();
+    for (int i = 0; i < 8; i++)
+        REQUIRE(key.Bisect(i) == children[i]);
+    REQUIRE(children[0] == VoxelKey(1, 0, 0, 0));
+    REQUIRE(children[1] == VoxelKey(1, 1, 0, 0));
+    REQUIRE(children[2] == VoxelKey(1, 0, 1, 0));
+    REQUIRE(children[3] == VoxelKey(1, 1, 1, 0));
+    REQUIRE(children[4] == VoxelKey(1, 0, 0, 1));
+    REQUIRE(children[5] == VoxelKey(1, 1, 0, 1));
+    REQUIRE(children[6] == VoxelKey(1, 0, 1, 1));
+    REQUIRE(children[7] == VoxelKey(1, 1, 1, 1));
+}
+
 TEST_CASE("IsChild Checks", "[Key]")
 {
     REQUIRE(VoxelKey(-1, -1, -1, -1).ChildOf(VoxelKey::BaseKey()) == false);

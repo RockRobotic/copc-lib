@@ -17,10 +17,21 @@ def test_vector_char():
 
 def test_vector3():
     vec3 = copc.Vector3(0, 1, 2)
-
     vec3_other = pickle.loads(pickle.dumps(vec3, -1))
-
     assert vec3 == vec3_other
+
+
+def test_node():
+    node = copc.Node()
+    node.key = copc.VoxelKey(1, 2, 3, 4)
+    node.offset = 10000
+    node.point_count = 4
+    node.byte_size = 6
+    node_other = pickle.loads(pickle.dumps(node, -1))
+    assert node.key == node_other.key
+    assert node.offset == node_other.offset
+    assert node.point_count == node_other.point_count
+    assert node.byte_size == node_other.byte_size
 
 
 def test_las_header():

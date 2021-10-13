@@ -43,7 +43,7 @@ class Reader : public BaseIO
     std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
 
     // Helper function to get all points from the root
-    las::Points GetAllPoints();
+    las::Points GetAllPoints(double resolution = 0);
 
     // Resolution query functions
     // The resulting resolution may not be exactly this value: the minimum possible resolution that is at least as

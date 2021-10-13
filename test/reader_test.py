@@ -154,18 +154,18 @@ def test_spatial_query_functions():
     assert len(subset_points) == 91178
 
     # GetDepthAtResolution
-    assert reader.GetDepthAtResolution(2) == 4
+    assert reader.GetDepthAtResolution(3) == 4
     assert reader.GetDepthAtResolution(0) == 5
     assert reader.GetDepthAtResolution(float_info.min) == 5
     assert reader.GetDepthAtResolution(float_info.max) == 0
 
     # GetNodesAtResolution
-    subset_nodes = reader.GetNodesAtResolution(2)
+    subset_nodes = reader.GetNodesAtResolution(3)
     assert len(subset_nodes) == 192
     for node in reader.GetNodesAtResolution(0):
         assert node.key.d == 5
 
     # GetNodesWithinResolution
-    subset_nodes = reader.GetNodesWithinResolution(2)
+    subset_nodes = reader.GetNodesWithinResolution(3)
     assert len(subset_nodes) == 257
     assert len(reader.GetNodesWithinResolution(0)) == len(reader.GetAllChildren())

@@ -179,13 +179,16 @@ std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
     return out;
 }
 
-las::Points Reader::GetAllPoints()
+las::Points Reader::GetAllPoints(double resolution)
 {
     auto out = las::Points(GetLasHeader());
 
+    auto max_depth = GetDepthAtResolution(resolution);
+
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
-        out.AddPoints(GetPoints(node));
+        if (node.key.d <= max_depth)
+            out.AddPoints(GetPoints(node));
     return out;
 }
 
@@ -270,7 +273,7 @@ int32_t Reader::GetDepthAtResolution(double resolution)
     if (GetCopcHeader().span <= 0)
         throw std::runtime_error("Reader::GetDepthAtResolution: Octree span must be greater than 0.");
 
-    auto current_resolution = (GetLasHeader().max.x - GetLasHeader().min.x) / GetCopcHeader().span;
+    auto current_resolution = GetLasHeader().GetSpan() / GetCopcHeader().span;
 
     for (int32_t i = 0; i <= max_depth; i++)
     {

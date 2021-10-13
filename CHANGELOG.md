@@ -14,11 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `Vector3` operators to `Vector3`
 - **\[Python/C++\]** Add resolution query functions `GetDepthAtResolution`, `GetNodesAtResolution` and `GetNodesWithinResolution` to `Reader`
 - **\[Python/C++\]** Add `BoundsTrimFileExample` and `ResolutionTrimFileExample` to example-writer files
+- **\[Python/C++\]** Add `Classification` and `PointSourceID` getter and setter to `Points`
+- **\[Python/C++\]** Add `GetChildren` to `VoxelKey`
+- **\[Python\]** Make `Node` and `VoxelKey` picklable
+
 ### Changed
 
 - **\[Python/C++\]** Change order of arguments in `VoxelKey` spatial functions `Intersects`, `Contains`, and `Within`
-- **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, and `GetPointsWithinBox`. `resolution` can be used to limit the resolution during spatial queries
+- **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, `GetPointsWithinBox`, and `GetAllPoints` . `resolution` can be used to limit the resolution during spatial queries
 - **\[Python/C++\]** Update `span` of `autzen-classified.copc.laz` test file from 0 to 128
+
+### Fixed
+
+- **\[Python\]** Fix typo in pickling of `Node`
+- **\[Python\]** Fix scale error and reformat `NewFileExample()` in example_writer.py
 
 ## [1.3.0] - 2021-10-04
 

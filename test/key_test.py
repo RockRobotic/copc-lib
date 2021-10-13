@@ -21,6 +21,21 @@ def test_key_operators():
     assert copc.VoxelKey(0, 0, 0, 0) != copc.VoxelKey(1, 1, 1, 1)
 
 
+def test_get_children():
+    key = copc.VoxelKey.BaseKey()
+    children = key.GetChildren()
+    for i in range(8):
+        assert key.Bisect(i) == children[i]
+    assert children[0] == copc.VoxelKey(1, 0, 0, 0)
+    assert children[1] == copc.VoxelKey(1, 1, 0, 0)
+    assert children[2] == copc.VoxelKey(1, 0, 1, 0)
+    assert children[3] == copc.VoxelKey(1, 1, 1, 0)
+    assert children[4] == copc.VoxelKey(1, 0, 0, 1)
+    assert children[5] == copc.VoxelKey(1, 1, 0, 1)
+    assert children[6] == copc.VoxelKey(1, 0, 1, 1)
+    assert children[7] == copc.VoxelKey(1, 1, 1, 1)
+
+
 def test_get_parent():
     assert copc.VoxelKey(-1, -1, -1, -1).GetParent().IsValid() is False
 
