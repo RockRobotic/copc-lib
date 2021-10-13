@@ -33,6 +33,20 @@ def test_box_constructors():
         assert copc.Box(0, 2, 0, 1, 1, 1)
         assert copc.Box(0, 0, 2, 1, 1, 1)
 
+    # Vector3 constructor
+    box = copc.Box((1.0, 2.0, 3.0), (4.0, 5.0, 6.0))
+    assert box.x_min == 1.0
+    assert box.y_min == 2.0
+    assert box.z_min == 3.0
+    assert box.x_max == 4.0
+    assert box.y_max == 5.0
+    assert box.z_max == 6.0
+
+    with pytest.raises(RuntimeError):
+        assert copc.Box((2, 0, 0), (1, 1, 1))
+        assert copc.Box((0, 2, 0), (1, 1, 1))
+        assert copc.Box((0, 0, 2), (1, 1, 1))
+
     # copc.VoxelKey constructor
     # Make a LasHeader with span 10
     header = copc.LasHeader()

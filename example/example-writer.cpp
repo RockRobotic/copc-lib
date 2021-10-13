@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <random>
 
@@ -86,7 +87,7 @@ void BoundsTrimFileExample()
     FileReader reader("autzen-classified.copc.laz");
     auto old_header = reader.GetLasHeader();
 
-    // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    // Take horizontal 2D box of [400,400] roughly in the middle of the point cloud.
 
     auto middle = (old_header.max + old_header.min) / 2;
     Box box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200);
@@ -184,33 +185,36 @@ void ResolutionTrimFileExample()
 }
 
 // constants
-const Vector3 MIN_BOUNDS = {-2000, -5000, 20};
-const Vector3 MAX_BOUNDS = {5000, 1034, 125};
+const Vector3 MIN_BOUNDS = {-2000, -5000, 20}; // Scaled coordinates
+const Vector3 MAX_BOUNDS = {5000, 1034, 125};  // Scaled coordinates
 const int NUM_POINTS = 3000;
 
 // random num devices
 std::random_device rd;  // obtain a random number from hardware
 std::mt19937 gen(rd()); // seed the generator
 
-// This function will generate `NUM_POINTS` random points within the voxel bounds
-las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
+// This function will generate `NUM_POINTS` random points within the bounds
+las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int number_points)
 {
     // Voxel cube dimensions will be calculated from the maximum span of the file
     double span = std::max({MAX_BOUNDS.x - MIN_BOUNDS.x, MAX_BOUNDS.y - MIN_BOUNDS.y, MAX_BOUNDS.z - MIN_BOUNDS.z});
     // Step size accounts for depth level
     double step = span / std::pow(2, key.d);
 
-    double minx = MIN_BOUNDS.x + (step * key.x);
-    double miny = MIN_BOUNDS.y + (step * key.y);
-    double minz = MIN_BOUNDS.z + (step * key.z);
+    double x_min = header.min.x + (step * key.x);
+    double y_min = header.min.y + (step * key.y);
+    double z_min = header.min.z + (step * key.z);
 
     // Random num generators between the min and max spatial bounds of the voxel
-    std::uniform_int_distribution<> rand_x((int)std::min(minx, MAX_BOUNDS.x), (int)std::min(minx + step, MAX_BOUNDS.x));
-    std::uniform_int_distribution<> rand_y((int)std::min(miny, MAX_BOUNDS.y), (int)std::min(miny + step, MAX_BOUNDS.y));
-    std::uniform_int_distribution<> rand_z((int)std::min(minz, MAX_BOUNDS.z), (int)std::min(minz + step, MAX_BOUNDS.z));
+    std::uniform_int_distribution<> rand_x(std::ceil(header.ApplyInverseScaleX(std::max(header.min.x, x_min))),
+                                           std::floor(header.ApplyInverseScaleX(std::min(header.max.x, x_min + step))));
+    std::uniform_int_distribution<> rand_y(std::ceil(header.ApplyInverseScaleY(std::max(header.min.y, y_min))),
+                                           std::floor(header.ApplyInverseScaleY(std::min(header.max.y, y_min + step))));
+    std::uniform_int_distribution<> rand_z(std::ceil(header.ApplyInverseScaleZ(std::max(header.min.z, z_min))),
+                                           std::floor(header.ApplyInverseScaleZ(std::min(header.max.z, z_min + step))));
 
-    las::Points points(point_format_id, {1, 1, 1}, {0, 0, 0});
-    for (int i = 0; i < NUM_POINTS; i++)
+    las::Points points(header.point_format_id, header.scale, header.offset);
+    for (int i = 0; i < number_points; i++)
     {
         // Create a point with a given point format
         // The use of las::Point constructor is strongly discouraged, instead use las::Points::CreatePoint
@@ -220,7 +224,7 @@ las::Points RandomPoints(VoxelKey key, int8_t point_format_id)
         point->UnscaledY(rand_y(gen));
         point->UnscaledZ(rand_z(gen));
         // For visualization purposes
-        point->PointSourceID(key.d + key.x + key.y + key.d);
+        point->PointSourceID(key.d + key.x + key.y + key.z);
 
         points.AddPoint(point);
     }
@@ -234,20 +238,18 @@ void NewFileExample()
     Writer::LasConfig cfg(8, {1, 1, 1}, {0, 0, 0});
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
-    cfg.min = Vector3{(MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-                      (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
-    cfg.max = Vector3{(MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x, (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-                      (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z};
+    cfg.min = MIN_BOUNDS;
+    cfg.max = MAX_BOUNDS;
 
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:
     FileWriter writer("new-copc.copc.laz", cfg, 256, "TEST_WKT");
-
+    auto header = writer.GetLasHeader();
     // The root page is automatically created
     Page root_page = writer.GetRootPage();
 
     // First we'll add a root node
     VoxelKey key(0, 0, 0, 0);
-    auto points = RandomPoints(key, cfg.point_format_id);
+    auto points = RandomPoints(key, header, NUM_POINTS);
     // The node will be written to the file when we call AddNode
     writer.AddNode(root_page, key, points);
 
@@ -258,16 +260,19 @@ void NewFileExample()
 
         // Once our page is created, we can add nodes to it like before
         key = VoxelKey(1, 1, 1, 0);
-        points = RandomPoints(key, cfg.point_format_id);
+        assert(Box(key, header).Intersects(header.GetBounds())); // Check that the key intersects the bounds
+        points = RandomPoints(key, header, NUM_POINTS);
         writer.AddNode(page, key, points);
 
         key = VoxelKey(2, 2, 2, 0);
-        points = RandomPoints(key, cfg.point_format_id);
+        assert(Box(key, header).Intersects(header.GetBounds())); // Check that the key intersects the bounds
+        points = RandomPoints(key, header, NUM_POINTS);
         writer.AddNode(page, key, points);
 
         // We can nest subpages as much as we want, as long as they are children of the parent
-        auto sub_page = writer.AddSubPage(page, VoxelKey(3, 4, 4, 2));
-        points = RandomPoints(sub_page.key, cfg.point_format_id);
+        auto sub_page = writer.AddSubPage(page, VoxelKey(3, 4, 4, 0));
+        assert(Box(sub_page.key, header).Intersects(header.GetBounds())); // Check that the key intersects the bounds
+        points = RandomPoints(sub_page.key, header, NUM_POINTS);
         writer.AddNode(page, sub_page.key, points);
     }
 

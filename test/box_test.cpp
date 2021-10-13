@@ -39,6 +39,21 @@ TEST_CASE("Box constructor", "[Box]")
         REQUIRE_THROWS(Box(0, 0, 2, 1, 1, 1));
     }
 
+    SECTION("Vector3 constructor")
+    {
+        auto box = Box(Vector3(1.0, 2.0, 3.0), Vector3(4.0, 5.0, 6.0));
+        REQUIRE(box.x_min == 1.0);
+        REQUIRE(box.y_min == 2.0);
+        REQUIRE(box.z_min == 3.0);
+        REQUIRE(box.x_max == 4.0);
+        REQUIRE(box.y_max == 5.0);
+        REQUIRE(box.z_max == 6.0);
+
+        REQUIRE_THROWS(Box(Vector3(2, 0, 0), Vector3(1, 1, 1)));
+        REQUIRE_THROWS(Box(Vector3(0, 2, 0), Vector3(1, 1, 1)));
+        REQUIRE_THROWS(Box(Vector3(0, 0, 2), Vector3(1, 1, 1)));
+    }
+
     SECTION("VoxelKey constructor")
     {
         // Make a LasHeader with span 10

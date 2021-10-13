@@ -1,5 +1,6 @@
 import random
 import copclib as copc
+import math
 
 random.seed(0)
 
@@ -81,8 +82,8 @@ def BoundsTrimFileExample():
     reader = copc.FileReader("autzen-classified.copc.laz")
     old_header = reader.GetLasHeader()
 
-    # Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-    box = copc.Box(637190, 851109, 637390, 851309)
+    middle = (old_header.max + old_header.min) / 2
+    box = copc.Box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200)
 
     # Copy the header to the new file
     cfg = copc.LasConfig(old_header, reader.GetExtraByteVlr())
@@ -192,52 +193,47 @@ NUM_POINTS = 3000
 
 
 # This function will generate `NUM_POINTS` random points within the voxel bounds
-def RandomPoints(key, las_config, number_points):
+def RandomPoints(key, header, number_points):
 
     # Voxel cube dimensions will be calculated from the maximum span of the file
     span = max(
         {
-            las_config.max.x - las_config.min.x,
-            las_config.max.y - las_config.min.y,
-            las_config.max.z - las_config.min.z,
+            header.max.x - header.min.x,
+            header.max.y - header.min.y,
+            header.max.z - header.min.z,
         }
     )
     # Step size accounts for depth level
     step = span / pow(2, key.d)
 
-    minx = las_config.min.x + (step * key.x)
-    miny = las_config.min.y + (step * key.y)
-    minz = las_config.min.z + (step * key.z)
+    minx = header.min.x + (step * key.x)
+    miny = header.min.y + (step * key.y)
+    minz = header.min.z + (step * key.z)
 
     points = copc.Points(
-        las_config.point_format_id,
-        las_config.scale,
-        las_config.offset,
+        header.point_format_id,
+        header.scale,
+        header.offset,
     )
     for i in range(number_points):
         # Create a point with a given point format
         point = points.CreatePoint()
         # point has getters/setters for all attributes
-        point.UnscaledX = int(
-            random.uniform(
-                min(minx, las_config.max.x), min(minx + step, las_config.max.x)
-            )
+        point.UnscaledX = random.randint(
+            math.ceil(header.ApplyInverseScaleX(max(header.min.x, minx))),
+            math.floor(header.ApplyInverseScaleX(min(header.max.x, minx + step))),
         )
-
-        point.UnscaledY = int(
-            random.uniform(
-                min(miny, las_config.max.y), min(miny + step, las_config.max.y)
-            )
+        point.UnscaledY = random.randint(
+            math.ceil(header.ApplyInverseScaleY(max(header.min.y, miny))),
+            math.floor(header.ApplyInverseScaleY(min(header.max.y, miny + step))),
         )
-
-        point.UnscaledZ = int(
-            random.uniform(
-                min(minz, las_config.max.z), min(minz + step, las_config.max.z)
-            )
+        point.UnscaledZ = random.randint(
+            math.ceil(header.ApplyInverseScaleZ(max(header.min.z, minz))),
+            math.floor(header.ApplyInverseScaleZ(min(header.max.z, minz + step))),
         )
 
         # For visualization purposes
-        point.PointSourceID = key.d + key.x + key.y + key.d
+        point.PointSourceID = key.d + key.x + key.y + key.z
 
         points.AddPoint(point)
     return points
@@ -250,18 +246,18 @@ def NewFileExample():
     cfg = copc.LasConfig(8, [1, 1, 1], [0, 0, 0])
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
-    cfg.min = MIN_BOUNDS * cfg.scale - cfg.offset
-    cfg.max = MAX_BOUNDS * cfg.scale - cfg.offset
+    cfg.min = MIN_BOUNDS
+    cfg.max = MAX_BOUNDS
 
     # Now, we can create our COPC writer, with an optional `span` and `wkt`:
     writer = copc.FileWriter("new-copc.copc.laz", cfg, 256, "TEST_WKT")
-
+    header = writer.GetLasHeader()
     # The root page is automatically created
     root_page = writer.GetRootPage()
 
     # First we'll add a root node
     key = copc.VoxelKey(0, 0, 0, 0)
-    points = RandomPoints(key, cfg, NUM_POINTS)
+    points = RandomPoints(key, header, NUM_POINTS)
     # The node will be written to the file when we call AddNode
     writer.AddNode(root_page, key, points)
 
@@ -272,16 +268,25 @@ def NewFileExample():
 
     # Once our page is created, we can add nodes to it like before
     key = copc.VoxelKey(1, 1, 1, 0)
-    points = RandomPoints(key, cfg, NUM_POINTS)
+    assert copc.Box(key, header).Intersects(
+        header.GetBounds()
+    )  # Check that the key intersects the bounds
+    points = RandomPoints(key, header, NUM_POINTS)
     writer.AddNode(page, key, points)
 
     key = copc.VoxelKey(2, 2, 2, 0)
-    points = RandomPoints(key, cfg, NUM_POINTS)
+    assert copc.Box(key, header).Intersects(
+        header.GetBounds()
+    )  # Check that the key intersects the bounds
+    points = RandomPoints(key, header, NUM_POINTS)
     writer.AddNode(page, key, points)
 
     # We can nest subpages as much as we want, as long as they are children of the parent
-    sub_page = writer.AddSubPage(page, copc.VoxelKey(3, 4, 4, 2))
-    points = RandomPoints(sub_page.key, cfg, NUM_POINTS)
+    sub_page = writer.AddSubPage(page, copc.VoxelKey(3, 4, 4, 0))
+    assert copc.Box(sub_page.key, header).Intersects(
+        header.GetBounds()
+    )  # Check that the key intersects the bounds
+    points = RandomPoints(sub_page.key, header, NUM_POINTS)
     writer.AddNode(page, sub_page.key, points)
 
     # Make sure we call close to finish writing the file!
