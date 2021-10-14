@@ -141,13 +141,13 @@ def test_writer_pages():
     # Given a valid file path
     file_path = "writer_test.copc.laz"
 
-    # Root Page
     writer = copc.FileWriter(file_path, copc.LasConfig(0))
 
     assert not writer.FindNode(copc.VoxelKey.BaseKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey(5, 4, 3, 2)).IsValid()
 
+    # Root Page
     writer.GetRootPage()
     root_page = writer.GetRootPage()
     assert root_page.IsValid()
@@ -221,3 +221,80 @@ def test_writer_copy():
     assert new_reader.GetPointData(
         new_reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
     ) == reader.GetPointData(reader.FindNode(copc.VoxelKey(5, 9, 7, 0)))
+
+
+def add_node_bounds_check():
+
+    file_path = "writer_test.copc.laz"
+
+    cfg = copc.Writer.LasConfig(7, (0.1, 0.1, 0.1), (50, 50, 50))
+    cfg.min = (-10, -10, -5)
+    cfg.max = (10, 10, 5)
+
+    writer = copc.FileWriter(file_path, cfg)
+    header = writer.GetLasHeader()
+    root_page = writer.GetRootPage()
+
+    ## Checks on las header bounds
+
+    points = copc.Points(header.point_format_id, header.scale, header.offset)
+
+    point = points.CreatePoint()
+    # point has getters/setters for all attributes
+    point.X = 10
+    point.Y = 10
+    point.Z = 5
+
+    points.AddPoint(point)
+
+    assert writer.AddNode(root_page, (1, 1, 1, 1), points, False)
+    assert writer.AddNode(root_page, (1, 1, 1, 1), points, True)
+
+    point = points.CreatePoint()
+    # point has getters/setters for all attributes
+    point.X = 10
+    point.Y = 10
+    point.Z = 5.1
+
+    points.AddPoint(point)
+    assert writer.AddNode(
+        root_page, (1, 1, 1, 1), points, False
+    )  # Check on node Intersects
+    with pytest.raises(TypeError):
+        writer.AddNode(
+            root_page, (1, 1, 1, 1), points, True
+        )  # Check on node Intersects
+
+    assert writer.AddNode(
+        root_page, (2, 3, 3, 3), points, False
+    )  # Check on node Outside
+    with pytest.raises(TypeError):
+        writer.AddNode(root_page, (2, 3, 3, 3), points, True)  # Check on node Outside
+
+    ## Checks on node bounds
+
+    points = copc.Points(header.point_format_id, header.scale, header.offset)
+
+    point = points.CreatePoint()
+    # point has getters/setters for all attributes
+    point.X = 0
+    point.Y = 0
+    point.Z = 0
+
+    points.AddPoint(point)
+
+    assert writer.AddNode(root_page, (1, 0, 0, 0), points, False)
+    assert writer.AddNode(root_page, (1, 0, 0, 0), points, True)
+
+    point = points.CreatePoint()
+    # point has getters/setters for all attributes
+    point.X = 0.1
+    point.Y = 0.1
+    point.Z = 0.1
+
+    points.AddPoint(point)
+    assert writer.AddNode(root_page, (1, 0, 0, 0), points, False)
+    with pytest.raises(TypeError):
+        writer.AddNode(root_page, (1, 0, 0, 0), points, True)
+
+    writer.Close()

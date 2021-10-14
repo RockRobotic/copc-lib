@@ -64,19 +64,28 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     return *node;
 }
 
-Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
+Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points, bool check_bounds)
 {
     auto header = file_->GetLasHeader();
     if (points.PointFormatID() != header.point_format_id || points.PointRecordLength() != header.point_record_length)
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
 
-    // Check that all points are within the file bounds
-    if (!points.Within(Box(header.min, header.max)))
-        std::cout << "Writer::AddNode Warning: Adding points outside of las header bounds!" << std::endl;
+    if (check_bounds)
+    {
+        // Check that node intersects the las header bounds
+        if (!Box(key, header).Intersects(header.GetBounds()))
+            throw std::runtime_error("Writer::AddNode: Node must intersect the laz file bounds");
+        // If node not within las header bounds, check that all points are within the file bounds
+        if (!Box(key, header).Within(header.GetBounds()))
+        {
+            if (!points.Within(Box(header.min, header.max)))
+                throw std::runtime_error("Writer::AddNode: Points must be within the laz file bounds");
+        }
 
-    // Check that all points are within the node
-    if (!points.Within(Box(key, header)))
-        throw std::runtime_error("Writer::AddNode: Points must be within the key");
+        // Check that all points are within the node
+        if (!points.Within(Box(key, header)))
+            throw std::runtime_error("Writer::AddNode: Points must be within the key");
+    }
 
     std::vector<char> uncompressed = points.Pack();
     return AddNode(page, key, uncompressed);

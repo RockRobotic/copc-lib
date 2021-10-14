@@ -259,7 +259,7 @@ def NewFileExample():
     key = copc.VoxelKey(0, 0, 0, 0)
     points = RandomPoints(key, header, NUM_POINTS)
     # The node will be written to the file when we call AddNode
-    writer.AddNode(root_page, key, points)
+    writer.AddNode(root_page, key, points, check_bounds=True)
 
     # We can also add pages in the same way, as long as the Key we specify
     # is a child of the parent page
@@ -268,26 +268,17 @@ def NewFileExample():
 
     # Once our page is created, we can add nodes to it like before
     key = copc.VoxelKey(1, 1, 1, 0)
-    assert copc.Box(key, header).Intersects(
-        header.GetBounds()
-    )  # Check that the key intersects the bounds
     points = RandomPoints(key, header, NUM_POINTS)
-    writer.AddNode(page, key, points)
+    writer.AddNode(page, key, points, check_bounds=True)
 
     key = copc.VoxelKey(2, 2, 2, 0)
-    assert copc.Box(key, header).Intersects(
-        header.GetBounds()
-    )  # Check that the key intersects the bounds
     points = RandomPoints(key, header, NUM_POINTS)
-    writer.AddNode(page, key, points)
+    writer.AddNode(page, key, points, check_bounds=True)
 
     # We can nest subpages as much as we want, as long as they are children of the parent
     sub_page = writer.AddSubPage(page, copc.VoxelKey(3, 4, 4, 0))
-    assert copc.Box(sub_page.key, header).Intersects(
-        header.GetBounds()
-    )  # Check that the key intersects the bounds
     points = RandomPoints(sub_page.key, header, NUM_POINTS)
-    writer.AddNode(page, sub_page.key, points)
+    writer.AddNode(page, sub_page.key, points, check_bounds=True)
 
     # Make sure we call close to finish writing the file!
     writer.Close()

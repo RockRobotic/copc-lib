@@ -251,7 +251,7 @@ void NewFileExample()
     VoxelKey key(0, 0, 0, 0);
     auto points = RandomPoints(key, header, NUM_POINTS);
     // The node will be written to the file when we call AddNode
-    writer.AddNode(root_page, key, points);
+    writer.AddNode(root_page, key, points, true);
 
     // We can also add pages in the same way, as long as the Key we specify
     // is a child of the parent page
@@ -260,20 +260,17 @@ void NewFileExample()
 
         // Once our page is created, we can add nodes to it like before
         key = VoxelKey(1, 1, 1, 0);
-        assert(Box(key, header).Intersects(header.GetBounds())); // Check that the key intersects the bounds
         points = RandomPoints(key, header, NUM_POINTS);
-        writer.AddNode(page, key, points);
+        writer.AddNode(page, key, points, true);
 
         key = VoxelKey(2, 2, 2, 0);
-        assert(Box(key, header).Intersects(header.GetBounds())); // Check that the key intersects the bounds
         points = RandomPoints(key, header, NUM_POINTS);
-        writer.AddNode(page, key, points);
+        writer.AddNode(page, key, points, true);
 
         // We can nest subpages as much as we want, as long as they are children of the parent
         auto sub_page = writer.AddSubPage(page, VoxelKey(3, 4, 4, 0));
-        assert(Box(sub_page.key, header).Intersects(header.GetBounds())); // Check that the key intersects the bounds
         points = RandomPoints(sub_page.key, header, NUM_POINTS);
-        writer.AddNode(page, sub_page.key, points);
+        writer.AddNode(page, sub_page.key, points, true);
     }
 
     // Make sure we call close to finish writing the file!
