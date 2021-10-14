@@ -26,15 +26,15 @@ TEST_CASE("GetPointData Test", "[Reader] ")
 
             int x;
             std::memcpy(&x, point_buff, sizeof(x));
-            REQUIRE(x == -144147);
+            REQUIRE(x == -113822);
             std::memcpy(&x, point_buff + record_length, sizeof(x));
-            REQUIRE(x == -172520);
+            REQUIRE(x == -215872);
             std::memcpy(&x, point_buff + record_length * 2, sizeof(x));
-            REQUIRE(x == -121603);
+            REQUIRE(x == -94105);
             std::memcpy(&x, point_buff + record_length * 3, sizeof(x));
-            REQUIRE(x == -49828);
+            REQUIRE(x == -141210);
             std::memcpy(&x, point_buff + record_length * 4, sizeof(x));
-            REQUIRE(x == -138082);
+            REQUIRE(x == -156093);
         }
 
         {
@@ -76,27 +76,26 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points.size() == hier_entry.point_count);
 
         // Getters
-        REQUIRE(points[0]->UnscaledX() == -144147);
-        REQUIRE(points[0]->UnscaledY() == -13541);
-        REQUIRE(points[0]->UnscaledZ() == -227681);
+        REQUIRE(points[0]->UnscaledX() == -113822);
+        REQUIRE(points[0]->UnscaledY() == -118589);
+        REQUIRE(points[0]->UnscaledZ() == -221965);
         REQUIRE(points[0]->Intensity() == 11);
         REQUIRE(points[0]->NumberOfReturns() == 3);
         REQUIRE(points[0]->ReturnNumber() == 1);
         REQUIRE(points[0]->ScanDirectionFlag() == true);
         REQUIRE(points[0]->EdgeOfFlightLineFlag() == false);
         REQUIRE(points[0]->Classification() == 5);
-        REQUIRE(points[0]->ExtendedScanAngle() == 833);
-        REQUIRE_THAT(points[0]->ScanAngle(), Catch::Matchers::WithinAbs(5, 0.01));
+        REQUIRE(points[0]->ExtendedScanAngle() == 1667);
+        REQUIRE_THAT(points[0]->ScanAngle(), Catch::Matchers::WithinAbs(10, 0.01));
         REQUIRE(points[0]->UserData() == 124);
-        REQUIRE(points[0]->PointSourceID() == 7330);
-        REQUIRE(points[0]->GPSTime() > 247570);
-        REQUIRE(points[0]->GPSTime() < 247570.5);
-        REQUIRE(points[0]->Red() == 46);
-        REQUIRE(points[0]->Green() == 60);
-        REQUIRE(points[0]->Blue() == 92);
+        REQUIRE(points[0]->PointSourceID() == 7327);
+        REQUIRE_THAT(points[0]->GPSTime(), Catch::Matchers::WithinAbs(246098.8141472744, 0.0001));
+        REQUIRE(points[0]->Red() == 16896);
+        REQUIRE(points[0]->Green() == 65280);
+        REQUIRE(points[0]->Blue() == 1536);
         REQUIRE(points[0]->PointFormatID() == 7);
-        REQUIRE(points[0]->PointRecordLength() == 38);
-        REQUIRE(points[0]->ExtraBytes().size() == 2);
+        REQUIRE(points[0]->PointRecordLength() == 36);
+        REQUIRE(points[0]->ExtraBytes().empty());
         REQUIRE_THROWS(points[0]->NIR());
         REQUIRE_THROWS(points[0]->ScanAngleRank());
 

@@ -9,25 +9,24 @@ def test_reader():
 
     # GetLasHeader Test
     copc_info = reader.copc_info_vlr
-    assert copc_info.center_x == 0
-    assert copc_info.center_y == 0
-    assert copc_info.center_z == 0
-    assert copc_info.halfsize == 0
-    assert copc_info.spacing == 16.0
-    assert copc_info.root_hier_offset == 94789784
+    assert copc_info.center_x == pytest.approx(637905.5448, 0.0001)
+    assert copc_info.center_y == pytest.approx(851209.9048, 0.0001)
+    assert copc_info.center_z == pytest.approx(2733.8948, 0.0001)
+    assert copc_info.halfsize == pytest.approx(2327.7548, 0.0001)
+    assert copc_info.spacing == pytest.approx(36.3711, 0.0001)
+    assert copc_info.root_hier_offset == 73017045
     assert copc_info.root_hier_size == 8896
 
     # GetLasHeader Test
     header = reader.las_header
     assert header.point_format_id == 7
     assert header.point_count == 10653336
-    assert header.point_record_length == 38
-    assert header.num_extra_bytes == 2
+    assert header.point_record_length == 36
+    assert header.num_extra_bytes == 0
 
     # WKT Test
     wkt = reader.wkt
-    assert len(wkt) > 0
-    assert wkt.startswith("COMPD_CS[")
+    assert len(wkt) == 0
 
 
 def test_find_key():
@@ -39,14 +38,14 @@ def test_find_key():
 
     assert hier_entry.IsValid() == True
     assert hier_entry.key == key
-    assert hier_entry.point_count == 61022
+    assert hier_entry.point_count == 60978
 
     key = (5, 9, 7, 0)  # Test implicit conversion of key to tuple
     hier_entry = reader.FindNode(key)
 
     assert hier_entry.IsValid() == True
     assert hier_entry.key == key
-    assert hier_entry.point_count == 12019
+    assert hier_entry.point_count == 12021
 
 
 def test_get_all_children():

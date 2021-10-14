@@ -12,7 +12,7 @@ namespace copc
 class CopcExtent : public las::CopcExtentsVlr::CopcExtent
 {
   public:
-    CopcExtent() : las::CopcExtentsVlr::CopcExtent(0, 0){};
+    CopcExtent();
 
     CopcExtent(double minimum, double maximum);
 

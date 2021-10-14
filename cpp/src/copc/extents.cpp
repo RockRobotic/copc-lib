@@ -3,6 +3,8 @@
 namespace copc
 {
 
+CopcExtent::CopcExtent() : las::CopcExtentsVlr::CopcExtent() {}
+
 CopcExtent::CopcExtent(double minimum, double maximum) : las::CopcExtentsVlr::CopcExtent(minimum, maximum)
 {
     if (minimum > maximum)

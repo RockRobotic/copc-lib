@@ -17,12 +17,12 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetCopcInfo Test")
         {
             auto copc_info = reader.GetCopcInfo();
-            REQUIRE(copc_info.center_x == 0);
-            REQUIRE(copc_info.center_y == 0);
-            REQUIRE(copc_info.center_z == 0);
-            REQUIRE(copc_info.halfsize == 0);
-            REQUIRE(copc_info.spacing == 16.0);
-            REQUIRE(copc_info.root_hier_offset == 94789784);
+            REQUIRE_THAT(copc_info.center_x, Catch::Matchers::WithinAbs(637905.5448, 0.0001));
+            REQUIRE_THAT(copc_info.center_y, Catch::Matchers::WithinAbs(851209.9048, 0.0001));
+            REQUIRE_THAT(copc_info.center_z, Catch::Matchers::WithinAbs(2733.8948, 0.0001));
+            REQUIRE_THAT(copc_info.halfsize, Catch::Matchers::WithinAbs(2327.7548, 0.0001));
+            REQUIRE_THAT(copc_info.spacing, Catch::Matchers::WithinAbs(36.3711, 0.0001));
+            REQUIRE(copc_info.root_hier_offset == 73017045);
             REQUIRE(copc_info.root_hier_size == 8896);
         }
 
@@ -32,15 +32,14 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE(header.header_size == 375);
             REQUIRE(header.point_format_id == 7);
             REQUIRE(header.point_count == 10653336);
-            REQUIRE(header.point_record_length == 38);
-            REQUIRE(header.NumExtraBytes() == 2);
+            REQUIRE(header.point_record_length == 36);
+            REQUIRE(header.NumExtraBytes() == 0);
         }
 
         SECTION("WKT")
         {
             auto wkt = reader.GetWkt();
-            REQUIRE(!wkt.empty());
-            REQUIRE(wkt.rfind("COMPD_CS[", 0) == 0);
+            REQUIRE(wkt.empty());
         }
     }
 
@@ -54,12 +53,12 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetCopcInfo Test")
         {
             auto copc_info = reader.GetCopcInfo();
-            REQUIRE(copc_info.center_x == 0);
-            REQUIRE(copc_info.center_y == 0);
-            REQUIRE(copc_info.center_z == 0);
-            REQUIRE(copc_info.halfsize == 0);
-            REQUIRE(copc_info.spacing == 16.0);
-            REQUIRE(copc_info.root_hier_offset == 94789784);
+            REQUIRE_THAT(copc_info.center_x, Catch::Matchers::WithinAbs(637905.5448828125, 0.0001));
+            REQUIRE_THAT(copc_info.center_y, Catch::Matchers::WithinAbs(851209.9048828125, 0.0001));
+            REQUIRE_THAT(copc_info.center_z, Catch::Matchers::WithinAbs(2733.8948828125, 0.0001));
+            REQUIRE_THAT(copc_info.halfsize, Catch::Matchers::WithinAbs(2327.7548828125, 0.0001));
+            REQUIRE_THAT(copc_info.spacing, Catch::Matchers::WithinAbs(36.3711700439, 0.0001));
+            REQUIRE(copc_info.root_hier_offset == 73017045);
             REQUIRE(copc_info.root_hier_size == 8896);
         }
 
@@ -74,8 +73,7 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("WKT")
         {
             auto wkt = reader.GetWkt();
-            REQUIRE(!wkt.empty());
-            REQUIRE(wkt.rfind("COMPD_CS[", 0) == 0);
+            REQUIRE(wkt.empty());
         }
     }
 }
@@ -91,14 +89,14 @@ TEST_CASE("FindKey Check", "[Reader]")
 
         REQUIRE(hier_entry.IsValid() == true);
         REQUIRE(hier_entry.key == key);
-        REQUIRE(hier_entry.point_count == 61022);
+        REQUIRE(hier_entry.point_count == 60978);
 
         key = VoxelKey(5, 9, 7, 0);
         hier_entry = reader.FindNode(key);
 
         REQUIRE(hier_entry.IsValid() == true);
         REQUIRE(hier_entry.key == key);
-        REQUIRE(hier_entry.point_count == 12019);
+        REQUIRE(hier_entry.point_count == 12021);
     }
 }
 
@@ -109,13 +107,13 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader]")
         FileReader reader("autzen-classified.copc.laz");
 
         auto eb_vlr = reader.GetExtraByteVlr();
-        REQUIRE(eb_vlr.items.size() == 2);
+        REQUIRE(eb_vlr.items.size() == 0);
 
-        REQUIRE(eb_vlr.items[0].data_type == 1);
-        REQUIRE(eb_vlr.items[0].name == "FIELD_0");
-
-        REQUIRE(eb_vlr.items[1].data_type == 1);
-        REQUIRE(eb_vlr.items[1].name == "FIELD_1");
+        //        REQUIRE(eb_vlr.items[0].data_type == 1);
+        //        REQUIRE(eb_vlr.items[0].name == "FIELD_0");
+        //
+        //        REQUIRE(eb_vlr.items[1].data_type == 1);
+        //        REQUIRE(eb_vlr.items[1].name == "FIELD_1");
     }
 }
 
@@ -226,8 +224,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
             //                                                               std::ceil(header.max.y),
             //                                                               std::ceil(header.max.z)));
             //            REQUIRE(subset_points.Get().size() == header.point_count);
-        }
-        {
+        } {
             // Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
             auto subset_points = reader.GetPointsWithinBox(Box(637190, 851109, 637390, 851309));
             REQUIRE(subset_points.Get().size() == 22902);
