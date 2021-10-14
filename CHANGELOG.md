@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python\]** Make `Node` and `VoxelKey` picklable
 - **\[Python/C++\]** Add a check that points are within the node in `Writer::AddNode`
 - **\[Python/C++\]** Add a check that points are within the las header bounds in `Writer::AddNode`
+- **\[Python/C++\]** Add a new constructor to `Box` using `Vector3`
 
 ### Changed
 
