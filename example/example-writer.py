@@ -1,24 +1,21 @@
 import random
-
 import copclib as copc
 
+random.seed(0)
 
 # In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
 def TrimFileExample(compressor_example_flag):
 
     # We'll get our point data from this file
     reader = copc.FileReader("autzen-classified.copc.laz")
-    old_header = reader.GetLasHeader()
+    old_header = reader.las_header
 
     # Copy the header to the new file
-    cfg = copc.LasHeaderConfig(old_header, reader.GetExtraByteVlr())
+    cfg = copc.LasHeaderConfig(old_header, reader.extra_bytes_vlr)
 
     # Now, we can create our actual writer, with an optional `spacing` and `wkt`:
     writer = copc.FileWriter(
-        "autzen-trimmed.copc.laz",
-        cfg,
-        reader.GetCopcInfo().spacing,
-        reader.GetWkt(),
+        "autzen-trimmed.copc.laz", cfg, reader.copc_info_vlr.spacing, reader.wkt
     )
 
     # The root page is automatically created and added for us
@@ -43,7 +40,7 @@ def TrimFileExample(compressor_example_flag):
         # (for example, compress multiple nodes in parallel and have one thread writing the data),
         # we can use the Compressor class:
         else:
-            header = writer.GetLasHeader()
+            header = writer.las_header
             uncompressed_points = reader.GetPointData(node)
             compressed_points = copc.CompressBytes(
                 uncompressed_points, header.point_format_id, cfg.NumExtraBytes()
@@ -66,7 +63,7 @@ def TrimFileExample(compressor_example_flag):
         # Similarly, we could retrieve the compressed node data from the file
         # and decompress it later using the Decompressor class
         if compressor_example_flag:
-            header = writer.GetLasHeader()
+            header = writer.las_header
             compressed_points = reader.GetPointDataCompressed(node.key)
             uncompressed_points = copc.DecompressBytes(
                 compressed_points, header, node.point_count
@@ -75,51 +72,165 @@ def TrimFileExample(compressor_example_flag):
     new_reader.Close()
 
 
-# constants
+# In this example, we'll filter the points in the autzen dataset based on bounds.
+def BoundsTrimFileExample():
+    # We'll get our point data from this file
+    reader = copc.FileReader("autzen-classified.copc.laz")
+    old_header = reader.las_header
+
+    # Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    box = copc.Box(637190, 851109, 637390, 851309)
+
+    # Copy the header to the new file
+    cfg = copc.LasHeaderConfig(old_header, reader.extra_bytes_vlr)
+
+    # Now, we can create our actual writer, with an optional `spacing` and `wkt`:
+    writer = copc.FileWriter(
+        "autzen-bounds-trimmed.copc.laz",
+        cfg,
+        reader.copc_info_vlr.spacing,
+        reader.wkt,
+    )
+
+    # The root page is automatically created and added for us
+    root_page = writer.GetRootPage()
+
+    for node in reader.GetAllChildren():
+        if node.key.Within(old_header, box):
+            # If node is within the box then add all points (without decompressing)
+            writer.AddNodeCompressed(
+                root_page,
+                node.key,
+                reader.GetPointDataCompressed(node),
+                node.point_count,
+            )
+        elif node.key.Intersects(old_header, box):
+            # If node only crosses the box then decompress points data and get subset of points that are within the box
+            points = reader.GetPoints(node).GetWithin(box)
+            writer.AddNode(root_page, node.key, copc.Points(points).Pack())
+
+    # Make sure we call close to finish writing the file!
+    writer.Close()
+
+    # Now, let's test our new file
+    new_reader = copc.FileReader("autzen-bounds-trimmed.copc.laz")
+
+    # Let's go through each point and make sure they fit in the within the Box
+    for node in new_reader.GetAllChildren():
+        points = new_reader.GetPoints(node)
+        assert points.Within(box)
+
+
+# In this example, we'll filter the points in the autzen dataset based on resolution.
+def ResolutionTrimFileExample():
+    # We'll get our point data from this file
+    reader = copc.FileReader("autzen-classified.copc.laz")
+    old_header = reader.las_header
+
+    resolution = 10
+    target_depth = reader.GetDepthAtResolution(resolution)
+    # Check that the resolution of the target depth is equal or smaller to the requested resolution
+    assert (
+        copc.VoxelKey.GetResolutionAtDepth(
+            target_depth, old_header, reader.copc_info_vlr
+        )
+        <= resolution
+    )
+
+    # Copy the header to the new file
+    cfg = copc.LasHeaderConfig(old_header, reader.extra_bytes_vlr)
+
+    # Now, we can create our actual writer, with an optional `spacing` and `wkt`:
+    writer = copc.FileWriter(
+        "autzen-resolution-trimmed.copc.laz",
+        cfg,
+        reader.copc_info_vlr.spacing,
+        reader.wkt,
+    )
+
+    # The root page is automatically created and added for us
+    root_page = writer.GetRootPage()
+
+    for node in reader.GetAllChildren():
+        if node.key.d <= target_depth:
+            writer.AddNodeCompressed(
+                root_page,
+                node.key,
+                reader.GetPointDataCompressed(node),
+                node.point_count,
+            )
+
+    # Make sure we call close to finish writing the file!
+    writer.Close()
+
+    # Now, let's test our new file
+    new_reader = copc.FileReader("autzen-resolution-trimmed.copc.laz")
+
+    new_header = new_reader.las_header
+    new_copc_info = new_reader.copc_info_vlr
+
+    # Let's go through each node we've written and make sure the resolution is correct
+    for node in new_reader.GetAllChildren():
+        assert node.key.d <= target_depth
+
+    # Let's make sure the max resolution is at least as much as we requested
+    max_octree_depth = new_reader.GetDepthAtResolution(0)
+    assert (
+        copc.VoxelKey.GetResolutionAtDepth(max_octree_depth, new_header, new_copc_info)
+        <= resolution
+    )
+
+    # constants
+
+
 MIN_BOUNDS = copc.Vector3(-2000, -5000, 20)  # Argument Constructor
 MAX_BOUNDS = copc.Vector3([5000, 1034, 125])  # List Constructor
 NUM_POINTS = 3000
 
 
 # This function will generate `NUM_POINTS` random points within the voxel bounds
-def RandomPoints(key, point_format_id):
+def RandomPoints(key, las_config, number_points):
 
-    # Voxel cube dimensions will be calculated from the maximum span of the file
+    # Voxel cube dimensions will be calculated from the maximum spacing of the file
     span = max(
         {
-            MAX_BOUNDS.x - MIN_BOUNDS.x,
-            MAX_BOUNDS.y - MIN_BOUNDS.y,
-            MAX_BOUNDS.z - MIN_BOUNDS.z,
+            las_config.max.x - las_config.min.x,
+            las_config.max.y - las_config.min.y,
+            las_config.max.z - las_config.min.z,
         }
     )
     # Step size accounts for depth level
     step = span / pow(2, key.d)
 
-    minx = MIN_BOUNDS.x + (step * key.x)
-    miny = MIN_BOUNDS.y + (step * key.y)
-    minz = MIN_BOUNDS.z + (step * key.z)
-
-    random.seed(0)
+    minx = las_config.min.x + (step * key.x)
+    miny = las_config.min.y + (step * key.y)
+    minz = las_config.min.z + (step * key.z)
 
     points = copc.Points(
-        point_format_id,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
+        las_config.point_format_id,
+        las_config.scale,
+        las_config.offset,
     )
-    for i in range(NUM_POINTS):
+    for i in range(number_points):
         # Create a point with a given point format
         point = points.CreatePoint()
         # point has getters/setters for all attributes
         point.UnscaledX = int(
-            random.uniform(min(minx, MAX_BOUNDS.x), min(minx + step, MAX_BOUNDS.x))
+            random.uniform(
+                min(minx, las_config.max.x), min(minx + step, las_config.max.x)
+            )
         )
 
         point.UnscaledY = int(
-            random.uniform(min(miny, MAX_BOUNDS.y), min(miny + step, MAX_BOUNDS.y))
+            random.uniform(
+                min(miny, las_config.max.y), min(miny + step, las_config.max.y)
+            )
         )
 
         point.UnscaledZ = int(
-            random.uniform(min(minz, MAX_BOUNDS.z), min(minz + step, MAX_BOUNDS.z))
+            random.uniform(
+                min(minz, las_config.max.z), min(minz + step, las_config.max.z)
+            )
         )
 
         # For visualization purposes
@@ -136,16 +247,8 @@ def NewFileExample():
     cfg = copc.LasHeaderConfig(8, [1, 1, 1], [0, 0, 0])
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
-    cfg.min = [
-        (MIN_BOUNDS.x * cfg.scale.x) - cfg.offset.x,
-        (MIN_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-        (MIN_BOUNDS.z * cfg.scale.z) - cfg.offset.z,
-    ]
-    cfg.max = [
-        (MAX_BOUNDS.x * cfg.scale.x) - cfg.offset.x,
-        (MAX_BOUNDS.y * cfg.scale.y) - cfg.offset.y,
-        (MAX_BOUNDS.z * cfg.scale.z) - cfg.offset.z,
-    ]
+    cfg.min = MIN_BOUNDS * cfg.scale - cfg.offset
+    cfg.max = MAX_BOUNDS * cfg.scale - cfg.offset
 
     # Now, we can create our COPC writer, with an optional `spacing` and `wkt`:
     writer = copc.FileWriter("new-copc.copc.laz", cfg, 256, "TEST_WKT")
@@ -155,7 +258,7 @@ def NewFileExample():
 
     # First we'll add a root node
     key = copc.VoxelKey(0, 0, 0, 0)
-    points = RandomPoints(key, cfg.point_format_id)
+    points = RandomPoints(key, cfg, NUM_POINTS)
     # The node will be written to the file when we call AddNode
     writer.AddNode(root_page, key, points)
 
@@ -166,16 +269,16 @@ def NewFileExample():
 
     # Once our page is created, we can add nodes to it like before
     key = copc.VoxelKey(1, 1, 1, 0)
-    points = RandomPoints(key, cfg.point_format_id)
+    points = RandomPoints(key, cfg, NUM_POINTS)
     writer.AddNode(page, key, points)
 
     key = copc.VoxelKey(2, 2, 2, 0)
-    points = RandomPoints(key, cfg.point_format_id)
+    points = RandomPoints(key, cfg, NUM_POINTS)
     writer.AddNode(page, key, points)
 
     # We can nest subpages as much as we want, as long as they are children of the parent
     sub_page = writer.AddSubPage(page, (3, 4, 4, 2))
-    points = RandomPoints(sub_page.key, cfg.point_format_id)
+    points = RandomPoints(sub_page.key, cfg, NUM_POINTS)
     writer.AddNode(page, sub_page.key, points)
 
     # Make sure we call close to finish writing the file!
@@ -183,8 +286,8 @@ def NewFileExample():
 
 
 if __name__ == "__main__":
-    # TODO[Leo]: (Extents) Update this once we have updated copc test file
-    # TrimFileExample(False)
-    # TrimFileExample(True)
-    # NewFileExample()
-    pass
+    TrimFileExample(False)
+    TrimFileExample(True)
+    BoundsTrimFileExample()
+    ResolutionTrimFileExample()
+    NewFileExample()

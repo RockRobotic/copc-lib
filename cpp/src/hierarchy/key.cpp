@@ -16,17 +16,27 @@ VoxelKey VoxelKey::Bisect(const uint64_t &direction) const
     VoxelKey key(*this);
     ++key.d;
 
-    auto step([&key, direction](uint8_t i) {
-        key.IdAt(i) *= 2;
-        const bool positive(direction & (((uint64_t)1) << i));
-        if (positive)
-            ++key.IdAt(i);
-    });
+    auto step(
+        [&key, direction](uint8_t i)
+        {
+            key.IdAt(i) *= 2;
+            const bool positive(direction & (((uint64_t)1) << i));
+            if (positive)
+                ++key.IdAt(i);
+        });
 
     for (uint8_t i(0); i < 3; ++i)
         step(i);
 
     return key;
+}
+
+std::vector<VoxelKey> VoxelKey::GetChildren() const
+{
+    std::vector<VoxelKey> children(8);
+    for (int i = 0; i < 8; i++)
+        children[i] = Bisect(i);
+    return children;
 }
 
 VoxelKey VoxelKey::GetParent() const
@@ -67,15 +77,29 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     return false;
 }
 
-bool VoxelKey::Intersects(const Box &box, const las::LasHeader &header) const
+double VoxelKey::Resolution(const las::LasHeader &header, const las::CopcInfoVlr &copc_info) const
+{
+    return copc_info.spacing / std::pow(2, d);
+}
+
+double VoxelKey::GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcInfoVlr &copc_info)
+{
+    return VoxelKey(d, 0, 0, 0).Resolution(header, copc_info);
+}
+
+bool VoxelKey::Intersects(const las::LasHeader &header, const Box &box) const
 {
     return Box(*this, header).Intersects(box);
 }
-bool VoxelKey::Contains(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Contains(box); }
-bool VoxelKey::Contains(const Vector3 &point, const las::LasHeader &header) const
+bool VoxelKey::Contains(const las::LasHeader &header, const Box &box) const { return Box(*this, header).Contains(box); }
+bool VoxelKey::Contains(const las::LasHeader &header, const Vector3 &point) const
 {
     return Box(*this, header).Contains(point);
 }
-bool VoxelKey::Within(const Box &box, const las::LasHeader &header) const { return Box(*this, header).Within(box); }
+bool VoxelKey::Within(const las::LasHeader &header, const Box &box) const { return Box(*this, header).Within(box); }
+bool VoxelKey::Crosses(const las::LasHeader &header, const Box &box) const
+{
+    return Box(*this, header).Intersects(box) && !Box(*this, header).Within(box);
+}
 
 } // namespace copc

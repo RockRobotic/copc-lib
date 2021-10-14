@@ -39,7 +39,7 @@ class Writer : public BaseIO
         las::EbVlr extra_bytes;
     };
 
-    Writer(std::ostream &out_stream, LasHeaderConfig const &config, int spacing = 0, const std::string &wkt = "")
+    Writer(std::ostream &out_stream, LasHeaderConfig const &config, double spacing = 0, const std::string &wkt = "")
     {
         InitWriter(out_stream, config, spacing, wkt);
     }
@@ -80,8 +80,7 @@ class Writer : public BaseIO
     };
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, const int &spacing,
-                    const std::string &wkt);
+    void InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, double spacing, const std::string &wkt);
     // Converts the LasHeaderConfig object into an actual LasHeader
     static las::LasHeader HeaderFromConfig(LasHeaderConfig const &config);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
@@ -91,7 +90,7 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, LasHeaderConfig const &config, const int &spacing = 0,
+    FileWriter(const std::string &file_path, LasHeaderConfig const &config, double spacing = 0,
                const std::string &wkt = "")
     {
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);

@@ -61,8 +61,7 @@ std::string Writer::LasHeaderConfig::ToString() const
     return ss.str();
 }
 
-void Writer::InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, const int &spacing,
-                        const std::string &wkt)
+void Writer::InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, double spacing, const std::string &wkt)
 {
     auto header = HeaderFromConfig(config);
     this->file_ = std::make_shared<CopcFile>(header, spacing, wkt, config.extra_bytes);

@@ -10,6 +10,7 @@
 
 #include "copc-lib/geometry/box.hpp"
 #include "copc-lib/geometry/vector3.hpp"
+#include "copc-lib/las/vlr.hpp"
 
 namespace copc
 {
@@ -40,6 +41,7 @@ class VoxelKey
 
     // Returns the corresponding key depending on direction [0,7]
     VoxelKey Bisect(const uint64_t &direction) const;
+    std::vector<VoxelKey> GetChildren() const;
 
     // The hierarchial parent of this key
     VoxelKey GetParent() const;
@@ -51,10 +53,16 @@ class VoxelKey
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;
 
-    bool Intersects(const Box &box, const las::LasHeader &header) const;
-    bool Contains(const Box &vec, const las::LasHeader &header) const;
-    bool Contains(const Vector3 &point, const las::LasHeader &header) const;
-    bool Within(const Box &box, const las::LasHeader &header) const;
+    // Spatial query functions
+    // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
+    bool Intersects(const las::LasHeader &header, const Box &box) const;
+    bool Contains(const las::LasHeader &header, const Box &vec) const;
+    bool Contains(const las::LasHeader &header, const Vector3 &point) const;
+    bool Within(const las::LasHeader &header, const Box &box) const;
+    bool Crosses(const las::LasHeader &header, const Box &box) const;
+
+    double Resolution(const las::LasHeader &header, const las::CopcInfoVlr &copc_info) const;
+    static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcInfoVlr &copc_info);
 
     int32_t d;
     int32_t x;
@@ -89,9 +97,7 @@ inline bool operator!=(const VoxelKey &a, const VoxelKey &b) { return !(a == b);
 } // namespace copc
 
 // Hash function to allow VoxelKeys as unordered_map keys
-namespace std
-{
-template <> struct hash<copc::VoxelKey>
+template <> struct std::hash<copc::VoxelKey>
 {
     std::size_t operator()(copc::VoxelKey const &k) const noexcept
     {
@@ -102,6 +108,5 @@ template <> struct hash<copc::VoxelKey>
         return h(k1) ^ (h(k2) << 1);
     }
 };
-} // namespace std
 
 #endif // COPCLIB_HIERARCHY_KEY_H_

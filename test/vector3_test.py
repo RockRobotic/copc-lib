@@ -30,7 +30,42 @@ def test_vector3():
     assert vec.y == 0.0
     assert vec.z == 0.0
 
-    # Operators
+    # Vector3 Operators
+
+    vec = copc.Vector3(1.0, 2.0, 3.0)
+    other = copc.Vector3(1.0, 2.0, 3.0)
+
+    res = vec * other
+
+    assert res.x == 1.0
+    assert res.y == 4.0
+    assert res.z == 9.0
+
+    res = vec / other
+
+    assert res.x == 1.0
+    assert res.y == 1.0
+    assert res.z == 1.0
+
+    res = vec // (2.0, 2.0, 2.0)
+
+    assert res.x == 0.0
+    assert res.y == 1.0
+    assert res.z == 1.0
+
+    res = vec + other
+
+    assert res.x == 2.0
+    assert res.y == 4.0
+    assert res.z == 6.0
+
+    res = vec - other
+
+    assert res.x == 0.0
+    assert res.y == 0.0
+    assert res.z == 0.0
+
+    # Double Operators
 
     vec = copc.Vector3(1.0, 2.0, 3.0)
     other_vec = vec

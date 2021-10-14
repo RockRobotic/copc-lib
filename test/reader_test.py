@@ -1,6 +1,6 @@
 import copclib as copc
 import pytest
-import math
+from sys import float_info
 
 
 def test_reader():
@@ -105,6 +105,10 @@ def test_spatial_query_functions():
 
     reader = copc.FileReader("autzen-classified.copc.laz")
 
+    # Make horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    middle = (reader.las_header.max + reader.las_header.min) / 2
+    middle_box = (middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200)
+
     # GetNodesWithinBox
 
     ## Check that no nodes fit in a zero-sized box
@@ -118,8 +122,7 @@ def test_spatial_query_functions():
 
     # GetNodesIntersectBox
 
-    ## Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-    subset_nodes = reader.GetNodesIntersectBox(copc.Box(637190, 851109, 637390, 851309))
+    subset_nodes = reader.GetNodesIntersectBox(middle_box)
     assert len(subset_nodes) == 13
 
     # GetPointsWithinBox
@@ -143,6 +146,22 @@ def test_spatial_query_functions():
     # )
     # assert len(subset_points) == header.point_count
 
-    ## Take horizontal 2D box of [200,200] roughly in the middle of the point cloud.
-    subset_points = reader.GetPointsWithinBox(copc.Box(637190, 851109, 637390, 851309))
-    assert len(subset_points) == 22902
+    subset_points = reader.GetPointsWithinBox(middle_box)
+    assert len(subset_points) == 91178
+
+    # GetDepthAtResolution
+    assert reader.GetDepthAtResolution(3) == 4
+    assert reader.GetDepthAtResolution(0) == 5
+    assert reader.GetDepthAtResolution(float_info.min) == 5
+    assert reader.GetDepthAtResolution(float_info.max) == 0
+
+    # GetNodesAtResolution
+    subset_nodes = reader.GetNodesAtResolution(3)
+    assert len(subset_nodes) == 192
+    for node in reader.GetNodesAtResolution(0):
+        assert node.key.d == 5
+
+    # GetNodesWithinResolution
+    subset_nodes = reader.GetNodesWithinResolution(3)
+    assert len(subset_nodes) == 257
+    assert len(reader.GetNodesWithinResolution(0)) == len(reader.GetAllChildren())

@@ -9,11 +9,11 @@ repos:
     - id: check-yaml
       name: (YAML) Check syntax
 
--   repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.10
-    hooks:
-      - id: mdformat
-        name: (Markdown) Format with mdformat
+#-   repo: https://github.com/executablebooks/mdformat
+#    rev: 0.7.10
+#    hooks:
+#      - id: mdformat
+#        name: (Markdown) Format with mdformat
 
 -   repo: git://github.com/pocc/pre-commit-hooks
     rev: v1.3.4
@@ -21,7 +21,7 @@ repos:
     -   id: clang-format
         always_run: true
         args: ["-i"]
-        additional_dependencies: ["clang-format"]
+        additional_dependencies: ["clang-format==12.0.1"]
 -   repo: https://github.com/psf/black
     rev: 21.9b0
     hooks:

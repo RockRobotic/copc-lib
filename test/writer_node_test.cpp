@@ -15,7 +15,7 @@ using namespace std;
 //    {
 //        stringstream out_stream;
 //
-//        Writer::LasConfig cfg(3);
+//        Writer::LasHeaderConfig cfg(3);
 //        Writer writer(out_stream, cfg);
 //
 //        Page root_page = writer.GetRootPage();
@@ -43,7 +43,7 @@ using namespace std;
 //    {
 //        stringstream out_stream;
 //
-//        Writer::LasConfig cfg(3);
+//        Writer::LasHeaderConfig cfg(3);
 //        Writer writer(out_stream, cfg, 256, "test_wkt");
 //
 //        Page root_page = writer.GetRootPage();
@@ -90,7 +90,7 @@ using namespace std;
 //    {
 //        stringstream out_stream;
 //
-//        Writer::LasConfig cfg(3);
+//        Writer::LasHeaderConfig cfg(3);
 //        Writer writer(out_stream, cfg);
 //
 //        Page root_page = writer.GetRootPage();
@@ -160,7 +160,7 @@ using namespace std;
 //    {
 //        stringstream out_stream;
 //
-//        Writer::LasConfig cfg(3);
+//        Writer::LasHeaderConfig cfg(3);
 //        Writer writer(out_stream, cfg);
 //
 //        Page root_page = writer.GetRootPage();
@@ -188,7 +188,7 @@ using namespace std;
 //    {
 //        stringstream out_stream;
 //
-//        Writer::LasConfig cfg(3);
+//        Writer::LasHeaderConfig cfg(3);
 //        Writer writer(out_stream, cfg, 256, "test_wkt");
 //
 //        Page root_page = writer.GetRootPage();
@@ -240,7 +240,7 @@ using namespace std;
 //    {
 //        stringstream out_stream;
 //
-//        Writer::LasConfig cfg(3);
+//        Writer::LasHeaderConfig cfg(3);
 //        Writer writer(out_stream, cfg);
 //
 //        Page root_page = writer.GetRootPage();

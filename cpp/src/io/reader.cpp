@@ -1,6 +1,9 @@
-#include "copc-lib/io/reader.hpp"
+#include <cmath>
+#include <stdexcept>
+
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
+#include "copc-lib/io/reader.hpp"
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/laz/decompressor.hpp"
 
@@ -240,60 +243,136 @@ std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
     return out;
 }
 
-las::Points Reader::GetAllPoints()
+las::Points Reader::GetAllPoints(double resolution)
 {
     auto out = las::Points(GetLasHeader());
 
+    auto max_depth = GetDepthAtResolution(resolution);
+
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
-        out.AddPoints(GetPoints(node));
+        if (node.key.d <= max_depth)
+            out.AddPoints(GetPoints(node));
     return out;
 }
 
-std::vector<Node> Reader::GetNodesWithinBox(const Box &box)
+std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double resolution)
 {
     std::vector<Node> out;
 
     auto header = GetLasHeader();
+    auto copc_info = GetCopcInfo();
+    auto max_depth = GetDepthAtResolution(resolution);
+
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Within(box, header))
+        if (node.key.Within(header, box) && node.key.d <= max_depth)
             out.push_back(node);
     }
 
     return out;
 }
 
-std::vector<Node> Reader::GetNodesIntersectBox(const Box &box)
+std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double resolution)
 {
     std::vector<Node> out;
 
     auto header = GetLasHeader();
+    auto copc_info = GetCopcInfo();
+    auto max_depth = GetDepthAtResolution(resolution);
+
+    // Get all nodes in octree
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Intersects(box, header))
+        if (node.key.Intersects(header, box) && node.key.d <= max_depth)
             out.push_back(node);
     }
 
     return out;
 }
 
-las::Points Reader::GetPointsWithinBox(const Box &box)
+las::Points Reader::GetPointsWithinBox(const Box &box, double resolution)
 {
     auto header = GetLasHeader();
+    auto copc_info = GetCopcInfo();
+    auto max_depth = GetDepthAtResolution(resolution);
     auto out = las::Points(header);
 
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
     {
-        // If node fits in Box
-        if (node.key.Intersects(box, header))
+        if (node.key.d <= max_depth)
         {
-            // Add points that fit in the box
-            auto points = GetPoints(node);
-            out.AddPoints(points.GetWithin(box));
+            // If node fits in Box
+            if (node.key.Within(header, box))
+            {
+                // If the node is within the box add all points
+                out.AddPoints(GetPoints(node));
+            }
+            else if (node.key.Intersects(header, box))
+            {
+                // If the node only crosses the box then get subset of points within box
+                auto points = GetPoints(node);
+                out.AddPoints(points.GetWithin(box));
+            }
         }
     }
+    return out;
+}
+
+int32_t Reader::GetDepthAtResolution(double resolution)
+{
+    // Compute max depth
+    int32_t max_depth = -1;
+    // Get all nodes in octree
+    for (const auto &node : GetAllChildren())
+    {
+        if (node.key.d > max_depth)
+            max_depth = node.key.d;
+    }
+
+    // If query resolution is <=0 return the octree's max depth
+    if (resolution <= 0.0)
+        return max_depth;
+
+    auto current_resolution = GetCopcInfo().spacing;
+
+    for (int32_t i = 0; i <= max_depth; i++)
+    {
+        if (current_resolution <= resolution)
+            return i;
+        current_resolution /= 2;
+    }
+    return max_depth;
+}
+
+std::vector<Node> Reader::GetNodesAtResolution(double resolution)
+{
+    auto target_depth = GetDepthAtResolution(resolution);
+
+    std::vector<Node> out;
+
+    for (const auto &node : GetAllChildren())
+    {
+        if (node.key.d == target_depth)
+            out.push_back(node);
+    }
+
+    return out;
+}
+
+std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
+{
+    auto target_depth = GetDepthAtResolution(resolution);
+
+    std::vector<Node> out;
+
+    for (const auto &node : GetAllChildren())
+    {
+        if (node.key.d <= target_depth)
+            out.push_back(node);
+    }
+
     return out;
 }
 
