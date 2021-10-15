@@ -14,6 +14,16 @@ TEST_CASE("Reader tests", "[Reader]")
 
         FileReader reader("autzen-classified.copc.laz");
 
+        SECTION("GetHeader Test")
+        {
+            auto header = reader.GetLasHeader();
+            REQUIRE(header.header_size == 375);
+            REQUIRE(header.point_format_id == 7);
+            REQUIRE(header.point_count == 10653336);
+            REQUIRE(header.point_record_length == 36);
+            REQUIRE(header.NumExtraBytes() == 0);
+        }
+
         SECTION("GetCopcInfo Test")
         {
             auto copc_info = reader.GetCopcInfo();
@@ -26,14 +36,45 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE(copc_info.root_hier_size == 8896);
         }
 
-        SECTION("GetHeader Test")
+        SECTION("GetCopcExtents Test")
         {
-            auto header = reader.GetLasHeader();
-            REQUIRE(header.header_size == 375);
-            REQUIRE(header.point_format_id == 7);
-            REQUIRE(header.point_count == 10653336);
-            REQUIRE(header.point_record_length == 36);
-            REQUIRE(header.NumExtraBytes() == 0);
+            auto copc_extents = reader.GetCopcExtents();
+            REQUIRE_THAT(copc_extents.X()->minimum, Catch::Matchers::WithinAbs(635577.7900, 0.0001));
+            REQUIRE_THAT(copc_extents.X()->maximum, Catch::Matchers::WithinAbs(639003.72999999998, 0.0001));
+            REQUIRE_THAT(copc_extents.Y()->minimum, Catch::Matchers::WithinAbs(848882.15000000002, 0.0001));
+            REQUIRE_THAT(copc_extents.Y()->maximum, Catch::Matchers::WithinAbs(853537.66000000003, 0.0001));
+            REQUIRE_THAT(copc_extents.Z()->minimum, Catch::Matchers::WithinAbs(406.13999999999999, 0.0001));
+            REQUIRE_THAT(copc_extents.Z()->maximum, Catch::Matchers::WithinAbs(615.25999999999999, 0.0001));
+            REQUIRE_THAT(copc_extents.Intensity()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.Intensity()->maximum, Catch::Matchers::WithinAbs(254, 0.0001));
+            REQUIRE_THAT(copc_extents.ReturnNumber()->minimum, Catch::Matchers::WithinAbs(1, 0.0001));
+            REQUIRE_THAT(copc_extents.ReturnNumber()->maximum, Catch::Matchers::WithinAbs(4, 0.0001));
+            REQUIRE_THAT(copc_extents.NumberOfReturns()->minimum, Catch::Matchers::WithinAbs(1, 0.0001));
+            REQUIRE_THAT(copc_extents.NumberOfReturns()->maximum, Catch::Matchers::WithinAbs(4, 0.0001));
+            REQUIRE_THAT(copc_extents.ScannerChannel()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.ScannerChannel()->maximum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.ScanDirectionFlag()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.ScanDirectionFlag()->maximum, Catch::Matchers::WithinAbs(1, 0.0001));
+            REQUIRE_THAT(copc_extents.EdgeOfFlightLine()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.EdgeOfFlightLine()->maximum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.Classification()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.Classification()->maximum, Catch::Matchers::WithinAbs(77, 0.0001));
+            REQUIRE_THAT(copc_extents.UserData()->minimum, Catch::Matchers::WithinAbs(115, 0.0001));
+            REQUIRE_THAT(copc_extents.UserData()->maximum, Catch::Matchers::WithinAbs(156, 0.0001));
+            REQUIRE_THAT(copc_extents.ScanAngle()->minimum, Catch::Matchers::WithinAbs(-21, 0.0001));
+            REQUIRE_THAT(copc_extents.ScanAngle()->maximum, Catch::Matchers::WithinAbs(20, 0.0001));
+            REQUIRE_THAT(copc_extents.PointSourceID()->minimum, Catch::Matchers::WithinAbs(7326, 0.0001));
+            REQUIRE_THAT(copc_extents.PointSourceID()->maximum, Catch::Matchers::WithinAbs(7334, 0.0001));
+            REQUIRE_THAT(copc_extents.GpsTime()->minimum, Catch::Matchers::WithinAbs(245369.89656857715, 0.0001));
+            REQUIRE_THAT(copc_extents.GpsTime()->maximum, Catch::Matchers::WithinAbs(249783.70312432514, 0.0001));
+            REQUIRE_THAT(copc_extents.Red()->minimum, Catch::Matchers::WithinAbs(4352, 0.0001));
+            REQUIRE_THAT(copc_extents.Red()->maximum, Catch::Matchers::WithinAbs(65280, 0.0001));
+            REQUIRE_THAT(copc_extents.Green()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
+            REQUIRE_THAT(copc_extents.Green()->maximum, Catch::Matchers::WithinAbs(65280, 0.0001));
+            REQUIRE_THAT(copc_extents.Blue()->minimum, Catch::Matchers::WithinAbs(1536, 0.0001));
+            REQUIRE_THAT(copc_extents.Blue()->maximum, Catch::Matchers::WithinAbs(65280, 0.0001));
+            REQUIRE_THROWS(copc_extents.NIR());
+            REQUIRE(copc_extents.ExtraBytes().empty());
         }
 
         SECTION("WKT")

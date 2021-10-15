@@ -47,6 +47,7 @@ class Writer : public BaseIO
         this->file_->SetPointsByReturn(points_by_return_14);
     }
     void SetCopcExtents(const CopcExtents &extents) { this->file_->SetCopcExtents(extents); }
+    void SetCopcInfo(const CopcInfo &info) { this->file_->SetCopcInfo(info); }
 
     virtual ~Writer();
 

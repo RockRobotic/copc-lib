@@ -8,6 +8,13 @@ def test_reader():
     reader = copc.FileReader("autzen-classified.copc.laz")
 
     # GetLasHeader Test
+    header = reader.las_header
+    assert header.point_format_id == 7
+    assert header.point_count == 10653336
+    assert header.point_record_length == 36
+    assert header.num_extra_bytes == 0
+
+    # GetCopcInfo Test
     copc_info = reader.copc_info
     assert copc_info.center_x == pytest.approx(637905.5448, 0.0001)
     assert copc_info.center_y == pytest.approx(851209.9048, 0.0001)
@@ -17,12 +24,45 @@ def test_reader():
     assert copc_info.root_hier_offset == 73017045
     assert copc_info.root_hier_size == 8896
 
-    # GetLasHeader Test
-    header = reader.las_header
-    assert header.point_format_id == 7
-    assert header.point_count == 10653336
-    assert header.point_record_length == 36
-    assert header.num_extra_bytes == 0
+    # GetCopcExtents Test
+    copc_extents = reader.copc_extents
+    assert copc_extents.x.minimum == pytest.approx(635577.7900, 0.0001)
+    assert copc_extents.x.maximum == pytest.approx(639003.72999999998, 0.0001)
+    assert copc_extents.y.minimum == pytest.approx(848882.15000000002, 0.0001)
+    assert copc_extents.y.maximum == pytest.approx(853537.66000000003, 0.0001)
+    assert copc_extents.z.minimum == pytest.approx(406.13999999999999, 0.0001)
+    assert copc_extents.z.maximum == pytest.approx(615.25999999999999, 0.0001)
+    assert copc_extents.intensity.minimum == pytest.approx(0, 0.0001)
+    assert copc_extents.intensity.maximum == pytest.approx(254, 0.0001)
+    assert copc_extents.return_number.minimum == pytest.approx(1, 0.0001)
+    assert copc_extents.return_number.maximum == pytest.approx(4, 0.0001)
+    assert copc_extents.number_of_returns.minimum == pytest.approx(1, 0.0001)
+    assert copc_extents.number_of_returns.maximum == pytest.approx(4, 0.0001)
+    assert copc_extents.scanner_channel.minimum == pytest.approx(0, 0.0001)
+    assert copc_extents.scanner_channel.maximum == pytest.approx(0, 0.0001)
+    assert copc_extents.scan_direction_flag.minimum == pytest.approx(0, 0.0001)
+    assert copc_extents.scan_direction_flag.maximum == pytest.approx(1, 0.0001)
+    assert copc_extents.edge_of_flight_line.minimum == pytest.approx(0, 0.0001)
+    assert copc_extents.edge_of_flight_line.maximum == pytest.approx(0, 0.0001)
+    assert copc_extents.classification.minimum == pytest.approx(0, 0.0001)
+    assert copc_extents.classification.maximum == pytest.approx(77, 0.0001)
+    assert copc_extents.user_data.minimum == pytest.approx(115, 0.0001)
+    assert copc_extents.user_data.maximum == pytest.approx(156, 0.0001)
+    assert copc_extents.scan_angle.minimum == pytest.approx(-21, 0.0001)
+    assert copc_extents.scan_angle.maximum == pytest.approx(20, 0.0001)
+    assert copc_extents.point_source_id.minimum == pytest.approx(7326, 0.0001)
+    assert copc_extents.point_source_id.maximum == pytest.approx(7334, 0.0001)
+    assert copc_extents.gps_time.minimum == pytest.approx(245369.89656857715, 0.0001)
+    assert copc_extents.gps_time.maximum == pytest.approx(249783.70312432514, 0.0001)
+    assert copc_extents.red.minimum == pytest.approx(4352, 0.0001)
+    assert copc_extents.red.maximum == pytest.approx(65280, 0.0001)
+    assert copc_extents.green.minimum == pytest.approx(0, 0.0001)
+    assert copc_extents.green.maximum == pytest.approx(65280, 0.0001)
+    assert copc_extents.blue.minimum == pytest.approx(1536, 0.0001)
+    assert copc_extents.blue.maximum == pytest.approx(65280, 0.0001)
+    with pytest.raises(RuntimeError):
+        assert copc_extents.nir
+    assert len(copc_extents.extra_bytes) == 0
 
     # WKT Test
     wkt = reader.wkt
