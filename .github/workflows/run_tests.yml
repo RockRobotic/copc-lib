@@ -25,7 +25,8 @@ jobs:
       uses: actions/checkout@v2
       with:
         path: lazperf
-        repository: hobu/laz-perf/commit/070f39bf0fcd7126ca4138f3791c693547d85a68
+        repository: hobu/laz-perf
+        ref: 070f39bf0fcd7126ca4138f3791c693547d85a68
 
     - name: Build lazperf
       shell: bash
