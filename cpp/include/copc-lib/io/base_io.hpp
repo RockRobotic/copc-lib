@@ -26,18 +26,17 @@ class BaseIO
     // Find a node object given a key
     Node FindNode(VoxelKey key);
 
-    // WKT string if defined, else empty
-    std::string GetWkt() const { return this->file_->GetWkt(); }
-    // CopcInfoEVLR
+    // Las header
+    las::LasHeader GetLasHeader() const { return this->file_->GetLasHeader(); }
+    // CopcInfo
     CopcInfo GetCopcInfo() const { return this->file_->GetCopcInfo(); }
     // CopcExtents
     CopcExtents GetCopcExtents() const { return this->file_->GetCopcExtents(); }
-    // Las header
-    las::LasHeader GetLasHeader() const { return this->file_->GetLasHeader(); }
+    // WKT string if defined, else empty
+    std::string GetWkt() const { return this->file_->GetWkt(); }
     // EB Vlr
     las::EbVlr GetExtraByteVlr() const { return this->file_->GetExtraBytes(); }
-
-    // EB Vlr
+    // Config file containing Las Header, Copc Info and Extents, WKT, and EB vlrs
     CopcConfig GetCopcConfig() const
     {
         return CopcConfig(this->file_->GetLasHeader(), this->file_->GetCopcInfo(), this->file_->GetCopcExtents(),
