@@ -77,12 +77,12 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     return false;
 }
 
-double VoxelKey::Resolution(const las::LasHeader &header, const las::CopcInfoVlr &copc_info) const
+double VoxelKey::Resolution(const las::LasHeader &header, const CopcInfo &copc_info) const
 {
     return copc_info.spacing / std::pow(2, d);
 }
 
-double VoxelKey::GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcInfoVlr &copc_info)
+double VoxelKey::GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const CopcInfo &copc_info)
 {
     return VoxelKey(d, 0, 0, 0).Resolution(header, copc_info);
 }

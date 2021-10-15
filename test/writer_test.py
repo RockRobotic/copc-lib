@@ -8,7 +8,7 @@ def test_writer_config():
     file_path = "writer_test.copc.laz"
 
     # Default config
-    cfg = copc.LasHeaderConfig(6)
+    cfg = copc.CopcConfig(6)
     writer = copc.FileWriter(file_path, cfg)
 
     las_header = writer.las_header
@@ -18,34 +18,38 @@ def test_writer_config():
 
     str(cfg)
 
+    with pytest.raises(RuntimeError):
+        assert copc.CopcConfig(5)
+        assert copc.CopcConfig(9)
+
     writer.Close()
 
     # Custom config
 
-    cfg = copc.LasHeaderConfig(8, [2, 3, 4], [-0.02, -0.03, -40.8])
-    cfg.file_source_id = 200
+    cfg = copc.CopcConfig(8, [2, 3, 4], [-0.02, -0.03, -40.8])
+    cfg.las_header_base.file_source_id = 200
 
     # Test LasHeaderConfig attributes
-    cfg.creation_day = 18
-    assert cfg.creation_day == 18
-    cfg.creation_year = 11
-    assert cfg.creation_year == 11
+    cfg.las_header_base.creation_day = 18
+    assert cfg.las_header_base.creation_day == 18
+    cfg.las_header_base.creation_year = 11
+    assert cfg.las_header_base.creation_year == 11
 
     # Test checks on string attributes
-    cfg.guid = "test_string"
-    assert cfg.guid == "test_string"
+    cfg.las_header_base.guid = "test_string"
+    assert cfg.las_header_base.guid == "test_string"
     with pytest.raises(RuntimeError):
-        cfg.guid = "a" * 17
+        cfg.las_header_base.guid = "a" * 17
 
-    cfg.system_identifier = "test_string"
-    assert cfg.system_identifier == "test_string"
+    cfg.las_header_base.system_identifier = "test_string"
+    assert cfg.las_header_base.system_identifier == "test_string"
     with pytest.raises(RuntimeError):
-        cfg.system_identifier = "a" * 33
+        cfg.las_header_base.system_identifier = "a" * 33
 
-    cfg.generating_software = "test_string"
-    assert cfg.generating_software == "test_string"
+    cfg.las_header_base.generating_software = "test_string"
+    assert cfg.las_header_base.generating_software == "test_string"
     with pytest.raises(RuntimeError):
-        cfg.generating_software = "a" * 33
+        cfg.las_header_base.generating_software = "a" * 33
 
     writer = copc.FileWriter(file_path, cfg)
 
@@ -59,19 +63,20 @@ def test_writer_config():
 
     # COPC Spacing
 
-    cfg = copc.LasHeaderConfig(6)
-    writer = copc.FileWriter(file_path, cfg, 10)
+    cfg = copc.CopcConfig(6)
+    cfg.copc_info.spacing = 10
+    writer = copc.FileWriter(file_path, cfg)
 
     # todo: use Reader to check all of these
-    assert writer.copc_info_vlr.spacing == 10
+    assert writer.copc_info.spacing == 10
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.copc_info_vlr.spacing == 10
+    assert reader.copc_info.spacing == 10
 
     # Extents
-    cfg = copc.LasHeaderConfig(6)
+    cfg = copc.CopcConfig(6)
     writer = copc.FileWriter(file_path, cfg)
 
     extents = writer.extents
@@ -98,8 +103,9 @@ def test_writer_config():
     assert reader.extents.y.maximum == extents.y.maximum
 
     # WKT
-    cfg = copc.LasHeaderConfig(6)
-    writer = copc.FileWriter(file_path, cfg, 256, "TEST_WKT")
+    cfg = copc.CopcConfig(6)
+    cfg.wkt = "TEST_WKT"
+    writer = copc.FileWriter(file_path, cfg)
 
     assert writer.wkt == "TEST_WKT"
 
@@ -138,10 +144,12 @@ def test_writer_config():
     max2 = (20, 30, 40)
     points_by_return = list(range(15))
 
-    cfg = copc.LasHeaderConfig(6)
-    cfg.min = min1
-    cfg.max = max1
-    writer = copc.FileWriter(file_path, cfg, 256, "TEST_WKT")
+    cfg = copc.CopcConfig(6)
+    cfg.las_header_base.min = min1
+    cfg.las_header_base.max = max1
+    cfg.copc_info.spacing = 10
+    cfg.wkt = "TEST_WKT"
+    writer = copc.FileWriter(file_path, cfg)
 
     assert writer.las_header.min == min1
     assert writer.las_header.max == max1
@@ -171,7 +179,7 @@ def test_writer_pages():
     file_path = "writer_test.copc.laz"
 
     # Root Page
-    writer = copc.FileWriter(file_path, copc.LasHeaderConfig(6))
+    writer = copc.FileWriter(file_path, copc.CopcConfig(6))
 
     assert not writer.FindNode(copc.VoxelKey.BaseKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
@@ -188,12 +196,12 @@ def test_writer_pages():
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.copc_info_vlr.root_hier_offset > 0
-    assert reader.copc_info_vlr.root_hier_size == 0
+    assert reader.copc_info.root_hier_offset > 0
+    assert reader.copc_info.root_hier_size == 0
     assert not reader.FindNode(key=copc.VoxelKey.InvalidKey()).IsValid()
 
     # Nested page
-    writer = copc.FileWriter(file_path, copc.LasHeaderConfig(6))
+    writer = copc.FileWriter(file_path, copc.CopcConfig(6))
 
     root_page = writer.GetRootPage()
 
@@ -209,12 +217,11 @@ def test_writer_pages():
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.copc_info_vlr.root_hier_offset > 0
-    assert reader.copc_info_vlr.root_hier_size == 32
+    assert reader.copc_info.root_hier_offset > 0
+    assert reader.copc_info.root_hier_size == 32
     assert not reader.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
 
 
-# TODO[Leo]: (Extents) Update this once we have updated copc test file
 # def test_writer_copy():
 #     # Given a valid file path
 #     file_path = "writer_test.copc.laz"

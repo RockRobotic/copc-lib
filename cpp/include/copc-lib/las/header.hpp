@@ -21,6 +21,9 @@ namespace las
 class LasHeaderBase
 {
   public:
+    LasHeaderBase() = default;
+    LasHeaderBase(const Vector3 &scale, const Vector3 &offset) : scale(scale), offset(offset){};
+
     // Getters/Setters for string attributes
     void GUID(const std::string &guid)
     {
@@ -49,16 +52,13 @@ class LasHeaderBase
     double GetSpan() const { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
     Box GetBounds() const;
 
-    virtual std::string ToString() const = 0;
+    virtual std::string ToString() const;
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
     uint16_t creation_day{};
     uint16_t creation_year{};
-
-    // Defaults to 6
-    int8_t point_format_id{6};
 
     // xyz scale/offset
     Vector3 scale{Vector3::DefaultScale()};
@@ -71,10 +71,6 @@ class LasHeaderBase
     std::array<uint64_t, 15> points_by_return{};
 
   protected:
-    LasHeaderBase() = default;
-    LasHeaderBase(const int8_t &point_format_id, const Vector3 &scale = Vector3::DefaultScale(),
-                  const Vector3 &offset = Vector3::DefaultOffset())
-        : point_format_id(point_format_id), scale(scale), offset(offset){};
     std::string guid_{};
     std::string system_identifier_{};
     std::string generating_software_{};
@@ -91,6 +87,9 @@ class LasHeader : public LasHeaderBase
     lazperf::header14 ToLazPerf() const;
 
     std::string ToString() const;
+
+    // Defaults to 6
+    int8_t point_format_id{6};
 
     const uint8_t version_major{1};
     const uint8_t version_minor{4};

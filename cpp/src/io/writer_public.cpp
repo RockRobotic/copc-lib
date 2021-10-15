@@ -7,64 +7,11 @@
 namespace copc
 {
 
-Writer::LasHeaderConfig::LasHeaderConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset)
-    : LasHeaderBase(point_format_id, scale, offset)
-{
-    if (point_format_id < 6 || point_format_id > 8)
-        throw std::runtime_error("LasConfig: Supported point formats are 6 to 8.");
-};
-
-Writer::LasHeaderConfig::LasHeaderConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes)
-{
-    file_source_id = config.file_source_id;
-    global_encoding = config.global_encoding;
-    creation_day = config.creation_day;
-    creation_year = config.creation_year;
-    point_format_id = config.point_format_id;
-
-    if (point_format_id < 6 || point_format_id > 8)
-        throw std::runtime_error("LasConfig: Supported point formats are 6 to 8.");
-
-    guid_ = config.GUID();
-    system_identifier_ = config.SystemIdentifier();
-    generating_software_ = config.GeneratingSoftware();
-
-    offset = config.offset;
-    scale = config.scale;
-
-    max = config.max;
-    min = config.min;
-
-    points_by_return = config.points_by_return;
-    this->extra_bytes = extra_bytes;
-}
-
-std::string Writer::LasHeaderConfig::ToString() const
-{
-    std::stringstream ss;
-    ss << "LasConfig:" << std::endl;
-    ss << "\tFile Source ID: " << file_source_id << std::endl;
-    ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
-    ss << "\tGUID: " << GUID() << std::endl;
-    ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
-    ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
-    ss << "\tCreation (DD/YYYY): (" << creation_day << "/" << creation_year << ")" << std::endl;
-    ss << "\tPoint Format ID: " << static_cast<int>(point_format_id) << std::endl;
-    ss << "\tScale: " << scale.ToString() << std::endl;
-    ss << "\tOffset: " << offset.ToString() << std::endl;
-    ss << "\tMax: " << max.ToString() << std::endl;
-    ss << "\tMin: " << min.ToString() << std::endl;
-    ss << "\tPoints By Return:" << std::endl;
-    for (int i = 0; i < points_by_return.size(); i++)
-        ss << "\t\t [" << i << "]: " << points_by_return[i] << std::endl;
-    ss << "\tNumber of Extra Bytes: " << NumExtraBytes() << std::endl;
-    return ss.str();
-}
-
-void Writer::InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, double spacing, const std::string &wkt)
+void Writer::InitWriter(std::ostream &out_stream, CopcConfig const &config)
 {
     auto header = HeaderFromConfig(config);
-    this->file_ = std::make_shared<CopcFile>(header, spacing, wkt, config.extra_bytes);
+    this->file_ = std::make_shared<CopcFile>(header, config.copc_info, config.GetCopcExtents(), config.wkt,
+                                             config.GetExtraBytesVlr());
     this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file_, this->hierarchy_);
 }
@@ -160,27 +107,27 @@ int Writer::NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items
     return out;
 }
 
-las::LasHeader Writer::HeaderFromConfig(LasHeaderConfig const &config)
+las::LasHeader Writer::HeaderFromConfig(CopcConfig const &config)
 {
     las::LasHeader h;
-    h.file_source_id = config.file_source_id;
-    h.global_encoding = config.global_encoding;
-    h.creation_day = config.creation_day;
-    h.creation_year = config.creation_year;
-    h.point_format_id = config.point_format_id;
+    h.file_source_id = config.las_header_base.file_source_id;
+    h.global_encoding = config.las_header_base.global_encoding;
+    h.creation_day = config.las_header_base.creation_day;
+    h.creation_year = config.las_header_base.creation_year;
+    h.point_format_id = config.GetPointFormatID();
     h.point_record_length =
-        las::PointBaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
+        las::PointBaseByteSize(config.GetPointFormatID()) + NumBytesFromExtraBytes(config.GetExtraBytesVlr().items);
 
-    h.GUID(config.GUID());
-    h.SystemIdentifier(config.SystemIdentifier());
-    h.GeneratingSoftware(config.GeneratingSoftware());
+    h.GUID(config.las_header_base.GUID());
+    h.SystemIdentifier(config.las_header_base.SystemIdentifier());
+    h.GeneratingSoftware(config.las_header_base.GeneratingSoftware());
 
-    h.offset = config.offset;
-    h.scale = config.scale;
-    h.max = config.max;
-    h.min = config.min;
+    h.offset = config.las_header_base.offset;
+    h.scale = config.las_header_base.scale;
+    h.max = config.las_header_base.max;
+    h.min = config.las_header_base.min;
 
-    h.points_by_return = config.points_by_return;
+    h.points_by_return = config.las_header_base.points_by_return;
     return h;
 }
 

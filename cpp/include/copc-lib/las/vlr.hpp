@@ -11,7 +11,6 @@ namespace copc::las
 {
 
 using WktVlr = lazperf::wkt_vlr;
-using CopcInfoVlr = lazperf::copc_info_vlr;
 using EbVlr = lazperf::eb_vlr;
 using CopcExtentsVlr = lazperf::copc_extents_vlr;
 

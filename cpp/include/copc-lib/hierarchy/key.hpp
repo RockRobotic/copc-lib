@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "copc-lib/copc/info.hpp"
 #include "copc-lib/geometry/box.hpp"
 #include "copc-lib/geometry/vector3.hpp"
 #include "copc-lib/las/vlr.hpp"
@@ -61,8 +62,8 @@ class VoxelKey
     bool Within(const las::LasHeader &header, const Box &box) const;
     bool Crosses(const las::LasHeader &header, const Box &box) const;
 
-    double Resolution(const las::LasHeader &header, const las::CopcInfoVlr &copc_info) const;
-    static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcInfoVlr &copc_info);
+    double Resolution(const las::LasHeader &header, const CopcInfo &copc_info) const;
+    static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const CopcInfo &copc_info);
 
     int32_t d;
     int32_t x;

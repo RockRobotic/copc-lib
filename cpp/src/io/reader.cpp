@@ -31,7 +31,7 @@ void Reader::InitReader()
     auto eb = ReadExtraBytesVlr(vlrs);
     auto copc_extents = ReadCopcExtentsVlr(vlrs, eb);
 
-    file_ = std::make_shared<CopcFile>(header, copc_info, copc_extents, wkt, eb);
+    file_ = std::make_shared<CopcFile>(header, copc_info, copc_extents, wkt.wkt, eb);
     file_->vlrs = vlrs;
 
     hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
@@ -70,10 +70,10 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
     return out;
 }
 
-las::CopcInfoVlr Reader::ReadCopcInfoVlr()
+CopcInfo Reader::ReadCopcInfoVlr()
 {
     in_stream_->seekg(COPC_OFFSET);
-    return las::CopcInfoVlr::create(*in_stream_);
+    return {lazperf::copc_info_vlr::create(*in_stream_)};
 }
 
 CopcExtents Reader::ReadCopcExtentsVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr)
@@ -135,7 +135,7 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
 {
     std::vector<Entry> out;
     if (!page->IsValid())
-        throw std::runtime_error("Cannot load an invalid page.");
+        throw std::runtime_error("Reader::ReadPage: Cannot load an invalid page.");
 
     // reset the stream to the page's offset
     in_stream_->seekg(page->offset);
@@ -174,7 +174,7 @@ las::Points Reader::GetPoints(VoxelKey const &key)
 std::vector<char> Reader::GetPointData(Node const &node)
 {
     if (!node.IsValid())
-        throw std::runtime_error("Cannot load an invalid node.");
+        throw std::runtime_error("Reader::GetPointData: Cannot load an invalid node.");
 
     in_stream_->seekg(node.offset);
 
@@ -199,7 +199,7 @@ std::vector<char> Reader::GetPointData(VoxelKey const &key)
 std::vector<char> Reader::GetPointDataCompressed(Node const &node)
 {
     if (!node.IsValid())
-        throw std::runtime_error("Cannot load an invalid node.");
+        throw std::runtime_error("Reader::GetPointDataCompressed: Cannot load an invalid node.");
 
     in_stream_->seekg(node.offset);
 

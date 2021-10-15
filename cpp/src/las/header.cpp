@@ -12,6 +12,26 @@ namespace copc::las
 {
 Box LasHeaderBase::GetBounds() const { return Box(min.x, min.y, min.z, max.x, max.y, max.z); }
 
+std::string LasHeaderBase::ToString() const
+{
+    std::stringstream ss;
+    ss << "LasHeaderBase:" << std::endl;
+    ss << "\tFile Source ID: " << file_source_id << std::endl;
+    ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
+    ss << "\tGUID: " << GUID() << std::endl;
+    ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
+    ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
+    ss << "\tCreation (DD/YYYY): (" << creation_day << "/" << creation_year << ")" << std::endl;
+    ss << "\tScale: " << scale.ToString() << std::endl;
+    ss << "\tOffset: " << offset.ToString() << std::endl;
+    ss << "\tMax: " << max.ToString() << std::endl;
+    ss << "\tMin: " << min.ToString() << std::endl;
+    ss << "\tPoints By Return:" << std::endl;
+    for (int i = 0; i < points_by_return.size(); i++)
+        ss << "\t\t [" << i << "]: " << points_by_return[i] << std::endl;
+    return ss.str();
+}
+
 uint16_t LasHeader::NumExtraBytes() const { return ComputeNumExtraBytes(point_format_id, point_record_length); }
 
 LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)

@@ -91,9 +91,9 @@ void WriterInternal::WriteHeader(las::LasHeader &header)
     laz_header.write(out_stream_);
 
     // Write the COPC Info VLR.
-    copc_data_.spacing = file_->GetCopcInfoVlr().spacing;
-    copc_data_.header().write(out_stream_);
-    copc_data_.write(out_stream_);
+    auto copc_info_vlr = file_->GetCopcInfo().ToLazperfVlr();
+    copc_info_vlr.header().write(out_stream_);
+    copc_info_vlr.write(out_stream_);
 
     // Write the COPC Extents VLR.
     auto extents_vlr = file_->GetCopcExtents().ToCopcExtentsVlr();
@@ -208,8 +208,7 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     // Set the copc header info if needed
     if (page->key == VoxelKey::BaseKey())
     {
-        copc_data_.root_hier_offset = offset;
-        copc_data_.root_hier_size = page_size;
+        file_->SetCopcHier(offset, page_size);
     }
 
     for (const auto &node : page->nodes)

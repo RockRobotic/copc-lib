@@ -43,12 +43,12 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
     {
         string file_path = "writer_test.copc.laz";
 
-        Writer::LasHeaderConfig cfg(7);
         las::EbVlr eb_vlr(2);
         eb_vlr.items[0].data_type = 29; // byte size 12
         eb_vlr.items[1].data_type = 29; // byte size 12
-        cfg.extra_bytes = eb_vlr;
-        FileWriter writer(file_path, cfg, 16);
+
+        CopcConfig cfg(7, {}, {}, eb_vlr);
+        FileWriter writer(file_path, cfg);
 
         auto extents = writer.GetCopcExtents();
         REQUIRE(extents.PointFormatID() == 7);
@@ -77,11 +77,11 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
     {
         string file_path = "writer_test.copc.laz";
 
-        Writer::LasHeaderConfig cfg(7);
         las::EbVlr eb_vlr(1);
         eb_vlr.items[0].data_type = 29; // byte size 12
-        cfg.extra_bytes = eb_vlr;
-        FileWriter writer(file_path, cfg, 256);
+
+        CopcConfig cfg(7, {}, {}, eb_vlr);
+        FileWriter writer(file_path, cfg);
 
         auto extents = writer.GetCopcExtents();
 

@@ -25,10 +25,9 @@ def test_copc_extents():
 
     file_path = "writer_test.copc.laz"
 
-    cfg = copc.LasHeaderConfig(7)
     eb_vlr = copc.EbVlr(1)
-    cfg.extra_bytes = eb_vlr
-    writer = copc.FileWriter(file_path, cfg, 256)
+    cfg = copc.CopcConfig(7, extra_bytes_vlr=eb_vlr)
+    writer = copc.FileWriter(file_path, cfg)
 
     extents = writer.extents
     assert extents.point_format_id == 7
@@ -50,8 +49,8 @@ def test_copc_extents():
         assert extent.minimum == 0
         assert extent.maximum == 0
 
-    #### Default Extents ####
-    writer = copc.FileWriter(file_path, cfg, 256)
+    #### Set Extents ####
+    writer = copc.FileWriter(file_path, cfg)
 
     extents = writer.extents
 
@@ -61,7 +60,7 @@ def test_copc_extents():
     extents.extra_bytes[0].minimum = -float_info.max
     extents.extra_bytes[0].maximum = float_info.max
 
-    # writer.extents = extents
+    writer.extents = extents
 
     writer.Close()
 
@@ -75,7 +74,7 @@ def test_copc_extents():
     assert extents.extra_bytes[0].minimum == -float_info.max
     assert extents.extra_bytes[0].maximum == float_info.max
 
-    #### SetCopcExtents ####
+    #### GetSetCopcExtents ####
     extents = copc.CopcExtents(point_format_id, extra_byte_count)
 
     for extent in extents.extents:

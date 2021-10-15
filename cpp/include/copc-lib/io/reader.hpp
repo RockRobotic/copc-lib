@@ -71,7 +71,7 @@ class Reader : public BaseIO
     // Fetchs the map key for a query vlr user and record IDs
     uint64_t FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id, uint16_t record_id);
     // Finds and loads the COPC vlr
-    las::CopcInfoVlr ReadCopcInfoVlr();
+    CopcInfo ReadCopcInfoVlr();
     // Finds and loads the COPC vlr
     CopcExtents ReadCopcExtentsVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr);
     // Finds and loads the WKT vlr

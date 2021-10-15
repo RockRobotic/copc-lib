@@ -8,7 +8,7 @@ def test_reader():
     reader = copc.FileReader("autzen-classified.copc.laz")
 
     # GetLasHeader Test
-    copc_info = reader.copc_info_vlr
+    copc_info = reader.copc_info
     assert copc_info.center_x == pytest.approx(637905.5448, 0.0001)
     assert copc_info.center_y == pytest.approx(851209.9048, 0.0001)
     assert copc_info.center_z == pytest.approx(2733.8948, 0.0001)

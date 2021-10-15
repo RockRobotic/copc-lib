@@ -24,25 +24,7 @@ class WriterInternal;
 class Writer : public BaseIO
 {
   public:
-    // Header config for creating a new file
-    struct LasHeaderConfig : public las::LasHeaderBase
-    {
-        LasHeaderConfig(const int8_t &point_format_id, const Vector3 &scale = Vector3::DefaultScale(),
-                        const Vector3 &offset = Vector3::DefaultOffset());
-        // Allow for "copying" a lasheader from one file to another
-        LasHeaderConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes);
-
-        std::string ToString() const;
-
-        uint16_t NumExtraBytes() const { return extra_bytes.items.size(); }
-
-        las::EbVlr extra_bytes;
-    };
-
-    Writer(std::ostream &out_stream, LasHeaderConfig const &config, double spacing = 0, const std::string &wkt = "")
-    {
-        InitWriter(out_stream, config, spacing, wkt);
-    }
+    Writer(std::ostream &out_stream, CopcConfig const &config) { InitWriter(out_stream, config); }
 
     Page GetRootPage();
 
@@ -80,9 +62,9 @@ class Writer : public BaseIO
     };
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitWriter(std::ostream &out_stream, LasHeaderConfig const &config, double spacing, const std::string &wkt);
+    void InitWriter(std::ostream &out_stream, CopcConfig const &config);
     // Converts the LasHeaderConfig object into an actual LasHeader
-    static las::LasHeader HeaderFromConfig(LasHeaderConfig const &config);
+    static las::LasHeader HeaderFromConfig(CopcConfig const &config);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
     static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
@@ -90,11 +72,10 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, LasHeaderConfig const &config, double spacing = 0,
-               const std::string &wkt = "")
+    FileWriter(const std::string &file_path, CopcConfig const &config)
     {
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
-        InitWriter(f_stream_, config, spacing, wkt);
+        InitWriter(f_stream_, config);
     }
 
     void Close() override;
