@@ -34,9 +34,9 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake ..
-        make
-        sudo make install
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake --build . --config ${{env.BUILD_TYPE}}
+        sudo cmake --install .
 
     - name: Checkout Copclib
       uses: actions/checkout@v2
