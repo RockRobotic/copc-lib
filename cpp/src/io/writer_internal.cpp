@@ -96,7 +96,8 @@ void WriterInternal::WriteHeader(las::LasHeader &header)
     copc_info_vlr.write(out_stream_);
 
     // Write the COPC Extents VLR.
-    auto extents_vlr = file_->GetCopcExtents().ToCopcExtentsVlr();
+    auto extents_vlr = file_->GetCopcExtents().ToCopcExtentsVlr(
+        {header.min.x, header.max.x}, {header.min.y, header.max.y}, {header.min.z, header.max.z});
     extents_vlr.header().write(out_stream_);
     extents_vlr.write(out_stream_);
 

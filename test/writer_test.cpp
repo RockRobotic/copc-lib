@@ -93,28 +93,27 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             FileWriter writer(file_path, cfg);
 
             auto extents = writer.GetCopcExtents();
-            extents.X()->minimum = -1.0;
-            extents.X()->maximum = 1;
+            extents.Intensity()->minimum = -1.0;
+            extents.Intensity()->maximum = 1;
 
-            extents.Y()->minimum = -std::numeric_limits<double>::max();
-            extents.Y()->maximum = std::numeric_limits<double>::max();
+            extents.Classification()->minimum = -std::numeric_limits<double>::max();
+            extents.Classification()->maximum = std::numeric_limits<double>::max();
 
             writer.SetCopcExtents(extents);
 
-            REQUIRE(writer.GetCopcExtents().X()->minimum == extents.X()->minimum);
-            REQUIRE(writer.GetCopcExtents().X()->maximum == extents.X()->maximum);
-            REQUIRE(writer.GetCopcExtents().Y()->minimum == extents.Y()->minimum);
-            REQUIRE(writer.GetCopcExtents().Y()->maximum == extents.Y()->maximum);
+            REQUIRE(writer.GetCopcExtents().Intensity()->minimum == extents.Intensity()->minimum);
+            REQUIRE(writer.GetCopcExtents().Intensity()->maximum == extents.Intensity()->maximum);
+            REQUIRE(writer.GetCopcExtents().Classification()->minimum == extents.Classification()->minimum);
+            REQUIRE(writer.GetCopcExtents().Classification()->maximum == extents.Classification()->maximum);
 
             writer.Close();
 
-            // TODO[Leo]: (Extents) Update this once autzen has been updated
-            //            // Test reading of extents
-            //            FileReader reader(file_path);
-            //            REQUIRE(reader.GetCopcExtents().x.minimum == extents.x.minimum);
-            //            REQUIRE(reader.GetCopcExtents().x.maximum == extents.x.maximum);
-            //            REQUIRE(reader.GetCopcExtents().y.minimum == extents.y.minimum);
-            //            REQUIRE(reader.GetCopcExtents().y.maximum == extents.y.maximum);
+            // Test reading of extents
+            FileReader reader(file_path);
+            REQUIRE(reader.GetCopcExtents().Intensity()->minimum == extents.Intensity()->minimum);
+            REQUIRE(reader.GetCopcExtents().Intensity()->maximum == extents.Intensity()->maximum);
+            REQUIRE(reader.GetCopcExtents().Classification()->minimum == extents.Classification()->minimum);
+            REQUIRE(reader.GetCopcExtents().Classification()->maximum == extents.Classification()->maximum);
         }
 
         SECTION("WKT")
@@ -133,28 +132,27 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             FileReader reader(file_path);
             REQUIRE(reader.GetWkt() == "TEST_WKT");
         }
-        // TODO[Leo]: (Extents) Update once autzen has been updated
-        //        SECTION("Copy")
-        //        {
-        //            FileReader orig("autzen-classified.copc.laz");
-        //
-        //            string file_path = "writer_test.copc.laz";
-        //            Writer::LasHeaderConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
-        //            FileWriter writer(file_path, cfg);
-        //            writer.Close();
-        //
-        //            FileReader reader(file_path);
-        //            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-        //            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-        //            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
-        //            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
-        //            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-        //            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
-        //            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
-        //            REQUIRE(reader.GetLasHeader().point_count == 0);
-        //            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
-        //            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
-        //        }
+        SECTION("Copy")
+        {
+            FileReader orig("autzen-classified.copc.laz");
+
+            string file_path = "writer_test.copc.laz";
+            auto cfg = orig.GetCopcConfig();
+            FileWriter writer(file_path, cfg);
+            writer.Close();
+
+            FileReader reader(file_path);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
+            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
+            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
+            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
+            REQUIRE(reader.GetLasHeader().point_count == 0);
+            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
+            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
+        }
     }
     GIVEN("A valid output stream")
     {
@@ -246,30 +244,30 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.GetWkt() == "TEST_WKT");
         }
 
-        // TODO[Leo]: (Extents) Update once autzen has been updated
-        //        SECTION("Copy")
-        //        {
-        //            fstream in_stream;
-        //            in_stream.open("autzen-classified.copc.laz", ios::in | ios::binary);
-        //            Reader orig(&in_stream);
-        //
-        //            stringstream out_stream;
-        //            Writer::LasHeaderConfig cfg(orig.GetLasHeader(), orig.GetExtraByteVlr());
-        //            Writer writer(out_stream, cfg);
-        //            writer.Close();
-        //
-        //            Reader reader(&out_stream);
-        //            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-        //            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-        //            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
-        //            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
-        //            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-        //            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
-        //            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
-        //            REQUIRE(reader.GetLasHeader().point_count == 0);
-        //            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
-        //            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
-        //        }
+        SECTION("Copy")
+        {
+            fstream in_stream;
+            in_stream.open("autzen-classified.copc.laz", ios::in | ios::binary);
+            Reader orig(&in_stream);
+
+            stringstream out_stream;
+            auto cfg = orig.GetCopcConfig();
+
+            Writer writer(out_stream, cfg);
+            writer.Close();
+
+            Reader reader(&out_stream);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
+            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
+            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
+            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
+            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
+            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
+            REQUIRE(reader.GetLasHeader().point_count == 0);
+            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
+            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
+        }
 
         SECTION("Update")
         {
@@ -406,65 +404,68 @@ TEST_CASE("Writer EBs", "[Writer]")
         REQUIRE(reader.GetExtraByteVlr().items.size() == 1);
         REQUIRE(reader.GetLasHeader().point_record_length == 48);
     }
-
-    // TODO[Leo]: (Extents) Update once autzen has been updated
-    //    SECTION("Copy Vlr")
-    //    {
-    //        FileReader reader("autzen-classified.copc.laz");
-    //
-    //        auto in_eb_vlr = reader.GetExtraByteVlr();
-    //
-    //        stringstream out_stream;
-    //        Writer::LasHeaderConfig config(6);
-    //        config.extra_bytes = in_eb_vlr;
-    //        Writer writer(out_stream, config);
-    //
-    //        REQUIRE(writer.GetLasHeader().point_record_length == 36); // 34 + 1 + 1
-    //
-    //        writer.Close();
-    //
-    //        Reader reader2(&out_stream);
-    //        REQUIRE(reader2.GetExtraByteVlr().items.size() == 2);
-    //        REQUIRE(reader2.GetLasHeader().point_record_length == reader.GetLasHeader().point_record_length);
-    //        REQUIRE(reader2.GetExtraByteVlr().items == reader.GetExtraByteVlr().items);
-    //    }
 }
-// TODO[Leo]: (Extents) Update once autzen has been updated
-// TEST_CASE("Writer Copy", "[Writer]")
-//{
-//    SECTION("Autzen")
-//    {
-//        FileReader reader("autzen-classified.copc.laz");
-//
-//        stringstream out_stream;
-//        Writer::LasHeaderConfig cfg(reader.GetLasHeader(), reader.GetExtraByteVlr());
-//        Writer writer(out_stream, cfg);
-//
-//        Page root_page = writer.GetRootPage();
-//
-//        for (auto node : reader.GetAllChildren())
-//        {
-//            // only write/compare compressed data or otherwise tests take too long
-//            writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
-//        }
-//
-//        writer.Close();
-//
-//        Reader new_reader(&out_stream);
-//
-//        for (auto node : reader.GetAllChildren())
-//        {
-//            REQUIRE(node.IsValid());
-//            auto new_node = new_reader.FindNode(node.key);
-//            REQUIRE(new_node.IsValid());
-//            REQUIRE(new_node.key == node.key);
-//            REQUIRE(new_node.point_count == node.point_count);
-//            REQUIRE(new_node.byte_size == node.byte_size);
-//            REQUIRE(new_reader.GetPointDataCompressed(new_node) == reader.GetPointDataCompressed(node));
-//        }
-//
-//        // we can do one uncompressed comparison here
-//        REQUIRE(new_reader.GetPointData(new_reader.FindNode(VoxelKey(5, 9, 7, 0))) ==
-//                reader.GetPointData(reader.FindNode(VoxelKey(5, 9, 7, 0))));
-//    }
-//}
+TEST_CASE("Writer Copy", "[Writer]")
+{
+
+    SECTION("Copy Copc Config")
+    {
+        FileReader reader("autzen-classified.copc.laz");
+
+        stringstream out_stream;
+        auto cfg = reader.GetCopcConfig();
+
+        Writer writer(out_stream, cfg);
+
+        REQUIRE(writer.GetLasHeader().point_record_length == 36);
+
+        writer.Close();
+
+        Reader new_reader(&out_stream);
+        REQUIRE(new_reader.GetLasHeader().point_record_length == reader.GetLasHeader().point_record_length);
+        REQUIRE(new_reader.GetCopcInfo().spacing == reader.GetCopcInfo().spacing);
+        REQUIRE(new_reader.GetCopcExtents().Intensity()->minimum == reader.GetCopcExtents().Intensity()->minimum);
+        REQUIRE(new_reader.GetWkt() == reader.GetWkt());
+        REQUIRE(new_reader.GetExtraByteVlr().items == reader.GetExtraByteVlr().items);
+    }
+
+    // TODO[Leo]: Add Copc Info and Extents
+
+    SECTION("Autzen")
+    {
+        FileReader reader("autzen-classified.copc.laz");
+
+        stringstream out_stream;
+
+        auto cfg = reader.GetCopcConfig();
+
+        Writer writer(out_stream, cfg);
+
+        Page root_page = writer.GetRootPage();
+
+        for (const auto &node : reader.GetAllChildren())
+        {
+            // only write/compare compressed data or otherwise tests take too long
+            writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+        }
+
+        writer.Close();
+
+        Reader new_reader(&out_stream);
+
+        for (const auto &node : reader.GetAllChildren())
+        {
+            REQUIRE(node.IsValid());
+            auto new_node = new_reader.FindNode(node.key);
+            REQUIRE(new_node.IsValid());
+            REQUIRE(new_node.key == node.key);
+            REQUIRE(new_node.point_count == node.point_count);
+            REQUIRE(new_node.byte_size == node.byte_size);
+            REQUIRE(new_reader.GetPointDataCompressed(new_node) == reader.GetPointDataCompressed(node));
+        }
+
+        // we can do one uncompressed comparison here
+        REQUIRE(new_reader.GetPointData(new_reader.FindNode(VoxelKey(5, 9, 7, 0))) ==
+                reader.GetPointData(reader.FindNode(VoxelKey(5, 9, 7, 0))));
+    }
+}

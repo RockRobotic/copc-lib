@@ -39,12 +39,6 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetCopcExtents Test")
         {
             auto copc_extents = reader.GetCopcExtents();
-            REQUIRE_THAT(copc_extents.X()->minimum, Catch::Matchers::WithinAbs(635577.7900, 0.0001));
-            REQUIRE_THAT(copc_extents.X()->maximum, Catch::Matchers::WithinAbs(639003.72999999998, 0.0001));
-            REQUIRE_THAT(copc_extents.Y()->minimum, Catch::Matchers::WithinAbs(848882.15000000002, 0.0001));
-            REQUIRE_THAT(copc_extents.Y()->maximum, Catch::Matchers::WithinAbs(853537.66000000003, 0.0001));
-            REQUIRE_THAT(copc_extents.Z()->minimum, Catch::Matchers::WithinAbs(406.13999999999999, 0.0001));
-            REQUIRE_THAT(copc_extents.Z()->maximum, Catch::Matchers::WithinAbs(615.25999999999999, 0.0001));
             REQUIRE_THAT(copc_extents.Intensity()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
             REQUIRE_THAT(copc_extents.Intensity()->maximum, Catch::Matchers::WithinAbs(254, 0.0001));
             REQUIRE_THAT(copc_extents.ReturnNumber()->minimum, Catch::Matchers::WithinAbs(1, 0.0001));

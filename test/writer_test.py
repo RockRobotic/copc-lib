@@ -80,26 +80,26 @@ def test_writer_config():
 
     extents = writer.copc_extents
 
-    extents.x.minimum = -1.0
-    extents.x.maximum = 1
+    extents.intensity.minimum = -1.0
+    extents.intensity.maximum = 1
 
-    extents.y.minimum = -float_info.max
-    extents.y.maximum = float_info.max
+    extents.classification.minimum = -float_info.max
+    extents.classification.maximum = float_info.max
 
     writer.copc_extents = extents
 
-    assert writer.copc_extents.x.minimum == extents.x.minimum
-    assert writer.copc_extents.x.maximum == extents.x.maximum
-    assert writer.copc_extents.y.minimum == extents.y.minimum
-    assert writer.copc_extents.y.maximum == extents.y.maximum
+    assert writer.copc_extents.intensity.minimum == extents.intensity.minimum
+    assert writer.copc_extents.intensity.maximum == extents.intensity.maximum
+    assert writer.copc_extents.classification.minimum == extents.classification.minimum
+    assert writer.copc_extents.classification.maximum == extents.classification.maximum
 
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.copc_extents.x.minimum == extents.x.minimum
-    assert reader.copc_extents.x.maximum == extents.x.maximum
-    assert reader.copc_extents.y.minimum == extents.y.minimum
-    assert reader.copc_extents.y.maximum == extents.y.maximum
+    assert reader.copc_extents.intensity.minimum == extents.intensity.minimum
+    assert reader.copc_extents.intensity.maximum == extents.intensity.maximum
+    assert reader.copc_extents.classification.minimum == extents.classification.minimum
+    assert reader.copc_extents.classification.maximum == extents.classification.maximum
 
     # WKT
     cfg = copc.CopcConfig(6)
@@ -217,39 +217,39 @@ def test_writer_pages():
     assert not reader.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
 
 
-# def test_writer_copy():
-#     # Given a valid file path
-#     file_path = "writer_test.copc.laz"
-#
-#     reader = copc.FileReader("autzen-classified.copc.laz")
-#
-#     cfg = copc.LasHeaderConfig(reader.las_header, reader.extra_bytes_vlr)
-#     writer = copc.FileWriter(file_path, cfg)
-#
-#     root_page = writer.GetRootPage()
-#
-#     for node in reader.GetAllChildren():
-#         # only write/compare compressed data or otherwise tests take too long
-#         writer.AddNodeCompressed(
-#             root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
-#         )
-#
-#     writer.Close()
-#
-#     # validate
-#     new_reader = copc.FileReader(file_path)
-#     for node in reader.GetAllChildren():
-#         assert node.IsValid()
-#         new_node = new_reader.FindNode(node.key)
-#         assert new_node.IsValid()
-#         assert new_node.key == node.key
-#         assert new_node.point_count == node.point_count
-#         assert new_node.byte_size == node.byte_size
-#         assert new_reader.GetPointDataCompressed(
-#             new_node
-#         ) == reader.GetPointDataCompressed(node)
-#
-#     # we can do one uncompressed comparison here
-#     assert new_reader.GetPointData(
-#         new_reader.FindNode((5, 9, 7, 0))
-#     ) == reader.GetPointData(reader.FindNode((5, 9, 7, 0)))
+def test_writer_copy():
+    # Given a valid file path
+    file_path = "writer_test.copc.laz"
+
+    reader = copc.FileReader("autzen-classified.copc.laz")
+
+    cfg = reader.GetCopcConfig()
+    writer = copc.FileWriter(file_path, cfg)
+
+    root_page = writer.GetRootPage()
+
+    for node in reader.GetAllChildren():
+        # only write/compare compressed data or otherwise tests take too long
+        writer.AddNodeCompressed(
+            root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
+        )
+
+    writer.Close()
+
+    # validate
+    new_reader = copc.FileReader(file_path)
+    for node in reader.GetAllChildren():
+        assert node.IsValid()
+        new_node = new_reader.FindNode(node.key)
+        assert new_node.IsValid()
+        assert new_node.key == node.key
+        assert new_node.point_count == node.point_count
+        assert new_node.byte_size == node.byte_size
+        assert new_reader.GetPointDataCompressed(
+            new_node
+        ) == reader.GetPointDataCompressed(node)
+
+    # we can do one uncompressed comparison here
+    assert new_reader.GetPointData(
+        new_reader.FindNode((5, 9, 7, 0))
+    ) == reader.GetPointData(reader.FindNode((5, 9, 7, 0)))

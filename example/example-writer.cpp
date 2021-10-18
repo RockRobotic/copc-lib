@@ -251,12 +251,10 @@ void NewFileExample()
     // Set the COPC Extents
     auto extents = writer.GetCopcExtents();
 
-    extents.X()->minimum = cfg.las_header_base.min.x;
-    extents.X()->maximum = cfg.las_header_base.max.x;
-    extents.Y()->minimum = cfg.las_header_base.min.y;
-    extents.Y()->maximum = cfg.las_header_base.max.y;
-    extents.Z()->minimum = cfg.las_header_base.min.z;
-    extents.Z()->maximum = cfg.las_header_base.max.z;
+    extents.Intensity()->minimum = 0;
+    extents.Intensity()->maximum = 10000;
+    extents.Classification()->minimum = 5;
+    extents.Classification()->maximum = 201;
 
     writer.SetCopcExtents(extents);
 

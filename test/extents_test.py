@@ -42,8 +42,8 @@ def test_copc_extents():
     assert extents.point_format_id == 7
     assert len(extents.extra_bytes) == 3
 
-    assert extents.x.minimum == 0
-    assert extents.y.minimum == 0
+    assert extents.classification.minimum == 0
+    assert extents.intensity.minimum == 0
 
     for extent in extents.extents:
         assert extent.minimum == 0
@@ -54,10 +54,10 @@ def test_copc_extents():
 
     extents = writer.copc_extents
 
-    extents.x.minimum = -float_info.max
-    extents.x.maximum = float_info.max
+    extents.classification.minimum = -float_info.max
+    extents.classification.maximum = float_info.max
 
-    extents.y = (-10, 5)  # Tuple implicit conversion
+    extents.intensity = (-10, 5)  # Tuple implicit conversion
 
     extents.extra_bytes[0].minimum = -float_info.max
     extents.extra_bytes[0].maximum = float_info.max
@@ -70,11 +70,11 @@ def test_copc_extents():
 
     extents = reader.copc_extents
 
-    assert extents.x.minimum == -float_info.max
-    assert extents.x.maximum == float_info.max
+    assert extents.classification.minimum == -float_info.max
+    assert extents.classification.maximum == float_info.max
 
-    assert extents.y.minimum == -10
-    assert extents.y.maximum == 5
+    assert extents.intensity.minimum == -10
+    assert extents.intensity.maximum == 5
 
     assert extents.extra_bytes[0].minimum == -float_info.max
     assert extents.extra_bytes[0].maximum == float_info.max

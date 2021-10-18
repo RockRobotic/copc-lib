@@ -41,27 +41,20 @@ uint8_t PointBaseNumberDimensions(const int8_t &point_format_id)
     switch (point_format_id)
     {
     case 0:
-        return 12;
     case 1:
-        return 13;
     case 2:
-        return 15;
     case 3:
-        return 16;
     case 4:
     case 5:
-        throw std::runtime_error("Point formats with Wave Packets not yet supported");
+        throw std::runtime_error("Point format must be 6-8");
     case 6:
         return 14;
     case 7:
         return 17;
     case 8:
         return 18;
-    case 9:
-    case 10:
-        throw std::runtime_error("Point formats with Wave Packets not yet supported");
     default:
-        throw std::runtime_error("Point format must be 0-10");
+        throw std::runtime_error("Point format must be 6-8");
     }
 }
 

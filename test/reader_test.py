@@ -26,12 +26,6 @@ def test_reader():
 
     # GetCopcExtents Test
     copc_extents = reader.copc_extents
-    assert copc_extents.x.minimum == pytest.approx(635577.7900, 0.0001)
-    assert copc_extents.x.maximum == pytest.approx(639003.72999999998, 0.0001)
-    assert copc_extents.y.minimum == pytest.approx(848882.15000000002, 0.0001)
-    assert copc_extents.y.maximum == pytest.approx(853537.66000000003, 0.0001)
-    assert copc_extents.z.minimum == pytest.approx(406.13999999999999, 0.0001)
-    assert copc_extents.z.maximum == pytest.approx(615.25999999999999, 0.0001)
     assert copc_extents.intensity.minimum == pytest.approx(0, 0.0001)
     assert copc_extents.intensity.maximum == pytest.approx(254, 0.0001)
     assert copc_extents.return_number.minimum == pytest.approx(1, 0.0001)

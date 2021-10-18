@@ -590,12 +590,6 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("num_eb_items") = 0)
         .def_static("NumberOfExtents", &CopcExtents::NumberOfExtents)
         .def_property_readonly("point_format_id", &CopcExtents::PointFormatID)
-        .def_property("x", py::overload_cast<>(&CopcExtents::X),
-                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::X))
-        .def_property("y", py::overload_cast<>(&CopcExtents::Y),
-                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Y))
-        .def_property("z", py::overload_cast<>(&CopcExtents::Z),
-                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Z))
         .def_property("intensity", py::overload_cast<>(&CopcExtents::Intensity),
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Intensity))
         .def_property("return_number", py::overload_cast<>(&CopcExtents::ReturnNumber),
