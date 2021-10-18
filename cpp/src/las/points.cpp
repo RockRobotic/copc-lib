@@ -7,18 +7,17 @@
 namespace copc::las
 {
 
-Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
-               const uint16_t &num_extra_bytes)
+Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const uint16_t &eb_byte_size)
     : point_format_id_(point_format_id), scale_(scale), offset_(offset)
 {
     if (point_format_id < 0 || point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10.");
 
-    point_record_length_ = ComputePointBytes(point_format_id, num_extra_bytes);
+    point_record_length_ = ComputePointBytes(point_format_id, eb_byte_size);
 }
 
 Points::Points(const LasHeader &header)
-    : Points(header.point_format_id, header.scale, header.offset, header.NumExtraBytes()){};
+    : Points(header.point_format_id, header.scale, header.offset, header.EbByteSize()){};
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {
@@ -72,13 +71,13 @@ void Points::AddPoints(std::vector<std::shared_ptr<Point>> points)
 
 Points Points::Unpack(const std::vector<char> &point_data, const LasHeader &header)
 {
-    return Unpack(point_data, header.point_format_id, header.NumExtraBytes(), header.scale, header.offset);
+    return Unpack(point_data, header.point_format_id, header.EbByteSize(), header.scale, header.offset);
 }
 
-Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
-                      const uint16_t &num_extra_bytes, const Vector3 &scale, const Vector3 &offset)
+Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id, const uint16_t &eb_byte_size,
+                      const Vector3 &scale, const Vector3 &offset)
 {
-    auto point_record_length = ComputePointBytes(point_format_id, num_extra_bytes);
+    auto point_record_length = ComputePointBytes(point_format_id, eb_byte_size);
     if (point_data.size() % point_record_length != 0)
         throw std::runtime_error("Invalid input point array!");
 
@@ -88,13 +87,13 @@ Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_f
     auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
 
     // Go through each Point to unpack the data from the stream
-    Points points(point_format_id, scale, offset, num_extra_bytes);
+    Points points(point_format_id, scale, offset, eb_byte_size);
     points.Reserve(point_count);
 
     // Unpack points
     for (int i = 0; i < point_count; i++)
     {
-        points.AddPoint(las::Point::Unpack(ss, point_format_id, scale, offset, num_extra_bytes));
+        points.AddPoint(las::Point::Unpack(ss, point_format_id, scale, offset, eb_byte_size));
     }
 
     return points;
@@ -118,7 +117,7 @@ std::string Points::ToString() const
 {
     std::stringstream ss;
     ss << "# of points: " << Size() << ", Point Format: " << static_cast<int>(point_format_id_)
-       << ", # Extra Bytes: " << NumExtraBytes() << ", Point Record Length: " << point_record_length_;
+       << ", # Extra Bytes: " << EbByteSize() << ", Point Record Length: " << point_record_length_;
     return ss.str();
 }
 

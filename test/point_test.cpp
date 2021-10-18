@@ -614,12 +614,12 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.PointRecordLength() == 20);
         REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
         REQUIRE(point.ExtraBytes().size() == 0);
-        REQUIRE(point.NumExtraBytes() == 0);
+        REQUIRE(point.EbByteSize() == 0);
 
         point = Point(0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 5);
         REQUIRE(point.PointFormatID() == 0);
         REQUIRE(point.PointRecordLength() == 20 + 5);
-        REQUIRE(point.NumExtraBytes() == 5);
+        REQUIRE(point.EbByteSize() == 5);
         REQUIRE(point.ExtraBytes().size() == 5);
         REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
         REQUIRE_NOTHROW(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4, 5, 6}));
@@ -628,7 +628,7 @@ TEST_CASE("Point tests", "[Point]")
         point.ToPointFormat(6);
         REQUIRE(point.PointFormatID() == 6);
         REQUIRE(point.PointRecordLength() == 30 + 5);
-        REQUIRE(point.NumExtraBytes() == 5);
+        REQUIRE(point.EbByteSize() == 5);
         REQUIRE(point.ExtraBytes().size() == 5);
         REQUIRE(point.ExtraBytes() == std::vector<uint8_t>{2, 3, 4, 5, 6});
         REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
@@ -670,49 +670,49 @@ TEST_CASE("Point tests", "[Point]")
         auto point = orig_point;
         point.Pack(ss);
         auto point_other =
-            *Point::Unpack(ss, 0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 1
         point.ToPointFormat(1);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 1, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 1, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 2
         point.ToPointFormat(2);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 2, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 2, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 3
         point.ToPointFormat(3);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 6
         point.ToPointFormat(6);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 7
         point.ToPointFormat(7);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 8
         point.ToPointFormat(8);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         point.ToPointFormat(0);

@@ -14,7 +14,7 @@ class Point
 {
   public:
     Point(const int8_t &point_format_id, const Vector3 &scale = Vector3::DefaultScale(),
-          const Vector3 &offset = Vector3::DefaultOffset(), const uint16_t &num_extra_bytes = 0);
+          const Vector3 &offset = Vector3::DefaultOffset(), const uint16_t &eb_byte_size = 0);
     Point(const LasHeader &header);
     Point(const Point &other);
 
@@ -350,9 +350,9 @@ class Point
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }
     void ExtraBytes(const std::vector<uint8_t> &in)
     {
-        if (in.size() != NumExtraBytes())
+        if (in.size() != EbByteSize())
             throw std::runtime_error("Number of input bytes " + std::to_string(in.size()) +
-                                     " does not match number of point bytes " + std::to_string(NumExtraBytes()));
+                                     " does not match number of point bytes " + std::to_string(EbByteSize()));
         extra_bytes_ = in;
     }
 
@@ -428,7 +428,7 @@ class Point
 
     uint32_t PointRecordLength() const { return point_record_length_; }
     int8_t PointFormatID() const { return point_format_id_; }
-    uint16_t NumExtraBytes() const;
+    uint16_t EbByteSize() const;
 
     Vector3 Scale() const { return scale_; }
     Vector3 Offset() const { return offset_; }
@@ -441,7 +441,7 @@ class Point
     std::string ToString() const;
 
     static std::shared_ptr<Point> Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
-                                         const Vector3 &offset, const uint16_t &num_extra_bytes);
+                                         const Vector3 &offset, const uint16_t &eb_byte_size);
     void Pack(std::ostream &out_stream) const;
     void ToPointFormat(const int8_t &point_format_id);
 

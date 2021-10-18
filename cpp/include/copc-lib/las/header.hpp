@@ -81,7 +81,7 @@ class LasHeader : public LasHeaderBase
 {
   public:
     LasHeader() = default;
-    uint16_t NumExtraBytes() const;
+    uint16_t EbByteSize() const;
 
     static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf() const;

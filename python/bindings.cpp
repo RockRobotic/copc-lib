@@ -283,7 +283,7 @@ PYBIND11_MODULE(copclib, m)
 
         .def_property_readonly("PointFormatID", &las::Point::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Point::PointRecordLength)
-        .def_property_readonly("NumExtraBytes", &las::Point::NumExtraBytes)
+        .def_property_readonly("EbByteSize", &las::Point::EbByteSize)
 
         .def_property("ExtraBytes", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Point::ExtraBytes))
@@ -308,7 +308,7 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<las::Points>(m, "Points")
         .def(py::init<const uint8_t &, const Vector3 &, const Vector3 &, const uint16_t &>(),
-             py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("num_extra_bytes") = 0)
+             py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("eb_byte_size") = 0)
         .def(py::init<const std::vector<std::shared_ptr<las::Point>> &>(), py::arg("points"))
         .def(py::init<const las::LasHeader &>())
         .def_property("X", py::overload_cast<>(&las::Points::X, py::const_),
@@ -323,7 +323,7 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::PointSourceID))
         .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
         .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
-        .def_property_readonly("NumExtraBytes", &las::Points::NumExtraBytes)
+        .def_property_readonly("EbByteSize", &las::Points::EbByteSize)
         .def("AddPoint", &las::Points::AddPoint)
         .def("AddPoints", py::overload_cast<las::Points>(&las::Points::AddPoints))
         .def("AddPoints", py::overload_cast<std::vector<std::shared_ptr<las::Point>>>(&las::Points::AddPoints))
@@ -448,7 +448,7 @@ PYBIND11_MODULE(copclib, m)
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
-          py::arg("in"), py::arg("point_format_id"), py::arg("num_extra_bytes"));
+          py::arg("in"), py::arg("point_format_id"), py::arg("eb_byte_size"));
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const las::LasHeader &>(&laz::Compressor::CompressBytes));
 
@@ -459,11 +459,11 @@ PYBIND11_MODULE(copclib, m)
     m.def("DecompressBytes",
           py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const int &>(
               &laz::Decompressor::DecompressBytes),
-          py::arg("compressed_data"), py::arg("point_format_id"), py::arg("num_extra_bytes"), py::arg("point_count"));
+          py::arg("compressed_data"), py::arg("point_format_id"), py::arg("eb_byte_size"), py::arg("point_count"));
 
     py::class_<las::LasHeader>(m, "LasHeader")
         .def(py::init<>())
-        .def_property_readonly("num_extra_bytes", &las::LasHeader::NumExtraBytes)
+        .def_property_readonly("eb_byte_size", &las::LasHeader::EbByteSize)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
@@ -587,7 +587,7 @@ PYBIND11_MODULE(copclib, m)
     py::implicitly_convertible<py::tuple, CopcExtent>();
 
     py::class_<CopcExtents>(m, "CopcExtents")
-        .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("eb_count") = 0)
+        .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("num_eb_items") = 0)
         .def_static("NumberOfExtents", &CopcExtents::NumberOfExtents)
         .def_property("point_format_id", py::overload_cast<>(&CopcExtents::PointFormatID, py::const_),
                       py::overload_cast<int8_t>(&CopcExtents::PointFormatID))

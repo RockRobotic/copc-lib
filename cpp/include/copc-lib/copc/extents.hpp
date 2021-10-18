@@ -31,10 +31,10 @@ class CopcExtents
 {
   public:
     // Empty constructor
-    CopcExtents(int8_t point_format_id, uint16_t eb_count = 0);
+    CopcExtents(int8_t point_format_id, uint16_t num_eb_items = 0);
 
     // VLR constructor
-    CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t eb_count = 0);
+    CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items = 0);
 
     // Getters/Setters
     void PointFormatID(int8_t point_format_id)
@@ -168,10 +168,10 @@ class CopcExtents
     // Set all extents from vector
 
     // Return the total number of extents
-    static int NumberOfExtents(int8_t point_format_id, uint16_t eb_count);
+    static int NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items);
 
     // Return the size in bytes of the extents
-    static size_t GetByteSize(int8_t point_format_id, uint16_t eb_count);
+    static size_t GetByteSize(int8_t point_format_id, uint16_t num_eb_items);
 
     std::string ToString() const;
 

@@ -45,7 +45,7 @@ std::string CopcConfig::ToString() const
     ss << las_header_base.ToString();
     ss << copc_info.ToString() << std::endl;
     ss << "\twkt: " << wkt << std::endl;
-    ss << "\tNumber of Extra Bytes: " << NumExtraBytes() << std::endl;
+    ss << "\tNumber of Extra Bytes: " << NumEbItems() << std::endl;
     return ss.str();
 }
 

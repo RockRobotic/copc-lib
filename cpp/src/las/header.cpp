@@ -32,7 +32,7 @@ std::string LasHeaderBase::ToString() const
     return ss.str();
 }
 
-uint16_t LasHeader::NumExtraBytes() const { return ComputeNumExtraBytes(point_format_id, point_record_length); }
+uint16_t LasHeader::EbByteSize() const { return ComputeEbByteSize(point_format_id, point_record_length); }
 
 LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
 {

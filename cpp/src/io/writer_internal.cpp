@@ -67,14 +67,14 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader(las::LasHeader &header)
 {
-    laz_vlr lazVlr(header.point_format_id, header.NumExtraBytes(), VARIABLE_CHUNK_SIZE);
+    laz_vlr lazVlr(header.point_format_id, header.EbByteSize(), VARIABLE_CHUNK_SIZE);
 
     header.vlr_count = 4; // copc_info + copc_extent + laz + wkt
 
     header.point_offset = OFFSET_TO_POINT_DATA;
     header.point_count = point_count_;
 
-    if (header.NumExtraBytes())
+    if (header.EbByteSize())
     {
         header.vlr_count++;
     }
@@ -110,7 +110,7 @@ void WriterInternal::WriteHeader(las::LasHeader &header)
     wkt_vlr.write(out_stream_);
 
     // Write optional Extra Byte VLR
-    if (header.NumExtraBytes())
+    if (header.EbByteSize())
     {
         auto ebVlr = this->file_->GetExtraBytes();
         ebVlr.header().write(out_stream_);

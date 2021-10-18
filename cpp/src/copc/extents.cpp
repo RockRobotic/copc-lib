@@ -38,24 +38,24 @@ std::string CopcExtent::ToString() const
     return ss.str();
 }
 
-CopcExtents::CopcExtents(int8_t point_format_id, uint16_t eb_count) : point_format_id_(point_format_id)
+CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items) : point_format_id_(point_format_id)
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 
-    extents_ = std::vector<std::shared_ptr<CopcExtent>>(NumberOfExtents(point_format_id, eb_count),
+    extents_ = std::vector<std::shared_ptr<CopcExtent>>(NumberOfExtents(point_format_id, num_eb_items),
                                                         std::make_shared<CopcExtent>());
 }
 
-CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t eb_count)
+CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items)
     : point_format_id_(point_format_id)
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 
-    if (vlr.items.size() != NumberOfExtents(point_format_id, eb_count))
+    if (vlr.items.size() != NumberOfExtents(point_format_id, num_eb_items))
         throw std::runtime_error("CopcExtents: Number of extents incorrect.");
-    extents_.reserve(NumberOfExtents(point_format_id, eb_count));
+    extents_.reserve(NumberOfExtents(point_format_id, num_eb_items));
     for (const auto &extent : vlr.items)
     {
         extents_.push_back(std::make_shared<CopcExtent>(extent));
@@ -73,14 +73,14 @@ las::CopcExtentsVlr CopcExtents::ToCopcExtentsVlr() const
     return vlr;
 }
 
-int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t eb_count)
+int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items)
 {
-    return las::PointBaseNumberDimensions(point_format_id) + eb_count;
+    return las::PointBaseNumberDimensions(point_format_id) + num_eb_items;
 }
 
-size_t CopcExtents::GetByteSize(int8_t point_format_id, uint16_t eb_count)
+size_t CopcExtents::GetByteSize(int8_t point_format_id, uint16_t num_eb_items)
 {
-    return CopcExtents(point_format_id, eb_count).ToCopcExtentsVlr().size();
+    return CopcExtents(point_format_id, num_eb_items).ToCopcExtentsVlr().size();
 }
 
 std::string CopcExtents::ToString() const

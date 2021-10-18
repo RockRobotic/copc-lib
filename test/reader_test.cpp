@@ -21,7 +21,7 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE(header.point_format_id == 7);
             REQUIRE(header.point_count == 10653336);
             REQUIRE(header.point_record_length == 36);
-            REQUIRE(header.NumExtraBytes() == 0);
+            REQUIRE(header.EbByteSize() == 0);
         }
 
         SECTION("GetCopcInfo Test")

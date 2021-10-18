@@ -8,8 +8,8 @@ namespace copc::las
 {
 uint8_t PointBaseByteSize(const int8_t &point_format_id);
 uint8_t PointBaseNumberDimensions(const int8_t &point_format_id);
-uint16_t ComputeNumExtraBytes(const int8_t &point_format_id, const uint32_t &point_record_length);
-uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &num_extra_bytes);
+uint16_t ComputeEbByteSize(const int8_t &point_format_id, const uint32_t &point_record_length);
+uint16_t ComputePointBytes(const int8_t &point_format_id, const uint16_t &eb_byte_size);
 
 bool FormatHasGPSTime(const uint8_t &point_format_id);
 bool FormatHasRGB(const uint8_t &point_format_id);

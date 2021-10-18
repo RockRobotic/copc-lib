@@ -9,7 +9,7 @@ def test_constructor():
         point_format_id=0,
         scale=copc.Vector3.DefaultScale(),
         offset=copc.Vector3.DefaultOffset(),
-        num_extra_bytes=0,
+        eb_byte_size=0,
     ).CreatePoint()
 
     assert point.HasExtendedPoint is False
@@ -645,17 +645,17 @@ def test_extra_byte():
     with pytest.raises(RuntimeError):
         point.ExtraBytes = [2, 3, 4]
     assert len(point.ExtraBytes) == 0
-    assert point.NumExtraBytes == 0
+    assert point.EbByteSize == 0
 
     point = copc.Points(
         0,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
-        num_extra_bytes=5,
+        eb_byte_size=5,
     ).CreatePoint()
     assert point.PointFormatID == 0
     assert point.PointRecordLength == 20 + 5
-    assert point.NumExtraBytes == 5
+    assert point.EbByteSize == 5
     assert len(point.ExtraBytes) == 5
     with pytest.raises(RuntimeError):
         point.ExtraBytes = [2, 3, 4]
@@ -665,7 +665,7 @@ def test_extra_byte():
     point.ToPointFormat(6)
     assert point.PointFormatID == 6
     assert point.PointRecordLength == 30 + 5
-    assert point.NumExtraBytes == 5
+    assert point.EbByteSize == 5
     assert len(point.ExtraBytes) == 5
     assert point.ExtraBytes == [2, 3, 4, 5, 6]
     with pytest.raises(RuntimeError):
@@ -677,7 +677,7 @@ def test_operator_copy():
         8,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
-        num_extra_bytes=2,
+        eb_byte_size=2,
     ).CreatePoint()
 
     point.UnscaledX = 4

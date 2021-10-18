@@ -21,7 +21,7 @@ struct CopcConfig
 
     std::string ToString() const;
 
-    uint16_t NumExtraBytes() const { return extra_bytes_vlr_.items.size(); }
+    uint16_t NumEbItems() const { return extra_bytes_vlr_.items.size(); }
 
     int8_t GetPointFormatID() const { return point_format_id_; }
     CopcExtents GetCopcExtents() const { return copc_extents_; }

@@ -12,7 +12,7 @@ def test_reader():
     assert header.point_format_id == 7
     assert header.point_count == 10653336
     assert header.point_record_length == 36
-    assert header.num_extra_bytes == 0
+    assert header.eb_byte_size == 0
 
     # GetCopcInfo Test
     copc_info = reader.copc_info
