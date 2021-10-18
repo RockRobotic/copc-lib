@@ -28,16 +28,6 @@ jobs:
         repository: hobu/laz-perf
         ref: db7f5f1cc4d3905ca21b0b67a55056533c7d6486
 
-    - name: Build lazperf
-      shell: bash
-      working-directory: lazperf
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-        cmake --build . --config ${{env.BUILD_TYPE}}
-        sudo cmake --install .
-
     - name: Checkout Copclib
       uses: actions/checkout@v2
 
@@ -58,6 +48,16 @@ jobs:
         pip install pytest wheel
       shell:
         bash -l {0}
+
+    - name: Build lazperf
+      shell: bash -l {0}
+      working-directory: lazperf
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake --build . --config ${{env.BUILD_TYPE}}
+        sudo cmake --install .
 
     - name: Build Copclib Python Bindings
       run: |

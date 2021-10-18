@@ -14,7 +14,7 @@
 namespace copc::Internal
 {
 
-void WriterInternal::ComputeOffsetLength()
+void WriterInternal::ComputeOffsetToPointData()
 {
 
     size_t extents_offset =
@@ -35,7 +35,7 @@ WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<C
     : out_stream_(out_stream), file_(file), hierarchy_(hierarchy)
 {
     // Update OFFSET_TO_POINT_DATA based on WKT and Extents
-    ComputeOffsetLength();
+    ComputeOffsetToPointData();
 
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FIRST_CHUNK_OFFSET(), 0);

@@ -76,44 +76,36 @@ CopcInfo Reader::ReadCopcInfoVlr()
     return {lazperf::copc_info_vlr::create(*in_stream_)};
 }
 
-CopcExtents Reader::ReadCopcExtentsVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr)
+CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr) const
 {
     auto offset = FetchVlr(vlrs, "copc", 10000);
-    auto pair = vlrs.find(offset);
+    if (offset == 0)
+        throw std::runtime_error("Reader::ReadCopcExtentsVlr: No COPC Extents VLR found in file.");
 
-    if (pair != vlrs.end())
-    {
-        in_stream_->seekg(offset + lazperf::vlr_header::Size);
-        return CopcExtents(las::CopcExtentsVlr::create(*in_stream_, pair->second.data_length),
-                           static_cast<int8_t>(reader_->header().point_format_id),
-                           static_cast<uint16_t>(eb_vlr.items.size()));
-    }
-    return CopcExtents(static_cast<int8_t>(reader_->header().point_format_id),
+    in_stream_->seekg(offset + lazperf::vlr_header::Size);
+    return CopcExtents(las::CopcExtentsVlr::create(*in_stream_, vlrs[offset].data_length),
+                       static_cast<int8_t>(reader_->header().point_format_id),
                        static_cast<uint16_t>(eb_vlr.items.size()));
 }
 
-las::WktVlr Reader::ReadWKTVlr(const std::map<uint64_t, las::VlrHeader> &vlrs)
+las::WktVlr Reader::ReadWKTVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     auto offset = FetchVlr(vlrs, "LASF_Projection", 2112);
-    auto pair = vlrs.find(offset);
-
-    if (pair != vlrs.end())
+    if (offset != 0)
     {
         in_stream_->seekg(offset + lazperf::vlr_header::Size);
-        return las::WktVlr::create(*in_stream_, pair->second.data_length);
+        return las::WktVlr::create(*in_stream_, vlrs[offset].data_length);
     }
     return {};
 }
 
-las::EbVlr Reader::ReadExtraBytesVlr(const std::map<uint64_t, las::VlrHeader> &vlrs)
+las::EbVlr Reader::ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     auto offset = FetchVlr(vlrs, "LASF_Spec", 4);
-    auto pair = vlrs.find(offset);
-
-    if (pair != vlrs.end())
+    if (offset != 0)
     {
         in_stream_->seekg(offset + lazperf::vlr_header::Size);
-        return las::EbVlr::create(*in_stream_, pair->second.data_length);
+        return las::EbVlr::create(*in_stream_, vlrs[offset].data_length);
     }
     return {};
 }

@@ -397,16 +397,6 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &las::Points::ToString)
         .def("__repr__", &las::Points::ToString);
 
-    py::class_<CopcExtent, std::shared_ptr<CopcExtent>>(m, "CopcExtent")
-        .def(py::init<>())
-        .def(py::init<double, double>())
-        .def(py::init<const std::vector<double> &>())
-        .def_readwrite("minimum", &CopcExtent::minimum)
-        .def_readwrite("maximum", &CopcExtent::maximum);
-
-    py::implicitly_convertible<py::list, CopcExtent>();
-    py::implicitly_convertible<py::tuple, CopcExtent>();
-
     py::class_<FileReader>(m, "FileReader")
         .def(py::init<std::string &>())
         .def("Close", &FileReader::Close)
@@ -585,29 +575,62 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &CopcInfo::ToString)
         .def("__repr__", &CopcInfo::ToString);
 
+    py::class_<CopcExtent, std::shared_ptr<CopcExtent>>(m, "CopcExtent")
+        .def(py::init<>())
+        .def(py::init<double, double>(), py::arg("minimum"), py::arg("maximum"))
+        .def(py::init<const std::vector<double> &>(), py::arg("list"))
+        .def_readwrite("minimum", &CopcExtent::minimum)
+        .def_readwrite("maximum", &CopcExtent::maximum)
+        .def("__str__", &CopcExtent::ToString)
+        .def("__repr__", &CopcExtent::ToString);
+
+    py::implicitly_convertible<py::tuple, CopcExtent>();
+
     py::class_<CopcExtents>(m, "CopcExtents")
         .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("eb_count") = 0)
         .def_static("NumberOfExtents", &CopcExtents::NumberOfExtents)
         .def_property("point_format_id", py::overload_cast<>(&CopcExtents::PointFormatID, py::const_),
                       py::overload_cast<int8_t>(&CopcExtents::PointFormatID))
-        .def_property_readonly("x", &CopcExtents::X)
-        .def_property_readonly("y", &CopcExtents::Y)
-        .def_property_readonly("z", &CopcExtents::Z)
-        .def_property_readonly("intensity", &CopcExtents::Intensity)
-        .def_property_readonly("return_number", &CopcExtents::ReturnNumber)
-        .def_property_readonly("number_of_returns", &CopcExtents::NumberOfReturns)
-        .def_property_readonly("scanner_channel", &CopcExtents::ScannerChannel)
-        .def_property_readonly("scan_direction_flag", &CopcExtents::ScanDirectionFlag)
-        .def_property_readonly("edge_of_flight_line", &CopcExtents::EdgeOfFlightLine)
-        .def_property_readonly("classification", &CopcExtents::Classification)
-        .def_property_readonly("user_data", &CopcExtents::UserData)
-        .def_property_readonly("scan_angle", &CopcExtents::ScanAngle)
-        .def_property_readonly("point_source_id", &CopcExtents::PointSourceID)
-        .def_property_readonly("gps_time", &CopcExtents::GpsTime)
-        .def_property_readonly("red", &CopcExtents::Red)
-        .def_property_readonly("green", &CopcExtents::Green)
-        .def_property_readonly("blue", &CopcExtents::Blue)
-        .def_property_readonly("nir", &CopcExtents::NIR)
-        .def_property_readonly("extra_bytes", &CopcExtents::ExtraBytes)
-        .def_property_readonly("extents", &CopcExtents::Extents);
+        .def_property("x", py::overload_cast<>(&CopcExtents::X),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::X))
+        .def_property("y", py::overload_cast<>(&CopcExtents::Y),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Y))
+        .def_property("z", py::overload_cast<>(&CopcExtents::Z),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Z))
+        .def_property("intensity", py::overload_cast<>(&CopcExtents::Intensity),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Intensity))
+        .def_property("return_number", py::overload_cast<>(&CopcExtents::ReturnNumber),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::ReturnNumber))
+        .def_property("number_of_returns", py::overload_cast<>(&CopcExtents::NumberOfReturns),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::NumberOfReturns))
+        .def_property("scanner_channel", py::overload_cast<>(&CopcExtents::ScannerChannel),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::ScannerChannel))
+        .def_property("scan_direction_flag", py::overload_cast<>(&CopcExtents::ScanDirectionFlag),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::ScanDirectionFlag))
+        .def_property("edge_of_flight_line", py::overload_cast<>(&CopcExtents::EdgeOfFlightLine),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::EdgeOfFlightLine))
+        .def_property("classification", py::overload_cast<>(&CopcExtents::Classification),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Classification))
+        .def_property("user_data", py::overload_cast<>(&CopcExtents::UserData),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::UserData))
+        .def_property("scan_angle", py::overload_cast<>(&CopcExtents::ScanAngle),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::ScanAngle))
+        .def_property("point_source_id", py::overload_cast<>(&CopcExtents::PointSourceID),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::PointSourceID))
+        .def_property("gps_time", py::overload_cast<>(&CopcExtents::GpsTime),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::GpsTime))
+        .def_property("red", py::overload_cast<>(&CopcExtents::Red),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Red))
+        .def_property("green", py::overload_cast<>(&CopcExtents::Green),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Green))
+        .def_property("blue", py::overload_cast<>(&CopcExtents::Blue),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Blue))
+        .def_property("nir", py::overload_cast<>(&CopcExtents::NIR),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::NIR))
+        .def_property("extra_bytes", py::overload_cast<>(&CopcExtents::ExtraBytes),
+                      py::overload_cast<std::vector<std::shared_ptr<CopcExtent>>>(&CopcExtents::ExtraBytes))
+        .def_property("extents", py::overload_cast<>(&CopcExtents::Extents),
+                      py::overload_cast<std::vector<std::shared_ptr<CopcExtent>>>(&CopcExtents::Extents))
+        .def("__str__", &CopcExtents::ToString)
+        .def("__repr__", &CopcExtents::ToString);
 }

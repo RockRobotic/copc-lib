@@ -17,8 +17,9 @@ using CopcExtentsVlr = lazperf::copc_extents_vlr;
 class VlrHeader : public lazperf::evlr_header
 {
   public:
-    bool evlr_flag;
+    bool evlr_flag{false};
 
+    VlrHeader() = default;
     VlrHeader(const lazperf::evlr_header &evlr_header) : evlr_flag(true), lazperf::evlr_header(evlr_header){};
     VlrHeader(const lazperf::vlr_header &vlr_header);
     VlrHeader(const VlrHeader &vlr_header);

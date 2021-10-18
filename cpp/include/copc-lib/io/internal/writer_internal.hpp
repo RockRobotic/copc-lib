@@ -42,7 +42,7 @@ class WriterInternal
     std::vector<lazperf::chunk> chunks_;
     uint64_t point_count_ = 0;
 
-    void ComputeOffsetLength();
+    void ComputeOffsetToPointData();
 
     void WriteHeader(las::LasHeader &header);
     void WriteChunkTable();
