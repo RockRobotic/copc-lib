@@ -114,7 +114,6 @@ lazperf::header14 LasHeader::ToLazPerf() const
     h.maxz = max.z;
     h.minz = min.z;
 
-    h.wave_offset = 0;
     h.evlr_offset = evlr_offset;
     h.evlr_count = evlr_count;
     h.point_count_14 = point_count;
