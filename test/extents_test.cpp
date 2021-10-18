@@ -14,23 +14,23 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 {
 
     int8_t point_format_id{7};
-    uint16_t extra_byte_count{5};
+    uint16_t num_eb_items{5};
 
     SECTION("Constructor")
     {
         // Empty constructor
         {
-            CopcExtents extents{point_format_id, extra_byte_count};
+            CopcExtents extents{point_format_id, num_eb_items};
             REQUIRE(extents.PointFormatID() == point_format_id);
-            REQUIRE(extents.ExtraBytes().size() == extra_byte_count);
+            REQUIRE(extents.ExtraBytes().size() == num_eb_items);
         }
         // Vlr Constructor
         {
             auto vlr = las::CopcExtentsVlr();
-            vlr.items.resize(CopcExtents::NumberOfExtents(point_format_id, extra_byte_count), {0, 0});
-            CopcExtents extents{vlr, point_format_id, extra_byte_count};
+            vlr.items.resize(CopcExtents::NumberOfExtents(point_format_id, num_eb_items), {0, 0});
+            CopcExtents extents{vlr, point_format_id, num_eb_items};
             REQUIRE(extents.PointFormatID() == point_format_id);
-            REQUIRE(extents.ExtraBytes().size() == extra_byte_count);
+            REQUIRE(extents.ExtraBytes().size() == num_eb_items);
             REQUIRE(extents.X()->minimum == 0);
             REQUIRE(extents.X()->maximum == 0);
         }
@@ -109,15 +109,15 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
     SECTION("ToCopcExtentVlr")
     {
 
-        CopcExtents extents{point_format_id, extra_byte_count};
+        CopcExtents extents{point_format_id, num_eb_items};
 
         auto vlr = extents.ToCopcExtentsVlr();
-        REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, extra_byte_count));
+        REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, num_eb_items));
     }
 
     SECTION("Get/Set Extents")
     {
-        CopcExtents extents{point_format_id, extra_byte_count};
+        CopcExtents extents{point_format_id, num_eb_items};
 
         for (const auto &extent : extents.Extents())
         {

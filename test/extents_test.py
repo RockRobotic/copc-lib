@@ -6,15 +6,15 @@ import copclib as copc
 def test_copc_extents():
 
     point_format_id = 7
-    extra_byte_count = 3
+    num_eb_items = 3
 
     #### Constructor ####
 
     # Empty Constructor
 
-    extents = copc.CopcExtents(point_format_id, extra_byte_count)
+    extents = copc.CopcExtents(point_format_id, num_eb_items)
     assert extents.point_format_id == point_format_id
-    assert len(extents.extra_bytes) == extra_byte_count
+    assert len(extents.extra_bytes) == num_eb_items
 
     # Point format checks
     with pytest.raises(RuntimeError):
@@ -25,7 +25,7 @@ def test_copc_extents():
 
     file_path = "writer_test.copc.laz"
 
-    eb_vlr = copc.EbVlr(extra_byte_count)
+    eb_vlr = copc.EbVlr(num_eb_items)
     cfg = copc.CopcConfig(point_format_id, extra_bytes_vlr=eb_vlr)
     writer = copc.FileWriter(file_path, cfg)
 
@@ -107,7 +107,7 @@ def test_copc_extents():
     assert extents.extra_bytes[2].maximum == 5
 
     #### Get/Set Extents List ####
-    extents = copc.CopcExtents(point_format_id, extra_byte_count)
+    extents = copc.CopcExtents(point_format_id, num_eb_items)
 
     for extent in extents.extents:
         extent.minimum = 1
