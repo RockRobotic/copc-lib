@@ -24,9 +24,15 @@ jobs:
     - name: Checkout Copclib
       uses: actions/checkout@v2
 
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: matrix.os == 'windows-latest'
+
     - name: Set up Conda for Python ${{ matrix.python-version }}
       uses: conda-incubator/setup-miniconda@v2
       with:
+        channels: conda-forge, defaults
+        show-channel-urls: true
+        auto-update-conda: true
         python-version: ${{ matrix.python-version }}
 
     - name: Free up disk space
@@ -34,7 +40,18 @@ jobs:
       run: |
         sudo rm -rf /usr/share/dotnet
 
-    - name: Install dependencies
+    - name: Setup Python (laz-perf)
+      shell: bash -l {0}
+      run: |
+          conda update -n base -c defaults conda -y
+          conda config --add channels conda-forge
+          conda config --set channel_priority strict
+          conda install -c conda-forge compilers -y
+          conda install -c conda-forge ninja cmake -y
+          conda install -c conda-forge laz-perf --only-deps -y
+      continue-on-error: true
+
+    - name: Setup Python (copc-lib)
       run: |
         conda install -c conda-forge Catch2 pybind11 --yes
         python -m pip install --upgrade pip
@@ -53,9 +70,13 @@ jobs:
       shell: bash -l {0}
       working-directory: lazperf
       run: |
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          export CC=cl.exe
+          export CXX=cl.exe
+        fi
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
         cmake --build . --config ${{env.BUILD_TYPE}}
         sudo cmake --install .
 
@@ -68,7 +89,7 @@ jobs:
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS_AND_EXAMPLES=ON -DWITH_PYTHON=OFF
+      run: cmake -G Ninja -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS_AND_EXAMPLES=ON -DWITH_PYTHON=OFF
       shell:
         bash -l {0}
 
