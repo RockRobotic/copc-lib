@@ -36,14 +36,7 @@ class CopcExtents
     // VLR constructor
     CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items = 0);
 
-    // Getters/Setters
-    void PointFormatID(int8_t point_format_id)
-    {
-        if (point_format_id < 6 || point_format_id > 8)
-            throw std::runtime_error("CopcExtents::PointFormatID: Supported point formats are 6 to 8.");
-        point_format_id_ = point_format_id;
-        // TODO[Leo]: Update size of extents based on PRDF
-    }
+    // Getters
     int8_t PointFormatID() const { return point_format_id_; }
     // Get all extents as a vector
     std::vector<std::shared_ptr<CopcExtent>> Extents() { return extents_; }
