@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **\[Python/C++\]** Add `CopcExtent` and `CopcExtents` classes
+- **\[Python/C++\]** Add `GetCopcExtents` function to `CopcFile`
+- **\[Python/C++\]** Add `GetCopcExtents` and `SetCopcExtents` functions to `Writer`
+- **\[Python\]** Add `reader.extents` property
+- **\[Python/C++\]** Add `CopcInfo` class
+- **\[Python/C++\]** Add vector(c++)/list(python) constructor to `VoxelKey`
+- **\[Python/C++\]** Add `CopcConfig` class
+- **\[Python/C++\]** Add `GetCopcConfig` function to `BaseIO`
+- **\[Python/C++\]** Support COPC Extents, WKT, and Extra Bytes as VLR or EVLR
+- **\[Python/C++\]** Add `SetCopcExtents` and `SetCopcInfo` to `Writer`
+- **\[Python/C++\]** Add `LasHeaderBase` class
+- **\[Python/C++\]** Add `ToString` to `LasHeader` class
+- **\[Python/C++\]** Add `VlrHeader` class
+
+### Changed
+
+- **\[Python/C++\]** Supported LAS point formats are now strictly 6 to 8 throughout the library
+- **\[Python/C++\]** Remove `point_count_14`, `points_by_return_14`, `header_size`, `wave_offset`, and `version` from `LasHeader`
+- **\[Python/C++\]** Change lazperf depency version requirement to > 2.1.0
+- **\[Python/C++\]** Update autzen-classified.copc.laz test file to COPC v1
+- **\[Python/C++\]** Change use of `las::CopcVlr::span` to `CopcInfo::spacing`
+- **\[Python/C++\]** Change `CopcFile::GetWkt` return type from `las::WktVlr` to `std::string`
+- **\[Python/C++\]** Rename `CopcFile::GetCopc` to `CopcFile::GetCopcInfo` and now returns a `CopcInfo` class
+- **\[Python/C++\]** Rename `Reader::GetCopcHeader` to `Reader::GetCopcInfo` and now returns a `CopcInfo` class
+- **\[Python/C++\]** `VoxelKey::Resolution` and `VoxelKey::GetResolutionAtDepth`  now take `CopcInfo` argument instead of `las::CopcVlr`
+- **\[Python/C++\]** Remove `Writer::LasConfig`, now using `CopcConfig` instead.
+- **\[Python/C++\]** Remove `Writer::LasConfig`, now using `CopcConfig` instead.
+- **\[Python/C++\]** `Writer` and `FileWriter` constructors now takes a `CopcConfig` class as argument
+- **\[Python/C++\]** Rename `NumExtraBytes` to `EbByteSize`
+- **\[Python\]** Change `reader.GetCopcHeader()` function to `reader.copc_info` property
+- **\[Python\]** Change `reader.GetLasHeader()` function to `reader.las_header` property
+- **\[Python\]** Change `reader.GetWkt()` function to `reader.wkt` property
+- **\[Python\]** Change `reader.GetExtraByteVlr()` function to `reader.extra_bytes_vlr` property
+- **\[C++\]** Add `create_test_data.py` and `create_test_data.sh` to create data for `writer_node_test.cpp`
+- **\[Python\]** Make `VoxelKey.BaseKey` and `VoxelKey.InvalidKey` static functions
+
 ## [1.3.1] - 2021-10-19
 
 ### Added
