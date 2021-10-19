@@ -13,13 +13,14 @@ include(GNUInstallDirs)
 # Shared/Dynamic or Static library?
 option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
 
-option(WITH_TESTS_AND_EXAMPLES "Build test and example files." OFF)
+option(WITH_CPP_TESTS "Build test and example files." OFF)
 option(WITH_PYTHON "Build python bindings." OFF)
+option(WITH_PYTHON_TESTS "Build python tests and examples." ON)
 option(ONLY_PYTHON "Build only python bindings, for setup.py env" OFF)
 
 if (ONLY_PYTHON)
     set(WITH_PYTHON ON)
-    set(WITH_TESTS_AND_EXAMPLES OFF)
+    set(WITH_CPP_TESTS OFF)
     set(BUILD_SHARED_LIBS ON)
 endif()
 
@@ -75,8 +76,8 @@ set(CMAKE_CXX_EXTENSIONS ON)
 # In this case replace the following line with
 # find_package(YCM REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-if(WITH_TESTS_AND_EXAMPLES)
+e-
+if(WITH_CPP_TESTS OR WITH_PYTHON_TESTS)
     enable_testing()
 endif()
 
@@ -121,7 +122,7 @@ install_basic_package_files(${PROJECT_NAME}
 include(AddUninstallTarget)
 
 # Build Submodules
-if (WITH_TESTS_AND_EXAMPLES)
+if (WITH_CPP_TESTS)
     add_subdirectory(test)
     add_subdirectory(example)
 endif()

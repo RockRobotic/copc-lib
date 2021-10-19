@@ -56,7 +56,7 @@ To build the copc-lib examples and unit tests along with the main library, you m
 
 ```bash
 mkdir build && cd build
-cmake .. -DWITH_TESTS_AND_EXAMPLES=ON
+cmake .. -DWITH_CPP_TESTS=ON
 cmake --build .
 ```
 
