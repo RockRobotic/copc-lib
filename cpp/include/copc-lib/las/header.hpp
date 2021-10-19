@@ -55,6 +55,16 @@ class LasHeader
     double GetSpan() const { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
     Box GetBounds() const;
 
+    // Apply Las scale factors to Vector3 or double
+    Vector3 ApplyScale(const Vector3 &unscaled_value) const { return unscaled_value * scale + offset; }
+    Vector3 ApplyInverseScale(const Vector3 &scaled_value) const { return scaled_value / scale - offset; }
+    double ApplyScaleX(double unscaled_value) const { return unscaled_value * scale.x + offset.x; }
+    double ApplyScaleY(double unscaled_value) const { return unscaled_value * scale.y + offset.y; }
+    double ApplyScaleZ(double unscaled_value) const { return unscaled_value * scale.z + offset.z; }
+    double ApplyInverseScaleX(double scaled_value) const { return (scaled_value - offset.x) / scale.x; }
+    double ApplyInverseScaleY(double scaled_value) const { return (scaled_value - offset.y) / scale.y; }
+    double ApplyInverseScaleZ(double scaled_value) const { return (scaled_value - offset.z) / scale.z; }
+
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 

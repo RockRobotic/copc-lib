@@ -5,6 +5,7 @@
 #include "copc-lib/io/internal/writer_internal.hpp"
 #include "copc-lib/io/writer.hpp"
 #include "copc-lib/las/point.hpp"
+#include "copc-lib/laz/decompressor.hpp"
 
 namespace copc
 {
@@ -68,7 +69,7 @@ Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 {
     auto header = file_->GetLasHeader();
     if (points.PointFormatID() != header.point_format_id || points.PointRecordLength() != header.point_record_length)
-        throw std::runtime_error("New points must be of same format and size.");
+        throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
 
     std::vector<char> uncompressed = points.Pack();
     return AddNode(page, key, uncompressed);

@@ -141,13 +141,13 @@ def test_writer_pages():
     # Given a valid file path
     file_path = "writer_test.copc.laz"
 
-    # Root Page
     writer = copc.FileWriter(file_path, copc.LasConfig(0))
 
     assert not writer.FindNode(copc.VoxelKey.BaseKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey(5, 4, 3, 2)).IsValid()
 
+    # Root Page
     writer.GetRootPage()
     root_page = writer.GetRootPage()
     assert root_page.IsValid()
@@ -221,3 +221,98 @@ def test_writer_copy():
     assert new_reader.GetPointData(
         new_reader.FindNode(copc.VoxelKey(5, 9, 7, 0))
     ) == reader.GetPointData(reader.FindNode(copc.VoxelKey(5, 9, 7, 0)))
+
+
+def test_check_spatial_bounds():
+
+    file_path = "writer_test.copc.laz"
+
+    cfg = copc.LasConfig(7, (0.1, 0.1, 0.1), (50, 50, 50))
+    cfg.min = (-10, -10, -5)
+    cfg.max = (10, 10, 5)
+    verbose = False
+
+    writer = copc.FileWriter(file_path, cfg)
+    header = writer.GetLasHeader()
+    root_page = writer.GetRootPage()
+
+    ## Checks on las header bounds
+
+    points = copc.Points(header.point_format_id, header.scale, header.offset)
+
+    point = points.CreatePoint()
+    # point has getters/setters for all attributes
+    point.X = 10
+    point.Y = 10
+    point.Z = 5
+
+    points.AddPoint(point)
+
+    writer.AddNode(root_page, copc.VoxelKey(1, 1, 1, 1), points)
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+
+    assert reader.ValidateSpatialBounds(verbose) == True
+
+    # Las Header Bounds check (node outside)
+    writer = copc.FileWriter(file_path, cfg)
+
+    header = writer.GetLasHeader()
+    root_page = writer.GetRootPage()
+
+    points = copc.Points(header.point_format_id, header.scale, header.offset)
+
+    point = points.CreatePoint()
+    point.X = 10
+    point.Y = 10
+    point.Z = 5.1
+
+    points.AddPoint(point)
+    writer.AddNode(root_page, copc.VoxelKey(2, 3, 3, 3), points)
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+
+    assert reader.ValidateSpatialBounds(verbose) == False
+
+    # Las Header Bounds check (node intersects)
+    writer = copc.FileWriter(file_path, cfg)
+
+    header = writer.GetLasHeader()
+    root_page = writer.GetRootPage()
+
+    points = copc.Points(header.point_format_id, header.scale, header.offset)
+
+    point = points.CreatePoint()
+    point.X = 10
+    point.Y = 10
+    point.Z = 5.1
+
+    points.AddPoint(point)
+    writer.AddNode(root_page, copc.VoxelKey(1, 1, 1, 1), points)
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+
+    assert reader.ValidateSpatialBounds(verbose) == False
+
+    # Node Bounds check
+    writer = copc.FileWriter(file_path, cfg)
+
+    header = writer.GetLasHeader()
+    root_page = writer.GetRootPage()
+
+    points = copc.Points(header.point_format_id, header.scale, header.offset)
+
+    point = points.CreatePoint()
+    point.X = 0.1
+    point.Y = 0.1
+    point.Z = 0.1
+
+    points.AddPoint(point)
+    writer.AddNode(root_page, copc.VoxelKey(1, 0, 0, 0), points)
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.ValidateSpatialBounds(verbose) == False
