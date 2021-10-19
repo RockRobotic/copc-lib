@@ -56,6 +56,7 @@ class Reader : public BaseIO
     std::vector<Node> GetNodesWithinBox(const Box &box, double resolution = 0);
     std::vector<Node> GetNodesIntersectBox(const Box &box, double resolution = 0);
     las::Points GetPointsWithinBox(const Box &box, double resolution = 0);
+    bool ValidateSpatialBounds(bool verbose = false);
 
   protected:
     Reader() = default;

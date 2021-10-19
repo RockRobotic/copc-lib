@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `Classification` and `PointSourceID` getter and setter to `Points`
 - **\[Python/C++\]** Add `GetChildren` to `VoxelKey`
 - **\[Python\]** Make `Node` and `VoxelKey` picklable
+- **\[Python/C++\]** Add a new constructor to `Box` using `Vector3`
+- **\[Python/C++\]** Add scaling functions to `LasHeader`
+- **\[Python/C++\]** Add `ValidateSpatialBounds` function to `Reader`
 
 ### Changed
 
@@ -27,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **\[Python\]** Fix typo in pickling of `Node`
-- **\[Python\]** Fix scale error and reformat `NewFileExample()` in example_writer.py
+- **\[Python\]** Fix scale error and reformat `NewFileExample()` in example_writer.py and .cpp
 
 ## [1.3.0] - 2021-10-04
 

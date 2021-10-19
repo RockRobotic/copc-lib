@@ -25,6 +25,9 @@ class Box
     // 2D box constructor
     Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max);
 
+    // Vector3 constructor
+    Box(const Vector3 &min, const Vector3 &max);
+
     // Constructor for tuple and list implicit conversion
     Box(const std::vector<double> &vec);
 

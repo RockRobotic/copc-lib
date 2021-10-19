@@ -139,7 +139,7 @@ def test_spatial_query_functions():
 
     reader = copc.FileReader("autzen-classified.copc.laz")
 
-    # Make horizontal 2D box of [200,200] roughly in the middle of the point cloud.
+    # Make horizontal 2D box of [400,400] roughly in the middle of the point cloud.
     middle = (reader.las_header.max + reader.las_header.min) / 2
     middle_box = (middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200)
 

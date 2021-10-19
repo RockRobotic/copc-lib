@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 #include "copc-lib/copc/extents.hpp"
@@ -366,6 +367,62 @@ std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
     }
 
     return out;
+}
+
+bool Reader::ValidateSpatialBounds(bool verbose)
+{
+
+    bool is_valid = true;
+    auto header = GetLasHeader();
+
+    for (const auto &node : GetAllChildren())
+    {
+
+        // Check if node intersects las header bounds
+        if (!Box(node.key, header).Intersects(header.GetBounds()))
+        {
+            is_valid = false;
+            if (verbose)
+                std::cout << "Node " << node.key.ToString() << " is outside of las header bounds." << std::endl;
+            else
+                return false;
+        }
+        else
+        {
+            auto points = GetPoints(node);
+            // If node not within las header bounds then check individual points
+            if (!Box(node.key, header).Within(header.GetBounds()))
+            {
+                for (auto const &point : points)
+                {
+                    if (!point->Within(header.GetBounds()))
+                    {
+                        is_valid = false;
+                        if (verbose)
+                            std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
+                                      << ") from node " << node.key.ToString() << " is outside of las header bounds."
+                                      << std::endl;
+                        else
+                            return false;
+                    }
+                }
+            }
+            // Check that points fall within the node bounds
+            for (auto const &point : points)
+            {
+                if (!point->Within(Box(node.key, header)))
+                {
+                    is_valid = false;
+                    if (verbose)
+                        std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
+                                  << ") is outside of node " << node.key.ToString() << " bounds." << std::endl;
+                    else
+                        return false;
+                }
+            }
+        }
+    }
+    return is_valid;
 }
 
 } // namespace copc

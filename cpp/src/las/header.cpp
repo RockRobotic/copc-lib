@@ -10,7 +10,7 @@
 
 namespace copc::las
 {
-Box LasHeaderBase::GetBounds() const { return Box(min.x, min.y, min.z, max.x, max.y, max.z); }
+Box LasHeaderBase::GetBounds() const { return Box(min, max); }
 
 std::string LasHeaderBase::ToString() const
 {

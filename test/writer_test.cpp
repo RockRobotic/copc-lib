@@ -469,3 +469,103 @@ TEST_CASE("Writer Copy", "[Writer]")
                 reader.GetPointData(reader.FindNode(VoxelKey(5, 9, 7, 0))));
     }
 }
+
+TEST_CASE("Check Spatial Bounds", "[Writer]")
+{
+    string file_path = "writer_test.copc.laz";
+    CopcConfig cfg(7, {0.1, 0.1, 0.1}, {50, 50, 50});
+    cfg.las_header_base.min = {-10, -10, -5};
+    cfg.las_header_base.max = {10, 10, 5};
+    bool verbose = false;
+
+    SECTION("Las Header Bounds check (pass)")
+    {
+        FileWriter writer(file_path, cfg);
+
+        auto header = writer.GetLasHeader();
+        Page root_page = writer.GetRootPage();
+
+        las::Points points(header.point_format_id, header.scale, header.offset);
+
+        auto point = points.CreatePoint();
+        point->X(10);
+        point->Y(10);
+        point->Z(5);
+
+        points.AddPoint(point);
+        writer.AddNode(root_page, {1, 1, 1, 1}, points);
+        writer.Close();
+
+        FileReader reader(file_path);
+
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == true);
+    }
+
+    SECTION("Las Header Bounds check (node outside)")
+    {
+        FileWriter writer(file_path, cfg);
+
+        auto header = writer.GetLasHeader();
+        Page root_page = writer.GetRootPage();
+
+        las::Points points(header.point_format_id, header.scale, header.offset);
+
+        auto point = points.CreatePoint();
+        point->X(10);
+        point->Y(10);
+        point->Z(5.1);
+
+        points.AddPoint(point);
+        writer.AddNode(root_page, {2, 3, 3, 3}, points);
+        writer.Close();
+
+        FileReader reader(file_path);
+
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == false);
+    }
+
+    SECTION("Las Header Bounds check (node intersects)")
+    {
+        FileWriter writer(file_path, cfg);
+
+        auto header = writer.GetLasHeader();
+        Page root_page = writer.GetRootPage();
+
+        las::Points points(header.point_format_id, header.scale, header.offset);
+
+        auto point = points.CreatePoint();
+        point->X(10);
+        point->Y(10);
+        point->Z(5.1);
+
+        points.AddPoint(point);
+        writer.AddNode(root_page, {1, 1, 1, 1}, points);
+        writer.Close();
+
+        FileReader reader(file_path);
+
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == false);
+    }
+
+    SECTION("Node Bounds check")
+    {
+        FileWriter writer(file_path, cfg);
+
+        auto header = writer.GetLasHeader();
+        Page root_page = writer.GetRootPage();
+
+        las::Points points(header.point_format_id, header.scale, header.offset);
+
+        auto point = points.CreatePoint();
+        point->X(0.1);
+        point->Y(0.1);
+        point->Z(0.1);
+
+        points.AddPoint(point);
+        writer.AddNode(root_page, {1, 0, 0, 0}, points);
+        writer.Close();
+
+        FileReader reader(file_path);
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == false);
+    }
+}
