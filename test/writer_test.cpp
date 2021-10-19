@@ -424,81 +424,6 @@ TEST_CASE("Writer Copy", "[Writer]")
     }
 }
 
-TEST_CASE("Add Node bounds check", "[Writer]")
-{
-
-    stringstream out_stream;
-
-    Writer::LasConfig cfg(7, {0.1, 0.1, 0.1}, {50, 50, 50});
-    cfg.min = {-10, -10, -5};
-    cfg.max = {10, 10, 5};
-
-    Writer writer(out_stream, cfg);
-
-    auto header = writer.GetLasHeader();
-
-    Page root_page = writer.GetRootPage();
-
-    SECTION("Las Header Bounds check")
-    {
-
-        las::Points points(header.point_format_id, header.scale, header.offset);
-
-        auto point = points.CreatePoint();
-        // point has getters/setters for all attributes
-        point->X(10);
-        point->Y(10);
-        point->Z(5);
-
-        points.AddPoint(point);
-
-        REQUIRE_NOTHROW(writer.AddNode(root_page, {1, 1, 1, 1}, points, false));
-        REQUIRE_NOTHROW(writer.AddNode(root_page, {1, 1, 1, 1}, points, true));
-
-        point = points.CreatePoint();
-        // point has getters/setters for all attributes
-        point->X(10);
-        point->Y(10);
-        point->Z(5.1);
-
-        points.AddPoint(point);
-        REQUIRE_NOTHROW(writer.AddNode(root_page, {1, 1, 1, 1}, points, false)); // Check on node Intersects
-        REQUIRE_THROWS(writer.AddNode(root_page, {1, 1, 1, 1}, points, true));   // Check on node Intersects
-
-        REQUIRE_NOTHROW(writer.AddNode(root_page, {2, 3, 3, 3}, points, false)); // Check on node Outside
-        REQUIRE_THROWS(writer.AddNode(root_page, {2, 3, 3, 3}, points, true));   // Check on node Outside
-    }
-
-    SECTION("Node Bounds check")
-    {
-
-        las::Points points(header.point_format_id, header.scale, header.offset);
-
-        auto point = points.CreatePoint();
-        // point has getters/setters for all attributes
-        point->X(0);
-        point->Y(0);
-        point->Z(0);
-
-        points.AddPoint(point);
-
-        REQUIRE_NOTHROW(writer.AddNode(root_page, {1, 0, 0, 0}, points, false));
-        REQUIRE_NOTHROW(writer.AddNode(root_page, {1, 0, 0, 0}, points, true));
-
-        point = points.CreatePoint();
-        // point has getters/setters for all attributes
-        point->X(0.1);
-        point->Y(0.1);
-        point->Z(0.1);
-
-        points.AddPoint(point);
-        REQUIRE_NOTHROW(writer.AddNode(root_page, {1, 0, 0, 0}, points, false));
-        REQUIRE_THROWS(writer.AddNode(root_page, {1, 0, 0, 0}, points, true));
-    }
-
-    writer.Close();
-}
-
 TEST_CASE("Check Spatial Bounds", "[Writer]")
 {
     string file_path = "writer_test.copc.laz";
@@ -527,7 +452,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
 
         FileReader reader(file_path);
 
-        REQUIRE(reader.CheckSpatialBounds(verbose) == true);
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == true);
     }
 
     SECTION("Las Header Bounds check (node outside)")
@@ -550,7 +475,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
 
         FileReader reader(file_path);
 
-        REQUIRE(reader.CheckSpatialBounds(verbose) == false);
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == false);
     }
 
     SECTION("Las Header Bounds check (node intersects)")
@@ -573,7 +498,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
 
         FileReader reader(file_path);
 
-        REQUIRE(reader.CheckSpatialBounds(verbose) == false);
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == false);
     }
 
     SECTION("Node Bounds check")
@@ -595,6 +520,6 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         writer.Close();
 
         FileReader reader(file_path);
-        REQUIRE(reader.CheckSpatialBounds(verbose) == false);
+        REQUIRE(reader.ValidateSpatialBounds(verbose) == false);
     }
 }

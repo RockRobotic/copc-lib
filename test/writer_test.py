@@ -223,85 +223,6 @@ def test_writer_copy():
     ) == reader.GetPointData(reader.FindNode(copc.VoxelKey(5, 9, 7, 0)))
 
 
-def test_add_node_bounds_check():
-
-    file_path = "writer_test.copc.laz"
-
-    cfg = copc.LasConfig(7, (0.1, 0.1, 0.1), (50, 50, 50))
-    cfg.min = (-10, -10, -5)
-    cfg.max = (10, 10, 5)
-
-    writer = copc.FileWriter(file_path, cfg)
-    header = writer.GetLasHeader()
-    root_page = writer.GetRootPage()
-
-    ## Checks on las header bounds
-
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
-
-    point = points.CreatePoint()
-    # point has getters/setters for all attributes
-    point.X = 10
-    point.Y = 10
-    point.Z = 5
-
-    points.AddPoint(point)
-
-    assert writer.AddNode(root_page, copc.VoxelKey(1, 1, 1, 1), points, False)
-    assert writer.AddNode(root_page, copc.VoxelKey(1, 1, 1, 1), points, True)
-
-    point = points.CreatePoint()
-    # point has getters/setters for all attributes
-    point.X = 10
-    point.Y = 10
-    point.Z = 5.1
-
-    points.AddPoint(point)
-    assert writer.AddNode(
-        root_page, copc.VoxelKey(1, 1, 1, 1), points, False
-    )  # Check on node Intersects
-    with pytest.raises(RuntimeError):
-        writer.AddNode(
-            root_page, copc.VoxelKey(1, 1, 1, 1), points, True
-        )  # Check on node Intersects
-
-    assert writer.AddNode(
-        root_page, copc.VoxelKey(2, 3, 3, 3), points, False
-    )  # Check on node Outside
-    with pytest.raises(RuntimeError):
-        writer.AddNode(
-            root_page, copc.VoxelKey(2, 3, 3, 3), points, True
-        )  # Check on node Outside
-
-    ## Checks on node bounds
-
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
-
-    point = points.CreatePoint()
-    # point has getters/setters for all attributes
-    point.X = 0
-    point.Y = 0
-    point.Z = 0
-
-    points.AddPoint(point)
-
-    assert writer.AddNode(root_page, copc.VoxelKey(1, 0, 0, 0), points, False)
-    assert writer.AddNode(root_page, copc.VoxelKey(1, 0, 0, 0), points, True)
-
-    point = points.CreatePoint()
-    # point has getters/setters for all attributes
-    point.X = 0.1
-    point.Y = 0.1
-    point.Z = 0.1
-
-    points.AddPoint(point)
-    assert writer.AddNode(root_page, copc.VoxelKey(1, 0, 0, 0), points, False)
-    with pytest.raises(RuntimeError):
-        writer.AddNode(root_page, copc.VoxelKey(1, 0, 0, 0), points, True)
-
-    writer.Close()
-
-
 def test_check_spatial_bounds():
 
     file_path = "writer_test.copc.laz"
@@ -327,12 +248,12 @@ def test_check_spatial_bounds():
 
     points.AddPoint(point)
 
-    writer.AddNode(root_page, copc.VoxelKey(1, 1, 1, 1), points, False)
+    writer.AddNode(root_page, copc.VoxelKey(1, 1, 1, 1), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
 
-    assert reader.CheckSpatialBounds(verbose) == True
+    assert reader.ValidateSpatialBounds(verbose) == True
 
     # Las Header Bounds check (node outside)
     writer = copc.FileWriter(file_path, cfg)
@@ -353,7 +274,7 @@ def test_check_spatial_bounds():
 
     reader = copc.FileReader(file_path)
 
-    assert reader.CheckSpatialBounds(verbose) == False
+    assert reader.ValidateSpatialBounds(verbose) == False
 
     # Las Header Bounds check (node intersects)
     writer = copc.FileWriter(file_path, cfg)
@@ -374,7 +295,7 @@ def test_check_spatial_bounds():
 
     reader = copc.FileReader(file_path)
 
-    assert reader.CheckSpatialBounds(verbose) == False
+    assert reader.ValidateSpatialBounds(verbose) == False
 
     # Node Bounds check
     writer = copc.FileWriter(file_path, cfg)
@@ -394,4 +315,4 @@ def test_check_spatial_bounds():
     writer.Close()
 
     reader = copc.FileReader(file_path)
-    assert reader.CheckSpatialBounds(verbose) == False
+    assert reader.ValidateSpatialBounds(verbose) == False

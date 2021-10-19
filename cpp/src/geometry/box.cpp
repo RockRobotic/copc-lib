@@ -16,20 +16,12 @@ Box::Box(const double &x_min, const double &y_min, const double &z_min, const do
 
 // 2D box constructor
 Box::Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max)
-    : x_min(x_min), y_min(y_min), z_min(-std::numeric_limits<double>::max()), x_max(x_max), y_max(y_max),
-      z_max(std::numeric_limits<double>::max())
+    : Box(x_min, y_min, -std::numeric_limits<double>::max(), x_max, y_max, std::numeric_limits<double>::max())
 {
-    if (x_max < x_min || y_max < y_min)
-        throw std::runtime_error("One or more of min values is greater than a max value");
 }
 
 // Vector3 constructor
-Box::Box(const Vector3 &min, const Vector3 &max)
-    : x_min(min.x), y_min(min.y), z_min(min.z), x_max(max.x), y_max(max.y), z_max(max.z)
-{
-    if (x_max < x_min || y_max < y_min || z_max < z_min)
-        throw std::runtime_error("One or more of min values is greater than a max value");
-}
+Box::Box(const Vector3 &min, const Vector3 &max) : Box(min.x, min.y, min.z, max.x, max.y, max.z) {}
 
 // Constructor for tuple and list implicit conversion
 Box::Box(const std::vector<double> &vec)

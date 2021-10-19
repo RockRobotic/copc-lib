@@ -315,31 +315,27 @@ std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
     return out;
 }
 
-bool Reader::CheckSpatialBounds(bool verbose)
+bool Reader::ValidateSpatialBounds(bool verbose)
 {
 
-    bool check = true;
+    bool is_valid = true;
     auto header = GetLasHeader();
 
     for (const auto &node : GetAllChildren())
     {
-        auto points = GetPoints(node);
 
         // Check if node intersects las header bounds
         if (!Box(node.key, header).Intersects(header.GetBounds()))
         {
+            is_valid = false;
             if (verbose)
-            {
-                check = false;
                 std::cout << "Node " << node.key.ToString() << " is outside of las header bounds." << std::endl;
-            }
             else
-            {
                 return false;
-            }
         }
         else
         {
+            auto points = GetPoints(node);
             // If node not within las header bounds then check individual points
             if (!Box(node.key, header).Within(header.GetBounds()))
             {
@@ -347,17 +343,13 @@ bool Reader::CheckSpatialBounds(bool verbose)
                 {
                     if (!point->Within(header.GetBounds()))
                     {
+                        is_valid = false;
                         if (verbose)
-                        {
-                            check = false;
                             std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
                                       << ") from node " << node.key.ToString() << " is outside of las header bounds."
                                       << std::endl;
-                        }
                         else
-                        {
                             return false;
-                        }
                     }
                 }
             }
@@ -366,21 +358,17 @@ bool Reader::CheckSpatialBounds(bool verbose)
             {
                 if (!point->Within(Box(node.key, header)))
                 {
+                    is_valid = false;
                     if (verbose)
-                    {
-                        check = false;
                         std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
                                   << ") is outside of node " << node.key.ToString() << " bounds." << std::endl;
-                    }
                     else
-                    {
                         return false;
-                    }
                 }
             }
         }
     }
-    return check;
+    return is_valid;
 }
 
 las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)

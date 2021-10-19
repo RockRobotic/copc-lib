@@ -17,8 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `Classification` and `PointSourceID` getter and setter to `Points`
 - **\[Python/C++\]** Add `GetChildren` to `VoxelKey`
 - **\[Python\]** Make `Node` and `VoxelKey` picklable
-- **\[Python/C++\]** Add an optional spatial bounds check in `Writer::AddNode`
 - **\[Python/C++\]** Add a new constructor to `Box` using `Vector3`
+- **\[Python/C++\]** Add scaling functions to `LasHeader`
+- **\[Python/C++\]** Add `ValidateSpatialBounds` function to `Reader`
 
 ### Changed
 
