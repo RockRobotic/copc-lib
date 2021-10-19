@@ -209,6 +209,11 @@ def test_points_group_accessors():
         p.X = i
         p.Y = i * 3
         p.Z = i - 80
+        p.Classification = i * 255 / num_points
+        p.PointSourceID = i * 255 / num_points
+        p.Red = i * 4
+        p.Green = i * 5
+        p.Blue = i * 6
         points.AddPoint(p)
 
     assert len(points) == num_points
@@ -218,6 +223,11 @@ def test_points_group_accessors():
         assert points.X[i] == i
         assert points.Y[i] == i * 3
         assert points.Z[i] == i - 80
+        assert points.Classification[i] == i * 255 / num_points
+        assert points.PointSourceID[i] == i * 255 / num_points
+        assert points.Red[i] == i * 4
+        assert points.Green[i] == i * 5
+        assert points.Blue[i] == i * 6
 
     # generate vector of coordinates
     Xn = []

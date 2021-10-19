@@ -148,6 +148,57 @@ class Points
             points_[i]->PointSourceID(in[i]);
     }
 
+    std::vector<uint16_t> Red() const
+    {
+        std::vector<uint16_t> out;
+        out.resize(Size());
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](const std::shared_ptr<Point> &p) { return p->Red(); });
+        return out;
+    }
+    void Red(const std::vector<uint16_t> &in)
+    {
+        if (in.size() != Size())
+            throw std::runtime_error("Red setter array must be same size as Points array!");
+
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i]->Red(in[i]);
+    }
+
+    std::vector<uint16_t> Green() const
+    {
+        std::vector<uint16_t> out;
+        out.resize(Size());
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](const std::shared_ptr<Point> &p) { return p->Green(); });
+        return out;
+    }
+    void Green(const std::vector<uint16_t> &in)
+    {
+        if (in.size() != Size())
+            throw std::runtime_error("Green setter array must be same size as Points array!");
+
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i]->Green(in[i]);
+    }
+
+    std::vector<uint16_t> Blue() const
+    {
+        std::vector<uint16_t> out;
+        out.resize(Size());
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](const std::shared_ptr<Point> &p) { return p->Blue(); });
+        return out;
+    }
+    void Blue(const std::vector<uint16_t> &in)
+    {
+        if (in.size() != Size())
+            throw std::runtime_error("Blue setter array must be same size as Points array!");
+
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i]->Blue(in[i]);
+    }
+
     // Function that return true only if all points are within the box
     bool Within(const Box &box) const
     {
