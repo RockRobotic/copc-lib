@@ -6,14 +6,12 @@ import pytest
 
 def test_constructor():
     point = copc.Points(
-        point_format_id=0,
+        point_format_id=6,
         scale=copc.Vector3.DefaultScale(),
         offset=copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
 
-    assert point.HasExtendedPoint is False
-    assert point.HasGPSTime is False
     assert point.HasRGB is False
     assert point.HasNIR is False
 
@@ -21,184 +19,11 @@ def test_constructor():
         8, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
 
-    assert point_ext.HasExtendedPoint is True
-    assert point_ext.HasGPSTime is True
     assert point_ext.HasRGB is True
     assert point_ext.HasNIR is True
 
 
-def test_point_format10():
-    point0 = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
-    ).CreatePoint()
-    # Position
-    point0.UnscaledX = 2147483647
-    point0.UnscaledY = 2147483647
-    point0.UnscaledZ = 2147483647
-    assert point0.UnscaledX == 2147483647
-    assert point0.UnscaledY == 2147483647
-    assert point0.UnscaledZ == 2147483647
-
-    # Intensity
-    point0.Intensity = 65535
-    assert point0.Intensity == 65535
-
-    # Return Number
-    point0.ReturnNumber = 7
-    assert point0.ReturnNumber == 7
-    with pytest.raises(RuntimeError):
-        point0.ReturnNumber = 8
-
-    # Number of Returns
-    point0.NumberOfReturns = 7
-    assert point0.NumberOfReturns == 7
-    with pytest.raises(RuntimeError):
-        point0.NumberOfReturns = 8
-
-    # Scan Direction
-    point0.ScanDirectionFlag = True
-    assert point0.ScanDirectionFlag is True
-
-    # Edge of Flight Line
-    point0.EdgeOfFlightLineFlag = True
-    assert point0.EdgeOfFlightLineFlag is True
-
-    # ReturnsScanDirEofBitField
-    point0.ReturnsScanDirEofBitFields = 172
-    assert point0.ReturnNumber == 4
-    assert point0.NumberOfReturns == 5
-    assert point0.ScanDirectionFlag is False
-    assert point0.EdgeOfFlightLineFlag is True
-
-    # Classification
-    point0.Classification = 31
-    assert point0.Classification == 31
-    with pytest.raises(RuntimeError):
-        point0.Classification = 32
-
-    # Synthetic
-    point0.Synthetic = True
-    assert point0.Synthetic is True
-
-    # KeyPoint
-    point0.KeyPoint = True
-    assert point0.KeyPoint is True
-
-    # Withheld
-    point0.Withheld = True
-    assert point0.Withheld is True
-
-    # Classification Bitfield
-    point0.ClassificationBitFields = 255
-    assert point0.ClassificationBitFields == 255
-    point0.ClassificationBitFields = 78
-    assert point0.Classification == 14
-    assert point0.Synthetic is False
-    assert point0.KeyPoint is True
-    assert point0.Withheld is False
-
-    # Scan Angle
-    point0.ScanAngleRank = 90
-    assert point0.ScanAngleRank == 90
-    assert point0.ScanAngle == 90.0
-    with pytest.raises(RuntimeError):
-        point0.ScanAngleRank = 91
-        point0.ScanAngleRank = -91
-
-    # User Data
-    point0.UserData = 255
-    assert point0.UserData == 255
-
-    # Point Source ID
-    point0.PointSourceID = 65535
-    assert point0.PointSourceID == 65535
-
-    assert point0.PointRecordLength == 20
-
-    # Checks
-    with pytest.raises(RuntimeError):
-        point0.ExtendedFlagsBitFields = 0
-        assert point0.ExtendedFlagsBitFields
-        point0.ScannerChannel = 0
-        assert point0.ScannerChannel
-        point0.NIR = 65535
-        assert point0.NIR
-        point0.Red = 65535
-        assert point0.Red
-        point0.Green = 65535
-        assert point0.Green
-        point0.Blue = 65535
-        assert point0.Blue
-        point0.GPSTime = sys.float_info.max
-        assert point0.GPSTime
-        point0.ExtendedScanAngle = 32767
-        assert point0.ExtendedScanAngle
-        point0.Overlap = True
-        assert point0.Overlap
-        point0.ExtendedReturnsBitFields = 255
-        assert point0.ExtendedReturnsBitFields
-        point0.ExtendedFlagsBitFields = 255
-        assert point0.ExtendedFlagsBitFields
-
-    str(point0)
-
-    point1 = copc.Points(
-        1, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
-    ).CreatePoint()
-
-    point1.GPSTime = sys.float_info.max
-    assert point1.GPSTime == sys.float_info.max
-    assert point1.PointRecordLength == 28
-    with pytest.raises(RuntimeError):
-        point0.Red = 65535
-        assert point0.Red
-        point0.Green = 65535
-        assert point0.Green
-        point0.Blue = 65535
-        assert point0.Blue
-        point0.NIR = 65535
-        assert point0.NIR
-
-    point2 = copc.Points(
-        2, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
-    ).CreatePoint()
-    assert point2.PointRecordLength == 26
-
-    point2.Red = 65535
-    assert point2.Red == 65535
-    point2.Green = 65535
-    assert point2.Green == 65535
-    point2.Blue = 65535
-    assert point2.Blue == 65535
-
-    point2.RGB = [65535, 65535, 65535]
-    assert point2.Red == 65535
-    assert point2.Green == 65535
-    assert point2.Blue == 65535
-
-    with pytest.raises(RuntimeError):
-        point2.GPSTime = sys.float_info.max
-        assert point2.GPSTime
-        point2.NIR = 65535
-        assert point2.NIR
-
-    point3 = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
-    ).CreatePoint()
-    assert point3.PointRecordLength == 34
-
-    point3.GPSTime = sys.float_info.max
-    assert point3.GPSTime
-    point3.RGB = [65535, 65535, 65535]
-    assert point3.Red
-    assert point3.Green
-    assert point3.Blue
-    with pytest.raises(RuntimeError):
-        point3.NIR = 65535
-        assert point3.NIR
-
-
-def test_point_format14():
+def test_point():
     point6 = copc.Points(
         6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
@@ -289,16 +114,14 @@ def test_point_format14():
     assert point6.Classification == 0
 
     # Scan Angle
-    point6.ExtendedScanAngle = -30000
-    assert point6.ExtendedScanAngle == -30000
-    assert point6.ScanAngle == -180.0
+    point6.ScanAngle = -30000
+    assert point6.ScanAngle == -30000
+    assert point6.ScanAngleFloat == -180.0
+    point6.ScanAngle = 30000
+    assert point6.ScanAngle == 30000
+    assert point6.ScanAngleFloat == 180.0
     with pytest.raises(RuntimeError):
-        point6.ExtendedScanAngle = -30001
-    point6.ExtendedScanAngle = 30000
-    assert point6.ExtendedScanAngle == 30000
-    assert point6.ScanAngle == 180.0
-    with pytest.raises(RuntimeError):
-        point6.ExtendedScanAngle = 30001
+        point6.ScanAngle = 30001
 
     # User Data
     point6.UserData = 255
@@ -356,26 +179,7 @@ def test_point_format14():
     assert point8.PointRecordLength == 38
 
 
-def test_point_conversion_10():
-    point = copc.Points(
-        1, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
-    ).CreatePoint()
-
-    assert point.GPSTime == 0
-
-    point.ToPointFormat(point_format_id=2)
-    assert point.Red == 0
-    assert point.Green == 0
-    assert point.Blue == 0
-
-    point.ToPointFormat(3)
-    assert point.GPSTime == 0
-    assert point.Red == 0
-    assert point.Green == 0
-    assert point.Blue == 0
-
-
-def test_point_conversion_14():
+def test_point_conversion():
     point = copc.Points(
         6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
@@ -405,115 +209,14 @@ def test_point_conversion_14():
     assert point.NIR == 0
 
 
-def test_point_conversion_10_to_14():
-    point = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
-    ).CreatePoint()
-
-    point.ReturnNumber = 5
-    point.NumberOfReturns = 6
-    point.ScanDirectionFlag = False
-    point.EdgeOfFlightLineFlag = True
-    point.Classification = 15
-    point.Synthetic = True
-    point.KeyPoint = False
-    point.Withheld = True
-    point.ScanAngleRank = 45
-
-    point.ToPointFormat(6)
-
-    assert point.ReturnNumber == 5
-    assert point.NumberOfReturns == 6
-    assert point.ScanDirectionFlag is False
-    assert point.EdgeOfFlightLineFlag is True
-    assert point.Classification == 15
-    assert point.Synthetic is True
-    assert point.KeyPoint is False
-    assert point.Withheld is True
-    assert point.Overlap is False
-    assert point.ExtendedScanAngle == 7500
-    assert point.ScannerChannel == 0
-    with pytest.raises(RuntimeError):
-        assert point.ReturnsScanDirEofBitFields
-
-    point.ToPointFormat(0)
-
-    assert point.ReturnNumber == 5
-    assert point.NumberOfReturns == 6
-    assert point.ScanDirectionFlag is False
-    assert point.EdgeOfFlightLineFlag is True
-    assert point.Classification == 15
-    assert point.Synthetic is True
-    assert point.KeyPoint is False
-    assert point.Withheld is True
-    assert point.ScanAngleRank == 45
-
-    point.ToPointFormat(6)
-
-    point.ReturnNumber = 13
-    point.NumberOfReturns = 14
-    point.Classification = 134
-    point.ScannerChannel = 2
-    point.Synthetic = True
-    point.KeyPoint = False
-    point.Withheld = True
-    point.ExtendedScanAngle = 28000
-
-    point.ToPointFormat(0)
-
-    assert point.ReturnNumber == 7
-    assert point.NumberOfReturns == 7
-    assert point.Classification == 31
-    assert point.ScanAngleRank == 90
-    with pytest.raises(RuntimeError):
-        assert point.Overlap
-        assert point.ScannerChannel
-        assert point.ExtendedReturnsBitFields
-        assert point.ExtendedFlagsBitFields
-
-    point.ToPointFormat(6)
-
-    assert point.ReturnNumber == 7
-    assert point.NumberOfReturns == 7
-    assert point.Classification == 31
-    assert point.ExtendedScanAngle == 15000
-    assert point.Overlap is False
-    assert point.ScannerChannel == 0
-
-
 def test_operators_equal():
     # Format 0
     point = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
     point_other = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
-
-    assert point == point_other
-
-    # Format 1
-    point_other.ToPointFormat(1)
-    assert point != point_other
-    point.ToPointFormat(1)
-    assert point == point_other
-
-    # Format 2
-    point_other.ToPointFormat(2)
-    assert point != point_other
-    point.ToPointFormat(2)
-    assert point == point_other
-
-    # Format 3
-    point_other.ToPointFormat(3)
-    assert point != point_other
-    point.ToPointFormat(3)
-    assert point == point_other
-
-    # Format 6
-    point_other.ToPointFormat(6)
-    assert point != point_other
-    point.ToPointFormat(6)
     assert point == point_other
 
     # Format 7
@@ -638,38 +341,29 @@ def test_operators_equal():
 
 def test_extra_byte():
     point = copc.Points(
-        0, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
-    assert point.PointFormatID == 0
-    assert point.PointRecordLength == 20
+    assert point.PointFormatID == 6
+    assert point.PointRecordLength == 30
     with pytest.raises(RuntimeError):
         point.ExtraBytes = [2, 3, 4]
     assert len(point.ExtraBytes) == 0
     assert point.EbByteSize == 0
 
     point = copc.Points(
-        0,
+        6,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
         eb_byte_size=5,
     ).CreatePoint()
-    assert point.PointFormatID == 0
-    assert point.PointRecordLength == 20 + 5
+    assert point.PointFormatID == 6
+    assert point.PointRecordLength == 30 + 5
     assert point.EbByteSize == 5
     assert len(point.ExtraBytes) == 5
     with pytest.raises(RuntimeError):
         point.ExtraBytes = [2, 3, 4]
     point.ExtraBytes = [2, 3, 4, 5, 6]
     assert point.ExtraBytes == [2, 3, 4, 5, 6]
-
-    point.ToPointFormat(6)
-    assert point.PointFormatID == 6
-    assert point.PointRecordLength == 30 + 5
-    assert point.EbByteSize == 5
-    assert len(point.ExtraBytes) == 5
-    assert point.ExtraBytes == [2, 3, 4, 5, 6]
-    with pytest.raises(RuntimeError):
-        point.ExtraBytes = [2, 3, 4]
 
 
 def test_operator_copy():
@@ -803,7 +497,7 @@ def test_scaled_xyz():
 
 
 def test_within():
-    point = copc.Points(3, (1, 1, 1), copc.Vector3.DefaultOffset()).CreatePoint()
+    point = copc.Points(6, (1, 1, 1), copc.Vector3.DefaultOffset()).CreatePoint()
 
     point.X = 5
     point.Y = 5

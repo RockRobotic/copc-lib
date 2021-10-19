@@ -34,11 +34,13 @@ Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 
 void Points::ToPointFormat(const int8_t &point_format_id)
 {
-    if (point_format_id < 0 || point_format_id > 10)
-        throw std::runtime_error("Point format must be 0-10.");
+    if (point_format_id < 6 || point_format_id > 8)
+        throw std::runtime_error("Point format must be 6-8.");
     for (auto &point : points_)
         point->ToPointFormat(point_format_id);
+    unsigned int eb_byte_size = point_record_length_ - PointBaseByteSize(point_format_id_);
     point_format_id_ = point_format_id;
+    point_record_length_ = ComputePointBytes(point_format_id, eb_byte_size);
 }
 
 void Points::AddPoint(const std::shared_ptr<Point> &point)
