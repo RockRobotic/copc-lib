@@ -14,7 +14,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
     {
         stringstream out_stream;
 
-        CopcConfig cfg(6);
+        CopcConfig cfg(7);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -42,7 +42,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
     {
         stringstream out_stream;
 
-        CopcConfig cfg(6);
+        CopcConfig cfg(7);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -89,7 +89,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
     {
         stringstream out_stream;
 
-        CopcConfig cfg(6);
+        CopcConfig cfg(7);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -159,7 +159,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
     {
         stringstream out_stream;
 
-        CopcConfig cfg(6);
+        CopcConfig cfg(7);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -186,7 +186,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
     {
         stringstream out_stream;
 
-        CopcConfig cfg(6);
+        CopcConfig cfg(7);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
@@ -233,7 +233,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
     {
         stringstream out_stream;
 
-        CopcConfig cfg(6);
+        CopcConfig cfg(7);
         Writer writer(out_stream, cfg);
 
         Page root_page = writer.GetRootPage();
