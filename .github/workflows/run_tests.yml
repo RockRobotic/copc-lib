@@ -100,6 +100,8 @@ jobs:
         curl -L -O https://cloudfront.rockrobotic.com/public/laz-examples/copc/drafts/span/autzen-classified.copc.laz
         which python
         python -m pip list
+        pip -V
+        python -m site
         python points_test.py
         pytest
         python ../example/example-reader.py
