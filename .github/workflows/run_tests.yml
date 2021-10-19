@@ -78,7 +78,7 @@ jobs:
         cd build
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -Dgtest_force_shared_crt=ON
         cmake --build . --config ${{env.BUILD_TYPE}}
-        sudo cmake --install .
+        cmake --install .
 
     - name: Build Copclib Python Bindings
       run: |
@@ -88,8 +88,11 @@ jobs:
 
     - name: Test Copclib Python Bindings
       run: |
-        cd build/temp.linux-x86_64-${{ matrix.python-version }}
-        ctest
+        cd test
+        wget https://cloudfront.rockrobotic.com/public/laz-examples/copc/drafts/span/autzen-classified.copc.laz
+        pytest
+        python ../example/example-reader.py
+        python ../example/example-writer.py
       shell:
         bash -l {0}
 
