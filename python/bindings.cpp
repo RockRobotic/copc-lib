@@ -221,9 +221,6 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledZ))
         .def_property("Intensity", py::overload_cast<>(&las::Point::Intensity, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Intensity))
-        .def_property("ReturnsScanDirEofBitFields",
-                      py::overload_cast<>(&las::Point::ReturnsScanDirEofBitFields, py::const_),
-                      py::overload_cast<const uint8_t &>(&las::Point::ReturnsScanDirEofBitFields))
         .def_property("ExtendedReturnsBitFields",
                       py::overload_cast<>(&las::Point::ExtendedReturnsBitFields, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::ExtendedReturnsBitFields))
@@ -247,16 +244,12 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const bool &>(&las::Point::ScanDirectionFlag))
         .def_property("EdgeOfFlightLineFlag", py::overload_cast<>(&las::Point::EdgeOfFlightLineFlag, py::const_),
                       py::overload_cast<const bool &>(&las::Point::EdgeOfFlightLineFlag))
-        .def_property("ClassificationBitFields", py::overload_cast<>(&las::Point::ClassificationBitFields, py::const_),
-                      py::overload_cast<const uint8_t &>(&las::Point::ClassificationBitFields))
         .def_property("Classification", py::overload_cast<>(&las::Point::Classification, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::Classification))
-        .def_property("ScanAngleRank", py::overload_cast<>(&las::Point::ScanAngleRank, py::const_),
-                      py::overload_cast<const int8_t &>(&las::Point::ScanAngleRank))
-        .def_property("ExtendedScanAngle", py::overload_cast<>(&las::Point::ExtendedScanAngle, py::const_),
-                      py::overload_cast<const int16_t &>(&las::Point::ExtendedScanAngle))
         .def_property("ScanAngle", py::overload_cast<>(&las::Point::ScanAngle, py::const_),
-                      py::overload_cast<const float &>(&las::Point::ScanAngle))
+                      py::overload_cast<const int16_t &>(&las::Point::ScanAngle))
+        .def_property("ScanAngleFloat", py::overload_cast<>(&las::Point::ScanAngleFloat, py::const_),
+                      py::overload_cast<const float &>(&las::Point::ScanAngleFloat))
         .def_property("UserData", py::overload_cast<>(&las::Point::UserData, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::UserData))
         .def_property("PointSourceID", py::overload_cast<>(&las::Point::PointSourceID, py::const_),
@@ -273,8 +266,6 @@ PYBIND11_MODULE(copclib, m)
         .def_property("NIR", py::overload_cast<>(&las::Point::NIR, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::NIR))
 
-        .def_property_readonly("HasExtendedPoint", &las::Point::HasExtendedPoint)
-        .def_property_readonly("HasGPSTime", &las::Point::HasGPSTime)
         .def_property_readonly("HasRGB", &las::Point::HasRGB)
         .def_property_readonly("HasRGB", &las::Point::HasRGB)
         .def_property_readonly("HasNIR", &las::Point::HasNIR)

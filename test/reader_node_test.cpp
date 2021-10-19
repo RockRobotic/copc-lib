@@ -85,8 +85,8 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points[0]->ScanDirectionFlag() == true);
         REQUIRE(points[0]->EdgeOfFlightLineFlag() == false);
         REQUIRE(points[0]->Classification() == 5);
-        REQUIRE(points[0]->ExtendedScanAngle() == 1667);
-        REQUIRE_THAT(points[0]->ScanAngle(), Catch::Matchers::WithinAbs(10, 0.01));
+        REQUIRE(points[0]->ScanAngle() == 1667);
+        REQUIRE_THAT(points[0]->ScanAngleFloat(), Catch::Matchers::WithinAbs(10, 0.01));
         REQUIRE(points[0]->UserData() == 124);
         REQUIRE(points[0]->PointSourceID() == 7327);
         REQUIRE_THAT(points[0]->GPSTime(), Catch::Matchers::WithinAbs(246098.8141472744, 0.0001));
@@ -97,7 +97,6 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points[0]->PointRecordLength() == 36);
         REQUIRE(points[0]->ExtraBytes().empty());
         REQUIRE_THROWS(points[0]->NIR());
-        REQUIRE_THROWS(points[0]->ScanAngleRank());
 
         // Setters
         points[0]->UnscaledX(std::numeric_limits<int32_t>::max());
@@ -109,7 +108,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         points[0]->ScanDirectionFlag(false);
         points[0]->EdgeOfFlightLineFlag(true);
         points[0]->Classification(31);
-        points[0]->ExtendedScanAngle(90);
+        points[0]->ScanAngle(90);
         points[0]->UserData(std::numeric_limits<int8_t>::max());
         points[0]->PointSourceID(std::numeric_limits<int8_t>::max());
         points[0]->GPSTime(std::numeric_limits<double>::max());
@@ -117,7 +116,6 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         points[0]->Green(std::numeric_limits<uint16_t>::max());
         points[0]->Blue(std::numeric_limits<uint16_t>::max());
         REQUIRE_THROWS(points[0]->NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(points[0]->ScanAngleRank(std::numeric_limits<int8_t>::max()));
 
         REQUIRE(points[0]->UnscaledX() == std::numeric_limits<int32_t>::max());
         REQUIRE(points[0]->UnscaledY() == std::numeric_limits<int32_t>::max());
@@ -128,7 +126,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points[0]->ScanDirectionFlag() == false);
         REQUIRE(points[0]->EdgeOfFlightLineFlag() == true);
         REQUIRE(points[0]->Classification() == 31);
-        REQUIRE(points[0]->ExtendedScanAngle() == 90);
+        REQUIRE(points[0]->ScanAngle() == 90);
         REQUIRE(points[0]->UserData() == std::numeric_limits<int8_t>::max());
         REQUIRE(points[0]->PointSourceID() == std::numeric_limits<int8_t>::max());
         REQUIRE(points[0]->GPSTime() == std::numeric_limits<double>::max());

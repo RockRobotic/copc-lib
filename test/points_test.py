@@ -5,14 +5,14 @@ import random
 
 def test_points_constructor():
     points = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
-    assert points.PointFormatID == 3
-    assert points.PointRecordLength == 38
+    assert points.PointFormatID == 6
+    assert points.PointRecordLength == 34
     assert len(points) == 0
 
     point1 = copc.Points(
-        3,
+        6,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
         eb_byte_size=4,
@@ -24,13 +24,13 @@ def test_points_constructor():
     point_list = [
         point1,
         copc.Points(
-            3,
+            6,
             copc.Vector3.DefaultScale(),
             copc.Vector3.DefaultOffset(),
             eb_byte_size=4,
         ).CreatePoint(),
         copc.Points(
-            3,
+            6,
             copc.Vector3.DefaultScale(),
             copc.Vector3.DefaultOffset(),
             eb_byte_size=4,
@@ -38,11 +38,10 @@ def test_points_constructor():
     ]
 
     points = copc.Points(point_list)
-    assert points.PointFormatID == 3
-    assert points.PointRecordLength == 38
+    assert points.PointFormatID == 6
+    assert points.PointRecordLength == 34
     for point in points:
-        assert point.PointFormatID == 3
-    assert points.PointRecordLength == 38
+        assert point.PointFormatID == 6
     assert points[0].UnscaledY == 11
     assert points[0].UnscaledZ == 11
 
@@ -51,10 +50,10 @@ def test_points_constructor():
 
 def test_adding_point_to_points():
     points = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 0
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 0
     )
     point = copc.Points(
-        3,
+        6,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
@@ -71,7 +70,7 @@ def test_adding_point_to_points():
     assert points[0].UnscaledZ == 11
 
     point = copc.Points(
-        3,
+        6,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
@@ -88,7 +87,7 @@ def test_adding_point_to_points():
 
     # Test check on point format
     point = copc.Points(
-        6,
+        7,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
@@ -98,7 +97,7 @@ def test_adding_point_to_points():
 
     # Test check on extra bytes
     point = copc.Points(
-        3,
+        6,
         copc.Vector3.DefaultScale(),
         copc.Vector3.DefaultOffset(),
         eb_byte_size=1,
@@ -111,7 +110,7 @@ def test_adding_points_to_points():
     points = copc.Points(
         [
             copc.Points(
-                3,
+                6,
                 copc.Vector3.DefaultScale(),
                 copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
@@ -122,7 +121,7 @@ def test_adding_points_to_points():
     points_other = copc.Points(
         [
             copc.Points(
-                3,
+                6,
                 copc.Vector3.DefaultScale(),
                 copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
@@ -139,7 +138,7 @@ def test_adding_points_to_points():
     points_other = copc.Points(
         [
             copc.Points(
-                6,
+                7,
                 copc.Vector3.DefaultScale(),
                 copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
@@ -154,7 +153,7 @@ def test_adding_points_to_points():
     points_other = copc.Points(
         [
             copc.Points(
-                3,
+                6,
                 copc.Vector3.DefaultScale(),
                 copc.Vector3.DefaultOffset(),
                 eb_byte_size=1,
@@ -170,7 +169,7 @@ def test_points_format_conversion():
     points = copc.Points(
         [
             copc.Points(
-                3,
+                6,
                 copc.Vector3.DefaultScale(),
                 copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
@@ -178,22 +177,22 @@ def test_points_format_conversion():
             for _ in range(10)
         ]
     )
-    points.ToPointFormat(6)
+    points.ToPointFormat(7)
 
-    assert points.PointFormatID == 6
-    assert points.PointRecordLength == 38
-    assert points[0].PointFormatID == 6
-    assert points[0].PointRecordLength == 34
+    assert points.PointFormatID == 7
+    assert points.PointRecordLength == 40
+    assert points[0].PointFormatID == 7
+    assert points[0].PointRecordLength == 40
 
     with pytest.raises(RuntimeError):
-        points.ToPointFormat(-1)
+        points.ToPointFormat(5)
     with pytest.raises(RuntimeError):
-        points.ToPointFormat(11)
+        points.ToPointFormat(9)
 
 
 def test_points_iterator():
     points = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
 
     # generate points
@@ -214,7 +213,7 @@ def test_points_iterator():
 
 def test_points_group_accessors():
     points = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
 
     # generate points
@@ -278,7 +277,7 @@ def test_points_group_accessors():
 
 def test_within():
 
-    points = copc.Points(3, (1, 1, 1), copc.Vector3.DefaultOffset())
+    points = copc.Points(6, (1, 1, 1), copc.Vector3.DefaultOffset())
 
     # generate points
     for i in range(2000):
@@ -301,7 +300,7 @@ def test_within():
 
 def test_get_within():
 
-    points = copc.Points(3, (1, 1, 1), copc.Vector3.DefaultOffset())
+    points = copc.Points(6, (1, 1, 1), copc.Vector3.DefaultOffset())
 
     # generate points
     for i in range(2000):
@@ -376,7 +375,7 @@ def test_points_accessors():
 
 def test_points_indexer_setter():
     points = copc.Points(
-        3, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
 
     # generate points
