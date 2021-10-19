@@ -52,7 +52,7 @@ def test_box_constructors():
     header = copc.LasHeader()
     header.min = (0, 0, 0)
     header.max = (10, 10, 10)
-    box = copc.Box(copc.VoxelKey(1, 1, 0, 0), header)
+    box = copc.Box((1, 1, 0, 0), header)
 
     assert box.x_min == 5.0
     assert box.y_min == 0.0
@@ -102,8 +102,8 @@ def test_box_functions():
     header = copc.LasHeader()
     header.min = (0, 0, 0)
     header.max = (10, 10, 10)
-    box1 = copc.Box(copc.VoxelKey(0, 0, 0, 0), header)
-    box2 = copc.Box(copc.VoxelKey(1, 1, 0, 0), header)
+    box1 = copc.Box((0, 0, 0, 0), header)
+    box2 = copc.Box((1, 1, 0, 0), header)
     assert box1.Contains(box2)
     assert not box2.Contains(box1)
     ## A box contains itself
@@ -125,8 +125,8 @@ def test_box_functions():
     header = copc.LasHeader()
     header.min = (0, 0, 0)
     header.max = (10, 10, 10)
-    box1 = copc.Box(copc.VoxelKey(0, 0, 0, 0), header)
-    box2 = copc.Box(copc.VoxelKey(1, 1, 0, 0), header)
+    box1 = copc.Box((0, 0, 0, 0), header)
+    box2 = copc.Box((1, 1, 0, 0), header)
     assert not box1.Within(box2)
     assert box2.Within(box1)
     ## A box is within itself

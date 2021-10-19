@@ -16,9 +16,9 @@ def test_key_validity():
 
 
 def test_key_operators():
-    assert copc.VoxelKey(0, 0, 0, 0) == copc.VoxelKey(0, 0, 0, 0)
-    assert copc.VoxelKey(-1, -1, -1, -1) == copc.VoxelKey(-1, -1, -1, -1)
-    assert copc.VoxelKey(0, 0, 0, 0) != copc.VoxelKey(1, 1, 1, 1)
+    assert copc.VoxelKey(0, 0, 0, 0) == (0, 0, 0, 0)
+    assert copc.VoxelKey(-1, -1, -1, -1) == (-1, -1, -1, -1)
+    assert copc.VoxelKey(0, 0, 0, 0) != (1, 1, 1, 1)
 
 
 def test_get_children():
@@ -26,22 +26,22 @@ def test_get_children():
     children = key.GetChildren()
     for i in range(8):
         assert key.Bisect(i) == children[i]
-    assert children[0] == copc.VoxelKey(1, 0, 0, 0)
-    assert children[1] == copc.VoxelKey(1, 1, 0, 0)
-    assert children[2] == copc.VoxelKey(1, 0, 1, 0)
-    assert children[3] == copc.VoxelKey(1, 1, 1, 0)
-    assert children[4] == copc.VoxelKey(1, 0, 0, 1)
-    assert children[5] == copc.VoxelKey(1, 1, 0, 1)
-    assert children[6] == copc.VoxelKey(1, 0, 1, 1)
-    assert children[7] == copc.VoxelKey(1, 1, 1, 1)
+    assert children[0] == (1, 0, 0, 0)
+    assert children[1] == (1, 1, 0, 0)
+    assert children[2] == (1, 0, 1, 0)
+    assert children[3] == (1, 1, 1, 0)
+    assert children[4] == (1, 0, 0, 1)
+    assert children[5] == (1, 1, 0, 1)
+    assert children[6] == (1, 0, 1, 1)
+    assert children[7] == (1, 1, 1, 1)
 
 
 def test_get_parent():
     assert copc.VoxelKey(-1, -1, -1, -1).GetParent().IsValid() is False
 
-    assert copc.VoxelKey(4, 4, 6, 12).GetParent() == copc.VoxelKey(3, 2, 3, 6)
-    assert copc.VoxelKey(4, 5, 6, 13).GetParent() == copc.VoxelKey(3, 2, 3, 6)
-    assert copc.VoxelKey(3, 2, 3, 6).GetParent() == copc.VoxelKey(2, 1, 1, 3)
+    assert copc.VoxelKey(4, 4, 6, 12).GetParent() == (3, 2, 3, 6)
+    assert copc.VoxelKey(4, 5, 6, 13).GetParent() == (3, 2, 3, 6)
+    assert copc.VoxelKey(3, 2, 3, 6).GetParent() == (2, 1, 1, 3)
 
     assert copc.VoxelKey(3, 2, 3, 6).GetParent() != copc.VoxelKey.BaseKey()
 
@@ -59,12 +59,12 @@ def test_is_child():
     )
     assert copc.VoxelKey.BaseKey().ChildOf(copc.VoxelKey.InvalidKey()) is False
 
-    assert copc.VoxelKey(4, 4, 6, 12).ChildOf(copc.VoxelKey(3, 2, 3, 6))
-    assert copc.VoxelKey(3, 2, 3, 6).ChildOf(copc.VoxelKey(2, 1, 1, 3))
+    assert copc.VoxelKey(4, 4, 6, 12).ChildOf((3, 2, 3, 6))
+    assert copc.VoxelKey(3, 2, 3, 6).ChildOf((2, 1, 1, 3))
     assert copc.VoxelKey(3, 2, 3, 6).ChildOf(copc.VoxelKey.BaseKey())
 
-    assert not copc.VoxelKey(4, 4, 6, 12).ChildOf(copc.VoxelKey(3, 4, 8, 6))
-    assert not copc.VoxelKey(3, 2, 3, 6).ChildOf(copc.VoxelKey(2, 2, 2, 2))
+    assert not copc.VoxelKey(4, 4, 6, 12).ChildOf((3, 4, 8, 6))
+    assert not copc.VoxelKey(3, 2, 3, 6).ChildOf((2, 2, 2, 2))
 
 
 def test_get_parents():

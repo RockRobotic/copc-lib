@@ -200,7 +200,7 @@ def test_writer_pages():
 
     root_page = writer.GetRootPage()
 
-    sub_page = writer.AddSubPage(root_page, copc.VoxelKey(1, 1, 1, 1))
+    sub_page = writer.AddSubPage(root_page, (1, 1, 1, 1))
     assert sub_page.IsPage()
     assert sub_page.IsValid()
     assert sub_page.loaded is True
@@ -279,7 +279,7 @@ def test_check_spatial_bounds():
 
     points.AddPoint(point)
 
-    writer.AddNode(writer.GetRootPage(), copc.VoxelKey(1, 1, 1, 1), points)
+    writer.AddNode(writer.GetRootPage(), (1, 1, 1, 1), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -299,7 +299,7 @@ def test_check_spatial_bounds():
     point.Z = 5.1
 
     points.AddPoint(point)
-    writer.AddNode(writer.GetRootPage(), copc.VoxelKey(2, 3, 3, 3), points)
+    writer.AddNode(writer.GetRootPage(), (2, 3, 3, 3), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -319,7 +319,7 @@ def test_check_spatial_bounds():
     point.Z = 5.1
 
     points.AddPoint(point)
-    writer.AddNode(writer.GetRootPage(), copc.VoxelKey(1, 1, 1, 1), points)
+    writer.AddNode(writer.GetRootPage(), (1, 1, 1, 1), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -338,7 +338,7 @@ def test_check_spatial_bounds():
     point.Z = 0.1
 
     points.AddPoint(point)
-    writer.AddNode(writer.GetRootPage(), copc.VoxelKey(1, 0, 0, 0), points)
+    writer.AddNode(writer.GetRootPage(), (1, 0, 0, 0), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
