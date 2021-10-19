@@ -419,7 +419,8 @@ PYBIND11_MODULE(copclib, m)
         .def("GetPointsWithinBox", &Reader::GetPointsWithinBox, py::arg("box"), py::arg("resolution") = 0)
         .def("GetDepthAtResolution", &Reader::GetDepthAtResolution, py::arg("resolution"))
         .def("GetNodesAtResolution", &Reader::GetNodesAtResolution, py::arg("resolution"))
-        .def("GetNodesWithinResolution", &Reader::GetNodesWithinResolution, py::arg("resolution"));
+        .def("GetNodesWithinResolution", &Reader::GetNodesWithinResolution, py::arg("resolution"))
+        .def("CheckSpatialBounds", &Reader::CheckSpatialBounds, py::arg("verbose"));
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, Writer::LasConfig const &, const int &, const std::string &>(),

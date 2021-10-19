@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
@@ -312,6 +313,74 @@ std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
     }
 
     return out;
+}
+
+bool Reader::CheckSpatialBounds(bool verbose)
+{
+
+    bool check = true;
+    auto header = GetLasHeader();
+
+    for (const auto &node : GetAllChildren())
+    {
+        auto points = GetPoints(node);
+
+        // Check if node intersects las header bounds
+        if (!Box(node.key, header).Intersects(header.GetBounds()))
+        {
+            if (verbose)
+            {
+                check = false;
+                std::cout << "Node " << node.key.ToString() << " is outside of las header bounds." << std::endl;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            // If node not within las header bounds then check individual points
+            if (!Box(node.key, header).Within(header.GetBounds()))
+            {
+                for (auto const &point : points)
+                {
+                    if (!point->Within(header.GetBounds()))
+                    {
+                        if (verbose)
+                        {
+                            check = false;
+                            std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
+                                      << ") from node " << node.key.ToString() << " is outside of las header bounds."
+                                      << std::endl;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            // Check that points fall within the node bounds
+            for (auto const &point : points)
+            {
+                if (!point->Within(Box(node.key, header)))
+                {
+                    if (verbose)
+                    {
+                        check = false;
+                        std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
+                                  << ") is outside of node " << node.key.ToString() << " bounds." << std::endl;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return check;
 }
 
 las::EbVlr Reader::ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs)

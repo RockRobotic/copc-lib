@@ -5,6 +5,7 @@
 #include "copc-lib/io/internal/writer_internal.hpp"
 #include "copc-lib/io/writer.hpp"
 #include "copc-lib/las/point.hpp"
+#include "copc-lib/laz/decompressor.hpp"
 
 namespace copc
 {
@@ -74,12 +75,12 @@ Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points, bool 
     {
         // Check that node intersects the las header bounds
         if (!Box(key, header).Intersects(header.GetBounds()))
-            throw std::runtime_error("Writer::AddNode: Node must intersect the laz file bounds");
+            throw std::runtime_error("Writer::AddNode: Node must intersect the las file bounds");
         // If node not within las header bounds, check that all points are within the file bounds
         if (!Box(key, header).Within(header.GetBounds()))
         {
             if (!points.Within(Box(header.min, header.max)))
-                throw std::runtime_error("Writer::AddNode: Points must be within the laz file bounds");
+                throw std::runtime_error("Writer::AddNode: Points must be within the las file bounds");
         }
 
         // Check that all points are within the node
