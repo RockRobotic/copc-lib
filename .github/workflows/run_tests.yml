@@ -78,8 +78,11 @@ jobs:
         cd build
         cmake .. -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -Dgtest_force_shared_crt=ON
         cmake --build . --config ${{env.BUILD_TYPE}}
-        cmake --install .
-
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          cmake --install .
+        else
+          sudo cmake --install .
+        fi
     - name: Build Copclib Python Bindings
       run: |
         pip install .
@@ -89,7 +92,7 @@ jobs:
     - name: Test Copclib Python Bindings
       run: |
         cd test
-        wget https://cloudfront.rockrobotic.com/public/laz-examples/copc/drafts/span/autzen-classified.copc.laz
+        curl -L -O https://cloudfront.rockrobotic.com/public/laz-examples/copc/drafts/span/autzen-classified.copc.laz
         pytest
         python ../example/example-reader.py
         python ../example/example-writer.py
