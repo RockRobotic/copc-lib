@@ -91,6 +91,8 @@ class FileReader : public Reader
     {
         auto f_stream = new std::fstream;
         f_stream->open(file_path.c_str(), std::ios::in | std::ios::binary);
+        if (!f_stream->good())
+            throw std::runtime_error("FileReader: Error while opening file path.");
         in_stream_ = f_stream;
 
         InitReader();

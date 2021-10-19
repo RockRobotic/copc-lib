@@ -75,7 +75,10 @@ class FileWriter : public Writer
   public:
     FileWriter(const std::string &file_path, CopcConfig const &config)
     {
+
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
+        if (!f_stream_.good())
+            throw std::runtime_error("FileWriter: Error while opening file path.");
         InitWriter(f_stream_, config);
     }
 
