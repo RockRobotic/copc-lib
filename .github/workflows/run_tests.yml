@@ -83,6 +83,7 @@ jobs:
         else
           sudo cmake --install .
         fi
+      
     - name: Build Copclib Python Bindings
       run: |
         python -m pip install .
@@ -93,6 +94,7 @@ jobs:
       run: |
         cd test
         curl -L -O https://cloudfront.rockrobotic.com/public/laz-examples/copc/drafts/span/autzen-classified.copc.laz
+        python ../example/example-reader.py
         pytest
         python ../example/example-reader.py
         python ../example/example-writer.py
