@@ -85,7 +85,7 @@ jobs:
         fi
     - name: Build Copclib Python Bindings
       run: |
-        pip install .
+        python -m pip install .
       shell:
         bash -l {0}
 
