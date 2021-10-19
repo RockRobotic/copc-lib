@@ -98,7 +98,7 @@ jobs:
         conda list
         cd test
         curl -L -O https://cloudfront.rockrobotic.com/public/laz-examples/copc/drafts/span/autzen-classified.copc.laz
-        python ../example/example-reader.py
+        python points_test.py
         pytest
         python ../example/example-reader.py
         python ../example/example-writer.py
