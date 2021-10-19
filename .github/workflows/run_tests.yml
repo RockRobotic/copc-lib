@@ -98,6 +98,8 @@ jobs:
         conda list
         cd test
         curl -L -O https://cloudfront.rockrobotic.com/public/laz-examples/copc/drafts/span/autzen-classified.copc.laz
+        which python
+        python -m pip list
         python points_test.py
         pytest
         python ../example/example-reader.py
