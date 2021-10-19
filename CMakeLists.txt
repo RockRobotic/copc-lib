@@ -76,7 +76,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 # In this case replace the following line with
 # find_package(YCM REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-e-
+
 if(WITH_CPP_TESTS OR WITH_PYTHON_TESTS)
     enable_testing()
 endif()
