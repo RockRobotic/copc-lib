@@ -57,7 +57,11 @@ jobs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -Dgtest_force_shared_crt=ON
         cmake --build . --config ${{env.BUILD_TYPE}}
-        sudo cmake --install .
+        if [ "$RUNNER_OS" == "Windows" ]; then
+                  cmake --install .
+                else
+                  sudo cmake --install .
+                fi
 
     - name: Build Copclib Python Bindings
       run: |
