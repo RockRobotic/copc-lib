@@ -43,8 +43,9 @@ CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items) : point_
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 
-    extents_ = std::vector<std::shared_ptr<CopcExtent>>(NumberOfExtents(point_format_id, num_eb_items),
-                                                        std::make_shared<CopcExtent>());
+    extents_.reserve(NumberOfExtents(point_format_id, num_eb_items));
+    for (int i{0}; i < NumberOfExtents(point_format_id, num_eb_items); i++)
+        extents_.push_back(std::make_shared<CopcExtent>());
 }
 
 CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items)

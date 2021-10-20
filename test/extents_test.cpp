@@ -88,6 +88,9 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         extents.Intensity()->minimum = -numeric_limits<double>::max();
         extents.Intensity()->maximum = numeric_limits<double>::max();
 
+        extents.Classification()->minimum = 0;
+        extents.Classification()->maximum = 255;
+
         extents.ExtraBytes()[0]->minimum = -numeric_limits<double>::max();
         extents.ExtraBytes()[0]->maximum = numeric_limits<double>::max();
 
@@ -101,6 +104,9 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
         REQUIRE(extents.Intensity()->minimum == -numeric_limits<double>::max());
         REQUIRE(extents.Intensity()->maximum == numeric_limits<double>::max());
+
+        REQUIRE(extents.Classification()->minimum == 0);
+        REQUIRE(extents.Classification()->maximum == 255);
 
         REQUIRE(extents.ExtraBytes()[0]->minimum == -numeric_limits<double>::max());
         REQUIRE(extents.ExtraBytes()[0]->maximum == numeric_limits<double>::max());
