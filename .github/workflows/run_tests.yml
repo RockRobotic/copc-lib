@@ -24,9 +24,6 @@ jobs:
     - name: Checkout Copclib
       uses: actions/checkout@v2
 
-    - uses: ilammy/msvc-dev-cmd@v1
-      if: matrix.os == 'windows-latest'
-
     - name: Set up Conda for Python ${{ matrix.python-version }}
       uses: conda-incubator/setup-miniconda@v2
       with:
@@ -58,7 +55,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -Dgtest_force_shared_crt=ON
         cmake --build . --config ${{env.BUILD_TYPE}}
         sudo cmake --install .
 
