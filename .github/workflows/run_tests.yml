@@ -47,7 +47,7 @@ jobs:
       with:
         path: lazperf
         repository: hobu/laz-perf
-        ref: db7f5f1cc4d3905ca21b0b67a55056533c7d6486
+        ref: 4819611b279cb791508a0ac0cedd913f8c1d2103
 
     - name: Build lazperf
       shell: bash -l {0}
