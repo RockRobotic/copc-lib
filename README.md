@@ -10,9 +10,22 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 
 copc-lib has the following dependencies:
 
-- [laz-perf](https://github.com/hobu/laz-perf) > 2.1.0
+- laz-perf >= [commit 4819611](https://github.com/hobu/laz-perf/commits/4819611b279cb791508a0ac0cedd913f8c1d2103)
 - Catch2
 - Pybind11
+
+To build the latest version of laz-perf:
+
+```bash
+git clone https://github.com/hobu/laz-perf.git
+cd laz-perf
+git checkout 4819611b279cb791508a0ac0cedd913f8c1d2103
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+sudo cmake --install .
+```
 
 ### C++
 
