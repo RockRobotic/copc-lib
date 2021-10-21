@@ -454,10 +454,10 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::string &>(&las::LasHeader::GeneratingSoftware))
         .def_readwrite("creation_day", &las::LasHeader::creation_day)
         .def_readwrite("creation_year", &las::LasHeader::creation_year)
-        .def_readwrite("point_offset", &las::LasHeader::point_offset)
-        .def_readwrite("vlr_count", &las::LasHeader::vlr_count)
-        .def_readwrite("point_format_id", &las::LasHeader::point_format_id)
-        .def_readwrite("point_record_length", &las::LasHeader::point_record_length)
+        .def_readwrite("point_offset", &las::LasHeader::point_offset_)
+        .def_readwrite("vlr_count", &las::LasHeader::vlr_count_)
+        .def_property_readonly("point_format_id", &las::LasHeader::PointFormatID)
+        .def_property_readonly("point_record_length", &las::LasHeader::PointRecordLength)
         .def_readwrite("scale", &las::LasHeader::scale)
         .def_readwrite("offset", &las::LasHeader::offset)
         .def_readwrite("max", &las::LasHeader::max)
@@ -472,9 +472,9 @@ PYBIND11_MODULE(copclib, m)
         .def("ApplyInverseScaleX", &las::LasHeader::ApplyInverseScaleX)
         .def("ApplyInverseScaleY", &las::LasHeader::ApplyInverseScaleY)
         .def("ApplyInverseScaleZ", &las::LasHeader::ApplyInverseScaleZ)
-        .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset)
-        .def_readwrite("evlr_count", &las::LasHeader::evlr_count)
-        .def_readwrite("point_count", &las::LasHeader::point_count)
+        .def_readwrite("evlr_offset", &las::LasHeader::evlr_offset_)
+        .def_readwrite("evlr_count", &las::LasHeader::evlr_count_)
+        .def_readwrite("point_count", &las::LasHeader::point_count_)
         .def_readwrite("points_by_return", &las::LasHeader::points_by_return)
         .def("__str__", &las::LasHeader::ToString)
         .def("__repr__", &las::LasHeader::ToString)
@@ -482,9 +482,9 @@ PYBIND11_MODULE(copclib, m)
             [](const las::LasHeader &h) { // __getstate__
                 /* Return a tuple that fully encodes the state of the object */
                 return py::make_tuple(h.file_source_id, h.global_encoding, h.GUID(), h.SystemIdentifier(),
-                                      h.GeneratingSoftware(), h.creation_day, h.creation_year, h.point_offset,
-                                      h.vlr_count, h.point_format_id, h.point_record_length, h.scale, h.offset, h.max,
-                                      h.min, h.evlr_offset, h.evlr_count, h.point_count, h.points_by_return);
+                                      h.GeneratingSoftware(), h.creation_day, h.creation_year, h.point_offset_,
+                                      h.vlr_count_, h.point_format_id, h.point_record_length, h.scale, h.offset, h.max,
+                                      h.min, h.evlr_offset_, h.evlr_count_, h.point_count_, h.points_by_return);
             },
             [](py::tuple t) { // __setstate__
                 if (t.size() != 19)
@@ -499,17 +499,17 @@ PYBIND11_MODULE(copclib, m)
                 h.GeneratingSoftware(t[4].cast<std::string>());
                 h.creation_day = t[5].cast<uint16_t>();
                 h.creation_year = t[6].cast<uint16_t>();
-                h.point_offset = t[7].cast<uint32_t>();
-                h.vlr_count = t[8].cast<uint32_t>();
+                h.point_offset_ = t[7].cast<uint32_t>();
+                h.vlr_count_ = t[8].cast<uint32_t>();
                 h.point_format_id = t[9].cast<int8_t>();
                 h.point_record_length = t[10].cast<uint16_t>();
                 h.scale = t[11].cast<Vector3>();
                 h.offset = t[12].cast<Vector3>();
                 h.max = t[13].cast<Vector3>();
                 h.min = t[14].cast<Vector3>();
-                h.evlr_offset = t[15].cast<uint64_t>();
-                h.evlr_count = t[16].cast<uint32_t>();
-                h.point_count = t[17].cast<uint64_t>();
+                h.evlr_offset_ = t[15].cast<uint64_t>();
+                h.evlr_count_ = t[16].cast<uint32_t>();
+                h.point_count_ = t[17].cast<uint64_t>();
                 h.points_by_return = t[18].cast<std::array<uint64_t, 15>>();
                 return h;
             }));

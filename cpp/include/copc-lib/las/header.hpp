@@ -23,15 +23,20 @@ class LasHeader
   public:
     LasHeader() = default;
     uint16_t EbByteSize() const;
-    LasHeader(int8_t point_format_id, const Vector3 &scale, const Vector3 &offset)
-        : point_format_id(point_format_id), scale(scale), offset(offset){};
+    LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset)
+        : point_format_id_(point_format_id), point_record_length_{point_record_length}, scale(scale), offset(offset){};
 
     static LasHeader FromLazPerf(const lazperf::header14 &header);
-    lazperf::header14 ToLazPerf() const;
+    lazperf::header14 ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset, uint32_t evlr_count,
+                                bool eb_flag) const;
 
     std::string ToString() const;
 
-    // Getters/Setters for string attributes
+    // Getters/Setters for protected attributes
+
+    uint8_t PointFormatID() const { return point_format_id_; }
+    uint16_t PointRecordLength() const { return point_record_length_; }
+
     void GUID(const std::string &guid)
     {
         if (guid.size() > 16)
@@ -69,10 +74,6 @@ class LasHeader
     double ApplyInverseScaleY(double scaled_value) const { return (scaled_value - offset.y) / scale.y; }
     double ApplyInverseScaleZ(double scaled_value) const { return (scaled_value - offset.z) / scale.z; }
 
-    int8_t point_format_id{6};
-    uint64_t point_count{};
-    uint16_t point_record_length{};
-
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
@@ -89,21 +90,25 @@ class LasHeader
     // # of points per return 0-14
     std::array<uint64_t, 15> points_by_return{};
 
-    uint32_t point_offset{};
-    uint32_t vlr_count{};
-
-    uint64_t evlr_offset{};
-    uint32_t evlr_count{};
-
   protected:
+    int8_t point_format_id_{6};
+    uint16_t point_record_length_{};
+
+    uint32_t point_count_{};
+    uint32_t point_offset_{};
+    uint32_t vlr_count_{};
+
+    uint64_t evlr_offset_{};
+    uint32_t evlr_count_{};
+
     std::string guid_{};
     std::string system_identifier_{};
     std::string generating_software_{};
 
-    const uint8_t version_major{1};
-    const uint8_t version_minor{4};
+    const uint8_t version_major_{1};
+    const uint8_t version_minor_{4};
 
-    const uint16_t header_size{375};
+    const uint16_t header_size_{375};
 };
 
 } // namespace las

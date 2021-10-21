@@ -144,7 +144,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.CopcConfig().LasHeader().point_format_id == orig.CopcConfig().LasHeader().point_format_id);
             REQUIRE(reader.CopcConfig().LasHeader().point_record_length ==
                     orig.CopcConfig().LasHeader().point_record_length);
-            REQUIRE(reader.CopcConfig().LasHeader().point_count == 0);
+            REQUIRE(reader.CopcConfig().LasHeader().point_count_ == 0);
             REQUIRE(reader.CopcConfig().LasHeader().scale == reader.CopcConfig().LasHeader().scale);
             REQUIRE(reader.CopcConfig().LasHeader().offset == reader.CopcConfig().LasHeader().offset);
         }
@@ -258,7 +258,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.CopcConfig().LasHeader().point_format_id == orig.CopcConfig().LasHeader().point_format_id);
             REQUIRE(reader.CopcConfig().LasHeader().point_record_length ==
                     orig.CopcConfig().LasHeader().point_record_length);
-            REQUIRE(reader.CopcConfig().LasHeader().point_count == 0);
+            REQUIRE(reader.CopcConfig().LasHeader().point_count_ == 0);
             REQUIRE(reader.CopcConfig().LasHeader().scale == reader.CopcConfig().LasHeader().scale);
             REQUIRE(reader.CopcConfig().LasHeader().offset == reader.CopcConfig().LasHeader().offset);
         }

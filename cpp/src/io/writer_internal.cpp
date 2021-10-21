@@ -17,7 +17,7 @@ namespace copc::Internal
 void WriterInternal::ComputeOffsetToPointData()
 {
 
-    size_t extents_offset = CopcExtents::GetByteSize(copc_file_writer_->LasHeader()->point_format_id,
+    size_t extents_offset = CopcExtents::GetByteSize(copc_file_writer_->LasHeader()->PointFormatID(),
                                                      copc_file_writer_->ExtraBytesVlr().items.size()) +
                             lazperf::vlr_header::Size;
 
@@ -51,8 +51,8 @@ void WriterInternal::Close()
 
     // Set hierarchy evlr
     out_stream_.seekp(0, std::ios::end);
-    copc_file_writer_->LasHeader()->evlr_offset = static_cast<int64_t>(out_stream_.tellp());
-    copc_file_writer_->LasHeader()->evlr_count += hierarchy_->seen_pages_.size();
+    evlr_offset_ = static_cast<int64_t>(out_stream_.tellp());
+    evlr_count_ += hierarchy_->seen_pages_.size();
 
     // Page writing must be done in a postorder traversal because each parent
     // has to write the offset of all of its children, which we don't know in advance
@@ -66,30 +66,14 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader()
 {
-    auto header = copc_file_writer_->LasHeader();
+    laz_vlr lazVlr(copc_file_writer_->LasHeader()->PointFormatID(), copc_file_writer_->LasHeader()->EbByteSize(),
+                   VARIABLE_CHUNK_SIZE);
 
-    laz_vlr lazVlr(header->point_format_id, header->EbByteSize(), VARIABLE_CHUNK_SIZE);
-
-    header->vlr_count = 4; // copc_info + copc_extent + laz + wkt
-
-    header->point_offset = OFFSET_TO_POINT_DATA;
-    header->point_count = point_count_;
-
-    if (header->EbByteSize())
-    {
-        header->vlr_count++;
-    }
-
-    // Set the WKT bit.
-    header->global_encoding |= (1 << 4);
+    auto las_header_vlr = copc_file_writer_->LasHeader()->ToLazPerf(
+        OFFSET_TO_POINT_DATA, point_count_, evlr_offset_, evlr_count_, copc_file_writer_->LasHeader()->EbByteSize());
 
     out_stream_.seekp(0);
-
-    // Convert back to lazperf header for writing
-    auto laz_header = header->ToLazPerf();
-    laz_header.point_format_id |= (1 << 7); // Do the lazperf trick
-
-    laz_header.write(out_stream_);
+    las_header_vlr.write(out_stream_);
 
     // Write the COPC Info VLR.
     auto copc_info_vlr = copc_file_writer_->CopcInfo()->ToLazperfVlr();
@@ -97,8 +81,9 @@ void WriterInternal::WriteHeader()
     copc_info_vlr.write(out_stream_);
 
     // Write the COPC Extents VLR.
-    auto extents_vlr = copc_file_writer_->CopcExtents()->ToCopcExtentsVlr(
-        {header->min.x, header->max.x}, {header->min.y, header->max.y}, {header->min.z, header->max.z});
+    auto extents_vlr = copc_file_writer_->CopcExtents()->ToCopcExtentsVlr({las_header_vlr.minx, las_header_vlr.maxx},
+                                                                          {las_header_vlr.miny, las_header_vlr.maxy},
+                                                                          {las_header_vlr.minz, las_header_vlr.maxz});
     extents_vlr.header().write(out_stream_);
     extents_vlr.write(out_stream_);
 
@@ -112,7 +97,7 @@ void WriterInternal::WriteHeader()
     wkt_vlr.write(out_stream_);
 
     // Write optional Extra Byte VLR
-    if (header->EbByteSize())
+    if (copc_file_writer_->LasHeader()->EbByteSize())
     {
         auto ebVlr = this->copc_file_writer_->ExtraBytesVlr();
         ebVlr.header().write(out_stream_);

@@ -12,7 +12,7 @@ namespace copc::las
 {
 Box LasHeader::GetBounds() const { return Box(min, max); }
 
-uint16_t LasHeader::EbByteSize() const { return ComputeEbByteSize(point_format_id, point_record_length); }
+uint16_t LasHeader::EbByteSize() const { return ComputeEbByteSize(point_format_id_, point_record_length_); }
 
 LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
 {
@@ -28,12 +28,12 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.creation_year = header.creation.year;
     if (header.header_size != 375)
         throw std::runtime_error("LasHeader::FromLazPerf: Header size must be 375.");
-    h.point_offset = header.point_offset;
-    h.vlr_count = header.vlr_count;
+    h.point_offset_ = header.point_offset;
+    h.vlr_count_ = header.vlr_count;
     if (header.point_format_id < 6 || header.point_format_id > 8)
         throw std::runtime_error("LasHeader::FromLazPerf: Supported point formats are 6 to 8.");
-    h.point_format_id = static_cast<int8_t>(header.point_format_id);
-    h.point_record_length = header.point_record_length;
+    h.point_format_id_ = static_cast<int8_t>(header.point_format_id);
+    h.point_record_length_ = header.point_record_length;
     std::copy(std::begin(header.points_by_return), std::end(header.points_by_return), std::begin(h.points_by_return));
     h.scale.x = header.scale.x;
     h.scale.y = header.scale.y;
@@ -47,31 +47,37 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.min.y = header.miny;
     h.max.z = header.maxz;
     h.min.z = header.minz;
-    h.evlr_offset = header.evlr_offset;
-    h.evlr_count = header.evlr_count;
-    h.point_count = header.point_count_14;
+    h.evlr_offset_ = header.evlr_offset;
+    h.evlr_count_ = header.evlr_count;
+    h.point_count_ = header.point_count_14;
     std::copy(std::begin(header.points_by_return_14), std::end(header.points_by_return_14),
               std::begin(h.points_by_return));
 
     return h;
 }
-lazperf::header14 LasHeader::ToLazPerf() const
+lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset,
+                                       uint32_t evlr_count, bool eb_flag) const
 {
     lazperf::header14 h;
     h.file_source_id = file_source_id;
     h.global_encoding = global_encoding;
+    h.global_encoding |= (1 << 4); // Set the WKT bit.
     std::strncpy(h.guid, guid_.c_str(), 16);
-    h.version.major = version_major;
-    h.version.minor = version_minor;
+    h.version.major = version_major_;
+    h.version.minor = version_minor_;
     std::strncpy(h.system_identifier, system_identifier_.c_str(), 32);
     std::strncpy(h.generating_software, generating_software_.c_str(), 32);
     h.creation.day = creation_day;
     h.creation.year = creation_year;
-    h.header_size = header_size;
+    h.header_size = header_size_;
     h.point_offset = point_offset;
-    h.vlr_count = vlr_count;
-    h.point_format_id = point_format_id;
-    h.point_record_length = point_record_length;
+    h.vlr_count = 4; // copc_info + copc_extent + laz + wkt;
+    // If there are Extra Bytes, count an extra VLR
+    if (eb_flag)
+        h.vlr_count++;
+    h.point_format_id = point_format_id_;
+    h.point_format_id |= (1 << 7); // Do the lazperf trick
+    h.point_record_length = point_record_length_;
     // Set the legacy point count as per LAS specs
     if (point_count > (std::numeric_limits<uint32_t>::max)())
         h.point_count = 0;
@@ -109,22 +115,22 @@ std::string LasHeader::ToString() const
     ss << "\tFile Source ID: " << file_source_id << std::endl;
     ss << "\tGlobal Encoding ID: " << global_encoding << std::endl;
     ss << "\tGUID: " << GUID() << std::endl;
-    ss << "\tVersion: " << static_cast<int>(version_major) << "." << static_cast<int>(version_minor) << std::endl;
+    ss << "\tVersion: " << static_cast<int>(version_major_) << "." << static_cast<int>(version_minor_) << std::endl;
     ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
     ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
     ss << "\tCreation (Day/Year): (" << creation_day << "/" << creation_year << ")" << std::endl;
-    ss << "\tHeader Size: " << header_size << std::endl;
-    ss << "\tPoint Offset: " << point_offset << std::endl;
-    ss << "\tVLR Count: " << vlr_count << std::endl;
-    ss << "\tPoint Format ID: " << static_cast<int>(point_format_id) << std::endl;
-    ss << "\tPoint Record Length: " << point_record_length << std::endl;
-    ss << "\tPoint Count: " << point_count << std::endl;
+    ss << "\tHeader Size: " << header_size_ << std::endl;
+    ss << "\tPoint Offset: " << point_offset_ << std::endl;
+    ss << "\tVLR Count: " << vlr_count_ << std::endl;
+    ss << "\tPoint Format ID: " << static_cast<int>(point_format_id_) << std::endl;
+    ss << "\tPoint Record Length: " << point_record_length_ << std::endl;
+    ss << "\tPoint Count: " << point_count_ << std::endl;
     ss << "\tScale: " << scale.ToString() << std::endl;
     ss << "\tOffset: " << offset.ToString() << std::endl;
     ss << "\tMax: " << max.ToString() << std::endl;
     ss << "\tMin: " << min.ToString() << std::endl;
-    ss << "\tEVLR Offset: " << evlr_offset << std::endl;
-    ss << "\tEVLR count: " << evlr_count << std::endl;
+    ss << "\tEVLR Offset: " << evlr_offset_ << std::endl;
+    ss << "\tEVLR count: " << evlr_count_ << std::endl;
     ss << "\tPoints By Return:" << std::endl;
     for (int i = 0; i < points_by_return.size(); i++)
         ss << "\t\t[" << i << "]: " << points_by_return[i] << std::endl;

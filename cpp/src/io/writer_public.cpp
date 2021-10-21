@@ -64,8 +64,8 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
 
 Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 {
-    if (points.PointFormatID() != config_->LasHeader()->point_format_id ||
-        points.PointRecordLength() != config_->LasHeader()->point_record_length)
+    if (points.PointFormatID() != config_->LasHeader()->PointFormatID() ||
+        points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
 
     std::vector<char> uncompressed = points.Pack();
@@ -74,7 +74,7 @@ Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 
 Node Writer::AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed)
 {
-    int point_size = config_->LasHeader()->point_record_length;
+    int point_size = config_->LasHeader()->PointRecordLength();
     if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
         throw std::runtime_error("Invalid point data array!");
 
@@ -88,22 +88,6 @@ Node Writer::AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char
         throw std::runtime_error("Point count must be >0!");
 
     return DoAddNode(page, key, compressed, point_count, true);
-}
-
-uint8_t EXTRA_BYTE_DATA_TYPE[31]{0, 1,  1,  2, 2,  4, 4, 8, 8, 4,  8,  2,  2,  4,  4, 8,
-                                 8, 16, 16, 8, 16, 3, 3, 6, 6, 12, 12, 24, 24, 12, 24};
-
-int Writer::NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items)
-{
-    int out = 0;
-    for (const auto &item : items)
-    {
-        if (item.data_type == 0)
-            out += item.options;
-        else
-            out += EXTRA_BYTE_DATA_TYPE[item.data_type];
-    }
-    return out;
 }
 
 void FileWriter::Close()

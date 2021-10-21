@@ -17,7 +17,7 @@ Point::Point(const int8_t &point_format_id, const Vector3 &scale, const Vector3 
 }
 
 Point::Point(const LasHeader &header)
-    : Point(header.point_format_id, header.scale, header.offset, header.EbByteSize()){};
+    : Point(header.PointFormatID(), header.scale, header.offset, header.EbByteSize()){};
 
 Point::Point(const Point &other) : Point(other.point_format_id_, other.scale_, other.offset_, other.EbByteSize())
 {

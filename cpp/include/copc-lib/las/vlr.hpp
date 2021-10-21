@@ -7,12 +7,17 @@
 
 #include "lazperf/vlr.hpp"
 
+uint8_t EXTRA_BYTE_DATA_TYPE[31]{0, 1,  1,  2, 2,  4, 4, 8, 8, 4,  8,  2,  2,  4,  4, 8,
+                                 8, 16, 16, 8, 16, 3, 3, 6, 6, 12, 12, 24, 24, 12, 24};
+
 namespace copc::las
 {
 
 using WktVlr = lazperf::wkt_vlr;
 using EbVlr = lazperf::eb_vlr;
 using CopcExtentsVlr = lazperf::copc_extents_vlr;
+
+int NumBytesFromExtraBytes(const std::vector<EbVlr::ebfield> &items);
 
 class VlrHeader : public lazperf::evlr_header
 {

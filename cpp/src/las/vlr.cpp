@@ -2,6 +2,20 @@
 
 namespace copc::las
 {
+
+int NumBytesFromExtraBytes(const std::vector<EbVlr::ebfield> &items)
+{
+    int out = 0;
+    for (const auto &item : items)
+    {
+        if (item.data_type == 0)
+            out += item.options;
+        else
+            out += EXTRA_BYTE_DATA_TYPE[item.data_type];
+    }
+    return out;
+}
+
 VlrHeader::VlrHeader(const lazperf::vlr_header &vlr_header) : evlr_flag(false)
 {
     reserved = vlr_header.reserved;

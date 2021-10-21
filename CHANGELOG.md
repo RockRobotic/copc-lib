@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **\[Python/C++\]** Supported LAS point formats are now strictly 6 to 8 throughout the library
-- **\[Python/C++\]** Remove `point_count_14`, `points_by_return_14`, `header_size`, `wave_offset`, and `version` from `LasHeader`
+- **\[Python/C++\]** Remove `point_count_14`, `points_by_return_14`, `header_size_`, `wave_offset`, and `version` from `LasHeader`
 - **\[Python/C++\]** Change lazperf depency version requirement to > 2.1.0
 - **\[Python/C++\]** Update autzen-classified.copc.laz test file to COPC v1
 - **\[Python/C++\]** Change use of `las::CopcVlr::span` to `CopcInfo::spacing`
