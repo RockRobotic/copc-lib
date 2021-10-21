@@ -7,7 +7,7 @@ def test_reader():
     # Given a valid file path
     reader = copc.FileReader("autzen-classified.copc.laz")
 
-    # GetLasHeader Test
+    # LasHeader Test
     header = reader.las_header
     assert header.point_format_id == 7
     assert header.point_count == 10653336

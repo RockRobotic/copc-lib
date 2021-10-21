@@ -11,20 +11,17 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
     GIVEN("A valid file_path")
     {
         FileReader reader("autzen-classified.copc.laz");
-        auto las_header = reader.GetLasHeader();
+        auto las_header = reader.CopcConfig().LasHeader();
         auto lazperf_header = las_header.ToLazPerf();
         auto las_header_origin = las::LasHeader::FromLazPerf(lazperf_header);
 
         REQUIRE(las_header_origin.file_source_id == las_header.file_source_id);
         REQUIRE(las_header_origin.global_encoding == las_header.global_encoding);
         REQUIRE(las_header_origin.GUID() == las_header.GUID());
-        REQUIRE(las_header_origin.version_major == las_header.version_major);
-        REQUIRE(las_header_origin.version_minor == las_header.version_minor);
         REQUIRE(las_header_origin.SystemIdentifier() == las_header.SystemIdentifier());
         REQUIRE(las_header_origin.GeneratingSoftware() == las_header.GeneratingSoftware());
         REQUIRE(las_header_origin.creation_day == las_header.creation_day);
         REQUIRE(las_header_origin.creation_year == las_header.creation_year);
-        REQUIRE(las_header_origin.header_size == las_header.header_size);
         REQUIRE(las_header_origin.point_offset == las_header.point_offset);
         REQUIRE(las_header_origin.vlr_count == las_header.vlr_count);
         REQUIRE(las_header_origin.point_format_id == las_header.point_format_id);
@@ -51,7 +48,7 @@ TEST_CASE("GetBounds", "[LasHeader]")
     GIVEN("A valid file_path")
     {
         FileReader reader("autzen-classified.copc.laz");
-        auto las_header = reader.GetLasHeader();
+        auto las_header = reader.CopcConfig().LasHeader();
         auto box = las_header.GetBounds();
         REQUIRE(box.x_min == las_header.min.x);
         REQUIRE(box.y_min == las_header.min.y);

@@ -277,7 +277,7 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("PointRecordLength", &las::Point::PointRecordLength)
         .def_property_readonly("EbByteSize", &las::Point::EbByteSize)
 
-        .def_property("ExtraBytes", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
+        .def_property("ExtraBytesVlr", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Point::ExtraBytes))
 
         .def(py::self == py::self)
@@ -393,12 +393,7 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<std::string &>())
         .def("Close", &FileReader::Close)
         .def("FindNode", &Reader::FindNode, py::arg("key"))
-        .def_property_readonly("wkt", &Reader::GetWkt)
-        .def_property_readonly("copc_info", &Reader::GetCopcInfo)
-        .def_property_readonly("copc_extents", &Reader::GetCopcExtents)
-        .def_property_readonly("las_header", &Reader::GetLasHeader)
-        .def_property_readonly("extra_bytes_vlr", &Reader::GetExtraByteVlr)
-        .def("GetCopcConfig", &Reader::GetCopcConfig)
+        .def_property_readonly("copc_config", &Reader::CopcConfig)
         .def("GetPointData", py::overload_cast<const Node &>(&Reader::GetPointData), py::arg("node"))
         .def("GetPointData", py::overload_cast<const VoxelKey &>(&Reader::GetPointData), py::arg("key"))
         .def("GetPoints", py::overload_cast<const Node &>(&Reader::GetPoints), py::arg("node"))
@@ -420,14 +415,8 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, CopcConfig const &>(), py::arg("file_path"), py::arg("config"))
+        .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
-        .def_property_readonly("wkt", &Writer::GetWkt)
-        .def_property("copc_info", &Writer::GetCopcInfo, &Writer::SetCopcInfo)
-        .def_property("copc_extents", &Writer::GetCopcExtents, &Writer::SetCopcExtents)
-        .def_property_readonly("las_header", &Writer::GetLasHeader)
-        .def_property_readonly("extra_bytes_vlr", &Writer::GetExtraByteVlr)
-        .def("GetCopcConfig", &Writer::GetCopcConfig)
-        .def_property("extents", &Writer::GetCopcExtents, &Writer::SetCopcExtents)
         .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &FileWriter::Close)
         .def("AddNode", py::overload_cast<Page &, const VoxelKey &, las::Points &>(&Writer::AddNode), py::arg("page"),
@@ -435,10 +424,7 @@ PYBIND11_MODULE(copclib, m)
         .def("AddNodeCompressed", &Writer::AddNodeCompressed)
         .def("AddNode", py::overload_cast<Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode),
              py::arg("page"), py::arg("key"), py::arg("uncompressed_data"))
-        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"))
-        .def("SetMin", &Writer::SetMin)
-        .def("SetMax", &Writer::SetMax)
-        .def("SetPointsByReturn", &Writer::SetPointsByReturn);
+        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"));
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
@@ -533,39 +519,22 @@ PYBIND11_MODULE(copclib, m)
     py::class_<las::EbVlr::ebfield>(m, "EbField").def(py::init<>());
 
     py::class_<CopcConfig>(m, "CopcConfig")
-        .def(py::init<const int8_t &, const Vector3 &, const Vector3 &, const las::EbVlr &>(),
+        .def_property_readonly("las_header", &CopcConfig::LasHeader)
+        .def_property_readonly("copc_info", &CopcConfig::CopcInfo)
+        .def_property_readonly("copc_extents", &CopcConfig::CopcExtents)
+        .def_property_readonly("wkt", &CopcConfig::Wkt);
+
+    py::class_<CopcConfigWriter, std::shared_ptr<CopcConfigWriter>>(m, "CopcConfigWriter")
+        .def(py::init<const int8_t &, const Vector3 &, const Vector3 &, const std::string &, const las::EbVlr &>(),
              py::arg("point_format_id"), py::arg("scale") = Vector3::DefaultScale(),
-             py::arg("offset") = Vector3::DefaultOffset(), py::arg("extra_bytes_vlr") = las::EbVlr(0))
-        .def_readwrite("las_header_base", &CopcConfig::las_header_base)
-        .def_readwrite("copc_info", &CopcConfig::copc_info)
-        .def_readwrite("wkt", &CopcConfig::wkt)
-        .def_property_readonly("point_format_id", &CopcConfig::GetPointFormatID)
-        .def_property_readonly("extra_bytes_vlr", &CopcConfig::GetExtraBytesVlr)
-        .def_property_readonly("copc_extents", &CopcConfig::GetCopcExtents)
-        .def("__str__", &CopcConfig::ToString)
-        .def("__repr__", &CopcConfig::ToString);
+             py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
+             py::arg("extra_bytes_vlr") = las::EbVlr(0))
+        .def_property_readonly("las_header", &CopcConfigWriter::LasHeader)
+        .def_property_readonly("copc_info", &CopcConfigWriter::CopcInfo)
+        .def_property_readonly("copc_extents", &CopcConfigWriter::CopcExtents)
+        .def_property_readonly("wkt", &CopcConfigWriter::Wkt);
 
-    py::class_<las::LasHeaderBase>(m, "LasHeaderBase")
-        .def(py::init<>())
-        .def_readwrite("file_source_id", &las::LasHeaderBase::file_source_id)
-        .def_readwrite("global_encoding", &las::LasHeaderBase::global_encoding)
-        .def_readwrite("creation_day", &las::LasHeaderBase::creation_day)
-        .def_readwrite("creation_year", &las::LasHeaderBase::creation_year)
-        .def_readwrite("scale", &las::LasHeaderBase::scale)
-        .def_readwrite("offset", &las::LasHeaderBase::offset)
-        .def_readwrite("max", &las::LasHeaderBase::max)
-        .def_readwrite("min", &las::LasHeaderBase::min)
-        .def_readwrite("points_by_return", &las::LasHeaderBase::points_by_return)
-        .def_property("guid", py::overload_cast<>(&las::LasHeaderBase::GUID, py::const_),
-                      py::overload_cast<const std::string &>(&las::LasHeaderBase::GUID))
-        .def_property("system_identifier", py::overload_cast<>(&las::LasHeaderBase::SystemIdentifier, py::const_),
-                      py::overload_cast<const std::string &>(&las::LasHeaderBase::SystemIdentifier))
-        .def_property("generating_software", py::overload_cast<>(&las::LasHeaderBase::GeneratingSoftware, py::const_),
-                      py::overload_cast<const std::string &>(&las::LasHeaderBase::GeneratingSoftware))
-        .def("__str__", &las::LasHeaderBase::ToString)
-        .def("__repr__", &las::LasHeaderBase::ToString);
-
-    py::class_<CopcInfo>(m, "CopcInfo")
+    py::class_<CopcInfo, std::shared_ptr<CopcInfo>>(m, "CopcInfo")
         .def(py::init<>())
         .def_readwrite("center_x", &CopcInfo::center_x)
         .def_readwrite("center_y", &CopcInfo::center_y)
@@ -588,7 +557,7 @@ PYBIND11_MODULE(copclib, m)
 
     py::implicitly_convertible<py::tuple, CopcExtent>();
 
-    py::class_<CopcExtents>(m, "CopcExtents")
+    py::class_<CopcExtents, std::shared_ptr<CopcExtents>>(m, "CopcExtents")
         .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("num_eb_items") = 0)
         .def_static("NumberOfExtents", &CopcExtents::NumberOfExtents)
         .def_property_readonly("point_format_id", &CopcExtents::PointFormatID)

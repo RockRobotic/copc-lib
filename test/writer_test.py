@@ -223,7 +223,7 @@ def test_writer_copy():
 
     reader = copc.FileReader("autzen-classified.copc.laz")
 
-    cfg = reader.GetCopcConfig()
+    cfg = reader.CopcConfig()
     writer = copc.FileWriter(file_path, cfg)
 
     root_page = writer.GetRootPage()

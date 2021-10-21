@@ -11,7 +11,7 @@ def TrimFileExample(compressor_example_flag):
     reader = copc.FileReader("autzen-classified.copc.laz")
 
     # Copy the header to the new file
-    cfg = reader.GetCopcConfig()
+    cfg = reader.CopcConfig()
 
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-trimmed.copc.laz", cfg)
@@ -80,7 +80,7 @@ def BoundsTrimFileExample():
     box = copc.Box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200)
 
     # Copy the header to the new file
-    cfg = reader.GetCopcConfig()
+    cfg = reader.CopcConfig()
 
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-bounds-trimmed.copc.laz", cfg)
@@ -129,7 +129,7 @@ def ResolutionTrimFileExample():
     )
 
     # Copy the header to the new file
-    cfg = reader.GetCopcConfig()
+    cfg = reader.CopcConfig()
 
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-resolution-trimmed.copc.laz", cfg)

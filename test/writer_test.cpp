@@ -20,48 +20,46 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             string file_path = "writer_test.copc.laz";
 
-            CopcConfig cfg(6);
+            CopcConfigWriter cfg(6);
             FileWriter writer(file_path, cfg);
 
-            auto las_header = writer.GetLasHeader();
-            REQUIRE(las_header.scale.z == 0.01);
-            REQUIRE(las_header.offset.z == 0);
-            REQUIRE(las_header.point_format_id == 6);
-
-            cfg.ToString();
+            auto las_header = writer.CopcConfig()->LasHeader();
+            REQUIRE(las_header->scale.z == 0.01);
+            REQUIRE(las_header->offset.z == 0);
+            REQUIRE(las_header->point_format_id == 6);
 
             writer.Close();
 
-            REQUIRE_THROWS(CopcConfig(5));
-            REQUIRE_THROWS(CopcConfig(9));
+            REQUIRE_THROWS(CopcConfigWriter(5));
+            REQUIRE_THROWS(CopcConfigWriter(9));
         }
 
         SECTION("Custom Config")
         {
             string file_path = "writer_test.copc.laz";
 
-            CopcConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
-            cfg.las_header_base.file_source_id = 200;
+            CopcConfigWriter cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
+            cfg.LasHeader()->file_source_id = 200;
 
             // Test checks on string attributes
-            cfg.las_header_base.SystemIdentifier("test_string");
-            REQUIRE(cfg.las_header_base.SystemIdentifier() == "test_string");
-            REQUIRE_THROWS(cfg.las_header_base.SystemIdentifier(std::string(33, 'a')));
-            cfg.las_header_base.GeneratingSoftware("test_string");
-            REQUIRE(cfg.las_header_base.GeneratingSoftware() == "test_string");
-            REQUIRE_THROWS(cfg.las_header_base.GeneratingSoftware(std::string(33, 'a')));
+            cfg.LasHeader()->SystemIdentifier("test_string");
+            REQUIRE(cfg.LasHeader()->SystemIdentifier() == "test_string");
+            REQUIRE_THROWS(cfg.LasHeader()->SystemIdentifier(std::string(33, 'a')));
+            cfg.LasHeader()->GeneratingSoftware("test_string");
+            REQUIRE(cfg.LasHeader()->GeneratingSoftware() == "test_string");
+            REQUIRE_THROWS(cfg.LasHeader()->GeneratingSoftware(std::string(33, 'a')));
 
             FileWriter writer(file_path, cfg);
 
-            auto las_header = writer.GetLasHeader();
-            REQUIRE(las_header.file_source_id == 200);
-            REQUIRE(las_header.point_format_id == 8);
-            REQUIRE(las_header.scale.x == 2);
-            REQUIRE(las_header.offset.x == -0.02);
-            REQUIRE(las_header.scale.y == 3);
-            REQUIRE(las_header.offset.y == -0.03);
-            REQUIRE(las_header.scale.z == 4);
-            REQUIRE(las_header.offset.z == -40.8);
+            auto las_header = writer.CopcConfig()->LasHeader();
+            REQUIRE(las_header->file_source_id == 200);
+            REQUIRE(las_header->point_format_id == 8);
+            REQUIRE(las_header->scale.x == 2);
+            REQUIRE(las_header->offset.x == -0.02);
+            REQUIRE(las_header->scale.y == 3);
+            REQUIRE(las_header->offset.y == -0.03);
+            REQUIRE(las_header->scale.z == 4);
+            REQUIRE(las_header->offset.z == -40.8);
 
             writer.Close();
         }
@@ -71,87 +69,84 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             string file_path = "writer_test.copc.laz";
 
             {
-                CopcConfig cfg(6);
-                cfg.copc_info.spacing = 10;
+                CopcConfigWriter cfg(6);
+                cfg.CopcInfo()->spacing = 10;
                 FileWriter writer(file_path, cfg);
 
-                // todo: use Reader to check all of these
-                auto spacing = writer.GetCopcInfo().spacing;
-                REQUIRE(spacing == 10);
+                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == 10);
 
                 writer.Close();
             }
             FileReader reader(file_path);
-            REQUIRE(reader.GetCopcInfo().spacing == 10);
+            REQUIRE(reader.CopcConfig().CopcInfo().spacing == 10);
         }
 
         SECTION("Extents")
         {
             string file_path = "writer_test.copc.laz";
 
-            CopcConfig cfg(6);
+            CopcConfigWriter cfg(6);
             FileWriter writer(file_path, cfg);
 
-            auto extents = writer.GetCopcExtents();
-            extents.Intensity()->minimum = -1.0;
-            extents.Intensity()->maximum = 1;
+            auto extents = writer.CopcConfig()->CopcExtents();
+            extents->Intensity()->minimum = -1.0;
+            extents->Intensity()->maximum = 1;
 
-            extents.Classification()->minimum = -std::numeric_limits<double>::max();
-            extents.Classification()->maximum = std::numeric_limits<double>::max();
+            extents->Classification()->minimum = -std::numeric_limits<double>::max();
+            extents->Classification()->maximum = std::numeric_limits<double>::max();
 
-            writer.SetCopcExtents(extents);
-
-            REQUIRE(writer.GetCopcExtents().Intensity()->minimum == extents.Intensity()->minimum);
-            REQUIRE(writer.GetCopcExtents().Intensity()->maximum == extents.Intensity()->maximum);
-            REQUIRE(writer.GetCopcExtents().Classification()->minimum == extents.Classification()->minimum);
-            REQUIRE(writer.GetCopcExtents().Classification()->maximum == extents.Classification()->maximum);
+            REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum == extents->Intensity()->minimum);
+            REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum == extents->Intensity()->maximum);
+            REQUIRE(writer.CopcConfig()->CopcExtents()->Classification()->minimum ==
+                    extents->Classification()->minimum);
+            REQUIRE(writer.CopcConfig()->CopcExtents()->Classification()->maximum ==
+                    extents->Classification()->maximum);
 
             writer.Close();
 
             // Test reading of extents
             FileReader reader(file_path);
-            REQUIRE(reader.GetCopcExtents().Intensity()->minimum == extents.Intensity()->minimum);
-            REQUIRE(reader.GetCopcExtents().Intensity()->maximum == extents.Intensity()->maximum);
-            REQUIRE(reader.GetCopcExtents().Classification()->minimum == extents.Classification()->minimum);
-            REQUIRE(reader.GetCopcExtents().Classification()->maximum == extents.Classification()->maximum);
+            REQUIRE(reader.CopcConfig().CopcExtents().Intensity()->minimum == extents->Intensity()->minimum);
+            REQUIRE(reader.CopcConfig().CopcExtents().Intensity()->maximum == extents->Intensity()->maximum);
+            REQUIRE(reader.CopcConfig().CopcExtents().Classification()->minimum == extents->Classification()->minimum);
+            REQUIRE(reader.CopcConfig().CopcExtents().Classification()->maximum == extents->Classification()->maximum);
         }
 
         SECTION("WKT")
         {
             string file_path = "writer_test.copc.laz";
 
-            CopcConfig cfg(6);
-            cfg.wkt = "TEST_WKT";
+            CopcConfigWriter cfg(6, {}, {}, "TEST_WKT");
             FileWriter writer(file_path, cfg);
 
-            // todo: use Reader to check all of these
-            REQUIRE(writer.GetWkt() == "TEST_WKT");
+            REQUIRE(writer.CopcConfig()->Wkt() == "TEST_WKT");
 
             writer.Close();
 
             FileReader reader(file_path);
-            REQUIRE(reader.GetWkt() == "TEST_WKT");
+            REQUIRE(reader.CopcConfig().Wkt() == "TEST_WKT");
         }
         SECTION("Copy")
         {
             FileReader orig("autzen-classified.copc.laz");
 
             string file_path = "writer_test.copc.laz";
-            auto cfg = orig.GetCopcConfig();
+            auto cfg = orig.CopcConfig();
             FileWriter writer(file_path, cfg);
             writer.Close();
 
             FileReader reader(file_path);
-            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
-            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
-            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
-            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
-            REQUIRE(reader.GetLasHeader().point_count == 0);
-            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
-            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
+            REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
+            REQUIRE(reader.CopcConfig().LasHeader().global_encoding == orig.CopcConfig().LasHeader().global_encoding);
+            REQUIRE(reader.CopcConfig().LasHeader().creation_day == orig.CopcConfig().LasHeader().creation_day);
+            REQUIRE(reader.CopcConfig().LasHeader().creation_year == orig.CopcConfig().LasHeader().creation_year);
+            REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
+            REQUIRE(reader.CopcConfig().LasHeader().point_format_id == orig.CopcConfig().LasHeader().point_format_id);
+            REQUIRE(reader.CopcConfig().LasHeader().point_record_length ==
+                    orig.CopcConfig().LasHeader().point_record_length);
+            REQUIRE(reader.CopcConfig().LasHeader().point_count == 0);
+            REQUIRE(reader.CopcConfig().LasHeader().scale == reader.CopcConfig().LasHeader().scale);
+            REQUIRE(reader.CopcConfig().LasHeader().offset == reader.CopcConfig().LasHeader().offset);
         }
     }
     GIVEN("A valid output stream")
@@ -160,13 +155,13 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             stringstream out_stream;
 
-            CopcConfig cfg(6);
+            CopcConfigWriter cfg(6);
             Writer writer(out_stream, cfg);
 
-            auto las_header = writer.GetLasHeader();
-            REQUIRE(las_header.scale.z == 0.01);
-            REQUIRE(las_header.offset.z == 0);
-            REQUIRE(las_header.point_format_id == 6);
+            auto las_header = writer.CopcConfig()->LasHeader();
+            REQUIRE(las_header->scale.z == 0.01);
+            REQUIRE(las_header->offset.z == 0);
+            REQUIRE(las_header->point_format_id == 6);
 
             writer.Close();
 
@@ -181,19 +176,19 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             stringstream out_stream;
 
-            CopcConfig cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
-            cfg.las_header_base.file_source_id = 200;
+            CopcConfigWriter cfg(8, {2, 3, 4}, {-0.02, -0.03, -40.8});
+            cfg.LasHeader()->file_source_id = 200;
             Writer writer(out_stream, cfg);
 
-            auto las_header = writer.GetLasHeader();
-            REQUIRE(las_header.file_source_id == 200);
-            REQUIRE(las_header.point_format_id == 8);
-            REQUIRE(las_header.scale.x == 2);
-            REQUIRE(las_header.offset.x == -0.02);
-            REQUIRE(las_header.scale.y == 3);
-            REQUIRE(las_header.offset.y == -0.03);
-            REQUIRE(las_header.scale.z == 4);
-            REQUIRE(las_header.offset.z == -40.8);
+            auto las_header = writer.CopcConfig()->LasHeader();
+            REQUIRE(las_header->file_source_id == 200);
+            REQUIRE(las_header->point_format_id == 8);
+            REQUIRE(las_header->scale.x == 2);
+            REQUIRE(las_header->offset.x == -0.02);
+            REQUIRE(las_header->scale.y == 3);
+            REQUIRE(las_header->offset.y == -0.03);
+            REQUIRE(las_header->scale.z == 4);
+            REQUIRE(las_header->offset.z == -40.8);
 
             writer.Close();
 
@@ -213,35 +208,33 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             stringstream out_stream;
 
-            CopcConfig cfg(6);
-            cfg.copc_info.spacing = 10;
+            CopcConfigWriter cfg(6);
+            cfg.CopcInfo()->spacing = 10;
             Writer writer(out_stream, cfg);
 
             // todo: use Reader to check all of these
-            auto spacing = writer.GetCopcInfo().spacing;
+            auto spacing = writer.CopcConfig()->CopcInfo()->spacing;
             REQUIRE(spacing == 10);
 
             writer.Close();
 
             Reader reader(&out_stream);
-            REQUIRE(reader.GetCopcInfo().spacing == 10);
+            REQUIRE(reader.CopcConfig().CopcInfo().spacing == 10);
         }
 
         SECTION("WKT")
         {
             stringstream out_stream;
 
-            CopcConfig cfg(6);
-            cfg.wkt = "TEST_WKT";
+            CopcConfigWriter cfg(6, {}, {}, "TEST_WKT");
             Writer writer(out_stream, cfg);
 
-            // todo: use Reader to check all of these
-            REQUIRE(writer.GetWkt() == "TEST_WKT");
+            REQUIRE(writer.CopcConfig()->Wkt() == "TEST_WKT");
 
             writer.Close();
 
             Reader reader(&out_stream);
-            REQUIRE(reader.GetWkt() == "TEST_WKT");
+            REQUIRE(reader.CopcConfig().Wkt() == "TEST_WKT");
         }
 
         SECTION("Copy")
@@ -251,22 +244,23 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             Reader orig(&in_stream);
 
             stringstream out_stream;
-            auto cfg = orig.GetCopcConfig();
+            auto cfg = orig.CopcConfig();
 
             Writer writer(out_stream, cfg);
             writer.Close();
 
             Reader reader(&out_stream);
-            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-            REQUIRE(reader.GetLasHeader().global_encoding == orig.GetLasHeader().global_encoding);
-            REQUIRE(reader.GetLasHeader().creation_day == orig.GetLasHeader().creation_day);
-            REQUIRE(reader.GetLasHeader().creation_year == orig.GetLasHeader().creation_year);
-            REQUIRE(reader.GetLasHeader().file_source_id == orig.GetLasHeader().file_source_id);
-            REQUIRE(reader.GetLasHeader().point_format_id == orig.GetLasHeader().point_format_id);
-            REQUIRE(reader.GetLasHeader().point_record_length == orig.GetLasHeader().point_record_length);
-            REQUIRE(reader.GetLasHeader().point_count == 0);
-            REQUIRE(reader.GetLasHeader().scale == reader.GetLasHeader().scale);
-            REQUIRE(reader.GetLasHeader().offset == reader.GetLasHeader().offset);
+            REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
+            REQUIRE(reader.CopcConfig().LasHeader().global_encoding == orig.CopcConfig().LasHeader().global_encoding);
+            REQUIRE(reader.CopcConfig().LasHeader().creation_day == orig.CopcConfig().LasHeader().creation_day);
+            REQUIRE(reader.CopcConfig().LasHeader().creation_year == orig.CopcConfig().LasHeader().creation_year);
+            REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
+            REQUIRE(reader.CopcConfig().LasHeader().point_format_id == orig.CopcConfig().LasHeader().point_format_id);
+            REQUIRE(reader.CopcConfig().LasHeader().point_record_length ==
+                    orig.CopcConfig().LasHeader().point_record_length);
+            REQUIRE(reader.CopcConfig().LasHeader().point_count == 0);
+            REQUIRE(reader.CopcConfig().LasHeader().scale == reader.CopcConfig().LasHeader().scale);
+            REQUIRE(reader.CopcConfig().LasHeader().offset == reader.CopcConfig().LasHeader().offset);
         }
 
         SECTION("Update")
@@ -278,31 +272,30 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             const Vector3 max2 = {20, 30, 40};
             std::array<uint64_t, 15> points_by_return = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-            CopcConfig cfg(6);
-            cfg.las_header_base.min = min1;
-            cfg.las_header_base.max = max1;
-            cfg.copc_info.spacing = 10;
-            cfg.wkt = "TEST_WKT";
+            CopcConfigWriter cfg(6, {}, {}, "TEST_WKT");
+            cfg.LasHeader()->min = min1;
+            cfg.LasHeader()->max = max1;
+            cfg.CopcInfo()->spacing = 10;
             Writer writer(out_stream, cfg);
 
-            REQUIRE(writer.GetLasHeader().min == min1);
-            REQUIRE(writer.GetLasHeader().max == max1);
-            REQUIRE(writer.GetLasHeader().points_by_return == std::array<uint64_t, 15>{0});
+            REQUIRE(writer.CopcConfig()->LasHeader()->min == min1);
+            REQUIRE(writer.CopcConfig()->LasHeader()->max == max1);
+            REQUIRE(writer.CopcConfig()->LasHeader()->points_by_return == std::array<uint64_t, 15>{0});
 
-            writer.SetMin(min2);
-            writer.SetMax(max2);
-            writer.SetPointsByReturn(points_by_return);
+            writer.CopcConfig()->LasHeader()->min = min2;
+            writer.CopcConfig()->LasHeader()->max = max2;
+            writer.CopcConfig()->LasHeader()->points_by_return = points_by_return;
 
-            REQUIRE(writer.GetLasHeader().min == min2);
-            REQUIRE(writer.GetLasHeader().max == max2);
-            REQUIRE(writer.GetLasHeader().points_by_return == points_by_return);
+            REQUIRE(writer.CopcConfig()->LasHeader()->min == min2);
+            REQUIRE(writer.CopcConfig()->LasHeader()->max == max2);
+            REQUIRE(writer.CopcConfig()->LasHeader()->points_by_return == points_by_return);
 
             writer.Close();
 
             Reader reader(&out_stream);
-            REQUIRE(reader.GetLasHeader().min == min2);
-            REQUIRE(reader.GetLasHeader().max == max2);
-            REQUIRE(reader.GetLasHeader().points_by_return == points_by_return);
+            REQUIRE(reader.CopcConfig().LasHeader().min == min2);
+            REQUIRE(reader.CopcConfig().LasHeader().max == max2);
+            REQUIRE(reader.CopcConfig().LasHeader().points_by_return == points_by_return);
         }
     }
 }
@@ -313,7 +306,7 @@ TEST_CASE("Writer Pages", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer writer(out_stream, CopcConfig(6));
+        Writer writer(out_stream, {6});
 
         REQUIRE(!writer.FindNode(VoxelKey::BaseKey()).IsValid());
         REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
@@ -330,8 +323,8 @@ TEST_CASE("Writer Pages", "[Writer]")
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcInfo().root_hier_size == 0);
+        REQUIRE(reader.CopcConfig().CopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 0);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
     }
 
@@ -339,7 +332,7 @@ TEST_CASE("Writer Pages", "[Writer]")
     {
         stringstream out_stream;
 
-        Writer writer(out_stream, CopcConfig(6));
+        Writer writer(out_stream, {6});
 
         Page root_page = writer.GetRootPage();
 
@@ -354,8 +347,8 @@ TEST_CASE("Writer Pages", "[Writer]")
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetCopcInfo().root_hier_offset > 0);
-        REQUIRE(reader.GetCopcInfo().root_hier_size == 32);
+        REQUIRE(reader.CopcConfig().CopcInfo().root_hier_offset > 0);
+        REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 32);
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
     }
 }
@@ -369,23 +362,23 @@ TEST_CASE("Writer EBs", "[Writer]")
         // don't make ebfields yourself unless you set their names correctly
         eb_vlr.items[0].data_type = 0;
         eb_vlr.items[0].options = 4;
-        CopcConfig config(7, {}, {}, eb_vlr);
-        Writer writer(out_stream, config);
+        CopcConfigWriter cfg(7, {}, {}, {}, eb_vlr);
+        Writer writer(out_stream, cfg);
 
-        REQUIRE(writer.GetLasHeader().point_record_length == 40); // 36 + 4
+        REQUIRE(writer.CopcConfig()->LasHeader()->point_record_length == 40); // 36 + 4
 
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetExtraByteVlr().items.size() == 1);
-        REQUIRE(reader.GetExtraByteVlr().items[0].data_type == 0);
-        REQUIRE(reader.GetExtraByteVlr().items[0].options == 4);
-        REQUIRE(reader.GetExtraByteVlr().items[0].name == "FIELD_0");
-        REQUIRE(reader.GetExtraByteVlr().items[0].maxval[2] == 0);
-        REQUIRE(reader.GetExtraByteVlr().items[0].minval[2] == 0);
-        REQUIRE(reader.GetExtraByteVlr().items[0].offset[2] == 0);
-        REQUIRE(reader.GetExtraByteVlr().items[0].scale[2] == 0);
-        REQUIRE(reader.GetLasHeader().point_record_length == 40);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() == 1);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].data_type == 0);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].options == 4);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].name == "FIELD_0");
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].maxval[2] == 0);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].minval[2] == 0);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].offset[2] == 0);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].scale[2] == 0);
+        REQUIRE(reader.CopcConfig().LasHeader().point_record_length == 40);
     }
 
     SECTION("Data type 29")
@@ -393,16 +386,16 @@ TEST_CASE("Writer EBs", "[Writer]")
         stringstream out_stream;
         las::EbVlr eb_vlr(1);
         eb_vlr.items[0].data_type = 29;
-        CopcConfig config(7, {}, {}, eb_vlr);
-        Writer writer(out_stream, config);
+        CopcConfigWriter cfg(7, {}, {}, {}, eb_vlr);
+        Writer writer(out_stream, cfg);
 
-        REQUIRE(writer.GetLasHeader().point_record_length == 48); // 36 + 12
+        REQUIRE(writer.CopcConfig()->LasHeader()->point_record_length == 48); // 36 + 12
 
         writer.Close();
 
         Reader reader(&out_stream);
-        REQUIRE(reader.GetExtraByteVlr().items.size() == 1);
-        REQUIRE(reader.GetLasHeader().point_record_length == 48);
+        REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() == 1);
+        REQUIRE(reader.CopcConfig().LasHeader().point_record_length == 48);
     }
 }
 TEST_CASE("Writer Copy", "[Writer]")
@@ -413,20 +406,22 @@ TEST_CASE("Writer Copy", "[Writer]")
         FileReader reader("autzen-classified.copc.laz");
 
         stringstream out_stream;
-        auto cfg = reader.GetCopcConfig();
+        auto cfg = reader.CopcConfig();
 
         Writer writer(out_stream, cfg);
 
-        REQUIRE(writer.GetLasHeader().point_record_length == 36);
+        REQUIRE(writer.CopcConfig()->LasHeader()->point_record_length == 36);
 
         writer.Close();
 
         Reader new_reader(&out_stream);
-        REQUIRE(new_reader.GetLasHeader().point_record_length == reader.GetLasHeader().point_record_length);
-        REQUIRE(new_reader.GetCopcInfo().spacing == reader.GetCopcInfo().spacing);
-        REQUIRE(new_reader.GetCopcExtents().Intensity()->minimum == reader.GetCopcExtents().Intensity()->minimum);
-        REQUIRE(new_reader.GetWkt() == reader.GetWkt());
-        REQUIRE(new_reader.GetExtraByteVlr().items == reader.GetExtraByteVlr().items);
+        REQUIRE(new_reader.CopcConfig().LasHeader().point_record_length ==
+                reader.CopcConfig().LasHeader().point_record_length);
+        REQUIRE(new_reader.CopcConfig().CopcInfo().spacing == reader.CopcConfig().CopcInfo().spacing);
+        REQUIRE(new_reader.CopcConfig().CopcExtents().Intensity()->minimum ==
+                reader.CopcConfig().CopcExtents().Intensity()->minimum);
+        REQUIRE(new_reader.CopcConfig().Wkt() == reader.CopcConfig().Wkt());
+        REQUIRE(new_reader.CopcConfig().ExtraBytesVlr().items == reader.CopcConfig().ExtraBytesVlr().items);
     }
 
     // TODO[Leo]: Add Copc Info and Extents
@@ -437,7 +432,7 @@ TEST_CASE("Writer Copy", "[Writer]")
 
         stringstream out_stream;
 
-        auto cfg = reader.GetCopcConfig();
+        auto cfg = reader.CopcConfig();
 
         Writer writer(out_stream, cfg);
 
@@ -473,16 +468,16 @@ TEST_CASE("Writer Copy", "[Writer]")
 TEST_CASE("Check Spatial Bounds", "[Writer]")
 {
     string file_path = "writer_test.copc.laz";
-    CopcConfig cfg(7, {0.1, 0.1, 0.1}, {50, 50, 50});
-    cfg.las_header_base.min = {-10, -10, -5};
-    cfg.las_header_base.max = {10, 10, 5};
+    CopcConfigWriter cfg(7, {0.1, 0.1, 0.1}, {50, 50, 50});
+    cfg.LasHeader()->min = {-10, -10, -5};
+    cfg.LasHeader()->max = {10, 10, 5};
     bool verbose = false;
 
     SECTION("Las Header Bounds check (pass)")
     {
         FileWriter writer(file_path, cfg);
 
-        auto header = writer.GetLasHeader();
+        auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
         las::Points points(header.point_format_id, header.scale, header.offset);
@@ -505,7 +500,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
     {
         FileWriter writer(file_path, cfg);
 
-        auto header = writer.GetLasHeader();
+        auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
         las::Points points(header.point_format_id, header.scale, header.offset);
@@ -528,7 +523,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
     {
         FileWriter writer(file_path, cfg);
 
-        auto header = writer.GetLasHeader();
+        auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
         las::Points points(header.point_format_id, header.scale, header.offset);
@@ -551,7 +546,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
     {
         FileWriter writer(file_path, cfg);
 
-        auto header = writer.GetLasHeader();
+        auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
         las::Points points(header.point_format_id, header.scale, header.offset);

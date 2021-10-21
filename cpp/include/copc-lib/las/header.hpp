@@ -17,12 +17,19 @@ namespace copc
 class Box;
 namespace las
 {
-// Base class for LasHeaderConfig and LasHeader
-class LasHeaderBase
+
+class LasHeader
 {
   public:
-    LasHeaderBase() = default;
-    LasHeaderBase(const Vector3 &scale, const Vector3 &offset) : scale(scale), offset(offset){};
+    LasHeader() = default;
+    uint16_t EbByteSize() const;
+    LasHeader(int8_t point_format_id, const Vector3 &scale, const Vector3 &offset)
+        : point_format_id(point_format_id), scale(scale), offset(offset){};
+
+    static LasHeader FromLazPerf(const lazperf::header14 &header);
+    lazperf::header14 ToLazPerf() const;
+
+    std::string ToString() const;
 
     // Getters/Setters for string attributes
     void GUID(const std::string &guid)
@@ -62,7 +69,9 @@ class LasHeaderBase
     double ApplyInverseScaleY(double scaled_value) const { return (scaled_value - offset.y) / scale.y; }
     double ApplyInverseScaleZ(double scaled_value) const { return (scaled_value - offset.z) / scale.z; }
 
-    virtual std::string ToString() const;
+    int8_t point_format_id{6};
+    uint64_t point_count{};
+    uint16_t point_record_length{};
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};
@@ -80,39 +89,21 @@ class LasHeaderBase
     // # of points per return 0-14
     std::array<uint64_t, 15> points_by_return{};
 
+    uint32_t point_offset{};
+    uint32_t vlr_count{};
+
+    uint64_t evlr_offset{};
+    uint32_t evlr_count{};
+
   protected:
     std::string guid_{};
     std::string system_identifier_{};
     std::string generating_software_{};
-};
-
-// Class used to convert to and from lazperf
-class LasHeader : public LasHeaderBase
-{
-  public:
-    LasHeader() = default;
-    uint16_t EbByteSize() const;
-
-    static LasHeader FromLazPerf(const lazperf::header14 &header);
-    lazperf::header14 ToLazPerf() const;
-
-    std::string ToString() const;
-
-    // Defaults to 6
-    int8_t point_format_id{6};
 
     const uint8_t version_major{1};
     const uint8_t version_minor{4};
 
     const uint16_t header_size{375};
-    uint32_t point_offset{};
-    uint32_t vlr_count{};
-
-    uint16_t point_record_length{};
-
-    uint64_t evlr_offset{};
-    uint32_t evlr_count{};
-    uint64_t point_count{};
 };
 
 } // namespace las

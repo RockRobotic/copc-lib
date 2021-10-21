@@ -14,7 +14,7 @@ TEST_CASE("GetPointData Test", "[Reader] ")
     {
         FileReader reader("autzen-classified.copc.laz");
 
-        int record_length = reader.GetLasHeader().point_record_length;
+        int record_length = reader.CopcConfig().LasHeader().point_record_length;
 
         {
             auto key = VoxelKey(0, 0, 0, 0);

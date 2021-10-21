@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **\[Python/C++\]** Add `CopcExtent` and `CopcExtents` classes
-- **\[Python/C++\]** Add `GetCopcExtents` function to `CopcFile`
+- **\[Python/C++\]** Add `GetCopcExtents` function to `CopcConfig`
 - **\[Python/C++\]** Add `GetCopcExtents` and `SetCopcExtents` functions to `Writer`
 - **\[Python\]** Add `reader.extents` property
 - **\[Python/C++\]** Add `CopcInfo` class
@@ -30,8 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Change lazperf depency version requirement to > 2.1.0
 - **\[Python/C++\]** Update autzen-classified.copc.laz test file to COPC v1
 - **\[Python/C++\]** Change use of `las::CopcVlr::span` to `CopcInfo::spacing`
-- **\[Python/C++\]** Change `CopcFile::GetWkt` return type from `las::WktVlr` to `std::string`
-- **\[Python/C++\]** Rename `CopcFile::GetCopc` to `CopcFile::GetCopcInfo` and now returns a `CopcInfo` class
+- **\[Python/C++\]** Change `CopcConfig::GetWkt` return type from `las::WktVlr` to `std::string`
+- **\[Python/C++\]** Rename `CopcConfig::GetCopc` to `CopcConfig::GetCopcInfo` and now returns a `CopcInfo` class
 - **\[Python/C++\]** Rename `Reader::GetCopcHeader` to `Reader::GetCopcInfo` and now returns a `CopcInfo` class
 - **\[Python/C++\]** `VoxelKey::Resolution` and `VoxelKey::GetResolutionAtDepth`  now take `CopcInfo` argument instead of `las::CopcVlr`
 - **\[Python/C++\]** Remove `Writer::LasConfig`, now using `CopcConfig` instead.
@@ -39,9 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** `Writer` and `FileWriter` constructors now takes a `CopcConfig` class as argument
 - **\[Python/C++\]** Rename `NumExtraBytes` to `EbByteSize`
 - **\[Python\]** Change `reader.GetCopcHeader()` function to `reader.copc_info` property
-- **\[Python\]** Change `reader.GetLasHeader()` function to `reader.las_header` property
-- **\[Python\]** Change `reader.GetWkt()` function to `reader.wkt` property
-- **\[Python\]** Change `reader.GetExtraByteVlr()` function to `reader.extra_bytes_vlr` property
+- **\[Python\]** Change `reader.CopcConfig().LasHeader()` function to `reader.las_header` property
+- **\[Python\]** Change `reader.CopcConfig().Wkt()` function to `reader.wkt` property
+- **\[Python\]** Change `reader.CopcConfig().ExtraBytesVlr()` function to `reader.extra_bytes_vlr` property
 - **\[C++\]** Add `create_test_data.py` and `create_test_data.sh` to create data for `writer_node_test.cpp`
 - **\[Python\]** Make `VoxelKey.BaseKey` and `VoxelKey.InvalidKey` static functions
 

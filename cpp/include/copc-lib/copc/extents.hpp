@@ -136,7 +136,7 @@ class CopcExtents
     void ExtraBytes(std::vector<std::shared_ptr<CopcExtent>> extra_bytes)
     {
         if (extra_bytes.size() != (extents_.size() - las::PointBaseNumberDimensions(point_format_id_) + 3))
-            throw std::runtime_error("CopcExtents::ExtraBytes: Vector of extra byte must be the right length.");
+            throw std::runtime_error("CopcExtents::ExtraBytesVlr: Vector of extra byte must be the right length.");
         std::copy(extra_bytes.begin(), extra_bytes.end(),
                   extents_.begin() + las::PointBaseNumberDimensions(point_format_id_) - 3);
     }
