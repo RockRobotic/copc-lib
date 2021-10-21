@@ -26,7 +26,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->scale.z == 0.01);
             REQUIRE(las_header->offset.z == 0);
-            REQUIRE(las_header->point_format_id == 6);
+            REQUIRE(las_header->PointFormatID() == 6);
 
             writer.Close();
 
@@ -53,7 +53,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->file_source_id == 200);
-            REQUIRE(las_header->point_format_id == 8);
+            REQUIRE(las_header->PointFormatID() == 8);
             REQUIRE(las_header->scale.x == 2);
             REQUIRE(las_header->offset.x == -0.02);
             REQUIRE(las_header->scale.y == 3);
@@ -141,10 +141,10 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.CopcConfig().LasHeader().creation_day == orig.CopcConfig().LasHeader().creation_day);
             REQUIRE(reader.CopcConfig().LasHeader().creation_year == orig.CopcConfig().LasHeader().creation_year);
             REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
-            REQUIRE(reader.CopcConfig().LasHeader().point_format_id == orig.CopcConfig().LasHeader().point_format_id);
-            REQUIRE(reader.CopcConfig().LasHeader().point_record_length ==
-                    orig.CopcConfig().LasHeader().point_record_length);
-            REQUIRE(reader.CopcConfig().LasHeader().point_count_ == 0);
+            REQUIRE(reader.CopcConfig().LasHeader().PointFormatID() == orig.CopcConfig().LasHeader().PointFormatID());
+            REQUIRE(reader.CopcConfig().LasHeader().PointRecordLength() ==
+                    orig.CopcConfig().LasHeader().PointRecordLength());
+            REQUIRE(reader.CopcConfig().LasHeader().PointCount() == 0);
             REQUIRE(reader.CopcConfig().LasHeader().scale == reader.CopcConfig().LasHeader().scale);
             REQUIRE(reader.CopcConfig().LasHeader().offset == reader.CopcConfig().LasHeader().offset);
         }
@@ -161,7 +161,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->scale.z == 0.01);
             REQUIRE(las_header->offset.z == 0);
-            REQUIRE(las_header->point_format_id == 6);
+            REQUIRE(las_header->PointFormatID() == 6);
 
             writer.Close();
 
@@ -182,7 +182,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->file_source_id == 200);
-            REQUIRE(las_header->point_format_id == 8);
+            REQUIRE(las_header->PointFormatID() == 8);
             REQUIRE(las_header->scale.x == 2);
             REQUIRE(las_header->offset.x == -0.02);
             REQUIRE(las_header->scale.y == 3);
@@ -255,10 +255,10 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.CopcConfig().LasHeader().creation_day == orig.CopcConfig().LasHeader().creation_day);
             REQUIRE(reader.CopcConfig().LasHeader().creation_year == orig.CopcConfig().LasHeader().creation_year);
             REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
-            REQUIRE(reader.CopcConfig().LasHeader().point_format_id == orig.CopcConfig().LasHeader().point_format_id);
-            REQUIRE(reader.CopcConfig().LasHeader().point_record_length ==
-                    orig.CopcConfig().LasHeader().point_record_length);
-            REQUIRE(reader.CopcConfig().LasHeader().point_count_ == 0);
+            REQUIRE(reader.CopcConfig().LasHeader().PointFormatID() == orig.CopcConfig().LasHeader().PointFormatID());
+            REQUIRE(reader.CopcConfig().LasHeader().PointRecordLength() ==
+                    orig.CopcConfig().LasHeader().PointRecordLength());
+            REQUIRE(reader.CopcConfig().LasHeader().PointCount() == 0);
             REQUIRE(reader.CopcConfig().LasHeader().scale == reader.CopcConfig().LasHeader().scale);
             REQUIRE(reader.CopcConfig().LasHeader().offset == reader.CopcConfig().LasHeader().offset);
         }
@@ -365,7 +365,7 @@ TEST_CASE("Writer EBs", "[Writer]")
         CopcConfigWriter cfg(7, {}, {}, {}, eb_vlr);
         Writer writer(out_stream, cfg);
 
-        REQUIRE(writer.CopcConfig()->LasHeader()->point_record_length == 40); // 36 + 4
+        REQUIRE(writer.CopcConfig()->LasHeader()->PointRecordLength() == 40); // 36 + 4
 
         writer.Close();
 
@@ -378,7 +378,7 @@ TEST_CASE("Writer EBs", "[Writer]")
         REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].minval[2] == 0);
         REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].offset[2] == 0);
         REQUIRE(reader.CopcConfig().ExtraBytesVlr().items[0].scale[2] == 0);
-        REQUIRE(reader.CopcConfig().LasHeader().point_record_length == 40);
+        REQUIRE(reader.CopcConfig().LasHeader().PointRecordLength() == 40);
     }
 
     SECTION("Data type 29")
@@ -389,13 +389,13 @@ TEST_CASE("Writer EBs", "[Writer]")
         CopcConfigWriter cfg(7, {}, {}, {}, eb_vlr);
         Writer writer(out_stream, cfg);
 
-        REQUIRE(writer.CopcConfig()->LasHeader()->point_record_length == 48); // 36 + 12
+        REQUIRE(writer.CopcConfig()->LasHeader()->PointRecordLength() == 48); // 36 + 12
 
         writer.Close();
 
         Reader reader(&out_stream);
         REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() == 1);
-        REQUIRE(reader.CopcConfig().LasHeader().point_record_length == 48);
+        REQUIRE(reader.CopcConfig().LasHeader().PointRecordLength() == 48);
     }
 }
 TEST_CASE("Writer Copy", "[Writer]")
@@ -410,13 +410,13 @@ TEST_CASE("Writer Copy", "[Writer]")
 
         Writer writer(out_stream, cfg);
 
-        REQUIRE(writer.CopcConfig()->LasHeader()->point_record_length == 36);
+        REQUIRE(writer.CopcConfig()->LasHeader()->PointRecordLength() == 36);
 
         writer.Close();
 
         Reader new_reader(&out_stream);
-        REQUIRE(new_reader.CopcConfig().LasHeader().point_record_length ==
-                reader.CopcConfig().LasHeader().point_record_length);
+        REQUIRE(new_reader.CopcConfig().LasHeader().PointRecordLength() ==
+                reader.CopcConfig().LasHeader().PointRecordLength());
         REQUIRE(new_reader.CopcConfig().CopcInfo().spacing == reader.CopcConfig().CopcInfo().spacing);
         REQUIRE(new_reader.CopcConfig().CopcExtents().Intensity()->minimum ==
                 reader.CopcConfig().CopcExtents().Intensity()->minimum);
@@ -480,7 +480,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.point_format_id, header.scale, header.offset);
+        las::Points points(header.PointFormatID(), header.scale, header.offset);
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -503,7 +503,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.point_format_id, header.scale, header.offset);
+        las::Points points(header.PointFormatID(), header.scale, header.offset);
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -526,7 +526,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.point_format_id, header.scale, header.offset);
+        las::Points points(header.PointFormatID(), header.scale, header.offset);
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -549,7 +549,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.point_format_id, header.scale, header.offset);
+        las::Points points(header.PointFormatID(), header.scale, header.offset);
 
         auto point = points.CreatePoint();
         point->X(0.1);

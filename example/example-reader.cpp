@@ -12,8 +12,8 @@ void ReaderExample()
     // Get the Las Header
     auto las_header = reader.CopcConfig().LasHeader();
     cout << endl << "Las Header:" << endl;
-    cout << "\tPoint Format: " << (int)las_header.point_format_id << endl
-         << "\tPoint Count: " << (int)las_header.point_count_ << endl;
+    cout << "\tPoint Format: " << (int)las_header.PointFormatID() << endl
+         << "\tPoint Count: " << (int)las_header.PointCount() << endl;
 
     // We can get the CopcInfo struct
     auto copc_info = reader.CopcConfig().CopcInfo();
@@ -72,7 +72,7 @@ void ReaderExample()
             copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, num_points_to_decompress);
 
         cout << endl
-             << "Successfully decompressed " << uncompressed_data.size() / las_header.point_record_length << "points!"
+             << "Successfully decompressed " << uncompressed_data.size() / las_header.PointRecordLength() << "points!"
              << endl;
     }
 }

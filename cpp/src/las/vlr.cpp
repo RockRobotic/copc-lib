@@ -3,6 +3,9 @@
 namespace copc::las
 {
 
+uint8_t EXTRA_BYTE_DATA_TYPE[31]{0, 1,  1,  2, 2,  4, 4, 8, 8, 4,  8,  2,  2,  4,  4, 8,
+                                 8, 16, 16, 8, 16, 3, 3, 6, 6, 12, 12, 24, 24, 12, 24};
+
 int NumBytesFromExtraBytes(const std::vector<EbVlr::ebfield> &items)
 {
     int out = 0;

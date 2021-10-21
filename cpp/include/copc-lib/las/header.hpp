@@ -26,6 +26,12 @@ class LasHeader
     LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset)
         : point_format_id_(point_format_id), point_record_length_{point_record_length}, scale(scale), offset(offset){};
 
+    // Constructor for python pickling
+    LasHeader(int8_t point_format_id, uint16_t point_record_length, uint32_t point_offset, uint64_t point_count,
+              uint32_t vlr_count, uint64_t evlr_offset, uint32_t evlr_count)
+        : point_format_id_(point_format_id), point_record_length_(point_record_length), point_offset_(point_offset),
+          point_count_(point_count), vlr_count_(vlr_count), evlr_offset_(evlr_offset), evlr_count_(evlr_count){};
+
     static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset, uint32_t evlr_count,
                                 bool eb_flag) const;
@@ -36,6 +42,11 @@ class LasHeader
 
     uint8_t PointFormatID() const { return point_format_id_; }
     uint16_t PointRecordLength() const { return point_record_length_; }
+    uint64_t PointCount() const { return point_count_; }
+    uint32_t PointOffset() const { return point_offset_; }
+    uint32_t VlrCount() const { return vlr_count_; }
+    uint32_t EvlrCount() const { return evlr_count_; }
+    uint64_t EvlrOffset() const { return evlr_offset_; }
 
     void GUID(const std::string &guid)
     {
@@ -94,7 +105,7 @@ class LasHeader
     int8_t point_format_id_{6};
     uint16_t point_record_length_{};
 
-    uint32_t point_count_{};
+    uint64_t point_count_{};
     uint32_t point_offset_{};
     uint32_t vlr_count_{};
 

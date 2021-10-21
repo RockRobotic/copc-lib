@@ -17,9 +17,9 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetHeader Test")
         {
             auto header = reader.CopcConfig().LasHeader();
-            REQUIRE(header.point_format_id == 7);
-            REQUIRE(header.point_count_ == 10653336);
-            REQUIRE(header.point_record_length == 36);
+            REQUIRE(header.PointFormatID() == 7);
+            REQUIRE(header.PointCount() == 10653336);
+            REQUIRE(header.PointRecordLength() == 36);
             REQUIRE(header.EbByteSize() == 0);
         }
 
@@ -99,8 +99,8 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetHeader Test")
         {
             auto header = reader.CopcConfig().LasHeader();
-            REQUIRE(header.point_format_id == 7);
-            REQUIRE(header.point_count_ == 10653336);
+            REQUIRE(header.PointFormatID() == 7);
+            REQUIRE(header.PointCount() == 10653336);
         }
 
         SECTION("WKT")
