@@ -15,14 +15,14 @@ void ReaderExample()
     cout << "\tPoint Format: " << (int)las_header.PointFormatID() << endl
          << "\tPoint Count: " << (int)las_header.PointCount() << endl;
 
-    // We can get the CopcInfo struct
+    // Get the CopcInfo struct
     auto copc_info = reader.CopcConfig().CopcInfo();
     cout << "Copc Info: " << endl;
     cout << "\tSpacing: " << copc_info.spacing << endl
          << "\tRoot Offset: " << copc_info.root_hier_offset << endl
          << "\tRoot Size: " << copc_info.root_hier_size << endl;
 
-    // We can get the CopcInfo struct
+    // Get the CopcInfo struct
     auto copc_extents = reader.CopcConfig().CopcExtents();
     cout << "Copc Extents (Min/Max): " << endl;
     cout << "\tIntensity : (" << copc_extents.Intensity()->minimum << "/" << copc_extents.Intensity()->maximum << ")"
@@ -30,6 +30,9 @@ void ReaderExample()
          << "\tClassification : (" << copc_extents.Classification()->minimum << "/"
          << copc_extents.Classification()->maximum << ")" << endl
          << "\tGpsTime : (" << copc_extents.GpsTime()->minimum << "/" << copc_extents.GpsTime()->maximum << ")" << endl;
+
+    // Get the WKT string
+    cout << "WKT: " << reader.CopcConfig().Wkt() << endl;
 
     cout << endl;
 

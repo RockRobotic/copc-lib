@@ -26,10 +26,10 @@ def test_copc_extents():
     file_path = "writer_test.copc.laz"
 
     eb_vlr = copc.EbVlr(num_eb_items)
-    cfg = copc.CopcConfig(point_format_id, extra_bytes_vlr=eb_vlr)
+    cfg = copc.CopcConfigWriter(point_format_id, extra_bytes_vlr=eb_vlr)
     writer = copc.FileWriter(file_path, cfg)
 
-    extents = writer.copc_extents
+    extents = writer.copc_config.copc_extents
     assert extents.point_format_id == 7
     assert len(extents.extra_bytes) == 3
 
@@ -37,7 +37,7 @@ def test_copc_extents():
 
     reader = copc.FileReader(file_path)
 
-    extents = reader.copc_extents
+    extents = reader.copc_config.copc_extents
 
     assert extents.point_format_id == 7
     assert len(extents.extra_bytes) == 3
@@ -52,7 +52,7 @@ def test_copc_extents():
     #### Set Extents ####
     writer = copc.FileWriter(file_path, cfg)
 
-    extents = writer.copc_extents
+    extents = writer.copc_config.copc_extents
 
     extents.classification.minimum = -float_info.max
     extents.classification.maximum = float_info.max
@@ -62,13 +62,11 @@ def test_copc_extents():
     extents.extra_bytes[0].minimum = -float_info.max
     extents.extra_bytes[0].maximum = float_info.max
 
-    writer.copc_extents = extents
-
     writer.Close()
 
     reader = copc.FileReader(file_path)
 
-    extents = reader.copc_extents
+    extents = reader.copc_config.copc_extents
 
     assert extents.classification.minimum == -float_info.max
     assert extents.classification.maximum == float_info.max
@@ -81,7 +79,7 @@ def test_copc_extents():
 
     #### Extra byte list setter ####
     writer = copc.FileWriter(file_path, cfg)
-    extents = writer.copc_extents
+    extents = writer.copc_config.copc_extents
 
     with pytest.raises(RuntimeError):
         extents.extra_bytes = [(0, 1), (2, 3)]
@@ -89,13 +87,11 @@ def test_copc_extents():
 
     extents.extra_bytes = [(0, 1), (2, 3), (4, 5)]
 
-    writer.copc_extents = extents
-
     writer.Close()
 
     reader = copc.FileReader(file_path)
 
-    extents = reader.copc_extents
+    extents = reader.copc_config.copc_extents
 
     assert extents.extra_bytes[0].minimum == 0
     assert extents.extra_bytes[0].maximum == 1

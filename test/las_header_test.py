@@ -4,7 +4,7 @@ import copclib as copc
 
 def test_get_bounds():
     reader = copc.FileReader("autzen-classified.copc.laz")
-    las_header = reader.las_header
+    las_header = reader.copc_config.las_header
     box = las_header.GetBounds()
     assert box.x_min == las_header.min.x
     assert box.y_min == las_header.min.y

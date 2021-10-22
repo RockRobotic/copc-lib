@@ -277,7 +277,7 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("PointRecordLength", &las::Point::PointRecordLength)
         .def_property_readonly("EbByteSize", &las::Point::EbByteSize)
 
-        .def_property("ExtraBytesVlr", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
+        .def_property("ExtraBytes", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Point::ExtraBytes))
 
         .def(py::self == py::self)
@@ -414,7 +414,7 @@ PYBIND11_MODULE(copclib, m)
         .def("ValidateSpatialBounds", &Reader::ValidateSpatialBounds, py::arg("verbose") = false);
 
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, CopcConfig const &>(), py::arg("file_path"), py::arg("config"))
+        .def(py::init<const std::string &, CopcConfigWriter const &>(), py::arg("file_path"), py::arg("config"))
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
         .def("GetRootPage", &Writer::GetRootPage)
@@ -441,7 +441,7 @@ PYBIND11_MODULE(copclib, m)
               &laz::Decompressor::DecompressBytes),
           py::arg("compressed_data"), py::arg("point_format_id"), py::arg("eb_byte_size"), py::arg("point_count"));
 
-    py::class_<las::LasHeader>(m, "LasHeader")
+    py::class_<las::LasHeader, std::shared_ptr<las::LasHeader>>(m, "LasHeader")
         .def(py::init<>())
         .def_property_readonly("eb_byte_size", &las::LasHeader::EbByteSize)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
@@ -513,10 +513,11 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<las::EbVlr::ebfield>(m, "EbField").def(py::init<>());
 
-    py::class_<CopcConfig>(m, "CopcConfig")
+    py::class_<CopcConfig, std::shared_ptr<CopcConfig>>(m, "CopcConfig")
         .def_property_readonly("las_header", &CopcConfig::LasHeader)
         .def_property_readonly("copc_info", &CopcConfig::CopcInfo)
         .def_property_readonly("copc_extents", &CopcConfig::CopcExtents)
+        .def_property_readonly("extra_bytes_vlr", &CopcConfig::ExtraBytesVlr)
         .def_property_readonly("wkt", &CopcConfig::Wkt);
 
     py::class_<CopcConfigWriter, std::shared_ptr<CopcConfigWriter>>(m, "CopcConfigWriter")
@@ -524,10 +525,14 @@ PYBIND11_MODULE(copclib, m)
              py::arg("point_format_id"), py::arg("scale") = Vector3::DefaultScale(),
              py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
              py::arg("extra_bytes_vlr") = las::EbVlr(0))
+        .def(py::init<const CopcConfig &>())
         .def_property_readonly("las_header", &CopcConfigWriter::LasHeader)
         .def_property_readonly("copc_info", &CopcConfigWriter::CopcInfo)
         .def_property_readonly("copc_extents", &CopcConfigWriter::CopcExtents)
-        .def_property_readonly("wkt", &CopcConfigWriter::Wkt);
+        .def_property_readonly("extra_bytes_vlr", &CopcConfig::ExtraBytesVlr)
+        .def_property_readonly("wkt", &CopcConfig::Wkt);
+
+    py::implicitly_convertible<CopcConfig, CopcConfigWriter>();
 
     py::class_<CopcInfo, std::shared_ptr<CopcInfo>>(m, "CopcInfo")
         .def(py::init<>())
