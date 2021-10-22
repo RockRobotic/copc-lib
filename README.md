@@ -149,16 +149,13 @@ private_read_only_(private_read_only){};
 
 int public_variable{};
 
-// Simple Getters and Setters
+// Getters and Setters
 void PrivateVariable(const int &private_variable) { private_variable_ = private_variable; }
 int PrivateVariable() const { return private_variable_; }
-
 bool PrivateReadOnly() const { return private_read_only_; }
 
-// Other getter-life functions
-int PrivateVariablePlusOne() { return private_variable_ + 1; }
-
 // Any other function
+int PrivateVariablePlusOne() { return private_variable_ + 1; }
 int SumPublicAndPrivate() const { return public_variable + private_variable_; }
 static std::string ReturnEmptyString() { return {}; }
 
