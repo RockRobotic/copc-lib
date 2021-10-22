@@ -137,6 +137,13 @@ def test_writer_config():
 
     cfg = orig.copc_config
     writer = copc.FileWriter(file_path, cfg)
+
+    writer.copc_config.las_header.scale = (1, 1, 1)
+    writer.copc_config.las_header.offset = (50, 50, 50)
+
+    assert writer.copc_config.las_header.scale == (1, 1, 1)
+    assert writer.copc_config.las_header.offset == (50, 50, 50)
+
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -169,8 +176,8 @@ def test_writer_config():
         == orig.copc_config.las_header.point_record_length
     )
     assert reader.copc_config.las_header.point_count == 0
-    assert reader.copc_config.las_header.scale == reader.copc_config.las_header.scale
-    assert reader.copc_config.las_header.offset == reader.copc_config.las_header.offset
+    assert reader.copc_config.las_header.scale == (1, 1, 1)
+    assert reader.copc_config.las_header.offset == (50, 50, 50)
 
     # Update
     min1 = (-800, 300, 800)
