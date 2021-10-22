@@ -155,7 +155,7 @@ int PrivateVariable() const { return private_variable_; }
 bool PrivateReadOnly() const { return private_read_only_; }
 
 // Any other function
-int PrivateVariablePlusOne() { return private_variable_ + 1; }
+int PrivateVariablePlusOne() const { return private_variable_ + 1; }
 int SumPublicAndPrivate() const { return public_variable + private_variable_; }
 static std::string ReturnEmptyString() { return {}; }
 
