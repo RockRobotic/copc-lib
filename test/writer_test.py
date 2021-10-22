@@ -117,7 +117,15 @@ def test_writer_config():
     orig = copc.FileReader("autzen-classified.copc.laz")
 
     cfg = orig.GetCopcConfig()
+
+    cfg.las_header_base.scale = (1, 1, 1)
+    cfg.las_header_base.offset = (50, 50, 50)
+
     writer = copc.FileWriter(file_path, cfg)
+
+    assert writer.las_header.scale == (1, 1, 1)
+    assert writer.las_header.offset == (50, 50, 50)
+
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -129,8 +137,8 @@ def test_writer_config():
     assert reader.las_header.point_format_id == orig.las_header.point_format_id
     assert reader.las_header.point_record_length == orig.las_header.point_record_length
     assert reader.las_header.point_count == 0
-    assert reader.las_header.scale == reader.las_header.scale
-    assert reader.las_header.offset == reader.las_header.offset
+    assert reader.las_header.scale == (1, 1, 1)
+    assert reader.las_header.offset == (50, 50, 50)
 
     # Update
     min1 = (-800, 300, 800)
