@@ -150,7 +150,7 @@ private_read_only_(private_read_only){};
 int public_variable{};
 
 // Getters and Setters
-void PrivateVariable(const int &private_variable) { private_variable_ = private_variable; }
+void PrivateVariable(int private_variable) { private_variable_ = private_variable; }
 int PrivateVariable() const { return private_variable_; }
 bool PrivateReadOnly() const { return private_read_only_; }
 
