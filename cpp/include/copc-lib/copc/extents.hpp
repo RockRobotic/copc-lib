@@ -4,13 +4,15 @@
 #include <string>
 #include <vector>
 
+#include <lazperf/vlr.hpp>
+
 #include "copc-lib/las/utils.hpp"
 #include "copc-lib/las/vlr.hpp"
 
 namespace copc
 {
 
-class CopcExtent : public las::CopcExtentsVlr::CopcExtent
+class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
 {
   public:
     CopcExtent();
@@ -20,9 +22,6 @@ class CopcExtent : public las::CopcExtentsVlr::CopcExtent
     CopcExtent(const std::vector<double> &vec);
 
     CopcExtent(const las::CopcExtentsVlr::CopcExtent &other);
-
-    // Convert to lazperf CopcExtent
-    las::CopcExtentsVlr::CopcExtent ToLazPerf() const { return {minimum, maximum}; }
 
     std::string ToString() const;
 };
@@ -38,6 +37,12 @@ class CopcExtents
 
     // Getters
     int8_t PointFormatID() const { return point_format_id_; }
+
+    static uint8_t PointBaseNumberExtents(int8_t point_format_id)
+    {
+        return las::PointBaseNumberDimensions(point_format_id) - 3;
+    } // Disregard x,y,z since they are automatically populated
+
     // Get all extents as a vector
     std::vector<std::shared_ptr<CopcExtent>> Extents() { return extents_; }
 
@@ -135,10 +140,9 @@ class CopcExtents
 
     void ExtraBytes(std::vector<std::shared_ptr<CopcExtent>> extra_bytes)
     {
-        if (extra_bytes.size() != (extents_.size() - las::PointBaseNumberDimensions(point_format_id_) + 3))
-            throw std::runtime_error("CopcExtents::ExtraBytes: Vector of extra byte must be the right length.");
-        std::copy(extra_bytes.begin(), extra_bytes.end(),
-                  extents_.begin() + las::PointBaseNumberDimensions(point_format_id_) - 3);
+        if (extra_bytes.size() != (extents_.size() - PointBaseNumberExtents(point_format_id_)))
+            throw std::runtime_error("CopcExtents::ExtraBytesVlr: Vector of extra byte must be the right length.");
+        std::copy(extra_bytes.begin(), extra_bytes.end(), extents_.begin() + PointBaseNumberExtents(point_format_id_));
     }
 
     // Set all extents as a vector
@@ -150,9 +154,7 @@ class CopcExtents
     }
 
     // Convert to lazperf vlr
-    las::CopcExtentsVlr ToCopcExtentsVlr(const CopcExtent &x, const CopcExtent &y, const CopcExtent &z) const;
-
-    // Set all extents from vector
+    las::CopcExtentsVlr ToLazPerf(const CopcExtent &x, const CopcExtent &y, const CopcExtent &z) const;
 
     // Return the total number of extents
     static int NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items);

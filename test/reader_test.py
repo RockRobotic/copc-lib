@@ -7,15 +7,15 @@ def test_reader():
     # Given a valid file path
     reader = copc.FileReader("autzen-classified.copc.laz")
 
-    # GetLasHeader Test
-    header = reader.las_header
+    # LasHeader Test
+    header = reader.copc_config.las_header
     assert header.point_format_id == 7
     assert header.point_count == 10653336
     assert header.point_record_length == 36
     assert header.eb_byte_size == 0
 
     # GetCopcInfo Test
-    copc_info = reader.copc_info
+    copc_info = reader.copc_config.copc_info
     assert copc_info.center_x == pytest.approx(637905.5448, 0.0001)
     assert copc_info.center_y == pytest.approx(851209.9048, 0.0001)
     assert copc_info.center_z == pytest.approx(2733.8948, 0.0001)
@@ -25,7 +25,7 @@ def test_reader():
     assert copc_info.root_hier_size == 8896
 
     # GetCopcExtents Test
-    copc_extents = reader.copc_extents
+    copc_extents = reader.copc_config.copc_extents
     assert copc_extents.intensity.minimum == pytest.approx(0, 0.0001)
     assert copc_extents.intensity.maximum == pytest.approx(254, 0.0001)
     assert copc_extents.return_number.minimum == pytest.approx(1, 0.0001)
@@ -59,7 +59,7 @@ def test_reader():
     assert len(copc_extents.extra_bytes) == 0
 
     # WKT Test
-    wkt = reader.wkt
+    wkt = reader.copc_config.wkt
     assert len(wkt) == 0
 
 
@@ -140,7 +140,7 @@ def test_spatial_query_functions():
     reader = copc.FileReader("autzen-classified.copc.laz")
 
     # Make horizontal 2D box of [400,400] roughly in the middle of the point cloud.
-    middle = (reader.las_header.max + reader.las_header.min) / 2
+    middle = (reader.copc_config.las_header.max + reader.copc_config.las_header.min) / 2
     middle_box = (middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200)
 
     # GetNodesWithinBox

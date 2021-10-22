@@ -17,14 +17,37 @@ namespace copc
 class Box;
 namespace las
 {
-// Base class for LasHeaderConfig and LasHeader
-class LasHeaderBase
+
+class LasHeader
 {
   public:
-    LasHeaderBase() = default;
-    LasHeaderBase(const Vector3 &scale, const Vector3 &offset) : scale(scale), offset(offset){};
+    LasHeader() = default;
+    uint16_t EbByteSize() const;
+    LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset)
+        : point_format_id_(point_format_id), point_record_length_{point_record_length}, scale(scale), offset(offset){};
 
-    // Getters/Setters for string attributes
+    // Constructor for python pickling
+    LasHeader(int8_t point_format_id, uint16_t point_record_length, uint32_t point_offset, uint64_t point_count,
+              uint32_t vlr_count, uint64_t evlr_offset, uint32_t evlr_count)
+        : point_format_id_(point_format_id), point_record_length_(point_record_length), point_offset_(point_offset),
+          point_count_(point_count), vlr_count_(vlr_count), evlr_offset_(evlr_offset), evlr_count_(evlr_count){};
+
+    static LasHeader FromLazPerf(const lazperf::header14 &header);
+    lazperf::header14 ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset, uint32_t evlr_count,
+                                bool eb_flag) const;
+
+    std::string ToString() const;
+
+    // Getters/Setters for protected attributes
+
+    uint8_t PointFormatID() const { return point_format_id_; }
+    uint16_t PointRecordLength() const { return point_record_length_; }
+    uint64_t PointCount() const { return point_count_; }
+    uint32_t PointOffset() const { return point_offset_; }
+    uint32_t VlrCount() const { return vlr_count_; }
+    uint32_t EvlrCount() const { return evlr_count_; }
+    uint64_t EvlrOffset() const { return evlr_offset_; }
+
     void GUID(const std::string &guid)
     {
         if (guid.size() > 16)
@@ -62,8 +85,6 @@ class LasHeaderBase
     double ApplyInverseScaleY(double scaled_value) const { return (scaled_value - offset.y) / scale.y; }
     double ApplyInverseScaleZ(double scaled_value) const { return (scaled_value - offset.z) / scale.z; }
 
-    virtual std::string ToString() const;
-
     uint16_t file_source_id{};
     uint16_t global_encoding{};
 
@@ -81,38 +102,24 @@ class LasHeaderBase
     std::array<uint64_t, 15> points_by_return{};
 
   protected:
+    int8_t point_format_id_{6};
+    uint16_t point_record_length_{};
+
+    uint64_t point_count_{};
+    uint32_t point_offset_{};
+    uint32_t vlr_count_{};
+
+    uint64_t evlr_offset_{};
+    uint32_t evlr_count_{};
+
     std::string guid_{};
     std::string system_identifier_{};
     std::string generating_software_{};
-};
 
-// Class used to convert to and from lazperf
-class LasHeader : public LasHeaderBase
-{
-  public:
-    LasHeader() = default;
-    uint16_t EbByteSize() const;
+    const uint8_t version_major_{1};
+    const uint8_t version_minor_{4};
 
-    static LasHeader FromLazPerf(const lazperf::header14 &header);
-    lazperf::header14 ToLazPerf() const;
-
-    std::string ToString() const;
-
-    // Defaults to 6
-    int8_t point_format_id{6};
-
-    const uint8_t version_major{1};
-    const uint8_t version_minor{4};
-
-    const uint16_t header_size{375};
-    uint32_t point_offset{};
-    uint32_t vlr_count{};
-
-    uint16_t point_record_length{};
-
-    uint64_t evlr_offset{};
-    uint32_t evlr_count{};
-    uint64_t point_count{};
+    const uint16_t header_size_{375};
 };
 
 } // namespace las

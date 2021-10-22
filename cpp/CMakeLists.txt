@@ -4,18 +4,16 @@ set(LIBRARY_TARGET_NAME copc-lib)
 set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/copc/info.hpp
         include/${LIBRARY_TARGET_NAME}/copc/extents.hpp
-        include/${LIBRARY_TARGET_NAME}/copc/file.hpp
+        include/${LIBRARY_TARGET_NAME}/copc/config.hpp
         include/${LIBRARY_TARGET_NAME}/geometry/box.hpp
         include/${LIBRARY_TARGET_NAME}/geometry/vector3.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/entry.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/key.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/node.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/page.hpp
-        include/${LIBRARY_TARGET_NAME}/io/copc_config.hpp
         include/${LIBRARY_TARGET_NAME}/io/base_io.hpp
         include/${LIBRARY_TARGET_NAME}/io/reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/writer.hpp
-        include/${LIBRARY_TARGET_NAME}/las/file.hpp
         include/${LIBRARY_TARGET_NAME}/las/header.hpp
         include/${LIBRARY_TARGET_NAME}/las/point.hpp
         include/${LIBRARY_TARGET_NAME}/las/points.hpp
@@ -32,10 +30,10 @@ set(${LIBRARY_TARGET_NAME}_SRC
         include/${LIBRARY_TARGET_NAME}/io/internal/writer_internal.hpp
         src/copc/info.cpp
         src/copc/extents.cpp
+        src/copc/config.cpp
         src/geometry/box.cpp
         src/hierarchy/key.cpp
         src/hierarchy/page.cpp
-        src/io/copc_config.cpp
         src/io/base_io.cpp
         src/io/reader.cpp
         src/io/writer_internal.cpp

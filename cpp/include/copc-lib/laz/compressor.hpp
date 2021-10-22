@@ -44,7 +44,7 @@ class Compressor
 
     static uint32_t CompressBytes(std::ostream &out_stream, las::LasHeader const &header, std::vector<char> &in)
     {
-        return CompressBytes(out_stream, header.point_format_id, header.EbByteSize(), in);
+        return CompressBytes(out_stream, header.PointFormatID(), header.EbByteSize(), in);
     }
 
     static std::vector<char> CompressBytes(std::vector<char> &in, const int8_t &point_format_id,
@@ -58,7 +58,7 @@ class Compressor
 
     static std::vector<char> CompressBytes(std::vector<char> &in, const las::LasHeader &header)
     {
-        return CompressBytes(in, header.point_format_id, header.EbByteSize());
+        return CompressBytes(in, header.PointFormatID(), header.EbByteSize());
     }
 };
 } // namespace copc::laz

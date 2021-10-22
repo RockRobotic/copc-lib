@@ -3,7 +3,7 @@
 
 #include <ostream>
 
-#include "copc-lib/copc/file.hpp"
+#include "copc-lib/copc/config.hpp"
 #include "copc-lib/io/base_io.hpp"
 #include "copc-lib/las/header.hpp"
 
@@ -19,7 +19,7 @@ class WriterInternal
     // 8 bytes for the chunk table offset
     uint64_t FIRST_CHUNK_OFFSET() const { return OFFSET_TO_POINT_DATA + sizeof(uint64_t); };
 
-    WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcFile> &file,
+    WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> file,
                    std::shared_ptr<Hierarchy> hierarchy);
 
     // Writes the header and COPC vlrs
@@ -36,15 +36,17 @@ class WriterInternal
     bool open_;
 
     std::ostream &out_stream_;
-    std::shared_ptr<CopcFile> file_;
+    std::shared_ptr<CopcConfigWriter> copc_file_writer_;
     std::shared_ptr<Hierarchy> hierarchy_;
 
     std::vector<lazperf::chunk> chunks_;
-    uint64_t point_count_ = 0;
+    uint64_t point_count_{};
+    uint64_t evlr_offset_{};
+    uint32_t evlr_count_{};
 
     void ComputeOffsetToPointData();
 
-    void WriteHeader(las::LasHeader &header);
+    void WriteHeader();
     void WriteChunkTable();
     void WritePage(const std::shared_ptr<PageInternal> &page);
 

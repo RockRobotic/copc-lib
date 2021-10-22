@@ -11,7 +11,7 @@ def TrimFileExample(compressor_example_flag):
     reader = copc.FileReader("autzen-classified.copc.laz")
 
     # Copy the header to the new file
-    cfg = reader.GetCopcConfig()
+    cfg = reader.copc_config
 
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-trimmed.copc.laz", cfg)
@@ -38,10 +38,9 @@ def TrimFileExample(compressor_example_flag):
         # (for example, compress multiple nodes in parallel and have one thread writing the data),
         # we can use the Compressor class:
         else:
-            header = writer.las_header
             uncompressed_points = reader.GetPointData(node)
             compressed_points = copc.CompressBytes(
-                uncompressed_points, writer.las_header
+                uncompressed_points, writer.copc_config.las_header
             )
             writer.AddNodeCompressed(
                 root_page, node.key, compressed_points, node.point_count
@@ -61,10 +60,9 @@ def TrimFileExample(compressor_example_flag):
         # Similarly, we could retrieve the compressed node data from the file
         # and decompress it later using the Decompressor class
         if compressor_example_flag:
-            header = writer.las_header
             compressed_points = reader.GetPointDataCompressed(node.key)
             uncompressed_points = copc.DecompressBytes(
-                compressed_points, header, node.point_count
+                compressed_points, writer.copc_config.las_header, node.point_count
             )
     reader.Close()
     new_reader.Close()
@@ -74,13 +72,13 @@ def TrimFileExample(compressor_example_flag):
 def BoundsTrimFileExample():
     # We'll get our point data from this file
     reader = copc.FileReader("autzen-classified.copc.laz")
-    old_header = reader.las_header
+    old_header = reader.copc_config.las_header
 
     middle = (old_header.max + old_header.min) / 2
     box = copc.Box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200)
 
     # Copy the header to the new file
-    cfg = reader.GetCopcConfig()
+    cfg = reader.copc_config
 
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-bounds-trimmed.copc.laz", cfg)
@@ -118,18 +116,20 @@ def BoundsTrimFileExample():
 def ResolutionTrimFileExample():
     # We'll get our point data from this file
     reader = copc.FileReader("autzen-classified.copc.laz")
-    old_header = reader.las_header
+    old_header = reader.copc_config.las_header
 
     resolution = 10
     target_depth = reader.GetDepthAtResolution(resolution)
     # Check that the resolution of the target depth is equal or smaller to the requested resolution
     assert (
-        copc.VoxelKey.GetResolutionAtDepth(target_depth, old_header, reader.copc_info)
+        copc.VoxelKey.GetResolutionAtDepth(
+            target_depth, old_header, reader.copc_config.copc_info
+        )
         <= resolution
     )
 
     # Copy the header to the new file
-    cfg = reader.GetCopcConfig()
+    cfg = reader.copc_config
 
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-resolution-trimmed.copc.laz", cfg)
@@ -152,8 +152,8 @@ def ResolutionTrimFileExample():
     # Now, let's test our new file
     new_reader = copc.FileReader("autzen-resolution-trimmed.copc.laz")
 
-    new_header = new_reader.las_header
-    new_copc_info = new_reader.copc_info
+    new_header = new_reader.copc_config.las_header
+    new_copc_info = new_reader.copc_config.copc_info
 
     # Let's go through each node we've written and make sure the resolution is correct
     for node in new_reader.GetAllChildren():
@@ -231,18 +231,17 @@ def RandomPoints(key, las_header, number_points):
 def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
-    cfg = copc.CopcConfig(8, [0.1, 0.1, 0.1], [50, 50, 50])
+    cfg = copc.CopcConfigWriter(8, [0.1, 0.1, 0.1], [50, 50, 50], "TEST_WKT")
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
-    cfg.las_header_base.min = MIN_BOUNDS
-    cfg.las_header_base.max = MAX_BOUNDS
+    cfg.las_header.min = MIN_BOUNDS
+    cfg.las_header.max = MAX_BOUNDS
 
     cfg.copc_info.spacing = 10
-    cfg.wkt = "TEST_WKT"
 
     # Now, we can create our COPC writer:
     writer = copc.FileWriter("new-copc.copc.laz", cfg)
-    header = writer.las_header
+    header = writer.copc_config.las_header
 
     # The root page is automatically created
     root_page = writer.GetRootPage()

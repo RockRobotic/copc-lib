@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "copc-lib/copc/file.hpp"
+#include "copc-lib/copc/config.hpp"
 #include "copc-lib/geometry/box.hpp"
 #include "copc-lib/io/base_io.hpp"
 #include "copc-lib/las/header.hpp"
@@ -24,7 +24,10 @@ class WriterInternal;
 class Writer : public BaseIO
 {
   public:
-    Writer(std::ostream &out_stream, CopcConfig const &config) { InitWriter(out_stream, config); }
+    Writer(std::ostream &out_stream, CopcConfigWriter const &copc_file_writer)
+    {
+        InitWriter(out_stream, copc_file_writer);
+    }
 
     Page GetRootPage();
 
@@ -39,20 +42,14 @@ class Writer : public BaseIO
     // Adds a subpage to a given page
     Page AddSubPage(Page &page, VoxelKey key);
 
-    // Update file internals
-    void SetMin(const Vector3 &min) { this->file_->SetMin(min); }
-    void SetMax(const Vector3 &max) { this->file_->SetMax(max); }
-    void SetPointsByReturn(const std::array<uint64_t, 15> &points_by_return_14)
-    {
-        this->file_->SetPointsByReturn(points_by_return_14);
-    }
-    void SetCopcExtents(const CopcExtents &extents) { this->file_->SetCopcExtents(extents); }
-    void SetCopcInfo(const CopcInfo &info) { this->file_->SetCopcInfo(info); }
+    std::shared_ptr<CopcConfigWriter> CopcConfig() { return config_; }
 
     virtual ~Writer();
 
   protected:
     Writer() = default;
+
+    std::shared_ptr<CopcConfigWriter> config_;
 
     std::shared_ptr<Internal::WriterInternal> writer_;
 
@@ -63,9 +60,7 @@ class Writer : public BaseIO
     };
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitWriter(std::ostream &out_stream, CopcConfig const &config);
-    // Converts the LasHeaderConfig object into an actual LasHeader
-    static las::LasHeader HeaderFromConfig(CopcConfig const &config);
+    void InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
     static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
@@ -73,13 +68,13 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, CopcConfig const &config)
+    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_file_writer)
     {
 
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
         if (!f_stream_.good())
             throw std::runtime_error("FileWriter: Error while opening file path.");
-        InitWriter(f_stream_, config);
+        InitWriter(f_stream_, copc_file_writer);
     }
 
     void Close() override;

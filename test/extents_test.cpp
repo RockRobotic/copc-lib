@@ -42,74 +42,76 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
     SECTION("Default Extents")
     {
         string file_path = "writer_test.copc.laz";
-
-        las::EbVlr eb_vlr(2);
-        eb_vlr.items[0].data_type = 29; // byte size 12
-        eb_vlr.items[1].data_type = 29; // byte size 12
-
-        CopcConfig cfg(7, {}, {}, eb_vlr);
-        FileWriter writer(file_path, cfg);
-
-        auto extents = writer.GetCopcExtents();
-        REQUIRE(extents.PointFormatID() == 7);
-        REQUIRE(extents.ExtraBytes().size() == 2);
-
-        writer.Close();
-
-        FileReader reader(file_path);
-
-        extents = reader.GetCopcExtents();
-
-        REQUIRE(extents.PointFormatID() == 7);
-        REQUIRE(extents.ExtraBytes().size() == 2);
-
-        REQUIRE(extents.Intensity()->minimum == 0);
-        REQUIRE(extents.Classification()->minimum == 0);
-
-        for (const auto &extent : extents.Extents())
         {
-            REQUIRE(extent->minimum == 0);
-            REQUIRE(extent->maximum == 0);
+            las::EbVlr eb_vlr(2);
+            eb_vlr.items[0].data_type = 29; // byte size 12
+            eb_vlr.items[1].data_type = 29; // byte size 12
+
+            CopcConfigWriter cfg(7, {}, {}, {}, eb_vlr);
+            FileWriter writer(file_path, cfg);
+
+            auto extents = writer.CopcConfig()->CopcExtents();
+            REQUIRE(extents->PointFormatID() == 7);
+            REQUIRE(extents->ExtraBytes().size() == 2);
+
+            writer.Close();
+        }
+        {
+            FileReader reader(file_path);
+
+            auto extents = reader.CopcConfig().CopcExtents();
+
+            REQUIRE(extents.PointFormatID() == 7);
+            REQUIRE(extents.ExtraBytes().size() == 2);
+
+            REQUIRE(extents.Intensity()->minimum == 0);
+            REQUIRE(extents.Classification()->minimum == 0);
+
+            for (const auto &extent : extents.Extents())
+            {
+                REQUIRE(extent->minimum == 0);
+                REQUIRE(extent->maximum == 0);
+            }
         }
     }
 
     SECTION("Set Extents")
     {
         string file_path = "writer_test.copc.laz";
+        {
+            las::EbVlr eb_vlr(1);
+            eb_vlr.items[0].data_type = 29; // byte size 12
 
-        las::EbVlr eb_vlr(1);
-        eb_vlr.items[0].data_type = 29; // byte size 12
+            CopcConfigWriter cfg(7, {}, {}, {}, eb_vlr);
+            FileWriter writer(file_path, cfg);
 
-        CopcConfig cfg(7, {}, {}, eb_vlr);
-        FileWriter writer(file_path, cfg);
+            auto extents = writer.CopcConfig()->CopcExtents();
 
-        auto extents = writer.GetCopcExtents();
+            extents->Intensity()->minimum = -numeric_limits<double>::max();
+            extents->Intensity()->maximum = numeric_limits<double>::max();
 
-        extents.Intensity()->minimum = -numeric_limits<double>::max();
-        extents.Intensity()->maximum = numeric_limits<double>::max();
+            extents->Classification()->minimum = 0;
+            extents->Classification()->maximum = 255;
 
-        extents.Classification()->minimum = 0;
-        extents.Classification()->maximum = 255;
+            extents->ExtraBytes()[0]->minimum = -numeric_limits<double>::max();
+            extents->ExtraBytes()[0]->maximum = numeric_limits<double>::max();
 
-        extents.ExtraBytes()[0]->minimum = -numeric_limits<double>::max();
-        extents.ExtraBytes()[0]->maximum = numeric_limits<double>::max();
+            writer.Close();
+        }
+        {
+            FileReader reader(file_path);
 
-        writer.SetCopcExtents(extents);
+            auto extents = reader.CopcConfig().CopcExtents();
 
-        writer.Close();
+            REQUIRE(extents.Intensity()->minimum == -numeric_limits<double>::max());
+            REQUIRE(extents.Intensity()->maximum == numeric_limits<double>::max());
 
-        FileReader reader(file_path);
+            REQUIRE(extents.Classification()->minimum == 0);
+            REQUIRE(extents.Classification()->maximum == 255);
 
-        extents = reader.GetCopcExtents();
-
-        REQUIRE(extents.Intensity()->minimum == -numeric_limits<double>::max());
-        REQUIRE(extents.Intensity()->maximum == numeric_limits<double>::max());
-
-        REQUIRE(extents.Classification()->minimum == 0);
-        REQUIRE(extents.Classification()->maximum == 255);
-
-        REQUIRE(extents.ExtraBytes()[0]->minimum == -numeric_limits<double>::max());
-        REQUIRE(extents.ExtraBytes()[0]->maximum == numeric_limits<double>::max());
+            REQUIRE(extents.ExtraBytes()[0]->minimum == -numeric_limits<double>::max());
+            REQUIRE(extents.ExtraBytes()[0]->maximum == numeric_limits<double>::max());
+        }
     }
 
     SECTION("ToCopcExtentVlr")
@@ -117,7 +119,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
         CopcExtents extents{point_format_id, num_eb_items};
 
-        auto vlr = extents.ToCopcExtentsVlr({}, {}, {});
+        auto vlr = extents.ToLazPerf({}, {}, {});
         REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, num_eb_items) + 3);
     }
 
@@ -137,4 +139,5 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             REQUIRE(extent->maximum == 1);
         }
     }
+    // TODO[Leo]: Add all Extents functions to tests
 }

@@ -37,7 +37,7 @@ def test_node():
 def test_las_header():
 
     reader = copc.FileReader("autzen-classified.copc.laz")
-    las_header = reader.las_header
+    las_header = reader.copc_config.las_header
 
     las_header_other = pickle.loads(pickle.dumps(las_header, -1))
 

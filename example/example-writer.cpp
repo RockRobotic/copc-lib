@@ -5,7 +5,6 @@
 
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/io/copc_config.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
 #include <copc-lib/las/header.hpp>
@@ -20,11 +19,11 @@ void TrimFileExample(bool compressor_example_flag)
 {
     // We'll get our point data from this file
     FileReader reader("autzen-classified.copc.laz");
-    auto old_header = reader.GetLasHeader();
+    auto old_header = reader.CopcConfig().LasHeader();
 
     {
         // Copy the config to the new file
-        CopcConfig cfg = reader.GetCopcConfig();
+        auto cfg = reader.CopcConfig();
 
         // Now, we can create our actual writer, with an optional `spacing` and `wkt`:
         FileWriter writer("autzen-trimmed.copc.laz", cfg);
@@ -52,7 +51,7 @@ void TrimFileExample(bool compressor_example_flag)
 
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
                 std::vector<char> compressed_points =
-                    laz::Compressor::CompressBytes(uncompressed_points, writer.GetLasHeader());
+                    laz::Compressor::CompressBytes(uncompressed_points, *writer.CopcConfig()->LasHeader());
                 writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
             }
         }
@@ -73,7 +72,7 @@ void TrimFileExample(bool compressor_example_flag)
         // and decompress it later using the Decompressor class
         if (compressor_example_flag)
         {
-            las::LasHeader header = new_reader.GetLasHeader();
+            las::LasHeader header = new_reader.CopcConfig().LasHeader();
             std::vector<char> compressed_points = reader.GetPointDataCompressed(node.key);
             std::vector<char> uncompressed_points =
                 laz::Decompressor::DecompressBytes(compressed_points, header, node.point_count);
@@ -86,7 +85,7 @@ void BoundsTrimFileExample()
 {
     // We'll get our point data from this file
     FileReader reader("autzen-classified.copc.laz");
-    auto old_header = reader.GetLasHeader();
+    auto old_header = reader.CopcConfig().LasHeader();
 
     // Take horizontal 2D box of [400,400] roughly in the middle of the point cloud.
 
@@ -95,7 +94,7 @@ void BoundsTrimFileExample()
 
     {
         // Copy the config to the new file
-        CopcConfig cfg = reader.GetCopcConfig();
+        auto cfg = reader.CopcConfig();
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
         FileWriter writer("autzen-bounds-trimmed.copc.laz", cfg);
@@ -140,15 +139,15 @@ void ResolutionTrimFileExample()
 {
     // We'll get our point data from this file
     FileReader reader("autzen-classified.copc.laz");
-    auto old_header = reader.GetLasHeader();
+    auto old_header = reader.CopcConfig().LasHeader();
 
     double resolution = 10;
     auto target_depth = reader.GetDepthAtResolution(resolution);
     // Check that the resolution of the target depth is equal or smaller to the requested resolution.
-    assert(VoxelKey::GetResolutionAtDepth(target_depth, old_header, reader.GetCopcInfo()) <= resolution);
+    assert(VoxelKey::GetResolutionAtDepth(target_depth, old_header, reader.CopcConfig().CopcInfo()) <= resolution);
     {
         // Copy the config to the new file
-        CopcConfig cfg = reader.GetCopcConfig();
+        auto cfg = reader.CopcConfig();
 
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
         FileWriter writer("autzen-resolution-trimmed.copc.laz", cfg);
@@ -171,8 +170,8 @@ void ResolutionTrimFileExample()
     // Now, let's test our new file
     FileReader new_reader("autzen-resolution-trimmed.copc.laz");
 
-    auto new_header = new_reader.GetLasHeader();
-    auto new_copc_info = new_reader.GetCopcInfo();
+    auto new_header = new_reader.CopcConfig().LasHeader();
+    auto new_copc_info = new_reader.CopcConfig().CopcInfo();
 
     // Let's go through each node we've written and make sure the resolution is correct
     for (const auto &node : new_reader.GetAllChildren())
@@ -214,7 +213,7 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
     std::uniform_int_distribution<> rand_z(std::ceil(header.ApplyInverseScaleZ(std::max(header.min.z, z_min))),
                                            std::floor(header.ApplyInverseScaleZ(std::min(header.max.z, z_min + step))));
 
-    las::Points points(header.point_format_id, header.scale, header.offset);
+    las::Points points(header.PointFormatID(), header.scale, header.offset);
     for (int i = 0; i < number_points; i++)
     {
         // Create a point with a given point format
@@ -236,34 +235,31 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
 void NewFileExample()
 {
     // Create our new file with the specified format, scale, and offset
-    CopcConfig cfg(8, {0.1, 0.1, 0.1}, {50, 50, 50});
+    CopcConfigWriter cfg(8, {0.1, 0.1, 0.1}, {50, 50, 50}, "TEST_WKT");
     // As of now, the library will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
-    cfg.las_header_base.min = MIN_BOUNDS;
-    cfg.las_header_base.max = MAX_BOUNDS;
+    cfg.LasHeader()->min = MIN_BOUNDS;
+    cfg.LasHeader()->max = MAX_BOUNDS;
 
-    cfg.copc_info.spacing = 10;
-    cfg.wkt = "TEST_WKT";
+    cfg.CopcInfo()->spacing = 10;
     // Now, we can create our COPC writer, with an optional `span` and `wkt`:
     FileWriter writer("new-copc.copc.laz", cfg);
-    auto header = writer.GetLasHeader();
+    auto header = writer.CopcConfig()->LasHeader();
 
     // Set the COPC Extents
-    auto extents = writer.GetCopcExtents();
+    auto extents = writer.CopcConfig()->CopcExtents();
 
-    extents.Intensity()->minimum = 0;
-    extents.Intensity()->maximum = 10000;
-    extents.Classification()->minimum = 5;
-    extents.Classification()->maximum = 201;
-
-    writer.SetCopcExtents(extents);
+    extents->Intensity()->minimum = 0;
+    extents->Intensity()->maximum = 10000;
+    extents->Classification()->minimum = 5;
+    extents->Classification()->maximum = 201;
 
     // The root page is automatically created
     Page root_page = writer.GetRootPage();
 
     // First we'll add a root node
     VoxelKey key(0, 0, 0, 0);
-    auto points = RandomPoints(key, header, NUM_POINTS);
+    auto points = RandomPoints(key, *header, NUM_POINTS);
     // The node will be written to the file when we call AddNode
     writer.AddNode(root_page, key, points);
 
@@ -274,16 +270,16 @@ void NewFileExample()
 
         // Once our page is created, we can add nodes to it like before
         key = VoxelKey(1, 1, 1, 0);
-        points = RandomPoints(key, header, NUM_POINTS);
+        points = RandomPoints(key, *header, NUM_POINTS);
         writer.AddNode(page, key, points);
 
         key = VoxelKey(2, 2, 2, 0);
-        points = RandomPoints(key, header, NUM_POINTS);
+        points = RandomPoints(key, *header, NUM_POINTS);
         writer.AddNode(page, key, points);
 
         // We can nest subpages as much as we want, as long as they are children of the parent
         auto sub_page = writer.AddSubPage(page, VoxelKey(3, 4, 4, 0));
-        points = RandomPoints(sub_page.key, header, NUM_POINTS);
+        points = RandomPoints(sub_page.key, *header, NUM_POINTS);
         writer.AddNode(page, sub_page.key, points);
     }
 

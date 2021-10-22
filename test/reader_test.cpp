@@ -16,17 +16,16 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetHeader Test")
         {
-            auto header = reader.GetLasHeader();
-            REQUIRE(header.header_size == 375);
-            REQUIRE(header.point_format_id == 7);
-            REQUIRE(header.point_count == 10653336);
-            REQUIRE(header.point_record_length == 36);
+            auto header = reader.CopcConfig().LasHeader();
+            REQUIRE(header.PointFormatID() == 7);
+            REQUIRE(header.PointCount() == 10653336);
+            REQUIRE(header.PointRecordLength() == 36);
             REQUIRE(header.EbByteSize() == 0);
         }
 
         SECTION("GetCopcInfo Test")
         {
-            auto copc_info = reader.GetCopcInfo();
+            auto copc_info = reader.CopcConfig().CopcInfo();
             REQUIRE_THAT(copc_info.center_x, Catch::Matchers::WithinAbs(637905.5448, 0.0001));
             REQUIRE_THAT(copc_info.center_y, Catch::Matchers::WithinAbs(851209.9048, 0.0001));
             REQUIRE_THAT(copc_info.center_z, Catch::Matchers::WithinAbs(2733.8948, 0.0001));
@@ -38,7 +37,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetCopcExtents Test")
         {
-            auto copc_extents = reader.GetCopcExtents();
+            auto copc_extents = reader.CopcConfig().CopcExtents();
             REQUIRE_THAT(copc_extents.Intensity()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
             REQUIRE_THAT(copc_extents.Intensity()->maximum, Catch::Matchers::WithinAbs(254, 0.0001));
             REQUIRE_THAT(copc_extents.ReturnNumber()->minimum, Catch::Matchers::WithinAbs(1, 0.0001));
@@ -73,7 +72,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("WKT")
         {
-            auto wkt = reader.GetWkt();
+            auto wkt = reader.CopcConfig().Wkt();
             REQUIRE(wkt.empty());
         }
     }
@@ -87,7 +86,7 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetCopcInfo Test")
         {
-            auto copc_info = reader.GetCopcInfo();
+            auto copc_info = reader.CopcConfig().CopcInfo();
             REQUIRE_THAT(copc_info.center_x, Catch::Matchers::WithinAbs(637905.5448828125, 0.0001));
             REQUIRE_THAT(copc_info.center_y, Catch::Matchers::WithinAbs(851209.9048828125, 0.0001));
             REQUIRE_THAT(copc_info.center_z, Catch::Matchers::WithinAbs(2733.8948828125, 0.0001));
@@ -99,15 +98,14 @@ TEST_CASE("Reader tests", "[Reader]")
 
         SECTION("GetHeader Test")
         {
-            auto header = reader.GetLasHeader();
-            REQUIRE(header.header_size == 375);
-            REQUIRE(header.point_format_id == 7);
-            REQUIRE(header.point_count == 10653336);
+            auto header = reader.CopcConfig().LasHeader();
+            REQUIRE(header.PointFormatID() == 7);
+            REQUIRE(header.PointCount() == 10653336);
         }
 
         SECTION("WKT")
         {
-            auto wkt = reader.GetWkt();
+            auto wkt = reader.CopcConfig().Wkt();
             REQUIRE(wkt.empty());
         }
     }
@@ -141,14 +139,8 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader]")
     {
         FileReader reader("autzen-classified.copc.laz");
 
-        auto eb_vlr = reader.GetExtraByteVlr();
+        auto eb_vlr = reader.CopcConfig().ExtraBytesVlr();
         REQUIRE(eb_vlr.items.size() == 0);
-
-        //        REQUIRE(eb_vlr.items[0].data_type == 1);
-        //        REQUIRE(eb_vlr.items[0].name == "FIELD_0");
-        //
-        //        REQUIRE(eb_vlr.items[1].data_type == 1);
-        //        REQUIRE(eb_vlr.items[1].name == "FIELD_1");
     }
 }
 
@@ -190,7 +182,7 @@ TEST_CASE("GetAllChildren Test", "[Reader]")
 TEST_CASE("GetAllPoints Test", "[Reader]")
 {
     //    FileReader reader("autzen-classified.copc.laz");
-    //    REQUIRE(reader.GetAllPoints().Get().size() == reader.GetLasHeader().point_count);
+    //    REQUIRE(reader.GetAllPoints().Get().size() == reader.CopcFile().LasHeader().point_count);
 }
 
 TEST_CASE("Point Error Handling Test", "[Reader]")
@@ -223,7 +215,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
     FileReader reader("autzen-classified.copc.laz");
 
     // Make horizontal 2D box of [400,400] roughly in the middle of the point cloud.
-    auto middle = (reader.GetLasHeader().max + reader.GetLasHeader().min) / 2;
+    auto middle = (reader.CopcConfig().LasHeader().max + reader.CopcConfig().LasHeader().min) / 2;
     Box middle_box(middle.x - 200, middle.y - 200, middle.x + 200, middle.y + 200);
 
     SECTION("GetNodesWithinBox")
@@ -254,7 +246,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
         {
             // TODO[Leo]: Make this test optional
             // Check that all points fit in a box sized from header
-            //            auto header = reader.GetLasHeader();
+            //            auto header = reader.CopcFile().LasHeader();
             //            auto subset_points = reader.GetPointsWithinBox(Box(std::floor(header.min.x),
             //            std::floor(header.min.y),
             //                                                               std::floor(header.min.z),

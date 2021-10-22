@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "lazperf/vlr.hpp"
+#include <lazperf/vlr.hpp>
 
 namespace copc::las
 {
@@ -13,6 +13,8 @@ namespace copc::las
 using WktVlr = lazperf::wkt_vlr;
 using EbVlr = lazperf::eb_vlr;
 using CopcExtentsVlr = lazperf::copc_extents_vlr;
+
+int NumBytesFromExtraBytes(const std::vector<EbVlr::ebfield> &items);
 
 class VlrHeader : public lazperf::evlr_header
 {

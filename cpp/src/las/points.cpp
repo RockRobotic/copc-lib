@@ -17,7 +17,7 @@ Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector
 }
 
 Points::Points(const LasHeader &header)
-    : Points(header.point_format_id, header.scale, header.offset, header.EbByteSize()){};
+    : Points(header.PointFormatID(), header.scale, header.offset, header.EbByteSize()){};
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {
@@ -73,7 +73,7 @@ void Points::AddPoints(std::vector<std::shared_ptr<Point>> points)
 
 Points Points::Unpack(const std::vector<char> &point_data, const LasHeader &header)
 {
-    return Unpack(point_data, header.point_format_id, header.EbByteSize(), header.scale, header.offset);
+    return Unpack(point_data, header.PointFormatID(), header.EbByteSize(), header.scale, header.offset);
 }
 
 Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id, const uint16_t &eb_byte_size,

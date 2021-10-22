@@ -113,6 +113,10 @@ for point in points.Get():
 - \[ \] Conda and pip packages
 - \[ \] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 
+## Note
+
+This version of copc-lib is pinned to a draft version of COPC respective of the state at [COPC.io](https://github.com/copcio/copcio.github.io/tree/a6e8654f65db7c7d438ebea90993bd7a8d59091a).
+
 ## Helpful Links
 
 - [COPC Spec](https://copc.io/)

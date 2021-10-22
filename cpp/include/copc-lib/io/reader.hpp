@@ -3,9 +3,10 @@
 
 #include <istream>
 #include <limits>
+#include <map>
 #include <string>
 
-#include "copc-lib/copc/file.hpp"
+#include "copc-lib/copc/config.hpp"
 #include "copc-lib/io/base_io.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/vlr.hpp"
@@ -58,8 +59,13 @@ class Reader : public BaseIO
     las::Points GetPointsWithinBox(const Box &box, double resolution = 0);
     bool ValidateSpatialBounds(bool verbose = false);
 
+    copc::CopcConfig CopcConfig() { return *config_; }
+
   protected:
     Reader() = default;
+
+    std::shared_ptr<copc::CopcConfig> config_;
+    std::map<uint64_t, las::VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
 
     std::istream *in_stream_;
 

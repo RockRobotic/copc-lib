@@ -42,7 +42,7 @@ class Decompressor
     static std::vector<char> DecompressBytes(std::istream &in_stream, const las::LasHeader &header,
                                              const int &point_count)
     {
-        return DecompressBytes(in_stream, header.point_format_id, header.EbByteSize(), point_count);
+        return DecompressBytes(in_stream, header.PointFormatID(), header.EbByteSize(), point_count);
     }
 
     static std::vector<char> DecompressBytes(const std::vector<char> &compressed_data, const int8_t &point_format_id,
@@ -55,7 +55,7 @@ class Decompressor
     static std::vector<char> DecompressBytes(const std::vector<char> &compressed_data, const las::LasHeader &header,
                                              const int &point_count)
     {
-        return DecompressBytes(compressed_data, header.point_format_id, header.EbByteSize(), point_count);
+        return DecompressBytes(compressed_data, header.PointFormatID(), header.EbByteSize(), point_count);
     }
 };
 } // namespace copc::laz
