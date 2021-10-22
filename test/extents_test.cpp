@@ -139,4 +139,5 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             REQUIRE(extent->maximum == 1);
         }
     }
+    // TODO[Leo]: Add all Extents functions to tests
 }
