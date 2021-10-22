@@ -119,7 +119,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
         CopcExtents extents{point_format_id, num_eb_items};
 
-        auto vlr = extents.ToCopcExtentsVlr({}, {}, {});
+        auto vlr = extents.ToLazPerf({}, {}, {});
         REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, num_eb_items) + 3);
     }
 

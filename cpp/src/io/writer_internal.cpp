@@ -76,14 +76,14 @@ void WriterInternal::WriteHeader()
     las_header_vlr.write(out_stream_);
 
     // Write the COPC Info VLR.
-    auto copc_info_vlr = copc_file_writer_->CopcInfo()->ToLazperfVlr();
+    auto copc_info_vlr = copc_file_writer_->CopcInfo()->ToLazPerf();
     copc_info_vlr.header().write(out_stream_);
     copc_info_vlr.write(out_stream_);
 
     // Write the COPC Extents VLR.
-    auto extents_vlr = copc_file_writer_->CopcExtents()->ToCopcExtentsVlr({las_header_vlr.minx, las_header_vlr.maxx},
-                                                                          {las_header_vlr.miny, las_header_vlr.maxy},
-                                                                          {las_header_vlr.minz, las_header_vlr.maxz});
+    auto extents_vlr = copc_file_writer_->CopcExtents()->ToLazPerf({las_header_vlr.minx, las_header_vlr.maxx},
+                                                                   {las_header_vlr.miny, las_header_vlr.maxy},
+                                                                   {las_header_vlr.minz, las_header_vlr.maxz});
     extents_vlr.header().write(out_stream_);
     extents_vlr.write(out_stream_);
 

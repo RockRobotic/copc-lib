@@ -10,7 +10,7 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 
 copc-lib has the following dependencies:
 
-- [laz-perf](https://github.com/hobu/laz-perf) > 2.1.0
+- [laz-perf](https://github.com/hobu/laz-perf) > [4819611b279cb791508a0ac0cedd913f8c1d2103](https://github.com/hobu/laz-perf/commit/4819611b279cb791508a0ac0cedd913f8c1d2103)
 - Catch2
 - Pybind11
 
@@ -99,6 +99,10 @@ for point in points.Get():
 - \[x\] JavaScript bindings (not planned, see below)
 - \[ \] Conda and pip packages
 - \[ \] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
+
+## Note
+
+This version of copc-lib is pinned to a draft version of COPC respective of the state at [COPC.io](https://github.com/copcio/copcio.github.io/tree/a6e8654f65db7c7d438ebea90993bd7a8d59091a).
 
 ## Helpful Links
 

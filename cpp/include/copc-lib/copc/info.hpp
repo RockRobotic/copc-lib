@@ -14,7 +14,7 @@ class CopcInfo
 
     CopcInfo(const lazperf::copc_info_vlr &copc_info_vlr);
 
-    lazperf::copc_info_vlr ToLazperfVlr() const;
+    lazperf::copc_info_vlr ToLazPerf() const;
 
     std::string ToString() const;
 

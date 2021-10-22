@@ -15,7 +15,7 @@ CopcInfo::CopcInfo(const lazperf::copc_info_vlr &copc_info_vlr)
     root_hier_size = copc_info_vlr.root_hier_size;
 }
 
-lazperf::copc_info_vlr CopcInfo::ToLazperfVlr() const
+lazperf::copc_info_vlr CopcInfo::ToLazPerf() const
 {
     lazperf::copc_info_vlr copc_info_vlr;
 

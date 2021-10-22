@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "lazperf/vlr.hpp"
+#include <lazperf/vlr.hpp>
 
 namespace copc::las
 {

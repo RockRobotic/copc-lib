@@ -54,7 +54,8 @@ CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id,
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 
-    if (vlr.items.size() - 3 != NumberOfExtents(point_format_id, num_eb_items))
+    if (vlr.items.size() - 3 !=
+        NumberOfExtents(point_format_id, num_eb_items)) // -3 takes into account extra extents for x,y,z from LAS header
         throw std::runtime_error("CopcExtents: Number of extents incorrect.");
     extents_.reserve(NumberOfExtents(point_format_id, num_eb_items));
     for (int i = 3; i < vlr.items.size(); i++)
@@ -63,27 +64,27 @@ CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id,
     }
 }
 
-las::CopcExtentsVlr CopcExtents::ToCopcExtentsVlr(const CopcExtent &x, const CopcExtent &y, const CopcExtent &z) const
+las::CopcExtentsVlr CopcExtents::ToLazPerf(const CopcExtent &x, const CopcExtent &y, const CopcExtent &z) const
 {
     las::CopcExtentsVlr vlr;
-    vlr.items.reserve(extents_.size() + 3);
-    vlr.items.push_back(x.ToLazPerf());
-    vlr.items.push_back(y.ToLazPerf());
-    vlr.items.push_back(z.ToLazPerf());
+    vlr.items.reserve(extents_.size() + 3); // +3 takes into account extra extents for x,y,z from LAS header
+    vlr.items.push_back(x);
+    vlr.items.push_back(y);
+    vlr.items.push_back(z);
     for (const auto &extent : extents_)
-        vlr.items.push_back(extent->ToLazPerf());
+        vlr.items.push_back(*extent);
 
     return vlr;
 }
 
 int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items)
 {
-    return las::PointBaseNumberDimensions(point_format_id) - 3 + num_eb_items;
+    return PointBaseNumberExtents(point_format_id) + num_eb_items;
 }
 
 size_t CopcExtents::GetByteSize(int8_t point_format_id, uint16_t num_eb_items)
 {
-    return CopcExtents(point_format_id, num_eb_items).ToCopcExtentsVlr({}, {}, {}).size();
+    return CopcExtents(point_format_id, num_eb_items).ToLazPerf({}, {}, {}).size();
 }
 
 std::string CopcExtents::ToString() const
