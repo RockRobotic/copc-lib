@@ -414,22 +414,30 @@ TEST_CASE("Writer Copy", "[Writer]")
 
         stringstream out_stream;
         auto cfg = reader.GetCopcConfig();
+        cfg.las_header_base.scale = {1, 1, 1}; // Update some values in the process
+        cfg.las_header_base.offset = {50, 50, 50};
 
         Writer writer(out_stream, cfg);
 
-        REQUIRE(writer.GetLasHeader().point_record_length == 36);
+        REQUIRE(writer.GetLasHeader().point_record_length == reader.GetLasHeader().point_record_length);
+        REQUIRE(writer.GetLasHeader().scale == Vector3(1, 1, 1));
+        REQUIRE(writer.GetLasHeader().offset == Vector3(50, 50, 50));
+        REQUIRE(writer.GetLasHeader().min == reader.GetLasHeader().min);
+        REQUIRE(writer.GetLasHeader().max == reader.GetLasHeader().max);
 
         writer.Close();
 
         Reader new_reader(&out_stream);
         REQUIRE(new_reader.GetLasHeader().point_record_length == reader.GetLasHeader().point_record_length);
+        REQUIRE(new_reader.GetLasHeader().scale == Vector3(1, 1, 1));
+        REQUIRE(new_reader.GetLasHeader().offset == Vector3(50, 50, 50));
+        REQUIRE(new_reader.GetLasHeader().min == reader.GetLasHeader().min);
+        REQUIRE(new_reader.GetLasHeader().max == reader.GetLasHeader().max);
         REQUIRE(new_reader.GetCopcInfo().spacing == reader.GetCopcInfo().spacing);
         REQUIRE(new_reader.GetCopcExtents().Intensity()->minimum == reader.GetCopcExtents().Intensity()->minimum);
         REQUIRE(new_reader.GetWkt() == reader.GetWkt());
         REQUIRE(new_reader.GetExtraByteVlr().items == reader.GetExtraByteVlr().items);
     }
-
-    // TODO[Leo]: Add Copc Info and Extents
 
     SECTION("Autzen")
     {
