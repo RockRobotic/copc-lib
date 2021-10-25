@@ -38,11 +38,6 @@ class CopcExtents
     // Getters
     int8_t PointFormatID() const { return point_format_id_; }
 
-    static uint8_t PointBaseNumberExtents(int8_t point_format_id)
-    {
-        return las::PointBaseNumberDimensions(point_format_id) - 3;
-    } // Disregard x,y,z since they are automatically populated
-
     // Get all extents as a vector
     std::vector<std::shared_ptr<CopcExtent>> Extents() { return extents_; }
 
@@ -160,11 +155,16 @@ class CopcExtents
     static int NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items);
 
     // Return the size in bytes of the extents
-    static size_t GetByteSize(int8_t point_format_id, uint16_t num_eb_items);
+    static size_t ByteSize(int8_t point_format_id, uint16_t num_eb_items);
 
     std::string ToString() const;
 
   private:
+    static uint8_t PointBaseNumberExtents(int8_t point_format_id)
+    {
+        return las::PointBaseNumberDimensions(point_format_id) - 3;
+    } // Disregard x,y,z since they are automatically populated
+
     int8_t point_format_id_;
     std::vector<std::shared_ptr<CopcExtent>> extents_;
 };

@@ -19,7 +19,7 @@ class WriterInternal
     // 8 bytes for the chunk table offset
     uint64_t FIRST_CHUNK_OFFSET() const { return OFFSET_TO_POINT_DATA + sizeof(uint64_t); };
 
-    WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> file,
+    WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
                    std::shared_ptr<Hierarchy> hierarchy);
 
     // Writes the header and COPC vlrs

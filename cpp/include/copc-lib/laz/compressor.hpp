@@ -26,7 +26,7 @@ class Compressor
 
         las_compressor::ptr compressor = build_las_compressor(stream.cb(), point_format_id, eb_byte_size);
 
-        int point_size = copc::las::ComputePointBytes(point_format_id, eb_byte_size);
+        int point_size = copc::las::PointByteSize(point_format_id, eb_byte_size);
         if (in.size() % point_size != 0)
             throw std::runtime_error("Invalid input stream for compression!");
 

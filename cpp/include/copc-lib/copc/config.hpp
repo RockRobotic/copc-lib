@@ -17,6 +17,7 @@ const int COPC_OFFSET = 429;
 class CopcConfig
 {
   public:
+    CopcConfig() = default;
     CopcConfig(const las::LasHeader &header, const CopcInfo &copc_info, const CopcExtents &copc_extents,
                const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
         : header_(std::make_shared<las::LasHeader>(header)), copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
@@ -49,7 +50,7 @@ class CopcConfigWriter : public CopcConfig
   public:
     CopcConfigWriter(const int8_t &point_format_id, const Vector3 &scale = Vector3::DefaultScale(),
                      const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
-                     const las::EbVlr &extra_bytes_vlr = {0});
+                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
 
     // Allow copy from CopcFile
     CopcConfigWriter(const CopcConfig &file)

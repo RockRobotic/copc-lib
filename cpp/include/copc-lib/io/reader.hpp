@@ -59,12 +59,12 @@ class Reader : public BaseIO
     las::Points GetPointsWithinBox(const Box &box, double resolution = 0);
     bool ValidateSpatialBounds(bool verbose = false);
 
-    copc::CopcConfig CopcConfig() { return *config_; }
+    copc::CopcConfig CopcConfig() { return config_; }
 
   protected:
     Reader() = default;
 
-    std::shared_ptr<copc::CopcConfig> config_;
+    copc::CopcConfig config_;
     std::map<uint64_t, las::VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
 
     std::istream *in_stream_;
@@ -74,7 +74,7 @@ class Reader : public BaseIO
     // Constructor helper function, initializes the file and hierarchy
     void InitReader();
     // Reads file VLRs and EVLRs into vlrs_
-    std::map<uint64_t, las::VlrHeader> ReadVlrHeaders();
+    std::map<uint64_t, las::VlrHeader> ReadVlrHeaders(); // TODO: Allow user to create/reader arbitrary VLRs
     // Fetchs the map key for a query vlr user and record IDs
     static uint64_t FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
                              uint16_t record_id);
@@ -83,7 +83,7 @@ class Reader : public BaseIO
     // Finds and loads the COPC vlr
     CopcExtents ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr) const;
     // Finds and loads the WKT vlr
-    las::WktVlr ReadWKTVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
+    las::WktVlr ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
     // Finds and loads EB vlr
     las::EbVlr ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
 

@@ -50,8 +50,7 @@ class Point
     {
         if (return_number > 15)
             throw std::runtime_error("Return Number must be <= 15");
-        else
-            returns_ = return_number | (returns_ & 0xF0);
+        returns_ = return_number | (returns_ & 0xF0);
     }
 
     uint8_t NumberOfReturns() const { return returns_ >> 4; }
@@ -59,24 +58,20 @@ class Point
     {
         if (number_of_returns > 15)
             throw std::runtime_error("Number of Returns must be <= 15");
-        else
-            returns_ = (number_of_returns << 4) | (returns_ & 0xF);
+        returns_ = (number_of_returns << 4) | (returns_ & 0xF);
     }
 
     uint8_t Classification() const { return classification_; }
     void Classification(const uint8_t &classification) { classification_ = classification; }
 
-#pragma region ScanAngle
     int16_t ScanAngle() const { return scan_angle_; }
 
     void ScanAngle(const int16_t &scan_angle)
     {
         if (scan_angle < -30000 || scan_angle > 30000)
             throw std::runtime_error("Scan Angle must be between -30000 and 30000");
-        else
-            scan_angle_ = scan_angle;
+        scan_angle_ = scan_angle;
     }
-#pragma endregion ScanAngle
 
     float ScanAngleFloat() const { return 0.006f * float(scan_angle_); }
 
@@ -107,8 +102,7 @@ class Point
     {
         if (scanner_channel > 3)
             throw std::runtime_error("Scanner channel must be <= 3");
-        else
-            flags_ = (flags_ & 0xCF) | (scanner_channel << 4);
+        flags_ = (flags_ & 0xCF) | (scanner_channel << 4);
     }
 
     bool ScanDirectionFlag() const { return (flags_ >> 6) & 0x1; }
@@ -124,73 +118,62 @@ class Point
 #pragma region RGB
     void RGB(const std::vector<uint16_t> &rgb)
     {
-        if (has_rgb_)
-        {
-            if (rgb.size() != 3)
-                throw std::runtime_error("RGB vector must be of size 3.");
-            rgb_[0] = rgb[0];
-            rgb_[1] = rgb[1];
-            rgb_[2] = rgb[2];
-        }
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB.");
+
+        if (rgb.size() != 3)
+            throw std::runtime_error("RGB vector must be of size 3.");
+        rgb_[0] = rgb[0];
+        rgb_[1] = rgb[1];
+        rgb_[2] = rgb[2];
     }
 
     void RGB(const uint16_t &red, const uint16_t &green, const uint16_t &blue)
     {
-        if (has_rgb_)
-        {
-            rgb_[0] = red;
-            rgb_[1] = green;
-            rgb_[2] = blue;
-        }
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB.");
+        rgb_[0] = red;
+        rgb_[1] = green;
+        rgb_[2] = blue;
     }
 
     uint16_t Red() const
     {
-        if (has_rgb_)
-            return rgb_[0];
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB");
+        return rgb_[0];
     }
     void Red(const uint16_t &red)
     {
-        if (has_rgb_)
-            rgb_[0] = red;
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB.");
+        rgb_[0] = red;
     }
 
     uint16_t Green() const
     {
-        if (has_rgb_)
-            return rgb_[1];
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB");
+        return rgb_[1];
     }
     void Green(const uint16_t &green)
     {
-        if (has_rgb_)
-            rgb_[1] = green;
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB.");
+        rgb_[1] = green;
     }
 
     uint16_t Blue() const
     {
-        if (has_rgb_)
-            return rgb_[2];
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB");
+        return rgb_[2];
     }
     void Blue(const uint16_t &blue)
     {
-        if (has_rgb_)
-            rgb_[2] = blue;
-        else
+        if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB.");
+        rgb_[2] = blue;
     }
 #pragma endregion RGB
 
@@ -199,17 +182,15 @@ class Point
 
     uint16_t NIR() const
     {
-        if (has_nir_)
-            return nir_;
-        else
+        if (!has_nir_)
             throw std::runtime_error("This point format does not have NIR.");
+        return nir_;
     }
     void NIR(const uint16_t &nir)
     {
-        if (has_nir_)
-            nir_ = nir;
-        else
+        if (!has_nir_)
             throw std::runtime_error("This point format does not have NIR.");
+        nir_ = nir;
     }
 
     std::vector<uint8_t> ExtraBytes() const { return extra_bytes_; }

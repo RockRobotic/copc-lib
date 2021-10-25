@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **\[Python\]** Fix typo in pickling of `Node`
-- **\[Python\]** Fix scale error and reformat `NewFileExample()` in example_writer.py and .cpp
+- **\[Python\]** Fix scale_ error and reformat `NewFileExample()` in example_writer.py and .cpp
 
 ## [1.3.0] - 2021-10-04
 
@@ -104,7 +104,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Python bindings
 - Points class for holding multiple "Point"s
 - File path reader/writers
-- Point scaling based on scale/offset
+- Point scaling based on scale_/offset_
 
 ### Changed
 

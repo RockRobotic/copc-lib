@@ -27,7 +27,7 @@ class Decompressor
         InFileStream stre(in_stream);
         las_decompressor::ptr decompressor = build_las_decompressor(stre.cb(), point_format_id, eb_byte_size);
 
-        int point_size = copc::las::ComputePointBytes(point_format_id, eb_byte_size);
+        int point_size = copc::las::PointByteSize(point_format_id, eb_byte_size);
         char buff[255];
         for (int i = 0; i < point_count; i++)
         {

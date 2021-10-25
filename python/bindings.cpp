@@ -458,8 +458,8 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("vlr_count", &las::LasHeader::VlrCount)
         .def_property_readonly("point_format_id", &las::LasHeader::PointFormatID)
         .def_property_readonly("point_record_length", &las::LasHeader::PointRecordLength)
-        .def_readwrite("scale", &las::LasHeader::scale)
-        .def_readwrite("offset", &las::LasHeader::offset)
+        .def_property_readonly("scale", &las::LasHeader::Scale)
+        .def_property_readonly("offset", &las::LasHeader::Offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
         .def("GetSpan", &las::LasHeader::GetSpan)
@@ -483,8 +483,8 @@ PYBIND11_MODULE(copclib, m)
                 /* Return a tuple that fully encodes the state of the object */
                 return py::make_tuple(h.file_source_id, h.global_encoding, h.GUID(), h.SystemIdentifier(),
                                       h.GeneratingSoftware(), h.creation_day, h.creation_year, h.PointOffset(),
-                                      h.VlrCount(), h.PointFormatID(), h.PointRecordLength(), h.scale, h.offset, h.max,
-                                      h.min, h.EvlrOffset(), h.EvlrCount(), h.PointCount(), h.points_by_return);
+                                      h.VlrCount(), h.PointFormatID(), h.PointRecordLength(), h.Scale(), h.Offset(),
+                                      h.max, h.min, h.EvlrOffset(), h.EvlrCount(), h.PointCount(), h.points_by_return);
             },
             [](py::tuple t) { // __setstate__
                 if (t.size() != 19)
@@ -492,8 +492,8 @@ PYBIND11_MODULE(copclib, m)
 
                 /* Create a new C++ instance */
                 las::LasHeader h(t[9].cast<int8_t>(), t[10].cast<uint16_t>(), t[7].cast<uint32_t>(),
-                                 t[17].cast<uint64_t>(), t[8].cast<uint32_t>(), t[15].cast<uint64_t>(),
-                                 t[16].cast<uint32_t>());
+                                 t[17].cast<uint64_t>(), t[8].cast<uint32_t>(), t[11].cast<Vector3>(),
+                                 t[12].cast<Vector3>(), t[15].cast<uint64_t>(), t[16].cast<uint32_t>());
                 h.file_source_id = t[0].cast<uint16_t>();
                 h.global_encoding = t[1].cast<uint16_t>();
                 h.GUID(t[2].cast<std::string>());
@@ -501,8 +501,6 @@ PYBIND11_MODULE(copclib, m)
                 h.GeneratingSoftware(t[4].cast<std::string>());
                 h.creation_day = t[5].cast<uint16_t>();
                 h.creation_year = t[6].cast<uint16_t>();
-                h.scale = t[11].cast<Vector3>();
-                h.offset = t[12].cast<Vector3>();
                 h.max = t[13].cast<Vector3>();
                 h.min = t[14].cast<Vector3>();
                 h.points_by_return = t[18].cast<std::array<uint64_t, 15>>();

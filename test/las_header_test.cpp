@@ -31,12 +31,12 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
         REQUIRE(las_header_origin.PointOffset() == las_header.PointOffset());
         REQUIRE(las_header_origin.PointCount() == las_header.PointCount());
         REQUIRE(las_header_origin.points_by_return == las_header.points_by_return);
-        REQUIRE(las_header_origin.scale.x == las_header.scale.x);
-        REQUIRE(las_header_origin.scale.y == las_header.scale.y);
-        REQUIRE(las_header_origin.scale.z == las_header.scale.z);
-        REQUIRE(las_header_origin.offset.x == las_header.offset.x);
-        REQUIRE(las_header_origin.offset.y == las_header.offset.y);
-        REQUIRE(las_header_origin.offset.z == las_header.offset.z);
+        REQUIRE(las_header_origin.Scale().x == las_header.Scale().x);
+        REQUIRE(las_header_origin.Scale().y == las_header.Scale().y);
+        REQUIRE(las_header_origin.Scale().z == las_header.Scale().z);
+        REQUIRE(las_header_origin.Offset().x == las_header.Offset().x);
+        REQUIRE(las_header_origin.Offset().y == las_header.Offset().y);
+        REQUIRE(las_header_origin.Offset().z == las_header.Offset().z);
         REQUIRE(las_header_origin.max == las_header.max);
         REQUIRE(las_header_origin.min == las_header.min);
         REQUIRE(las_header_origin.VlrCount() == las_header.VlrCount());

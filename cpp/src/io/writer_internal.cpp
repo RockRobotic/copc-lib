@@ -17,8 +17,8 @@ namespace copc::Internal
 void WriterInternal::ComputeOffsetToPointData()
 {
 
-    size_t extents_offset = CopcExtents::GetByteSize(copc_file_writer_->LasHeader()->PointFormatID(),
-                                                     copc_file_writer_->ExtraBytesVlr().items.size()) +
+    size_t extents_offset = CopcExtents::ByteSize(copc_file_writer_->LasHeader()->PointFormatID(),
+                                                  copc_file_writer_->ExtraBytesVlr().items.size()) +
                             lazperf::vlr_header::Size;
 
     size_t wkt_offset = copc_file_writer_->Wkt().size() + lazperf::vlr_header::Size;
@@ -30,9 +30,9 @@ void WriterInternal::ComputeOffsetToPointData()
     OFFSET_TO_POINT_DATA += extents_offset + wkt_offset + eb_offset;
 }
 
-WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_file_writer,
+WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
                                std::shared_ptr<Hierarchy> hierarchy)
-    : out_stream_(out_stream), copc_file_writer_(copc_file_writer), hierarchy_(hierarchy)
+    : out_stream_(out_stream), copc_file_writer_(copc_config), hierarchy_(hierarchy)
 {
     // Update OFFSET_TO_POINT_DATA based on WKT and Extents
     ComputeOffsetToPointData();

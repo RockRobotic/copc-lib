@@ -13,11 +13,11 @@ Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector
     if (point_format_id < 0 || point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10.");
 
-    point_record_length_ = ComputePointBytes(point_format_id, eb_byte_size);
+    point_record_length_ = PointByteSize(point_format_id, eb_byte_size);
 }
 
 Points::Points(const LasHeader &header)
-    : Points(header.PointFormatID(), header.scale, header.offset, header.EbByteSize()){};
+    : Points(header.PointFormatID(), header.Scale(), header.Offset(), header.EbByteSize()){};
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {
@@ -40,7 +40,7 @@ void Points::ToPointFormat(const int8_t &point_format_id)
         point->ToPointFormat(point_format_id);
     unsigned int eb_byte_size = point_record_length_ - PointBaseByteSize(point_format_id_);
     point_format_id_ = point_format_id;
-    point_record_length_ = ComputePointBytes(point_format_id, eb_byte_size);
+    point_record_length_ = PointByteSize(point_format_id, eb_byte_size);
 }
 
 void Points::AddPoint(const std::shared_ptr<Point> &point)
@@ -73,13 +73,13 @@ void Points::AddPoints(std::vector<std::shared_ptr<Point>> points)
 
 Points Points::Unpack(const std::vector<char> &point_data, const LasHeader &header)
 {
-    return Unpack(point_data, header.PointFormatID(), header.EbByteSize(), header.scale, header.offset);
+    return Unpack(point_data, header.PointFormatID(), header.EbByteSize(), header.Scale(), header.Offset());
 }
 
 Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id, const uint16_t &eb_byte_size,
                       const Vector3 &scale, const Vector3 &offset)
 {
-    auto point_record_length = ComputePointBytes(point_format_id, eb_byte_size);
+    auto point_record_length = PointByteSize(point_format_id, eb_byte_size);
     if (point_data.size() % point_record_length != 0)
         throw std::runtime_error("Invalid input point array!");
 

@@ -82,7 +82,7 @@ int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items)
     return PointBaseNumberExtents(point_format_id) + num_eb_items;
 }
 
-size_t CopcExtents::GetByteSize(int8_t point_format_id, uint16_t num_eb_items)
+size_t CopcExtents::ByteSize(int8_t point_format_id, uint16_t num_eb_items)
 {
     return CopcExtents(point_format_id, num_eb_items).ToLazPerf({}, {}, {}).size();
 }

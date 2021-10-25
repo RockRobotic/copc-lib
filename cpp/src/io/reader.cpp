@@ -29,11 +29,11 @@ void Reader::InitReader()
     vlrs_ = ReadVlrHeaders();
 
     auto copc_info = ReadCopcInfoVlr();
-    auto wkt = ReadWKTVlr(vlrs_);
+    auto wkt = ReadWktVlr(vlrs_);
     auto eb = ReadExtraBytesVlr(vlrs_);
     auto copc_extents = ReadCopcExtentsVlr(vlrs_, eb);
 
-    config_ = std::make_shared<copc::CopcConfig>(header, copc_info, copc_extents, wkt.wkt, eb);
+    config_ = copc::CopcConfig(header, copc_info, copc_extents, wkt.wkt, eb);
 
     hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
 }
@@ -89,7 +89,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
                        static_cast<uint16_t>(eb_vlr.items.size()));
 }
 
-las::WktVlr Reader::ReadWKTVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
+las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     auto offset = FetchVlr(vlrs, "LASF_Projection", 2112);
     if (offset != 0)
@@ -151,7 +151,7 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
 las::Points Reader::GetPoints(Node const &node)
 {
     std::vector<char> point_data = GetPointData(node);
-    return las::Points::Unpack(point_data, config_->LasHeader());
+    return las::Points::Unpack(point_data, config_.LasHeader());
 }
 
 las::Points Reader::GetPoints(VoxelKey const &key)
@@ -159,9 +159,9 @@ las::Points Reader::GetPoints(VoxelKey const &key)
     std::vector<char> point_data = GetPointData(key);
 
     if (point_data.empty())
-        return las::Points(config_->LasHeader());
+        return las::Points(config_.LasHeader());
 
-    return las::Points::Unpack(point_data, config_->LasHeader());
+    return las::Points::Unpack(point_data, config_.LasHeader());
 }
 
 std::vector<char> Reader::GetPointData(Node const &node)
@@ -171,7 +171,7 @@ std::vector<char> Reader::GetPointData(Node const &node)
 
     in_stream_->seekg(node.offset);
 
-    auto las_header = config_->LasHeader();
+    auto las_header = config_.LasHeader();
     std::vector<char> point_data = laz::Decompressor::DecompressBytes(*in_stream_, las_header, node.point_count);
     return point_data;
 }
@@ -238,7 +238,7 @@ std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
 
 las::Points Reader::GetAllPoints(double resolution)
 {
-    auto out = las::Points(config_->LasHeader());
+    auto out = las::Points(config_.LasHeader());
 
     auto max_depth = GetDepthAtResolution(resolution);
 
@@ -257,7 +257,7 @@ std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double resolution)
 
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Within(config_->LasHeader(), box) && node.key.d <= max_depth)
+        if (node.key.Within(config_.LasHeader(), box) && node.key.d <= max_depth)
             out.push_back(node);
     }
 
@@ -273,7 +273,7 @@ std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double resolution
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
     {
-        if (node.key.Intersects(config_->LasHeader(), box) && node.key.d <= max_depth)
+        if (node.key.Intersects(config_.LasHeader(), box) && node.key.d <= max_depth)
             out.push_back(node);
     }
 
@@ -283,7 +283,7 @@ std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double resolution
 las::Points Reader::GetPointsWithinBox(const Box &box, double resolution)
 {
     auto max_depth = GetDepthAtResolution(resolution);
-    auto out = las::Points(config_->LasHeader());
+    auto out = las::Points(config_.LasHeader());
 
     // Get all nodes in octree
     for (const auto &node : GetAllChildren())
@@ -291,12 +291,12 @@ las::Points Reader::GetPointsWithinBox(const Box &box, double resolution)
         if (node.key.d <= max_depth)
         {
             // If node fits in Box
-            if (node.key.Within(config_->LasHeader(), box))
+            if (node.key.Within(config_.LasHeader(), box))
             {
                 // If the node is within the box add all points
                 out.AddPoints(GetPoints(node));
             }
-            else if (node.key.Intersects(config_->LasHeader(), box))
+            else if (node.key.Intersects(config_.LasHeader(), box))
             {
                 // If the node only crosses the box then get subset of points within box
                 auto points = GetPoints(node);
@@ -322,7 +322,7 @@ int32_t Reader::GetDepthAtResolution(double resolution)
     if (resolution <= 0.0)
         return max_depth;
 
-    auto current_resolution = config_->CopcInfo().spacing;
+    auto current_resolution = config_.CopcInfo().spacing;
 
     for (int32_t i = 0; i <= max_depth; i++)
     {
@@ -367,7 +367,7 @@ bool Reader::ValidateSpatialBounds(bool verbose)
 {
 
     bool is_valid = true;
-    auto header = config_->LasHeader();
+    auto header = config_.LasHeader();
 
     for (const auto &node : GetAllChildren())
     {
