@@ -38,16 +38,26 @@ std::string CopcExtent::ToString() const
     return ss.str();
 }
 
+// Empty constructor
 CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items) : point_format_id_(point_format_id)
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
-
-    extents_.reserve(NumberOfExtents(point_format_id, num_eb_items));
-    for (int i{0}; i < NumberOfExtents(point_format_id, num_eb_items); i++)
+    auto num_extents = NumberOfExtents(point_format_id, num_eb_items);
+    extents_.reserve(num_extents);
+    for (int i{0}; i < num_extents; i++)
         extents_.push_back(std::make_shared<CopcExtent>());
 }
 
+// Copy constructor
+CopcExtents::CopcExtents(const CopcExtents &extents) : point_format_id_(extents.PointFormatID())
+{
+    extents_.reserve(extents.NumberOfExtents());
+    for (int i{0}; i < extents.NumberOfExtents(); i++)
+        extents_.push_back(std::make_shared<CopcExtent>(extents.Extents()[i]));
+}
+
+// VLR constructor
 CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items)
     : point_format_id_(point_format_id)
 {
@@ -79,7 +89,8 @@ las::CopcExtentsVlr CopcExtents::ToLazPerf(const CopcExtent &x, const CopcExtent
 
 int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items)
 {
-    return PointBaseNumberExtents(point_format_id) + num_eb_items;
+    return las::PointBaseNumberDimensions(point_format_id) - 3 +
+           num_eb_items; // -3 disregards x,y,z since they are not handled in Extents
 }
 
 size_t CopcExtents::ByteSize(int8_t point_format_id, uint16_t num_eb_items)

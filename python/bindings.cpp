@@ -222,15 +222,14 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledZ))
         .def_property("Intensity", py::overload_cast<>(&las::Point::Intensity, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Intensity))
-        .def_property("ExtendedReturnsBitFields",
-                      py::overload_cast<>(&las::Point::ExtendedReturnsBitFields, py::const_),
-                      py::overload_cast<const uint8_t &>(&las::Point::ExtendedReturnsBitFields))
+        .def_property("ReturnsBitField", py::overload_cast<>(&las::Point::ReturnsBitField, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::ReturnsBitField))
         .def_property("ReturnNumber", py::overload_cast<>(&las::Point::ReturnNumber, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::ReturnNumber))
         .def_property("NumberOfReturns", py::overload_cast<>(&las::Point::NumberOfReturns, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::NumberOfReturns))
-        .def_property("ExtendedFlagsBitFields", py::overload_cast<>(&las::Point::ExtendedFlagsBitFields, py::const_),
-                      py::overload_cast<const uint8_t &>(&las::Point::ExtendedFlagsBitFields))
+        .def_property("FlagsBitField", py::overload_cast<>(&las::Point::FlagsBitField, py::const_),
+                      py::overload_cast<const uint8_t &>(&las::Point::FlagsBitField))
         .def_property("Synthetic", py::overload_cast<>(&las::Point::Synthetic, py::const_),
                       py::overload_cast<const bool &>(&las::Point::Synthetic))
         .def_property("KeyPoint", py::overload_cast<>(&las::Point::KeyPoint, py::const_),
@@ -524,9 +523,9 @@ PYBIND11_MODULE(copclib, m)
              py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
              py::arg("extra_bytes_vlr") = las::EbVlr(0))
         .def(py::init<const CopcConfig &>())
-        .def_property_readonly("las_header", &CopcConfigWriter::LasHeader)
-        .def_property_readonly("copc_info", &CopcConfigWriter::CopcInfo)
-        .def_property_readonly("copc_extents", &CopcConfigWriter::CopcExtents)
+        .def_property_readonly("las_header", py::overload_cast<>(&CopcConfigWriter::LasHeader))
+        .def_property_readonly("copc_info", py::overload_cast<>(&CopcConfigWriter::CopcInfo))
+        .def_property_readonly("copc_extents", py::overload_cast<>(&CopcConfigWriter::CopcExtents))
         .def_property_readonly("extra_bytes_vlr", &CopcConfig::ExtraBytesVlr)
         .def_property_readonly("wkt", &CopcConfig::Wkt);
 
@@ -550,6 +549,7 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const std::vector<double> &>(), py::arg("list"))
         .def_readwrite("minimum", &CopcExtent::minimum)
         .def_readwrite("maximum", &CopcExtent::maximum)
+        .def(py::self == py::self)
         .def("__str__", &CopcExtent::ToString)
         .def("__repr__", &CopcExtent::ToString);
 
@@ -557,7 +557,6 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<CopcExtents, std::shared_ptr<CopcExtents>>(m, "CopcExtents")
         .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("num_eb_items") = 0)
-        .def_static("NumberOfExtents", &CopcExtents::NumberOfExtents)
         .def_property_readonly("point_format_id", &CopcExtents::PointFormatID)
         .def_property("intensity", py::overload_cast<>(&CopcExtents::Intensity),
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Intensity))
@@ -591,8 +590,7 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::NIR))
         .def_property("extra_bytes", py::overload_cast<>(&CopcExtents::ExtraBytes),
                       py::overload_cast<std::vector<std::shared_ptr<CopcExtent>>>(&CopcExtents::ExtraBytes))
-        .def_property("extents", py::overload_cast<>(&CopcExtents::Extents),
-                      py::overload_cast<std::vector<std::shared_ptr<CopcExtent>>>(&CopcExtents::Extents))
+        .def_property_readonly("extents", py::overload_cast<>(&CopcExtents::Extents))
         .def("__str__", &CopcExtents::ToString)
         .def("__repr__", &CopcExtents::ToString);
 }

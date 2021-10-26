@@ -10,6 +10,23 @@
 using namespace copc;
 using namespace std;
 
+TEST_CASE("COPC Extent", "[CopcExtent]")
+{
+    CopcExtent extent(-numeric_limits<double>::max(), numeric_limits<double>::max());
+
+    REQUIRE(extent.minimum == -numeric_limits<double>::max());
+    REQUIRE(extent.maximum == numeric_limits<double>::max());
+
+    CopcExtent other(-numeric_limits<double>::max(), numeric_limits<double>::max());
+    REQUIRE(extent == other);
+
+    other = CopcExtent(-numeric_limits<double>::max(), 5);
+
+    REQUIRE(extent != other);
+
+    REQUIRE_THROWS(CopcExtent(1, 0));
+}
+
 TEST_CASE("COPC Extents", "[CopcExtents]")
 {
 
@@ -33,6 +50,8 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             REQUIRE(extents.ExtraBytes().size() == num_eb_items);
             REQUIRE(extents.Intensity()->minimum == 0);
             REQUIRE(extents.Intensity()->maximum == 0);
+            REQUIRE(*extents.Intensity() == CopcExtent(0, 0)); // Test == operator
+            REQUIRE(*extents.Intensity() != CopcExtent(0, 1)); // Test != operator
         }
         // Point format checks
         REQUIRE_THROWS(CopcExtents(5));
@@ -96,6 +115,13 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             extents->ExtraBytes()[0]->minimum = -numeric_limits<double>::max();
             extents->ExtraBytes()[0]->maximum = numeric_limits<double>::max();
 
+            // Vector accessor
+            extents->Extents()[7]->minimum = 78;
+            extents->Extents()[7]->maximum = 79;
+
+            extents->Extents()[8]->minimum = 80;
+            extents->Extents()[8]->maximum = 81;
+
             writer.Close();
         }
         {
@@ -111,6 +137,12 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
             REQUIRE(extents.ExtraBytes()[0]->minimum == -numeric_limits<double>::max());
             REQUIRE(extents.ExtraBytes()[0]->maximum == numeric_limits<double>::max());
+
+            // Vector accessor
+            REQUIRE(*extents.UserData() == CopcExtent(78, 79));
+
+            REQUIRE(extents.Extents()[8]->minimum == 80);
+            REQUIRE(extents.Extents()[8]->maximum == 81);
         }
     }
 

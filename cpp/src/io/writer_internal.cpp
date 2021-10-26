@@ -14,31 +14,31 @@
 namespace copc::Internal
 {
 
-void WriterInternal::ComputeOffsetToPointData()
+size_t WriterInternal::OffsetToPointData() const
 {
+    size_t base_offset(375 + (54 + 160) + (54 + (34 + 4 * 6))); // header + COPC vlr + LAZ vlr (max 4 items)
 
     size_t extents_offset = CopcExtents::ByteSize(copc_file_writer_->LasHeader()->PointFormatID(),
                                                   copc_file_writer_->ExtraBytesVlr().items.size()) +
                             lazperf::vlr_header::Size;
 
-    size_t wkt_offset = copc_file_writer_->Wkt().size() + lazperf::vlr_header::Size;
+    size_t wkt_offset = copc_file_writer_->Wkt().size();
+    if (wkt_offset > 0)
+        wkt_offset += lazperf::vlr_header::Size;
 
     size_t eb_offset = copc_file_writer_->ExtraBytesVlr().size();
     if (eb_offset > 0)
         eb_offset += lazperf::vlr_header::Size;
 
-    OFFSET_TO_POINT_DATA += extents_offset + wkt_offset + eb_offset;
+    return base_offset + extents_offset + wkt_offset + eb_offset;
 }
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
                                std::shared_ptr<Hierarchy> hierarchy)
     : out_stream_(out_stream), copc_file_writer_(copc_config), hierarchy_(hierarchy)
 {
-    // Update OFFSET_TO_POINT_DATA based on WKT and Extents
-    ComputeOffsetToPointData();
-
     // reserve enough space for the header & VLRs in the file
-    std::fill_n(std::ostream_iterator<char>(out_stream_), FIRST_CHUNK_OFFSET(), 0);
+    std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
     open_ = true;
 }
 
@@ -69,8 +69,9 @@ void WriterInternal::WriteHeader()
     laz_vlr lazVlr(copc_file_writer_->LasHeader()->PointFormatID(), copc_file_writer_->LasHeader()->EbByteSize(),
                    VARIABLE_CHUNK_SIZE);
 
-    auto las_header_vlr = copc_file_writer_->LasHeader()->ToLazPerf(
-        OFFSET_TO_POINT_DATA, point_count_, evlr_offset_, evlr_count_, copc_file_writer_->LasHeader()->EbByteSize());
+    auto las_header_vlr = copc_file_writer_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_,
+                                                                    evlr_count_, !copc_file_writer_->Wkt().empty(),
+                                                                    copc_file_writer_->LasHeader()->EbByteSize());
 
     out_stream_.seekp(0);
     las_header_vlr.write(out_stream_);
@@ -91,13 +92,16 @@ void WriterInternal::WriteHeader()
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
 
-    // Write WKT VLR
-    lazperf::wkt_vlr wkt_vlr(copc_file_writer_->Wkt());
-    wkt_vlr.header().write(out_stream_);
-    wkt_vlr.write(out_stream_);
+    // Write optional WKT VLR
+    if (!copc_file_writer_->Wkt().empty())
+    {
+        lazperf::wkt_vlr wkt_vlr(copc_file_writer_->Wkt());
+        wkt_vlr.header().write(out_stream_);
+        wkt_vlr.write(out_stream_);
+    }
 
     // Write optional Extra Byte VLR
-    if (copc_file_writer_->LasHeader()->EbByteSize())
+    if (copc_file_writer_->LasHeader()->EbByteSize() > 0)
     {
         auto ebVlr = this->copc_file_writer_->ExtraBytesVlr();
         ebVlr.header().write(out_stream_);
@@ -105,7 +109,7 @@ void WriterInternal::WriteHeader()
     }
 
     // Make sure that we haven't gone over allocated size
-    if (static_cast<int64_t>(out_stream_.tellp()) > OFFSET_TO_POINT_DATA)
+    if (static_cast<int64_t>(out_stream_.tellp()) > OffsetToPointData())
         throw std::runtime_error("WriterInternal::WriteHeader: LasHeader + VLRs are bigger than offset to point data.");
 }
 
@@ -118,7 +122,7 @@ void WriterInternal::WriteChunkTable()
     auto chunk_table_offset = static_cast<int64_t>(out_stream_.tellp());
 
     // Fixup the chunk table to be relative offsets rather than absolute ones.
-    uint64_t prevOffset = FIRST_CHUNK_OFFSET();
+    uint64_t prevOffset = FirstChunkOffset();
     for (auto &c : chunks_)
     {
         uint64_t relOffset = c.offset - prevOffset;
@@ -139,7 +143,7 @@ void WriterInternal::WriteChunkTable()
 
     compress_chunk_table(w.cb(), chunks_, true);
     // go back to where we're supposed to write chunk table offset
-    out_stream_.seekp(OFFSET_TO_POINT_DATA);
+    out_stream_.seekp(OffsetToPointData());
     out_stream_.write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(chunk_table_offset));
 }
 

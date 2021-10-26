@@ -204,11 +204,11 @@ class Point
 
 #pragma region BitFields
 
-    uint8_t ExtendedReturnsBitFields() const { return returns_; }
-    void ExtendedReturnsBitFields(const uint8_t &extended_returns) { returns_ = extended_returns; }
+    uint8_t ReturnsBitField() const { return returns_; }
+    void ReturnsBitField(const uint8_t &extended_returns) { returns_ = extended_returns; }
 
-    uint8_t ExtendedFlagsBitFields() const { return flags_; }
-    void ExtendedFlagsBitFields(const uint8_t &class_flags) { flags_ = class_flags; }
+    uint8_t FlagsBitField() const { return flags_; }
+    void FlagsBitField(const uint8_t &class_flags) { flags_ = class_flags; }
 #pragma endregion BitFields
 
     bool HasRGB() const { return has_rgb_; }

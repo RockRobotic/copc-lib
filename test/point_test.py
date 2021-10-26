@@ -40,8 +40,8 @@ def test_point():
     assert point6.Intensity == 65535
 
     # Return BitField
-    point6.ExtendedReturnsBitFields = 255
-    assert point6.ExtendedReturnsBitFields == 255
+    point6.ReturnsBitField = 255
+    assert point6.ReturnsBitField == 255
 
     # Return Number
     point6.ReturnNumber = 0
@@ -60,8 +60,8 @@ def test_point():
         point6.NumberOfReturns = 16
 
     # Flags
-    point6.ExtendedFlagsBitFields = 255
-    assert point6.ExtendedFlagsBitFields == 255
+    point6.FlagsBitField = 255
+    assert point6.FlagsBitField == 255
 
     # Synthetic
     point6.Synthetic = False

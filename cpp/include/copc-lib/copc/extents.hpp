@@ -24,6 +24,10 @@ class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
     CopcExtent(const las::CopcExtentsVlr::CopcExtent &other);
 
     std::string ToString() const;
+
+    // Operators
+    bool operator==(const CopcExtent &other) const { return minimum == other.minimum && maximum == other.maximum; }
+    bool operator!=(const CopcExtent &other) const { return !(*this == other); }
 };
 
 class CopcExtents
@@ -32,14 +36,28 @@ class CopcExtents
     // Empty constructor
     CopcExtents(int8_t point_format_id, uint16_t num_eb_items = 0);
 
+    // Copy constructor
+    CopcExtents(const CopcExtents &extents);
+
     // VLR constructor
     CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items = 0);
 
     // Getters
     int8_t PointFormatID() const { return point_format_id_; }
 
-    // Get all extents as a vector
+    // Get all extents as a vector of shared_ptrs
     std::vector<std::shared_ptr<CopcExtent>> Extents() { return extents_; }
+
+    // Get all extents as a copy vector
+    std::vector<CopcExtent> Extents() const
+    {
+        std::vector<CopcExtent> vec;
+        vec.reserve(extents_.size());
+
+        for (int i{0}; i < extents_.size(); i++)
+            vec.push_back(*extents_[i]);
+        return vec;
+    }
 
     std::shared_ptr<CopcExtent> Intensity() { return extents_[0]; }
     std::shared_ptr<CopcExtent> ReturnNumber() { return extents_[1]; }
@@ -135,24 +153,19 @@ class CopcExtents
 
     void ExtraBytes(std::vector<std::shared_ptr<CopcExtent>> extra_bytes)
     {
-        if (extra_bytes.size() != (extents_.size() - PointBaseNumberExtents(point_format_id_)))
+        if (extra_bytes.size() != (extents_.size() - NumberOfExtents(point_format_id_)))
             throw std::runtime_error("CopcExtents::ExtraBytesVlr: Vector of extra byte must be the right length.");
-        std::copy(extra_bytes.begin(), extra_bytes.end(), extents_.begin() + PointBaseNumberExtents(point_format_id_));
-    }
-
-    // Set all extents as a vector
-    void Extents(std::vector<std::shared_ptr<CopcExtent>> extents)
-    {
-        if (extents.size() != extents_.size())
-            throw std::runtime_error("CopcExtents::Extents: Vector of extents must be the right length.");
-        extents_ = extents;
+        std::copy(extra_bytes.begin(), extra_bytes.end(), extents_.begin() + NumberOfExtents(point_format_id_));
     }
 
     // Convert to lazperf vlr
     las::CopcExtentsVlr ToLazPerf(const CopcExtent &x, const CopcExtent &y, const CopcExtent &z) const;
 
     // Return the total number of extents
-    static int NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items);
+    size_t NumberOfExtents() const { return extents_.size(); }
+
+    // Return the total number of extents
+    static int NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items = 0);
 
     // Return the size in bytes of the extents
     static size_t ByteSize(int8_t point_format_id, uint16_t num_eb_items);
@@ -160,11 +173,6 @@ class CopcExtents
     std::string ToString() const;
 
   private:
-    static uint8_t PointBaseNumberExtents(int8_t point_format_id)
-    {
-        return las::PointBaseNumberDimensions(point_format_id) - 3;
-    } // Disregard x,y,z since they are automatically populated
-
     int8_t point_format_id_;
     std::vector<std::shared_ptr<CopcExtent>> extents_;
 };

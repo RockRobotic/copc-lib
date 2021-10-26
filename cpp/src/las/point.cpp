@@ -57,20 +57,15 @@ bool Point::operator==(const Point &other) const
     if (x_ != other.UnscaledX() || y_ != other.UnscaledY() || z_ != other.UnscaledZ() ||
         intensity_ != other.Intensity())
         return false;
-    if (ReturnNumber() != other.ReturnNumber() || NumberOfReturns() != other.NumberOfReturns())
+    if (returns_ != other.ReturnsBitField())
         return false;
-    if (ScanDirectionFlag() != other.ScanDirectionFlag() || EdgeOfFlightLineFlag() != other.EdgeOfFlightLineFlag())
+    if (flags_ != other.FlagsBitField())
         return false;
-    if (Classification() != other.Classification())
+    if (classification_ != other.Classification())
         return false;
-    if (Synthetic() != other.Synthetic() || KeyPoint() != other.KeyPoint() || Withheld() != other.Withheld())
+    if (scan_angle_ != other.ScanAngle() || user_data_ != other.UserData() || point_source_id_ != other.PointSourceID())
         return false;
-    if (ScanAngleFloat() != other.ScanAngleFloat() || user_data_ != other.UserData() ||
-        point_source_id_ != other.PointSourceID())
-        return false;
-    if (ExtraBytes() != other.ExtraBytes())
-        return false;
-    if (Overlap() != other.Overlap() || ScannerChannel() != other.ScannerChannel())
+    if (extra_bytes_ != other.ExtraBytes())
         return false;
     if (gps_time_ != other.GPSTime())
         return false;

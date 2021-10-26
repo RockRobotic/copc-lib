@@ -112,9 +112,3 @@ def test_copc_extents():
     for extent in extents.extents:
         assert extent.minimum == 1
         assert extent.maximum == 1
-
-    extents.extents = [(2, 2) for _ in range(len(extents.extents))]
-
-    for extent in extents.extents:
-        assert extent.minimum == 2
-        assert extent.maximum == 2

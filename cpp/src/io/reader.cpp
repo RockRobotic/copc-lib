@@ -97,7 +97,7 @@ las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
         in_stream_->seekg(offset + lazperf::vlr_header::Size);
         return las::WktVlr::create(*in_stream_, vlrs[offset].data_length);
     }
-    return {};
+    return las::WktVlr();
 }
 
 las::EbVlr Reader::ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
@@ -108,7 +108,7 @@ las::EbVlr Reader::ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
         in_stream_->seekg(offset + lazperf::vlr_header::Size);
         return las::EbVlr::create(*in_stream_, vlrs[offset].data_length);
     }
-    return {};
+    return las::EbVlr();
 }
 
 uint64_t Reader::FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
@@ -121,7 +121,7 @@ uint64_t Reader::FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const 
             return offset;
         }
     }
-    return {};
+    return 0;
 }
 
 std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page)

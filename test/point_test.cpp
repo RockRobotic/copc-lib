@@ -42,8 +42,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.Intensity() == std::numeric_limits<uint16_t>::max());
 
         // Return BitField
-        point6.ExtendedReturnsBitFields(std::numeric_limits<uint8_t>::max());
-        REQUIRE(point6.ExtendedReturnsBitFields() == std::numeric_limits<uint8_t>::max());
+        point6.ReturnsBitField(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.ReturnsBitField() == std::numeric_limits<uint8_t>::max());
 
         // Return Number
         point6.ReturnNumber(0);
@@ -60,8 +60,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.NumberOfReturns(16));
 
         // Flags
-        point6.ExtendedFlagsBitFields(std::numeric_limits<uint8_t>::max());
-        REQUIRE(point6.ExtendedFlagsBitFields() == std::numeric_limits<uint8_t>::max());
+        point6.FlagsBitField(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.FlagsBitField() == std::numeric_limits<uint8_t>::max());
 
         // Synthetic
         point6.Synthetic(false);

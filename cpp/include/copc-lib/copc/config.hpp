@@ -24,11 +24,11 @@ class CopcConfig
           copc_extents_(std::make_shared<copc::CopcExtents>(copc_extents)), wkt_(wkt),
           eb_vlr_(std::make_shared<las::EbVlr>(extra_bytes_vlr)){};
 
-    las::LasHeader LasHeader() const { return *header_; }
+    virtual las::LasHeader LasHeader() const { return *header_; }
 
-    copc::CopcInfo CopcInfo() const { return *copc_info_; }
+    virtual copc::CopcInfo CopcInfo() const { return *copc_info_; }
 
-    copc::CopcExtents CopcExtents() const { return *copc_extents_; }
+    virtual copc::CopcExtents CopcExtents() const { return *copc_extents_; }
 
     std::string Wkt() const { return wkt_; }
 
@@ -52,15 +52,28 @@ class CopcConfigWriter : public CopcConfig
                      const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
                      const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
 
+    //    // Copy constructor
+    CopcConfigWriter(const CopcConfigWriter &copc_config)
+        : CopcConfig(copc_config.LasHeader(), copc_config.CopcInfo(), copc_config.CopcExtents(), copc_config.Wkt(),
+                     copc_config.ExtraBytesVlr())
+    {
+    }
+
     // Allow copy from CopcFile
-    CopcConfigWriter(const CopcConfig &file)
-        : CopcConfig(file.LasHeader(), file.CopcInfo(), file.CopcExtents(), file.Wkt(), file.ExtraBytesVlr()){};
+    CopcConfigWriter(const CopcConfig &copc_config)
+        : CopcConfig(copc_config.LasHeader(), copc_config.CopcInfo(), copc_config.CopcExtents(), copc_config.Wkt(),
+                     copc_config.ExtraBytesVlr())
+    {
+    }
 
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }
+    las::LasHeader LasHeader() const override { return *header_; }
 
     std::shared_ptr<copc::CopcInfo> CopcInfo() { return copc_info_; }
+    copc::CopcInfo CopcInfo() const override { return *copc_info_; }
 
     std::shared_ptr<copc::CopcExtents> CopcExtents() { return copc_extents_; }
+    copc::CopcExtents CopcExtents() const override { return *copc_extents_; }
 };
 
 } // namespace copc
