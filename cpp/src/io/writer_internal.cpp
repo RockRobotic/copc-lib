@@ -93,7 +93,7 @@ void WriterInternal::WriteHeader()
 
     auto header = extended_stats_vlr.header();
     header.user_id = "rock_robotic";
-    header.record_id = 10000;
+    header.record_id = 10001;
     header.description = "COPC extended stats";
 
     header.write(out_stream_);
