@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **\[Python/C++\]** Add `CopcExtent` and `CopcExtents` classes
+- **\[Python/C++\]** Add extended stats (mean/var) to `CopcExtent` using an additional Lazperf extents VLR (see README.md for more info).
 - **\[Python/C++\]** Add `GetCopcExtents` function to `CopcConfig`
 - **\[Python/C++\]** Add `GetCopcExtents` and `SetCopcExtents` functions to `Writer`
 - **\[Python\]** Add `reader.extents` property
@@ -22,19 +23,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `LasHeaderBase` class
 - **\[Python/C++\]** Add `ToString` to `LasHeader` class
 - **\[Python/C++\]** Add `VlrHeader` class
+- **\[Python/C++\]** Add a check for `WKT` byte in `LasHeader::FromLazPerf`
 
 ### Changed
 
 - **\[Python/C++\]** Supported LAS point formats are now strictly 6 to 8 throughout the library
 - **\[Python/C++\]** Remove `point_count_14`, `points_by_return_14`, `header_size_`, `wave_offset`, and `version` from `LasHeader`
-- **\[Python/C++\]** Change lazperf depency version requirement to > 2.1.0
-- **\[Python/C++\]** Update autzen-classified.copc.laz test file to COPC v1
+- **\[Python/C++\]** Change lazperf version requirement to > 2.1.0
+- **\[Python/C++\]** Update autzen-classified.copc.laz test file to be latest official
 - **\[Python/C++\]** Change use of `las::CopcVlr::span` to `CopcInfo::spacing`
 - **\[Python/C++\]** Change `CopcConfig::GetWkt` return type from `las::WktVlr` to `std::string`
 - **\[Python/C++\]** Rename `CopcConfig::GetCopc` to `CopcConfig::GetCopcInfo` and now returns a `CopcInfo` class
 - **\[Python/C++\]** Rename `Reader::GetCopcHeader` to `Reader::GetCopcInfo` and now returns a `CopcInfo` class
 - **\[Python/C++\]** `VoxelKey::Resolution` and `VoxelKey::GetResolutionAtDepth`  now take `CopcInfo` argument instead of `las::CopcVlr`
-- **\[Python/C++\]** Remove `Writer::LasConfig`, now using `CopcConfig` instead.
 - **\[Python/C++\]** Remove `Writer::LasConfig`, now using `CopcConfig` instead.
 - **\[Python/C++\]** `Writer` and `FileWriter` constructors now takes a `CopcConfig` class as argument
 - **\[Python/C++\]** Rename `NumExtraBytes` to `EbByteSize`
@@ -60,7 +61,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add a new constructor to `Box` using `Vector3`
 - **\[Python/C++\]** Add scaling functions to `LasHeader`
 - **\[Python/C++\]** Add `ValidateSpatialBounds` function to `Reader`
-- **\[Python/C++\]** Add a check for `WKT` byte in `LasHeader::FromLazPerf`
 
 ### Changed
 
@@ -107,7 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Python bindings
 - Points class for holding multiple "Point"s
 - File path reader/writers
-- Point scaling based on scale_/offset_
+- Point scaling based on scale/offset
 
 ### Changed
 

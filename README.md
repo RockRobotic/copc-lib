@@ -110,12 +110,30 @@ for point in points.Get():
 - \[x\] Add writer for COPC data
 - \[x\] Python bindings
 - \[x\] JavaScript bindings (not planned, see below)
+- \[x\] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 - \[ \] Conda and pip packages
-- \[ \] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 
 ## Note
 
 This version of copc-lib is pinned to a draft version of COPC respective of the state at [COPC.io](https://github.com/copcio/copcio.github.io/tree/a6e8654f65db7c7d438ebea90993bd7a8d59091a).
+
+## ``extended stats`` VLR
+
+| User ID                    | Record ID        |
+| -------------------------- | ---------------- |
+| ``rock_robotic``                   | ``10001``        |
+
+We use a modified lazperf COPC ``extents`` VLR to store mean and variance values for each dimension.
+
+    struct CopcExtent
+    {
+        double minimum; // mean
+        double maximum; // var
+    }
+
+This VLR is optional in the `Reader`, if present, the values are put in `CopcExtents`, if not, default values of `mean=0` and `var=1` are in `CopcExtents`.
+
+This VLR is always written by the `Writer` and default to `mean=0` and `var=1`.
 
 ## Helpful Links
 
