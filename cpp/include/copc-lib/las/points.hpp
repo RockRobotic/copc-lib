@@ -25,7 +25,7 @@ class Points
     Points(const std::vector<std::shared_ptr<Point>> &points);
 
     // Getters
-    int8_t PointFormatID() const { return point_format_id_; }
+    int8_t PointFormatId() const { return point_format_id_; }
     uint32_t PointRecordLength() const { return point_record_length_; }
     uint32_t EbByteSize() const { return copc::las::EbByteSize(point_format_id_, point_record_length_); }
 

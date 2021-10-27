@@ -12,7 +12,7 @@ void ReaderExample()
     // Get the Las Header
     auto las_header = reader.CopcConfig().LasHeader();
     cout << endl << "Las Header:" << endl;
-    cout << "\tPoint Format: " << (int)las_header.PointFormatID() << endl
+    cout << "\tPoint Format: " << (int)las_header.PointFormatId() << endl
          << "\tPoint Count: " << (int)las_header.PointCount() << endl;
 
     // Get the CopcInfo struct

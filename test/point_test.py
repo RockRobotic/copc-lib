@@ -12,15 +12,15 @@ def test_constructor():
         eb_byte_size=0,
     ).CreatePoint()
 
-    assert point.HasRGB() is False
-    assert point.HasNIR() is False
+    assert point.HasRgb() is False
+    assert point.HasNir() is False
 
     point_ext = copc.Points(
         8, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
 
-    assert point_ext.HasRGB() is True
-    assert point_ext.HasNIR() is True
+    assert point_ext.HasRgb() is True
+    assert point_ext.HasNir() is True
 
 
 def test_point():

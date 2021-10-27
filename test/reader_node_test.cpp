@@ -93,10 +93,10 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points[0]->Red() == 16896);
         REQUIRE(points[0]->Green() == 65280);
         REQUIRE(points[0]->Blue() == 1536);
-        REQUIRE(points[0]->PointFormatID() == 7);
+        REQUIRE(points[0]->PointFormatId() == 7);
         REQUIRE(points[0]->PointRecordLength() == 36);
         REQUIRE(points[0]->ExtraBytes().empty());
-        REQUIRE_THROWS(points[0]->NIR());
+        REQUIRE_THROWS(points[0]->Nir());
 
         // Setters
         points[0]->UnscaledX(std::numeric_limits<int32_t>::max());
@@ -115,7 +115,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         points[0]->Red(std::numeric_limits<uint16_t>::max());
         points[0]->Green(std::numeric_limits<uint16_t>::max());
         points[0]->Blue(std::numeric_limits<uint16_t>::max());
-        REQUIRE_THROWS(points[0]->NIR(std::numeric_limits<uint16_t>::max()));
+        REQUIRE_THROWS(points[0]->Nir(std::numeric_limits<uint16_t>::max()));
 
         REQUIRE(points[0]->UnscaledX() == std::numeric_limits<int32_t>::max());
         REQUIRE(points[0]->UnscaledY() == std::numeric_limits<int32_t>::max());

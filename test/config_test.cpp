@@ -37,7 +37,7 @@ TEST_CASE("CopcConfig", "[CopcConfig]")
 
     CopcConfig cfg(header, copc_info, copc_extents, wkt, test_extra_bytes_vlr);
 
-    REQUIRE(cfg.LasHeader().PointFormatID() == point_format_id);
+    REQUIRE(cfg.LasHeader().PointFormatId() == point_format_id);
     REQUIRE(cfg.LasHeader().Scale() == test_scale);
     REQUIRE(cfg.LasHeader().Offset() == test_offset);
 
@@ -72,7 +72,7 @@ TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
     {
         CopcConfigWriter cfg(point_format_id);
 
-        REQUIRE(cfg.LasHeader()->PointFormatID() == point_format_id);
+        REQUIRE(cfg.LasHeader()->PointFormatId() == point_format_id);
         REQUIRE(cfg.LasHeader()->Scale() == Vector3::DefaultScale());
 
         REQUIRE(cfg.CopcInfo()->spacing == 0);
@@ -88,7 +88,7 @@ TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
     {
         CopcConfigWriter cfg(point_format_id, test_scale, test_offset, test_wkt, test_extra_bytes_vlr);
 
-        REQUIRE(cfg.LasHeader()->PointFormatID() == point_format_id);
+        REQUIRE(cfg.LasHeader()->PointFormatId() == point_format_id);
         REQUIRE(cfg.LasHeader()->Scale() == test_scale);
         REQUIRE(cfg.LasHeader()->Offset() == test_offset);
 

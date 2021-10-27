@@ -15,7 +15,7 @@ TEST_CASE("Points tests", "[Point]")
     SECTION("Points constructors")
     {
         auto points = Points(6, {1, 1, 1}, {0, 0, 0}, 4);
-        REQUIRE(points.PointFormatID() == 6);
+        REQUIRE(points.PointFormatId() == 6);
         REQUIRE(points.PointRecordLength() == 34);
         REQUIRE(points.Get().empty());
 
@@ -33,10 +33,10 @@ TEST_CASE("Points tests", "[Point]")
         point_vec.push_back(point3);
 
         points = Points(point_vec);
-        REQUIRE(points.PointFormatID() == 6);
+        REQUIRE(points.PointFormatId() == 6);
         REQUIRE(points.PointRecordLength() == 34);
         for (const auto &point : points.Get())
-            REQUIRE(point->PointFormatID() == 6);
+            REQUIRE(point->PointFormatId() == 6);
         REQUIRE(points.Get(0)->UnscaledX() == 11);
         REQUIRE(points.Get(0)->UnscaledY() == 11);
         REQUIRE(points.Get(0)->UnscaledZ() == 11);
@@ -107,9 +107,9 @@ TEST_CASE("Points tests", "[Point]")
             10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
         points.ToPointFormat(7);
 
-        REQUIRE(points.PointFormatID() == 7);
+        REQUIRE(points.PointFormatId() == 7);
         REQUIRE(points.PointRecordLength() == 40);
-        REQUIRE(points.Get(1)->PointFormatID() == 7);
+        REQUIRE(points.Get(1)->PointFormatId() == 7);
         REQUIRE(points.Get(1)->PointRecordLength() == 40);
 
         REQUIRE_THROWS(points.ToPointFormat(5));

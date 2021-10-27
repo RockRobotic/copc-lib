@@ -64,7 +64,7 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
 
 Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 {
-    if (points.PointFormatID() != config_->LasHeader()->PointFormatID() ||
+    if (points.PointFormatId() != config_->LasHeader()->PointFormatId() ||
         points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
 

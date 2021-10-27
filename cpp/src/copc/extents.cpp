@@ -57,7 +57,7 @@ CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items) : point_
 }
 
 // Copy constructor
-CopcExtents::CopcExtents(const CopcExtents &extents) : point_format_id_(extents.PointFormatID())
+CopcExtents::CopcExtents(const CopcExtents &extents) : point_format_id_(extents.PointFormatId())
 {
     extents_.reserve(extents.NumberOfExtents());
     for (int i{0}; i < extents.NumberOfExtents(); i++)

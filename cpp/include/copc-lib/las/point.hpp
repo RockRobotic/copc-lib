@@ -116,7 +116,7 @@ class Point
 #pragma endregion Flags
 
 #pragma region RGB
-    void RGB(const std::vector<uint16_t> &rgb)
+    void Rgb(const std::vector<uint16_t> &rgb)
     {
         if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB.");
@@ -128,7 +128,7 @@ class Point
         rgb_[2] = rgb[2];
     }
 
-    void RGB(const uint16_t &red, const uint16_t &green, const uint16_t &blue)
+    void Rgb(const uint16_t &red, const uint16_t &green, const uint16_t &blue)
     {
         if (!has_rgb_)
             throw std::runtime_error("This point format does not have RGB.");
@@ -180,13 +180,13 @@ class Point
     double GPSTime() const { return gps_time_; }
     void GPSTime(const double &gps_time) { gps_time_ = gps_time; }
 
-    uint16_t NIR() const
+    uint16_t Nir() const
     {
         if (!has_nir_)
             throw std::runtime_error("This point format does not have NIR.");
         return nir_;
     }
-    void NIR(const uint16_t &nir)
+    void Nir(const uint16_t &nir)
     {
         if (!has_nir_)
             throw std::runtime_error("This point format does not have NIR.");
@@ -211,11 +211,11 @@ class Point
     void FlagsBitField(const uint8_t &class_flags) { flags_ = class_flags; }
 #pragma endregion BitFields
 
-    bool HasRGB() const { return has_rgb_; }
-    bool HasNIR() const { return has_nir_; }
+    bool HasRgb() const { return has_rgb_; }
+    bool HasNir() const { return has_nir_; }
 
     uint32_t PointRecordLength() const { return point_record_length_; }
-    int8_t PointFormatID() const { return point_format_id_; }
+    int8_t PointFormatId() const { return point_format_id_; }
     uint16_t EbByteSize() const;
 
     Vector3 Scale() const { return scale_; }

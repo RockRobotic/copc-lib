@@ -26,7 +26,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->Scale().z == 0.01);
             REQUIRE(las_header->Offset().z == 0);
-            REQUIRE(las_header->PointFormatID() == 6);
+            REQUIRE(las_header->PointFormatId() == 6);
 
             writer.Close();
 
@@ -53,7 +53,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->file_source_id == 200);
-            REQUIRE(las_header->PointFormatID() == 8);
+            REQUIRE(las_header->PointFormatId() == 8);
             REQUIRE(las_header->Scale().x == 2);
             REQUIRE(las_header->Offset().x == -0.02);
             REQUIRE(las_header->Scale().y == 3);
@@ -141,7 +141,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.CopcConfig().LasHeader().creation_day == orig.CopcConfig().LasHeader().creation_day);
             REQUIRE(reader.CopcConfig().LasHeader().creation_year == orig.CopcConfig().LasHeader().creation_year);
             REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
-            REQUIRE(reader.CopcConfig().LasHeader().PointFormatID() == orig.CopcConfig().LasHeader().PointFormatID());
+            REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() == orig.CopcConfig().LasHeader().PointFormatId());
             REQUIRE(reader.CopcConfig().LasHeader().PointRecordLength() ==
                     orig.CopcConfig().LasHeader().PointRecordLength());
             REQUIRE(reader.CopcConfig().LasHeader().PointCount() == 0);
@@ -161,7 +161,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->Scale().z == 0.01);
             REQUIRE(las_header->Offset().z == 0);
-            REQUIRE(las_header->PointFormatID() == 6);
+            REQUIRE(las_header->PointFormatId() == 6);
 
             writer.Close();
 
@@ -182,7 +182,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             auto las_header = writer.CopcConfig()->LasHeader();
             REQUIRE(las_header->file_source_id == 200);
-            REQUIRE(las_header->PointFormatID() == 8);
+            REQUIRE(las_header->PointFormatId() == 8);
             REQUIRE(las_header->Scale().x == 2);
             REQUIRE(las_header->Offset().x == -0.02);
             REQUIRE(las_header->Scale().y == 3);
@@ -255,7 +255,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.CopcConfig().LasHeader().creation_day == orig.CopcConfig().LasHeader().creation_day);
             REQUIRE(reader.CopcConfig().LasHeader().creation_year == orig.CopcConfig().LasHeader().creation_year);
             REQUIRE(reader.CopcConfig().LasHeader().file_source_id == orig.CopcConfig().LasHeader().file_source_id);
-            REQUIRE(reader.CopcConfig().LasHeader().PointFormatID() == orig.CopcConfig().LasHeader().PointFormatID());
+            REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() == orig.CopcConfig().LasHeader().PointFormatId());
             REQUIRE(reader.CopcConfig().LasHeader().PointRecordLength() ==
                     orig.CopcConfig().LasHeader().PointRecordLength());
             REQUIRE(reader.CopcConfig().LasHeader().PointCount() == 0);
@@ -490,7 +490,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.PointFormatID(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -513,7 +513,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.PointFormatID(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -536,7 +536,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.PointFormatID(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -559,7 +559,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         auto header = *writer.CopcConfig()->LasHeader();
         Page root_page = writer.GetRootPage();
 
-        las::Points points(header.PointFormatID(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
         auto point = points.CreatePoint();
         point->X(0.1);

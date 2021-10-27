@@ -10,14 +10,14 @@ Point::Point(const int8_t &point_format_id, const Vector3 &scale, const Vector3 
 
     point_record_length_ = PointBaseByteSize(point_format_id) + eb_byte_size;
 
-    has_rgb_ = FormatHasRGB(point_format_id);
-    has_nir_ = FormatHasNIR(point_format_id);
+    has_rgb_ = FormatHasRgb(point_format_id);
+    has_nir_ = FormatHasNir(point_format_id);
 
     extra_bytes_.resize(eb_byte_size, 0);
 }
 
 Point::Point(const LasHeader &header)
-    : Point(header.PointFormatID(), header.Scale(), header.Offset(), header.EbByteSize()){};
+    : Point(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize()){};
 
 Point::Point(const Point &other) : Point(other.point_format_id_, other.Scale(), other.Offset(), other.EbByteSize())
 {
@@ -71,7 +71,7 @@ bool Point::operator==(const Point &other) const
         return false;
     if (has_rgb_ && (rgb_[0] != other.Red() || rgb_[1] != other.Green() || rgb_[2] != other.Blue()))
         return false;
-    if (has_nir_ && (nir_ != other.NIR()))
+    if (has_nir_ && (nir_ != other.Nir()))
         return false;
     return true;
 }
@@ -145,8 +145,8 @@ void Point::ToPointFormat(const int8_t &point_format_id)
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("Point format must be 6-8.");
     // Update flags
-    has_rgb_ = FormatHasRGB(point_format_id);
-    has_nir_ = FormatHasNIR(point_format_id);
+    has_rgb_ = FormatHasRgb(point_format_id);
+    has_nir_ = FormatHasNir(point_format_id);
     point_record_length_ = PointBaseByteSize(point_format_id) + extra_bytes_.size();
     point_format_id_ = point_format_id;
 }

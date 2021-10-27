@@ -33,7 +33,7 @@ uint8_t PointBaseNumberDimensions(const int8_t &point_format_id)
     }
 }
 
-bool FormatHasRGB(const uint8_t &point_format_id)
+bool FormatHasRgb(const uint8_t &point_format_id)
 {
     switch (point_format_id)
     {
@@ -43,11 +43,11 @@ bool FormatHasRGB(const uint8_t &point_format_id)
     case 8:
         return true;
     default:
-        throw std::runtime_error("FormatHasRGB: Point format must be 6-8");
+        throw std::runtime_error("FormatHasRgb: Point format must be 6-8");
     }
 }
 
-bool FormatHasNIR(const uint8_t &point_format_id)
+bool FormatHasNir(const uint8_t &point_format_id)
 {
     switch (point_format_id)
     {
@@ -57,7 +57,7 @@ bool FormatHasNIR(const uint8_t &point_format_id)
     case 8:
         return true;
     default:
-        throw std::runtime_error("FormatHasNIR: Point format must be 6-8");
+        throw std::runtime_error("FormatHasNir: Point format must be 6-8");
     }
 }
 

@@ -17,13 +17,13 @@ TEST_CASE("Point tests", "[Point]")
 
         auto point = Point(6);
 
-        REQUIRE(point.HasRGB() == false);
-        REQUIRE(point.HasNIR() == false);
+        REQUIRE(point.HasRgb() == false);
+        REQUIRE(point.HasNir() == false);
 
         auto point_ext = Point(8);
 
-        REQUIRE(point_ext.HasRGB() == true);
-        REQUIRE(point_ext.HasNIR() == true);
+        REQUIRE(point_ext.HasRgb() == true);
+        REQUIRE(point_ext.HasNir() == true);
     }
 
     SECTION("Point Test")
@@ -138,31 +138,31 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.PointRecordLength() == 30);
 
         // Checks
-        REQUIRE_THROWS(point6.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
+        REQUIRE_THROWS(point6.Rgb(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
                                   std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point6.Red());
         REQUIRE_THROWS(point6.Green());
         REQUIRE_THROWS(point6.Blue());
-        REQUIRE_THROWS(point6.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point6.NIR());
+        REQUIRE_THROWS(point6.Nir(std::numeric_limits<uint16_t>::max()));
+        REQUIRE_THROWS(point6.Nir());
         REQUIRE_NOTHROW(point6.ToString());
 
         auto point7 = Point(7);
 
-        point7.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
+        point7.Rgb(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
                    std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.Red() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.Green() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.Blue() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.PointRecordLength() == 36);
 
-        REQUIRE_THROWS(point7.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point7.NIR());
+        REQUIRE_THROWS(point7.Nir(std::numeric_limits<uint16_t>::max()));
+        REQUIRE_THROWS(point7.Nir());
 
         auto point8 = Point(8);
 
-        point8.NIR(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point8.NIR() == std::numeric_limits<uint16_t>::max());
+        point8.Nir(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point8.Nir() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point8.PointRecordLength() == 38);
     }
 
@@ -192,7 +192,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Red() == 0);
         REQUIRE(point.Green() == 0);
         REQUIRE(point.Blue() == 0);
-        REQUIRE(point.NIR() == 0);
+        REQUIRE(point.Nir() == 0);
     }
 
     SECTION("Point conversion")
@@ -225,7 +225,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Red() == 0);
         REQUIRE(point.Green() == 0);
         REQUIRE(point.Blue() == 0);
-        REQUIRE_THROWS(point.NIR());
+        REQUIRE_THROWS(point.Nir());
 
         point.Red(150);
         point.Green(200);
@@ -247,7 +247,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Red() == 150);
         REQUIRE(point.Green() == 200);
         REQUIRE(point.Blue() == 250);
-        REQUIRE(point.NIR() == 0);
+        REQUIRE(point.Nir() == 0);
     }
 
     SECTION("Operator == and !=")
@@ -372,23 +372,23 @@ TEST_CASE("Point tests", "[Point]")
         point_other.Blue(4);
         REQUIRE(point == point_other);
 
-        point.NIR(4);
+        point.Nir(4);
         REQUIRE(point != point_other);
-        point_other.NIR(4);
+        point_other.Nir(4);
         REQUIRE(point == point_other);
     }
 
     SECTION("Point ExtraByte")
     {
         auto point = Point(6);
-        REQUIRE(point.PointFormatID() == 6);
+        REQUIRE(point.PointFormatId() == 6);
         REQUIRE(point.PointRecordLength() == 30);
         REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
         REQUIRE(point.ExtraBytes().size() == 0);
         REQUIRE(point.EbByteSize() == 0);
 
         point = Point(6, {}, {}, 5);
-        REQUIRE(point.PointFormatID() == 6);
+        REQUIRE(point.PointFormatId() == 6);
         REQUIRE(point.PointRecordLength() == 30 + 5);
         REQUIRE(point.EbByteSize() == 5);
         REQUIRE(point.ExtraBytes().size() == 5);
@@ -407,7 +407,7 @@ TEST_CASE("Point tests", "[Point]")
 
         point.GPSTime(4.0);
         point.Red(4.0);
-        point.NIR(4.0);
+        point.Nir(4.0);
 
         point.ExtraBytes(std::vector<uint8_t>{2, 5});
 

@@ -18,7 +18,7 @@ size_t WriterInternal::OffsetToPointData() const
 {
     size_t base_offset(375 + (54 + 160) + (54 + (34 + 4 * 6))); // header + COPC vlr + LAZ vlr (max 4 items)
 
-    size_t extents_offset = CopcExtents::ByteSize(copc_file_writer_->LasHeader()->PointFormatID(),
+    size_t extents_offset = CopcExtents::ByteSize(copc_file_writer_->LasHeader()->PointFormatId(),
                                                   copc_file_writer_->ExtraBytesVlr().items.size()) +
                             lazperf::vlr_header::Size;
 
@@ -66,7 +66,7 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader()
 {
-    laz_vlr lazVlr(copc_file_writer_->LasHeader()->PointFormatID(), copc_file_writer_->LasHeader()->EbByteSize(),
+    laz_vlr lazVlr(copc_file_writer_->LasHeader()->PointFormatId(), copc_file_writer_->LasHeader()->EbByteSize(),
                    VARIABLE_CHUNK_SIZE);
 
     auto las_header_vlr = copc_file_writer_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_,

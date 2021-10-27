@@ -6,8 +6,7 @@ namespace copc
 {
 
 // 3D box constructor
-Box::Box(const double &x_min, const double &y_min, const double &z_min, const double &x_max, const double &y_max,
-         const double &z_max)
+Box::Box(double x_min, double y_min, double z_min, double x_max, double y_max, double z_max)
     : x_min(x_min), y_min(y_min), z_min(z_min), x_max(x_max), y_max(y_max), z_max(z_max)
 {
     if (x_max < x_min || y_max < y_min || z_max < z_min)
@@ -15,7 +14,7 @@ Box::Box(const double &x_min, const double &y_min, const double &z_min, const do
 }
 
 // 2D box constructor
-Box::Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max)
+Box::Box(double x_min, double y_min, double x_max, double y_max)
     : Box(x_min, y_min, -std::numeric_limits<double>::max(), x_max, y_max, std::numeric_limits<double>::max())
 {
 }

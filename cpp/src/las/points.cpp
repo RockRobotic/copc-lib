@@ -17,7 +17,7 @@ Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector
 }
 
 Points::Points(const LasHeader &header)
-    : Points(header.PointFormatID(), header.Scale(), header.Offset(), header.EbByteSize()){};
+    : Points(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize()){};
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {
@@ -25,7 +25,7 @@ Points::Points(const std::vector<std::shared_ptr<Point>> &points)
         throw std::runtime_error("Can't add empty vector of points to Points!");
 
     point_record_length_ = points[0]->PointRecordLength();
-    point_format_id_ = points[0]->PointFormatID();
+    point_format_id_ = points[0]->PointFormatId();
     scale_ = points[0]->Scale();
     offset_ = points[0]->Offset();
 
@@ -45,7 +45,7 @@ void Points::ToPointFormat(const int8_t &point_format_id)
 
 void Points::AddPoint(const std::shared_ptr<Point> &point)
 {
-    if (point->PointFormatID() == point_format_id_ && point->PointRecordLength() == point_record_length_)
+    if (point->PointFormatId() == point_format_id_ && point->PointRecordLength() == point_record_length_)
         points_.push_back(point);
     else
         throw std::runtime_error("New point must be of same format and byte_size.");
@@ -53,7 +53,7 @@ void Points::AddPoint(const std::shared_ptr<Point> &point)
 
 void Points::AddPoints(Points points)
 {
-    if (points.PointFormatID() != point_format_id_ || points.PointRecordLength() != point_record_length_)
+    if (points.PointFormatId() != point_format_id_ || points.PointRecordLength() != point_record_length_)
         throw std::runtime_error("New points must be of same format and byte_size.");
 
     auto point_vec = points.Get();
@@ -64,7 +64,7 @@ void Points::AddPoints(std::vector<std::shared_ptr<Point>> points)
 {
     for (const auto &point : points)
     {
-        if (point->PointFormatID() != point_format_id_ || point->PointRecordLength() != point_record_length_)
+        if (point->PointFormatId() != point_format_id_ || point->PointRecordLength() != point_record_length_)
             throw std::runtime_error("New points must be of same format and byte_size.");
     }
 
@@ -73,7 +73,7 @@ void Points::AddPoints(std::vector<std::shared_ptr<Point>> points)
 
 Points Points::Unpack(const std::vector<char> &point_data, const LasHeader &header)
 {
-    return Unpack(point_data, header.PointFormatID(), header.EbByteSize(), header.Scale(), header.Offset());
+    return Unpack(point_data, header.PointFormatId(), header.EbByteSize(), header.Scale(), header.Offset());
 }
 
 Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_format_id, const uint16_t &eb_byte_size,

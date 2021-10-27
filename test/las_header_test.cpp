@@ -16,7 +16,7 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
             las_header.ToLazPerf(las_header.PointOffset(), las_header.PointCount(), las_header.EvlrOffset(),
                                  las_header.EvlrCount(), !reader.CopcConfig().Wkt().empty(), las_header.EbByteSize());
         // Correct the bitshift happening in ToLazPerf for test purpose
-        lazperf_header.point_format_id = las_header.PointFormatID();
+        lazperf_header.point_format_id = las_header.PointFormatId();
         auto las_header_origin = las::LasHeader::FromLazPerf(lazperf_header);
 
         REQUIRE(las_header_origin.file_source_id == las_header.file_source_id);
@@ -26,7 +26,7 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
         REQUIRE(las_header_origin.GeneratingSoftware() == las_header.GeneratingSoftware());
         REQUIRE(las_header_origin.creation_day == las_header.creation_day);
         REQUIRE(las_header_origin.creation_year == las_header.creation_year);
-        REQUIRE(las_header_origin.PointFormatID() == las_header.PointFormatID());
+        REQUIRE(las_header_origin.PointFormatId() == las_header.PointFormatId());
         REQUIRE(las_header_origin.PointRecordLength() == las_header.PointRecordLength());
         REQUIRE(las_header_origin.PointOffset() == las_header.PointOffset());
         REQUIRE(las_header_origin.PointCount() == las_header.PointCount());

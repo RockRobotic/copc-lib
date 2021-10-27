@@ -49,7 +49,7 @@ class CopcExtents
     CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items = 0);
 
     // Getters
-    int8_t PointFormatID() const { return point_format_id_; }
+    int8_t PointFormatId() const { return point_format_id_; }
 
     // Get all extents as a vector of shared_ptrs
     std::vector<std::shared_ptr<CopcExtent>> Extents() { return extents_; }
@@ -99,7 +99,7 @@ class CopcExtents
             throw std::runtime_error("CopcExtents::Blue: This point format does not have Blue");
     }
 
-    std::shared_ptr<CopcExtent> NIR()
+    std::shared_ptr<CopcExtent> Nir()
     {
         if (point_format_id_ == 8)
             return extents_[14];
@@ -149,7 +149,7 @@ class CopcExtents
             throw std::runtime_error("CopcExtents::Blue: This point format does not have Blue");
     }
 
-    void NIR(std::shared_ptr<CopcExtent> nir)
+    void Nir(std::shared_ptr<CopcExtent> nir)
     {
         if (point_format_id_ == 8)
             extents_[14] = nir;

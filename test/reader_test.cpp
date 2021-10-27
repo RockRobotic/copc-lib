@@ -17,7 +17,7 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetHeader Test")
         {
             auto header = reader.CopcConfig().LasHeader();
-            REQUIRE(header.PointFormatID() == 7);
+            REQUIRE(header.PointFormatId() == 7);
             REQUIRE(header.PointCount() == 10653336);
             REQUIRE(header.PointRecordLength() == 36);
             REQUIRE(header.EbByteSize() == 0);
@@ -66,7 +66,7 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE_THAT(copc_extents.Green()->maximum, Catch::Matchers::WithinAbs(65280, 0.0001));
             REQUIRE_THAT(copc_extents.Blue()->minimum, Catch::Matchers::WithinAbs(1536, 0.0001));
             REQUIRE_THAT(copc_extents.Blue()->maximum, Catch::Matchers::WithinAbs(65280, 0.0001));
-            REQUIRE_THROWS(copc_extents.NIR());
+            REQUIRE_THROWS(copc_extents.Nir());
             REQUIRE(copc_extents.ExtraBytes().empty());
         }
 
@@ -99,7 +99,7 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetHeader Test")
         {
             auto header = reader.CopcConfig().LasHeader();
-            REQUIRE(header.PointFormatID() == 7);
+            REQUIRE(header.PointFormatId() == 7);
             REQUIRE(header.PointCount() == 10653336);
         }
 

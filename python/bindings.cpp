@@ -252,7 +252,7 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const uint8_t &>(&las::Point::UserData))
         .def_property("point_source_id", py::overload_cast<>(&las::Point::PointSourceID, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::PointSourceID))
-        .def_property("rgb", nullptr, py::overload_cast<const std::vector<uint16_t> &>(&las::Point::RGB))
+        .def_property("rgb", nullptr, py::overload_cast<const std::vector<uint16_t> &>(&las::Point::Rgb))
         .def_property("red", py::overload_cast<>(&las::Point::Red, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Red))
         .def_property("green", py::overload_cast<>(&las::Point::Green, py::const_),
@@ -261,14 +261,14 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const uint16_t &>(&las::Point::Blue))
         .def_property("gps_time", py::overload_cast<>(&las::Point::GPSTime, py::const_),
                       py::overload_cast<const double &>(&las::Point::GPSTime))
-        .def_property("nir", py::overload_cast<>(&las::Point::NIR, py::const_),
-                      py::overload_cast<const uint16_t &>(&las::Point::NIR))
-        .def_property_readonly("point_format_id", &las::Point::PointFormatID)
+        .def_property("nir", py::overload_cast<>(&las::Point::Nir, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::Nir))
+        .def_property_readonly("point_format_id", &las::Point::PointFormatId)
         .def_property_readonly("point_record_length", &las::Point::PointRecordLength)
         .def_property("extra_bytes", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Point::ExtraBytes))
-        .def("HasRGB", &las::Point::HasRGB)
-        .def("HasNIR", &las::Point::HasNIR)
+        .def("HasRgb", &las::Point::HasRgb)
+        .def("HasNir", &las::Point::HasNir)
         .def("ToPointFormat", &las::Point::ToPointFormat, py::arg("point_format_id"))
         .def("EbByteSize", &las::Point::EbByteSize)
         .def(py::self == py::self)
@@ -304,7 +304,7 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::Classification))
         .def_property("point_source_id", py::overload_cast<>(&las::Points::PointSourceID, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::PointSourceID))
-        .def_property_readonly("point_format_id", &las::Points::PointFormatID)
+        .def_property_readonly("point_format_id", &las::Points::PointFormatId)
         .def_property_readonly("point_record_length", &las::Points::PointRecordLength)
         .def_property_readonly("eb_byte_size", &las::Points::EbByteSize)
         .def("AddPoint", &las::Points::AddPoint)
@@ -439,7 +439,7 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("creation_year", &las::LasHeader::creation_year)
         .def_property_readonly("point_offset", &las::LasHeader::PointOffset)
         .def_property_readonly("vlr_count", &las::LasHeader::VlrCount)
-        .def_property_readonly("point_format_id", &las::LasHeader::PointFormatID)
+        .def_property_readonly("point_format_id", &las::LasHeader::PointFormatId)
         .def_property_readonly("point_record_length", &las::LasHeader::PointRecordLength)
         .def_property_readonly("scale", &las::LasHeader::Scale)
         .def_property_readonly("offset", &las::LasHeader::Offset)
@@ -467,7 +467,7 @@ PYBIND11_MODULE(copclib, m)
                 /* Return a tuple that fully encodes the state of the object */
                 return py::make_tuple(h.file_source_id, h.global_encoding, h.GUID(), h.SystemIdentifier(),
                                       h.GeneratingSoftware(), h.creation_day, h.creation_year, h.PointOffset(),
-                                      h.VlrCount(), h.PointFormatID(), h.PointRecordLength(), h.Scale(), h.Offset(),
+                                      h.VlrCount(), h.PointFormatId(), h.PointRecordLength(), h.Scale(), h.Offset(),
                                       h.max, h.min, h.EvlrOffset(), h.EvlrCount(), h.PointCount(), h.points_by_return);
             },
             [](py::tuple t) { // __setstate__
@@ -545,7 +545,7 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<CopcExtents, std::shared_ptr<CopcExtents>>(m, "CopcExtents")
         .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("num_eb_items") = 0)
-        .def_property_readonly("point_format_id", &CopcExtents::PointFormatID)
+        .def_property_readonly("point_format_id", &CopcExtents::PointFormatId)
         .def_property("intensity", py::overload_cast<>(&CopcExtents::Intensity),
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Intensity))
         .def_property("return_number", py::overload_cast<>(&CopcExtents::ReturnNumber),
@@ -574,8 +574,8 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Green))
         .def_property("blue", py::overload_cast<>(&CopcExtents::Blue),
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Blue))
-        .def_property("nir", py::overload_cast<>(&CopcExtents::NIR),
-                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::NIR))
+        .def_property("nir", py::overload_cast<>(&CopcExtents::Nir),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Nir))
         .def_property("extra_bytes", py::overload_cast<>(&CopcExtents::ExtraBytes),
                       py::overload_cast<std::vector<std::shared_ptr<CopcExtent>>>(&CopcExtents::ExtraBytes))
         .def_property_readonly("extents", py::overload_cast<>(&CopcExtents::Extents))

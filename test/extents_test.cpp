@@ -40,7 +40,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         // Empty constructor
         {
             CopcExtents extents{point_format_id, num_eb_items};
-            REQUIRE(extents.PointFormatID() == point_format_id);
+            REQUIRE(extents.PointFormatId() == point_format_id);
             REQUIRE(extents.ExtraBytes().size() == num_eb_items);
         }
         // Vlr Constructor
@@ -48,7 +48,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             auto vlr = las::CopcExtentsVlr();
             vlr.items.resize(CopcExtents::NumberOfExtents(point_format_id, num_eb_items) + 3, {0, 0});
             CopcExtents extents{vlr, point_format_id, num_eb_items};
-            REQUIRE(extents.PointFormatID() == point_format_id);
+            REQUIRE(extents.PointFormatId() == point_format_id);
             REQUIRE(extents.ExtraBytes().size() == num_eb_items);
             REQUIRE(extents.Intensity()->minimum == 0);
             REQUIRE(extents.Intensity()->maximum == 0);
@@ -72,7 +72,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             FileWriter writer(file_path, cfg);
 
             auto extents = writer.CopcConfig()->CopcExtents();
-            REQUIRE(extents->PointFormatID() == 7);
+            REQUIRE(extents->PointFormatId() == 7);
             REQUIRE(extents->ExtraBytes().size() == 2);
 
             writer.Close();
@@ -82,7 +82,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
             auto extents = reader.CopcConfig().CopcExtents();
 
-            REQUIRE(extents.PointFormatID() == 7);
+            REQUIRE(extents.PointFormatId() == 7);
             REQUIRE(extents.ExtraBytes().size() == 2);
 
             REQUIRE(extents.Intensity()->minimum == 0);
