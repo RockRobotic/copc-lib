@@ -92,7 +92,8 @@ void WriterInternal::WriteHeader()
     auto extended_stats_vlr = copc_file_writer_->CopcExtents()->ToLazPerfExtended();
 
     auto header = extended_stats_vlr.header();
-    header.record_id = 10001;
+    header.user_id = "rock_robotic";
+    header.record_id = 10000;
     header.description = "COPC extended stats";
 
     header.write(out_stream_);

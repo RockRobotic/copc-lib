@@ -89,7 +89,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
                         static_cast<uint16_t>(eb_vlr.items.size()));
 
     // Load mean/var if they exist
-    offset = FetchVlr(vlrs, "copc", 10001);
+    offset = FetchVlr(vlrs, "rock_robotic", 10000);
     if (offset != 0)
     {
         in_stream_->seekg(offset + lazperf::vlr_header::Size);
