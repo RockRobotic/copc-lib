@@ -119,7 +119,7 @@ def test_key_spatial_functions():
     assert not copc.VoxelKey(2, 0, 0, 0).Contains(header, (0, 0, 0, 1, 1, 1))
     ## A box contains itself
     assert copc.VoxelKey(0, 0, 0, 0).Contains(
-        header, (0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())
+        header, (0, 0, 0, header.Span(), header.Span(), header.Span())
     )
 
     # Contains vector
@@ -132,7 +132,7 @@ def test_key_spatial_functions():
     )
     ## A box is within itself
     assert copc.VoxelKey(0, 0, 0, 0).Within(
-        header, (0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())
+        header, (0, 0, 0, header.Span(), header.Span(), header.Span())
     )
 
     # Crosses
@@ -142,7 +142,7 @@ def test_key_spatial_functions():
     assert copc.VoxelKey(1, 0, 0, 0).Crosses(header, (0.5, 0.5, 0.5, 1.5, 1.5, 1.5))
     ## Within
     assert not copc.VoxelKey(0, 0, 0, 0).Crosses(
-        header, (0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())
+        header, (0, 0, 0, header.Span(), header.Span(), header.Span())
     )
     ## Outside
     assert not copc.VoxelKey(1, 0, 0, 0).Crosses(header, (1.1, 1.1, 1.1, 2, 2, 2))

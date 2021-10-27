@@ -448,7 +448,7 @@ TEST_CASE("Writer Copy", "[Writer]")
 
         Page root_page = writer.GetRootPage();
 
-        for (const auto &node : reader.GetAllChildren())
+        for (const auto &node : reader.GetAllNodes())
         {
             // only write/compare compressed data or otherwise tests take too long
             writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
@@ -458,7 +458,7 @@ TEST_CASE("Writer Copy", "[Writer]")
 
         Reader new_reader(&out_stream);
 
-        for (const auto &node : reader.GetAllChildren())
+        for (const auto &node : reader.GetAllNodes())
         {
             REQUIRE(node.IsValid());
             auto new_node = new_reader.FindNode(node.key);

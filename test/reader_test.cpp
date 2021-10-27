@@ -144,7 +144,7 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader]")
     }
 }
 
-TEST_CASE("GetAllChildren Test", "[Reader]")
+TEST_CASE("GetAllChildrenOfPage Test", "[Reader]")
 {
     GIVEN("A valid file path")
     {
@@ -152,19 +152,19 @@ TEST_CASE("GetAllChildren Test", "[Reader]")
 
         {
             // Get root key
-            auto nodes = reader.GetAllChildren();
+            auto nodes = reader.GetAllNodes();
             REQUIRE(nodes.size() == 278);
         }
 
         {
             // Get an invalid key
-            auto nodes = reader.GetAllChildren(VoxelKey::InvalidKey());
+            auto nodes = reader.GetAllChildrenOfPage(VoxelKey::InvalidKey());
             REQUIRE(nodes.empty());
         }
 
         {
             // Get an existing key
-            auto nodes = reader.GetAllChildren(VoxelKey(5, 9, 7, 0));
+            auto nodes = reader.GetAllChildrenOfPage(VoxelKey(5, 9, 7, 0));
             REQUIRE(nodes.size() == 1);
             REQUIRE(nodes[0].IsValid());
             REQUIRE(nodes[0].key == VoxelKey(5, 9, 7, 0));
@@ -172,7 +172,7 @@ TEST_CASE("GetAllChildren Test", "[Reader]")
 
         {
             // Get a non-existing key
-            auto nodes = reader.GetAllChildren(VoxelKey(20, 20, 20, 20));
+            auto nodes = reader.GetAllChildrenOfPage(VoxelKey(20, 20, 20, 20));
             REQUIRE(nodes.empty());
         }
     }
@@ -226,7 +226,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
 
         // Check that all nodes fit in a max-sized box
         subset_nodes = reader.GetNodesWithinBox(Box::MaxBox());
-        auto all_nodes = reader.GetAllChildren();
+        auto all_nodes = reader.GetAllNodes();
         REQUIRE(subset_nodes.size() == all_nodes.size());
     }
 
@@ -282,6 +282,6 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
     {
         auto subset_nodes = reader.GetNodesWithinResolution(3);
         REQUIRE(subset_nodes.size() == 257);
-        REQUIRE(reader.GetNodesWithinResolution(0).size() == reader.GetAllChildren().size());
+        REQUIRE(reader.GetNodesWithinResolution(0).size() == reader.GetAllNodes().size());
     }
 }

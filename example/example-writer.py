@@ -19,8 +19,8 @@ def TrimFileExample(compressor_example_flag):
     # The root page is automatically created and added for us
     root_page = writer.GetRootPage()
 
-    # GetAllChildren will load the entire hierarchy under a given key
-    for node in reader.GetAllChildren(root_page.key):
+    # GetAllNodes will load the entire hierarchy under a given key
+    for node in reader.GetAllNodes():
         # In this example, we'll only save up to depth level 3.
         if node.key.d > 3:
             continue
@@ -52,7 +52,7 @@ def TrimFileExample(compressor_example_flag):
     new_reader = copc.FileReader("autzen-trimmed.copc.laz")
 
     # Let's go through each node we've written and make sure it matches the original
-    for node in new_reader.GetAllChildren():
+    for node in new_reader.GetAllNodes():
         assert new_reader.GetPointDataCompressed(node) == reader.GetPointDataCompressed(
             node.key
         )
@@ -86,7 +86,7 @@ def BoundsTrimFileExample():
     # The root page is automatically created and added for us
     root_page = writer.GetRootPage()
 
-    for node in reader.GetAllChildren():
+    for node in reader.GetAllNodes():
         if node.key.Within(old_header, box):
             # If node is within the box then add all points (without decompressing)
             writer.AddNodeCompressed(
@@ -107,7 +107,7 @@ def BoundsTrimFileExample():
     new_reader = copc.FileReader("autzen-bounds-trimmed.copc.laz")
 
     # Let's go through each point and make sure they fit in the within the Box
-    for node in new_reader.GetAllChildren():
+    for node in new_reader.GetAllNodes():
         points = new_reader.GetPoints(node)
         assert points.Within(box)
 
@@ -137,7 +137,7 @@ def ResolutionTrimFileExample():
     # The root page is automatically created and added for us
     root_page = writer.GetRootPage()
 
-    for node in reader.GetAllChildren():
+    for node in reader.GetAllNodes():
         if node.key.d <= target_depth:
             writer.AddNodeCompressed(
                 root_page,
@@ -156,7 +156,7 @@ def ResolutionTrimFileExample():
     new_copc_info = new_reader.copc_config.copc_info
 
     # Let's go through each node we've written and make sure the resolution is correct
-    for node in new_reader.GetAllChildren():
+    for node in new_reader.GetAllNodes():
         assert node.key.d <= target_depth
 
     # Let's make sure the max resolution is at least as much as we requested
@@ -201,19 +201,19 @@ def RandomPoints(key, las_header, number_points):
         # Create a point with a given point format
         point = points.CreatePoint()
         # point has getters/setters for all attributes
-        point.UnscaledX = random.randint(
+        point.unscaled_x = random.randint(
             math.ceil(las_header.ApplyInverseScaleX(max(las_header.min.x, minx))),
             math.floor(
                 las_header.ApplyInverseScaleX(min(las_header.max.x, minx + step))
             ),
         )
-        point.UnscaledY = random.randint(
+        point.unscaled_y = random.randint(
             math.ceil(las_header.ApplyInverseScaleY(max(las_header.min.y, miny))),
             math.floor(
                 las_header.ApplyInverseScaleY(min(las_header.max.y, miny + step))
             ),
         )
-        point.UnscaledZ = random.randint(
+        point.unscaled_z = random.randint(
             math.ceil(las_header.ApplyInverseScaleZ(max(las_header.min.z, minz))),
             math.floor(
                 las_header.ApplyInverseScaleZ(min(las_header.max.z, minz + step))
@@ -221,7 +221,7 @@ def RandomPoints(key, las_header, number_points):
         )
 
         # For visualization purposes
-        point.PointSourceID = key.d + key.x + key.y + key.z
+        point.point_source_id = key.d + key.x + key.y + key.z
 
         points.AddPoint(point)
     return points

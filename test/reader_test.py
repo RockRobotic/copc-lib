@@ -12,7 +12,7 @@ def test_reader():
     assert header.point_format_id == 7
     assert header.point_count == 10653336
     assert header.point_record_length == 36
-    assert header.eb_byte_size == 0
+    assert header.EbByteSize() == 0
 
     # GetCopcInfo Test
     copc_info = reader.copc_config.copc_info
@@ -86,21 +86,21 @@ def test_get_all_children():
     reader = copc.FileReader("autzen-classified.copc.laz")
 
     # Get root key
-    nodes = reader.GetAllChildren()
+    nodes = reader.GetAllNodes()
     assert len(nodes) == 278
 
     # Get an invalid key
-    nodes = reader.GetAllChildren(copc.VoxelKey.InvalidKey())
+    nodes = reader.GetAllChildrenOfPage(copc.VoxelKey.InvalidKey())
     assert len(nodes) == 0
 
     # Get an existing key
-    nodes = reader.GetAllChildren((5, 9, 7, 0))
+    nodes = reader.GetAllChildrenOfPage((5, 9, 7, 0))
     assert len(nodes) == 1
     assert nodes[0].IsValid()
     assert nodes[0].key == (5, 9, 7, 0)  # Test implicit conversion of key to tuple
 
     # Get a non-existing key
-    nodes = reader.GetAllChildren((20, 20, 20, 20))
+    nodes = reader.GetAllChildrenOfPage((20, 20, 20, 20))
     assert len(nodes) == 0
 
 
@@ -151,7 +151,7 @@ def test_spatial_query_functions():
 
     ## Check that all nodes fit in a max-sized box
     subset_nodes = reader.GetNodesWithinBox(copc.Box.MaxBox())
-    all_nodes = reader.GetAllChildren()
+    all_nodes = reader.GetAllNodes()
     assert len(subset_nodes) == len(all_nodes)
 
     # GetNodesIntersectBox
@@ -198,4 +198,4 @@ def test_spatial_query_functions():
     # GetNodesWithinResolution
     subset_nodes = reader.GetNodesWithinResolution(3)
     assert len(subset_nodes) == 257
-    assert len(reader.GetNodesWithinResolution(0)) == len(reader.GetAllChildren())
+    assert len(reader.GetNodesWithinResolution(0)) == len(reader.GetAllNodes())

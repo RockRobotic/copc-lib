@@ -78,8 +78,11 @@ class LasHeader
     }
     std::string GeneratingSoftware() const { return generating_software_; }
 
-    double GetSpan() const { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
-    Box GetBounds() const;
+    // Returns the scaled size of the maximum dimension of the point cloud
+    double Span() const { return std::max({max.x - min.x, max.y - min.y, max.z - min.z}); }
+
+    // Returns a box that fits the dimensions of the point cloud based on min and max
+    Box Bounds() const;
 
     // Apply Las scale factors to Vector3 or double
     Vector3 ApplyScale(const Vector3 &unscaled_value) const { return unscaled_value * scale_ + offset_; }

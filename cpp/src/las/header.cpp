@@ -10,7 +10,7 @@
 
 namespace copc::las
 {
-Box LasHeader::GetBounds() const { return Box(min, max); }
+Box LasHeader::Bounds() const { return Box(min, max); }
 
 uint16_t LasHeader::EbByteSize() const { return copc::las::EbByteSize(point_format_id_, point_record_length_); }
 

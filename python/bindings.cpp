@@ -1,6 +1,5 @@
 #include <cmath>
 #include <iostream>
-#include <limits>
 #include <string>
 #include <vector>
 
@@ -30,7 +29,6 @@ PYBIND11_MAKE_OPAQUE(std::vector<char>);
 
 PYBIND11_MODULE(copclib, m)
 {
-
     py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol())
         .def(py::pickle(
             [](const std::vector<char> &vec) { // __getstate__
@@ -208,77 +206,71 @@ PYBIND11_MODULE(copclib, m)
     py::implicitly_convertible<py::tuple, Vector3>();
 
     py::class_<las::Point, std::shared_ptr<las::Point>>(m, "Point")
-        .def_property("X", py::overload_cast<>(&las::Point::X, py::const_),
+        .def_property("x", py::overload_cast<>(&las::Point::X, py::const_),
                       py::overload_cast<const double &>(&las::Point::X))
-        .def_property("Y", py::overload_cast<>(&las::Point::Y, py::const_),
+        .def_property("y", py::overload_cast<>(&las::Point::Y, py::const_),
                       py::overload_cast<const double &>(&las::Point::Y))
-        .def_property("Z", py::overload_cast<>(&las::Point::Z, py::const_),
+        .def_property("z", py::overload_cast<>(&las::Point::Z, py::const_),
                       py::overload_cast<const double &>(&las::Point::Z))
-        .def_property("UnscaledX", py::overload_cast<>(&las::Point::UnscaledX, py::const_),
+        .def_property("unscaled_x", py::overload_cast<>(&las::Point::UnscaledX, py::const_),
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledX))
-        .def_property("UnscaledY", py::overload_cast<>(&las::Point::UnscaledY, py::const_),
+        .def_property("unscaled_y", py::overload_cast<>(&las::Point::UnscaledY, py::const_),
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledY))
-        .def_property("UnscaledZ", py::overload_cast<>(&las::Point::UnscaledZ, py::const_),
+        .def_property("unscaled_z", py::overload_cast<>(&las::Point::UnscaledZ, py::const_),
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledZ))
-        .def_property("Intensity", py::overload_cast<>(&las::Point::Intensity, py::const_),
+        .def_property("intensity", py::overload_cast<>(&las::Point::Intensity, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Intensity))
-        .def_property("ReturnsBitField", py::overload_cast<>(&las::Point::ReturnsBitField, py::const_),
+        .def_property("returns_bit_field", py::overload_cast<>(&las::Point::ReturnsBitField, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::ReturnsBitField))
-        .def_property("ReturnNumber", py::overload_cast<>(&las::Point::ReturnNumber, py::const_),
+        .def_property("return_number", py::overload_cast<>(&las::Point::ReturnNumber, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::ReturnNumber))
-        .def_property("NumberOfReturns", py::overload_cast<>(&las::Point::NumberOfReturns, py::const_),
+        .def_property("number_of_returns", py::overload_cast<>(&las::Point::NumberOfReturns, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::NumberOfReturns))
-        .def_property("FlagsBitField", py::overload_cast<>(&las::Point::FlagsBitField, py::const_),
+        .def_property("flags_bit_field", py::overload_cast<>(&las::Point::FlagsBitField, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::FlagsBitField))
-        .def_property("Synthetic", py::overload_cast<>(&las::Point::Synthetic, py::const_),
+        .def_property("synthetic", py::overload_cast<>(&las::Point::Synthetic, py::const_),
                       py::overload_cast<const bool &>(&las::Point::Synthetic))
-        .def_property("KeyPoint", py::overload_cast<>(&las::Point::KeyPoint, py::const_),
+        .def_property("key_point", py::overload_cast<>(&las::Point::KeyPoint, py::const_),
                       py::overload_cast<const bool &>(&las::Point::KeyPoint))
-        .def_property("Withheld", py::overload_cast<>(&las::Point::Withheld, py::const_),
+        .def_property("withheld", py::overload_cast<>(&las::Point::Withheld, py::const_),
                       py::overload_cast<const bool &>(&las::Point::Withheld))
-        .def_property("Overlap", py::overload_cast<>(&las::Point::Overlap, py::const_),
+        .def_property("overlap", py::overload_cast<>(&las::Point::Overlap, py::const_),
                       py::overload_cast<const bool &>(&las::Point::Overlap))
-        .def_property("ScannerChannel", py::overload_cast<>(&las::Point::ScannerChannel, py::const_),
+        .def_property("scanner_channel", py::overload_cast<>(&las::Point::ScannerChannel, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::ScannerChannel))
-        .def_property("ScanDirectionFlag", py::overload_cast<>(&las::Point::ScanDirectionFlag, py::const_),
+        .def_property("scan_direction_flag", py::overload_cast<>(&las::Point::ScanDirectionFlag, py::const_),
                       py::overload_cast<const bool &>(&las::Point::ScanDirectionFlag))
-        .def_property("EdgeOfFlightLineFlag", py::overload_cast<>(&las::Point::EdgeOfFlightLineFlag, py::const_),
+        .def_property("edge_of_flight_line", py::overload_cast<>(&las::Point::EdgeOfFlightLineFlag, py::const_),
                       py::overload_cast<const bool &>(&las::Point::EdgeOfFlightLineFlag))
-        .def_property("Classification", py::overload_cast<>(&las::Point::Classification, py::const_),
+        .def_property("classification", py::overload_cast<>(&las::Point::Classification, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::Classification))
-        .def_property("ScanAngle", py::overload_cast<>(&las::Point::ScanAngle, py::const_),
+        .def_property("scan_angle", py::overload_cast<>(&las::Point::ScanAngle, py::const_),
                       py::overload_cast<const int16_t &>(&las::Point::ScanAngle))
-        .def_property("ScanAngleFloat", py::overload_cast<>(&las::Point::ScanAngleFloat, py::const_),
+        .def_property("scan_angle_float", py::overload_cast<>(&las::Point::ScanAngleFloat, py::const_),
                       py::overload_cast<const float &>(&las::Point::ScanAngleFloat))
-        .def_property("UserData", py::overload_cast<>(&las::Point::UserData, py::const_),
+        .def_property("user_data", py::overload_cast<>(&las::Point::UserData, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::UserData))
-        .def_property("PointSourceID", py::overload_cast<>(&las::Point::PointSourceID, py::const_),
+        .def_property("point_source_id", py::overload_cast<>(&las::Point::PointSourceID, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::PointSourceID))
-        .def_property("RGB", nullptr, py::overload_cast<const std::vector<uint16_t> &>(&las::Point::RGB))
-        .def_property("Red", py::overload_cast<>(&las::Point::Red, py::const_),
+        .def_property("rgb", nullptr, py::overload_cast<const std::vector<uint16_t> &>(&las::Point::RGB))
+        .def_property("red", py::overload_cast<>(&las::Point::Red, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Red))
-        .def_property("Green", py::overload_cast<>(&las::Point::Green, py::const_),
+        .def_property("green", py::overload_cast<>(&las::Point::Green, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Green))
-        .def_property("Blue", py::overload_cast<>(&las::Point::Blue, py::const_),
+        .def_property("blue", py::overload_cast<>(&las::Point::Blue, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Blue))
-        .def_property("GPSTime", py::overload_cast<>(&las::Point::GPSTime, py::const_),
+        .def_property("gps_time", py::overload_cast<>(&las::Point::GPSTime, py::const_),
                       py::overload_cast<const double &>(&las::Point::GPSTime))
-        .def_property("NIR", py::overload_cast<>(&las::Point::NIR, py::const_),
+        .def_property("nir", py::overload_cast<>(&las::Point::NIR, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::NIR))
-
-        .def_property_readonly("HasRGB", &las::Point::HasRGB)
-        .def_property_readonly("HasRGB", &las::Point::HasRGB)
-        .def_property_readonly("HasNIR", &las::Point::HasNIR)
-
-        .def("ToPointFormat", &las::Point::ToPointFormat, py::arg("point_format_id"))
-
-        .def_property_readonly("PointFormatID", &las::Point::PointFormatID)
-        .def_property_readonly("PointRecordLength", &las::Point::PointRecordLength)
-        .def_property_readonly("EbByteSize", &las::Point::EbByteSize)
-
-        .def_property("ExtraBytes", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
+        .def_property_readonly("point_format_id", &las::Point::PointFormatID)
+        .def_property_readonly("point_record_length", &las::Point::PointRecordLength)
+        .def_property("extra_bytes", py::overload_cast<>(&las::Point::ExtraBytes, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Point::ExtraBytes))
-
+        .def("HasRGB", &las::Point::HasRGB)
+        .def("HasNIR", &las::Point::HasNIR)
+        .def("ToPointFormat", &las::Point::ToPointFormat, py::arg("point_format_id"))
+        .def("EbByteSize", &las::Point::EbByteSize)
         .def(py::self == py::self)
         .def(py::self != py::self)
         .def("Within", &las::Point::Within, py::arg("box"))
@@ -302,19 +294,19 @@ PYBIND11_MODULE(copclib, m)
              py::arg("point_format_id"), py::arg("scale"), py::arg("offset"), py::arg("eb_byte_size") = 0)
         .def(py::init<const std::vector<std::shared_ptr<las::Point>> &>(), py::arg("points"))
         .def(py::init<const las::LasHeader &>())
-        .def_property("X", py::overload_cast<>(&las::Points::X, py::const_),
+        .def_property("x", py::overload_cast<>(&las::Points::X, py::const_),
                       py::overload_cast<const std::vector<double> &>(&las::Points::X))
-        .def_property("Y", py::overload_cast<>(&las::Points::Y, py::const_),
+        .def_property("y", py::overload_cast<>(&las::Points::Y, py::const_),
                       py::overload_cast<const std::vector<double> &>(&las::Points::Y))
-        .def_property("Z", py::overload_cast<>(&las::Points::Z, py::const_),
+        .def_property("z", py::overload_cast<>(&las::Points::Z, py::const_),
                       py::overload_cast<const std::vector<double> &>(&las::Points::Z))
-        .def_property("Classification", py::overload_cast<>(&las::Points::Classification, py::const_),
+        .def_property("classification", py::overload_cast<>(&las::Points::Classification, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::Classification))
-        .def_property("PointSourceID", py::overload_cast<>(&las::Points::PointSourceID, py::const_),
+        .def_property("point_source_id", py::overload_cast<>(&las::Points::PointSourceID, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::PointSourceID))
-        .def_property_readonly("PointFormatID", &las::Points::PointFormatID)
-        .def_property_readonly("PointRecordLength", &las::Points::PointRecordLength)
-        .def_property_readonly("EbByteSize", &las::Points::EbByteSize)
+        .def_property_readonly("point_format_id", &las::Points::PointFormatID)
+        .def_property_readonly("point_record_length", &las::Points::PointRecordLength)
+        .def_property_readonly("eb_byte_size", &las::Points::EbByteSize)
         .def("AddPoint", &las::Points::AddPoint)
         .def("AddPoints", py::overload_cast<las::Points>(&las::Points::AddPoints))
         .def("AddPoints", py::overload_cast<std::vector<std::shared_ptr<las::Point>>>(&las::Points::AddPoints))
@@ -337,13 +329,6 @@ PYBIND11_MODULE(copclib, m)
                  i = wrap_i(i, s.Size());
                  s[(SizeType)i] = v;
              })
-        // todo?
-        //.def(
-        //    "__delitem__",
-        //    [wrap_i](las::Points &s, size_t i) {
-        //        i = wrap_i(i, s.Size());
-        //    },
-        //    "Delete the list elements at index ``i``")
         .def("__len__", &las::Points::Size)
         /// Optional sequence protocol operations
         .def(
@@ -401,8 +386,8 @@ PYBIND11_MODULE(copclib, m)
              py::arg("node"))
         .def("GetPointDataCompressed", py::overload_cast<const VoxelKey &>(&Reader::GetPointDataCompressed),
              py::arg("key"))
-        .def("GetAllChildren", py::overload_cast<const VoxelKey &>(&Reader::GetAllChildren), py::arg("key"))
-        .def("GetAllChildren", py::overload_cast<>(&Reader::GetAllChildren))
+        .def("GetAllChildrenOfPage", &Reader::GetAllChildrenOfPage, py::arg("key"))
+        .def("GetAllNodes", &Reader::GetAllNodes)
         .def("GetAllPoints", &Reader::GetAllPoints, py::arg("resolution") = 0)
         .def("GetNodesWithinBox", &Reader::GetNodesWithinBox, py::arg("box"), py::arg("resolution") = 0)
         .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox, py::arg("box"), py::arg("resolution") = 0)
@@ -442,7 +427,6 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<las::LasHeader, std::shared_ptr<las::LasHeader>>(m, "LasHeader")
         .def(py::init<>())
-        .def_property_readonly("eb_byte_size", &las::LasHeader::EbByteSize)
         .def_readwrite("file_source_id", &las::LasHeader::file_source_id)
         .def_readwrite("global_encoding", &las::LasHeader::global_encoding)
         .def_property("guid", py::overload_cast<>(&las::LasHeader::GUID, py::const_),
@@ -461,8 +445,13 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("offset", &las::LasHeader::Offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
-        .def("GetSpan", &las::LasHeader::GetSpan)
-        .def("GetBounds", &las::LasHeader::GetBounds)
+        .def_property_readonly("evlr_offset", &las::LasHeader::EvlrOffset)
+        .def_property_readonly("evlr_count", &las::LasHeader::EvlrCount)
+        .def_property_readonly("point_count", &las::LasHeader::PointCount)
+        .def_readwrite("points_by_return", &las::LasHeader::points_by_return)
+        .def("EbByteSize", &las::LasHeader::EbByteSize)
+        .def("Span", &las::LasHeader::Span)
+        .def("Bounds", &las::LasHeader::Bounds)
         .def("ApplyScale", &las::LasHeader::ApplyScale)
         .def("ApplyInverseScale", &las::LasHeader::ApplyInverseScale)
         .def("ApplyScaleX", &las::LasHeader::ApplyScaleX)
@@ -471,10 +460,6 @@ PYBIND11_MODULE(copclib, m)
         .def("ApplyInverseScaleX", &las::LasHeader::ApplyInverseScaleX)
         .def("ApplyInverseScaleY", &las::LasHeader::ApplyInverseScaleY)
         .def("ApplyInverseScaleZ", &las::LasHeader::ApplyInverseScaleZ)
-        .def_property_readonly("evlr_offset", &las::LasHeader::EvlrOffset)
-        .def_property_readonly("evlr_count", &las::LasHeader::EvlrCount)
-        .def_property_readonly("point_count", &las::LasHeader::PointCount)
-        .def_readwrite("points_by_return", &las::LasHeader::points_by_return)
         .def("__str__", &las::LasHeader::ToString)
         .def("__repr__", &las::LasHeader::ToString)
         .def(py::pickle(
@@ -545,7 +530,8 @@ PYBIND11_MODULE(copclib, m)
 
     py::class_<CopcExtent, std::shared_ptr<CopcExtent>>(m, "CopcExtent")
         .def(py::init<>())
-        .def(py::init<double, double>(), py::arg("minimum"), py::arg("maximum"))
+        .def(py::init<double, double, double, double>(), py::arg("minimum"), py::arg("maximum"), py::arg("mean") = 0,
+             py::arg("var") = 1)
         .def(py::init<const std::vector<double> &>(), py::arg("list"))
         .def_readwrite("minimum", &CopcExtent::minimum)
         .def_readwrite("maximum", &CopcExtent::maximum)

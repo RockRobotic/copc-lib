@@ -117,8 +117,7 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
         REQUIRE(VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, 1, 1, 1)));
         REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(header, Box(0, 0, 0, 1, 1, 1)));
         // A box contains itself
-        REQUIRE(
-            VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, header.Span(), header.Span(), header.Span())));
     }
 
     SECTION("Contains vector")
@@ -131,8 +130,7 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
     {
         REQUIRE(VoxelKey(1, 1, 1, 1).Within(header, Box(0.99, 0.99, 0.99, 2.01, 2.01, 2.01)));
         // A box is within itself
-        REQUIRE(
-            VoxelKey(0, 0, 0, 0).Within(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Within(header, Box(0, 0, 0, header.Span(), header.Span(), header.Span())));
     }
 
     SECTION("Crosses")
@@ -142,8 +140,7 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
         // Crossing on all axis
         REQUIRE(VoxelKey(1, 0, 0, 0).Crosses(header, Box(0.5, 0.5, 0.5, 1.5, 1.5, 1.5)));
         // Within
-        REQUIRE(
-            !VoxelKey(0, 0, 0, 0).Crosses(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        REQUIRE(!VoxelKey(0, 0, 0, 0).Crosses(header, Box(0, 0, 0, header.Span(), header.Span(), header.Span())));
         // Outside
         REQUIRE(!VoxelKey(1, 0, 0, 0).Crosses(header, Box(1.1, 1.1, 1.1, 2, 2, 2)));
     }

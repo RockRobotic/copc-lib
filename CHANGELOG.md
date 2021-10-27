@@ -45,6 +45,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python\]** Change `reader.CopcConfig().ExtraBytesVlr()` function to `reader.extra_bytes_vlr` property
 - **\[C++\]** Add `create_test_data.py` and `create_test_data.sh` to create data for `writer_node_test.cpp`
 - **\[Python\]** Make `VoxelKey.BaseKey` and `VoxelKey.InvalidKey` static functions
+- **\[Python\]** Update `Point` and `Points` property names from `CamelCase` to `under_score`
+- **\[Python/C++\]** Rename `Reader::GetAllChildren(VoxelKey)` to `Reader::GetAllChildrenOfPage(VoxelKey)`
+- **\[Python/C++\]** Rename `Reader::GetAllChildren()` to `Reader::GetAllNodes()`
 
 ## [1.3.1] - 2021-10-19
 

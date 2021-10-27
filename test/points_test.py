@@ -7,8 +7,8 @@ def test_points_constructor():
     points = copc.Points(
         6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
-    assert points.PointFormatID == 6
-    assert points.PointRecordLength == 34
+    assert points.point_format_id == 6
+    assert points.point_record_length == 34
     assert len(points) == 0
 
     point1 = copc.Points(
@@ -17,9 +17,9 @@ def test_points_constructor():
         copc.Vector3.DefaultOffset(),
         eb_byte_size=4,
     ).CreatePoint()
-    point1.UnscaledX = 11
-    point1.UnscaledY = 11
-    point1.UnscaledZ = 11
+    point1.unscaled_x = 11
+    point1.unscaled_y = 11
+    point1.unscaled_z = 11
 
     point_list = [
         point1,
@@ -38,12 +38,12 @@ def test_points_constructor():
     ]
 
     points = copc.Points(point_list)
-    assert points.PointFormatID == 6
-    assert points.PointRecordLength == 34
+    assert points.point_format_id == 6
+    assert points.point_record_length == 34
     for point in points:
-        assert point.PointFormatID == 6
-    assert points[0].UnscaledY == 11
-    assert points[0].UnscaledZ == 11
+        assert point.point_format_id == 6
+    assert points[0].unscaled_y == 11
+    assert points[0].unscaled_z == 11
 
     str(points)
 
@@ -58,16 +58,16 @@ def test_adding_point_to_points():
         copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
-    point.UnscaledX = 11
-    point.UnscaledY = 11
-    point.UnscaledZ = 11
+    point.unscaled_x = 11
+    point.unscaled_y = 11
+    point.unscaled_z = 11
 
     points.AddPoint(point)
 
     assert len(points) == 1
-    assert points[0].UnscaledX == 11
-    assert points[0].UnscaledY == 11
-    assert points[0].UnscaledZ == 11
+    assert points[0].unscaled_x == 11
+    assert points[0].unscaled_y == 11
+    assert points[0].unscaled_z == 11
 
     point = copc.Points(
         6,
@@ -75,15 +75,15 @@ def test_adding_point_to_points():
         copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
-    point.UnscaledX = 22
-    point.UnscaledY = 22
-    point.UnscaledZ = 22
+    point.unscaled_x = 22
+    point.unscaled_y = 22
+    point.unscaled_z = 22
 
     points.AddPoint(point)
     assert len(points) == 2
-    assert points[1].UnscaledX == 22
-    assert points[1].UnscaledY == 22
-    assert points[1].UnscaledZ == 22
+    assert points[1].unscaled_x == 22
+    assert points[1].unscaled_y == 22
+    assert points[1].unscaled_z == 22
 
     # Test check on point format
     point = copc.Points(
@@ -179,10 +179,10 @@ def test_points_format_conversion():
     )
     points.ToPointFormat(7)
 
-    assert points.PointFormatID == 7
-    assert points.PointRecordLength == 40
-    assert points[0].PointFormatID == 7
-    assert points[0].PointRecordLength == 40
+    assert points.point_format_id == 7
+    assert points.point_record_length == 40
+    assert points[0].point_format_id == 7
+    assert points[0].point_record_length == 40
 
     with pytest.raises(RuntimeError):
         points.ToPointFormat(5)
@@ -199,11 +199,11 @@ def test_points_iterator():
     num_points = 2000
     for i in range(num_points):
         p = points.CreatePoint()
-        p.Classification = i % 32
+        p.classification = i % 32
         points.AddPoint(p)
 
-    classification_index = [points[i].Classification for i in range(num_points)]
-    classification_iterator = [p.Classification for p in points]
+    classification_index = [points[i].classification for i in range(num_points)]
+    classification_iterator = [p.classification for p in points]
 
     for i, clas in enumerate(classification_index):
         assert clas == i % 32
@@ -220,59 +220,59 @@ def test_points_group_accessors():
     num_points = 2000
     for i in range(num_points):
         p = points.CreatePoint()
-        p.X = i
-        p.Y = i * 3
-        p.Z = i - 80
+        p.x = i
+        p.y = i * 3
+        p.z = i - 80
         points.AddPoint(p)
 
     assert len(points) == num_points
 
     # test that the getters work
     for i in range(num_points):
-        assert points.X[i] == i
-        assert points.Y[i] == i * 3
-        assert points.Z[i] == i - 80
+        assert points.x[i] == i
+        assert points.y[i] == i * 3
+        assert points.z[i] == i - 80
 
     # generate vector of coordinates
-    Xn = []
-    Yn = []
-    Zn = []
+    xn = []
+    yn = []
+    zn = []
     with pytest.raises(RuntimeError):
-        points.X = Xn
-        points.Y = Yn
-        points.Z = Zn
+        points.x = xn
+        points.y = yn
+        points.z = zn
 
     for i in range(num_points - 1):
-        Xn.append(i * 50 + 8)
-        Yn.append(i + 800)
-        Zn.append(i * 4)
+        xn.append(i * 50 + 8)
+        yn.append(i + 800)
+        zn.append(i * 4)
 
     with pytest.raises(RuntimeError):
-        points.X = Xn
-        points.Y = Yn
-        points.Z = Zn
+        points.x = xn
+        points.y = yn
+        points.z = zn
 
     # add the last point
-    Xn.append(1)
-    Yn.append(2)
-    Zn.append(3)
+    xn.append(1)
+    yn.append(2)
+    zn.append(3)
 
     # test setters
-    points.X = Xn
-    points.Y = Yn
-    points.Z = Zn
+    points.x = xn
+    points.y = yn
+    points.z = zn
 
     for i in range(num_points - 1):
         p = points[i]
-        assert p.X == i * 50 + 8
-        assert p.Y == i + 800
-        assert p.Z == i * 4
+        assert p.x == i * 50 + 8
+        assert p.y == i + 800
+        assert p.z == i * 4
 
     # test negative indices
     last_point = points[-1]
-    assert last_point.X == 1
-    assert last_point.Y == 2
-    assert last_point.Z == 3
+    assert last_point.x == 1
+    assert last_point.y == 2
+    assert last_point.z == 3
 
 
 def test_within():
@@ -282,17 +282,17 @@ def test_within():
     # generate points
     for i in range(2000):
         p = points.CreatePoint()
-        p.X = random.uniform(0, 5)
-        p.Y = random.uniform(0, 5)
-        p.Z = random.uniform(0, 5)
+        p.x = random.uniform(0, 5)
+        p.y = random.uniform(0, 5)
+        p.z = random.uniform(0, 5)
         points.AddPoint(p)
 
     assert points.Within(copc.Box(0, 0, 0, 5, 5, 5))
 
     p = points.CreatePoint()
-    p.X = random.uniform(0, 5)
-    p.Y = random.uniform(0, 5)
-    p.Z = 6
+    p.x = random.uniform(0, 5)
+    p.y = random.uniform(0, 5)
+    p.z = 6
     points.AddPoint(p)
 
     assert not points.Within(copc.Box(0, 0, 0, 5, 5, 5))
@@ -305,9 +305,9 @@ def test_get_within():
     # generate points
     for i in range(2000):
         p = points.CreatePoint()
-        p.X = random.uniform(0, 5)
-        p.Y = random.uniform(0, 5)
-        p.Z = random.uniform(0, 5)
+        p.x = random.uniform(0, 5)
+        p.y = random.uniform(0, 5)
+        p.z = random.uniform(0, 5)
         points.AddPoint(p)
 
     box = copc.Box(0, 0, 0, 2.5, 2.5, 2.5)
@@ -324,15 +324,15 @@ def test_points_accessors():
     num_points = 2000
     for i in range(num_points):
         p = points.CreatePoint()
-        p.X = i
-        p.Y = i * 3
-        p.Z = i - 80
-        p.Classification = i * 255 // num_points
-        p.PointSourceID = i * 255 // num_points
+        p.x = i
+        p.y = i * 3
+        p.z = i - 80
+        p.classification = i * 255 // num_points
+        p.point_source_id = i * 255 // num_points
         points.AddPoint(p)
 
     for i, (x, y, z, classification, point_source_id) in enumerate(
-        zip(points.X, points.Y, points.Z, points.Classification, points.PointSourceID)
+        zip(points.x, points.y, points.z, points.classification, points.point_source_id)
     ):
         assert x == i
         assert y == i * 3
@@ -341,36 +341,36 @@ def test_points_accessors():
         assert point_source_id == i * 255 // num_points
 
     # test slice
-    assert points.X[5:10] == [x for x in range(5, 10)]
-    assert points.Y[-10:] == [x * 3 for x in range(1990, 2000)]
-    assert points.Z[:10] == [x - 80 for x in range(0, 10)]
-    assert points.Classification[:10] == [x * 255 // num_points for x in range(0, 10)]
-    assert points.PointSourceID[:10] == [x * 255 // num_points for x in range(0, 10)]
+    assert points.x[5:10] == [x for x in range(5, 10)]
+    assert points.y[-10:] == [x * 3 for x in range(1990, 2000)]
+    assert points.z[:10] == [x - 80 for x in range(0, 10)]
+    assert points.classification[:10] == [x * 255 // num_points for x in range(0, 10)]
+    assert points.point_source_id[:10] == [x * 255 // num_points for x in range(0, 10)]
 
     # test index setter
     for i in range(len(points)):
         p = points[i]
-        p.X = 20
-        p.Y = 30
-        p.Z = 40
-        p.Classification = 50
-        p.PointSourceID = 50
+        p.x = 20
+        p.y = 30
+        p.z = 40
+        p.classification = 50
+        p.point_source_id = 50
 
-    assert all([x == 20 for x in points.X])
-    assert all([y == 30 for y in points.Y])
-    assert all([z == 40 for z in points.Z])
-    assert all([classification == 50 for classification in points.Classification])
-    assert all([point_source_id == 50 for point_source_id in points.PointSourceID])
+    assert all([x == 20 for x in points.x])
+    assert all([y == 30 for y in points.y])
+    assert all([z == 40 for z in points.z])
+    assert all([classification == 50 for classification in points.classification])
+    assert all([point_source_id == 50 for point_source_id in points.point_source_id])
 
     # test iterator setter
     for p in points:
-        p.X = -50
-        p.Y = -60
-        p.Z = -70
+        p.x = -50
+        p.y = -60
+        p.z = -70
 
-    assert all([x == -50 for x in points.X])
-    assert all([y == -60 for y in points.Y])
-    assert all([z == -70 for z in points.Z])
+    assert all([x == -50 for x in points.x])
+    assert all([y == -60 for y in points.y])
+    assert all([z == -70 for z in points.z])
 
 
 def test_points_indexer_setter():
@@ -383,39 +383,39 @@ def test_points_indexer_setter():
     for i in range(num_points):
         points.AddPoint(points.CreatePoint())
 
-    assert all([x == 0 for x in points.X])
-    assert all([y == 0 for y in points.Y])
-    assert all([z == 0 for z in points.Z])
+    assert all([x == 0 for x in points.x])
+    assert all([y == 0 for y in points.y])
+    assert all([z == 0 for z in points.z])
 
-    points[0].X = 20
-    points[0].Y = 40
-    points[0].Z = 80
-    points[2].Intensity = 60000
+    points[0].x = 20
+    points[0].y = 40
+    points[0].z = 80
+    points[2].intensity = 60000
 
-    assert points[0].X == 20
-    assert points[0].Y == 40
-    assert points[0].Z == 80
-    assert points[2].Intensity == 60000
+    assert points[0].x == 20
+    assert points[0].y == 40
+    assert points[0].z == 80
+    assert points[2].intensity == 60000
 
     # test slicing setters
-    points[:].X = [2] * len(points)
-    points[:].Y = [4] * len(points)
-    points[:].Z = [8] * len(points)
+    points[:].x = [2] * len(points)
+    points[:].y = [4] * len(points)
+    points[:].z = [8] * len(points)
 
-    assert all([x == 2 for x in points.X])
-    assert all([x == 4 for x in points.Y])
-    assert all([x == 8 for x in points.Z])
+    assert all([x == 2 for x in points.x])
+    assert all([x == 4 for x in points.y])
+    assert all([x == 8 for x in points.z])
 
     # TODO: Allow the user to set all values the same
-    points[1000:].X = [-2] * 1000
-    points[1500:1600].Y = [-4] * 100
-    points[-5:].Z = [-8] * 5
+    points[1000:].x = [-2] * 1000
+    points[1500:1600].y = [-4] * 100
+    points[-5:].z = [-8] * 5
 
-    assert all([x == -2 for i, x in enumerate(points.X) if i >= 1000])
-    assert all([x != -2 for i, x in enumerate(points.X) if not i >= 1000])
-    assert all([x == -4 for i, x in enumerate(points.Y) if i >= 1500 and i < 1600])
+    assert all([x == -2 for i, x in enumerate(points.x) if i >= 1000])
+    assert all([x != -2 for i, x in enumerate(points.x) if not i >= 1000])
+    assert all([x == -4 for i, x in enumerate(points.y) if i >= 1500 and i < 1600])
     assert all(
-        [x != -4 for i, x in enumerate(points.Y) if not (i >= 1500 and i < 1600)]
+        [x != -4 for i, x in enumerate(points.y) if not (i >= 1500 and i < 1600)]
     )
-    assert all([x == -8 for i, x in enumerate(points.Z) if i >= len(points) - 5])
-    assert all([x != -8 for i, x in enumerate(points.Z) if not (i >= len(points) - 5)])
+    assert all([x == -8 for i, x in enumerate(points.z) if i >= len(points) - 5])
+    assert all([x != -8 for i, x in enumerate(points.z) if not (i >= len(points) - 5)])

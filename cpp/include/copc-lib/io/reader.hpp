@@ -37,9 +37,9 @@ class Reader : public BaseIO
 
     // Return all children of a page with a given key
     // (or the node itself, if it exists, if there isn't a page with that key)
-    std::vector<Node> GetAllChildren(const VoxelKey &key);
+    std::vector<Node> GetAllChildrenOfPage(const VoxelKey &key);
     // Helper function to get all nodes from the root
-    std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
+    std::vector<Node> GetAllNodes() { return GetAllChildrenOfPage(VoxelKey::BaseKey()); }
 
     // Helper function to get all points from the root
     las::Points GetAllPoints(double resolution = 0);

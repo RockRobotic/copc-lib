@@ -274,7 +274,7 @@ def test_writer_copy():
 
     root_page = writer.GetRootPage()
 
-    for node in reader.GetAllChildren():
+    for node in reader.GetAllNodes():
         # only write/compare compressed data or otherwise tests take too long
         writer.AddNodeCompressed(
             root_page, node.key, reader.GetPointDataCompressed(node), node.point_count
@@ -284,7 +284,7 @@ def test_writer_copy():
 
     # validate
     new_reader = copc.FileReader(file_path)
-    for node in reader.GetAllChildren():
+    for node in reader.GetAllNodes():
         assert node.IsValid()
         new_node = new_reader.FindNode(node.key)
         assert new_node.IsValid()
@@ -319,9 +319,9 @@ def test_check_spatial_bounds():
 
     point = points.CreatePoint()
     # point has getters/setters for all attributes
-    point.X = 10
-    point.Y = 10
-    point.Z = 5
+    point.x = 10
+    point.y = 10
+    point.z = 5
 
     points.AddPoint(point)
 
@@ -340,9 +340,9 @@ def test_check_spatial_bounds():
     points = copc.Points(header.point_format_id, header.scale, header.offset)
 
     point = points.CreatePoint()
-    point.X = 10
-    point.Y = 10
-    point.Z = 5.1
+    point.x = 10
+    point.y = 10
+    point.z = 5.1
 
     points.AddPoint(point)
     writer.AddNode(writer.GetRootPage(), (2, 3, 3, 3), points)
@@ -360,9 +360,9 @@ def test_check_spatial_bounds():
     points = copc.Points(header.point_format_id, header.scale, header.offset)
 
     point = points.CreatePoint()
-    point.X = 10
-    point.Y = 10
-    point.Z = 5.1
+    point.x = 10
+    point.y = 10
+    point.z = 5.1
 
     points.AddPoint(point)
     writer.AddNode(writer.GetRootPage(), (1, 1, 1, 1), points)
@@ -379,9 +379,9 @@ def test_check_spatial_bounds():
     points = copc.Points(header.point_format_id, header.scale, header.offset)
 
     point = points.CreatePoint()
-    point.X = 0.1
-    point.Y = 0.1
-    point.Z = 0.1
+    point.x = 0.1
+    point.y = 0.1
+    point.z = 0.1
 
     points.AddPoint(point)
     writer.AddNode(writer.GetRootPage(), (1, 0, 0, 0), points)

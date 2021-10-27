@@ -224,7 +224,7 @@ std::vector<char> Reader::GetPointDataCompressed(VoxelKey const &key)
     return GetPointDataCompressed(node);
 }
 
-std::vector<Node> Reader::GetAllChildren(const VoxelKey &key)
+std::vector<Node> Reader::GetAllChildrenOfPage(const VoxelKey &key)
 {
     std::vector<Node> out;
     if (!key.IsValid())
@@ -252,7 +252,7 @@ las::Points Reader::GetAllPoints(double resolution)
     auto max_depth = GetDepthAtResolution(resolution);
 
     // Get all nodes in octree
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
         if (node.key.d <= max_depth)
             out.AddPoints(GetPoints(node));
     return out;
@@ -264,7 +264,7 @@ std::vector<Node> Reader::GetNodesWithinBox(const Box &box, double resolution)
 
     auto max_depth = GetDepthAtResolution(resolution);
 
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
     {
         if (node.key.Within(config_.LasHeader(), box) && node.key.d <= max_depth)
             out.push_back(node);
@@ -280,7 +280,7 @@ std::vector<Node> Reader::GetNodesIntersectBox(const Box &box, double resolution
     auto max_depth = GetDepthAtResolution(resolution);
 
     // Get all nodes in octree
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
     {
         if (node.key.Intersects(config_.LasHeader(), box) && node.key.d <= max_depth)
             out.push_back(node);
@@ -295,7 +295,7 @@ las::Points Reader::GetPointsWithinBox(const Box &box, double resolution)
     auto out = las::Points(config_.LasHeader());
 
     // Get all nodes in octree
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
     {
         if (node.key.d <= max_depth)
         {
@@ -321,7 +321,7 @@ int32_t Reader::GetDepthAtResolution(double resolution)
     // Compute max depth
     int32_t max_depth = -1;
     // Get all nodes in octree
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
     {
         if (node.key.d > max_depth)
             max_depth = node.key.d;
@@ -348,7 +348,7 @@ std::vector<Node> Reader::GetNodesAtResolution(double resolution)
 
     std::vector<Node> out;
 
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
     {
         if (node.key.d == target_depth)
             out.push_back(node);
@@ -363,7 +363,7 @@ std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
 
     std::vector<Node> out;
 
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
     {
         if (node.key.d <= target_depth)
             out.push_back(node);
@@ -378,11 +378,11 @@ bool Reader::ValidateSpatialBounds(bool verbose)
     bool is_valid = true;
     auto header = config_.LasHeader();
 
-    for (const auto &node : GetAllChildren())
+    for (const auto &node : GetAllNodes())
     {
 
         // Check if node intersects las header bounds
-        if (!Box(node.key, header).Intersects(header.GetBounds()))
+        if (!Box(node.key, header).Intersects(header.Bounds()))
         {
             is_valid = false;
             if (verbose)
@@ -394,11 +394,11 @@ bool Reader::ValidateSpatialBounds(bool verbose)
         {
             auto points = GetPoints(node);
             // If node not within las header bounds then check individual points
-            if (!Box(node.key, header).Within(header.GetBounds()))
+            if (!Box(node.key, header).Within(header.Bounds()))
             {
                 for (auto const &point : points)
                 {
-                    if (!point->Within(header.GetBounds()))
+                    if (!point->Within(header.Bounds()))
                     {
                         is_valid = false;
                         if (verbose)

@@ -57,7 +57,7 @@ Box::Box(const VoxelKey &key, const las::LasHeader &header)
 {
 
     // Step size accounts for depth level
-    double step = header.GetSpan() / std::pow(2, key.d);
+    double step = header.Span() / std::pow(2, key.d);
 
     x_min = step * key.x + header.min.x;
     y_min = step * key.y + header.min.y;

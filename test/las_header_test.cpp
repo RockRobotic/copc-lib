@@ -47,13 +47,13 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
     }
 }
 
-TEST_CASE("GetBounds", "[LasHeader]")
+TEST_CASE("Bounds", "[LasHeader]")
 {
     GIVEN("A valid file_path")
     {
         FileReader reader("autzen-classified.copc.laz");
         auto las_header = reader.CopcConfig().LasHeader();
-        auto box = las_header.GetBounds();
+        auto box = las_header.Bounds();
         REQUIRE(box.x_min == las_header.min.x);
         REQUIRE(box.y_min == las_header.min.y);
         REQUIRE(box.z_min == las_header.min.z);

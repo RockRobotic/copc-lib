@@ -31,8 +31,8 @@ void TrimFileExample(bool compressor_example_flag)
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
 
-        // GetAllChildren will load the entire hierarchy under a given key
-        for (const auto &node : reader.GetAllChildren(root_page.key))
+        // GetAllNodes will load the entire hierarchy under a given key
+        for (const auto &node : reader.GetAllChildrenOfPage(root_page.key))
         {
             // In this example, we'll only save up to depth level 3.
             if (node.key.d > 3)
@@ -64,7 +64,7 @@ void TrimFileExample(bool compressor_example_flag)
     FileReader new_reader("autzen-trimmed.copc.laz");
 
     // Let's go through each node we've written and make sure it matches the original
-    for (const auto &node : new_reader.GetAllChildren())
+    for (const auto &node : new_reader.GetAllNodes())
     {
         assert(new_reader.GetPointDataCompressed(node) == reader.GetPointDataCompressed(node.key));
 
@@ -102,7 +102,7 @@ void BoundsTrimFileExample()
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
 
-        for (const auto &node : reader.GetAllChildren())
+        for (const auto &node : reader.GetAllNodes())
         {
 
             if (node.key.Within(old_header, box))
@@ -127,7 +127,7 @@ void BoundsTrimFileExample()
     FileReader new_reader("autzen-bounds-trimmed.copc.laz");
 
     // Let's go through each point and make sure they fit within the Box
-    for (const auto &node : new_reader.GetAllChildren())
+    for (const auto &node : new_reader.GetAllNodes())
     {
         auto points = new_reader.GetPoints(node);
         assert(points.Within(box));
@@ -155,7 +155,7 @@ void ResolutionTrimFileExample()
         // The root page is automatically created and added for us
         Page root_page = writer.GetRootPage();
 
-        for (const auto &node : reader.GetAllChildren())
+        for (const auto &node : reader.GetAllNodes())
         {
             if (node.key.d <= target_depth)
             {
@@ -174,7 +174,7 @@ void ResolutionTrimFileExample()
     auto new_copc_info = new_reader.CopcConfig().CopcInfo();
 
     // Let's go through each node we've written and make sure the resolution is correct
-    for (const auto &node : new_reader.GetAllChildren())
+    for (const auto &node : new_reader.GetAllNodes())
     {
         assert(node.key.d <= target_depth);
     }
