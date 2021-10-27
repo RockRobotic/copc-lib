@@ -12,12 +12,14 @@ using namespace std;
 
 TEST_CASE("COPC Extent", "[CopcExtent]")
 {
-    CopcExtent extent(-numeric_limits<double>::max(), numeric_limits<double>::max());
+    CopcExtent extent(-numeric_limits<double>::max(), numeric_limits<double>::max(), 5, 10);
 
     REQUIRE(extent.minimum == -numeric_limits<double>::max());
     REQUIRE(extent.maximum == numeric_limits<double>::max());
+    REQUIRE(extent.mean == 5);
+    REQUIRE(extent.var == 10);
 
-    CopcExtent other(-numeric_limits<double>::max(), numeric_limits<double>::max());
+    CopcExtent other(-numeric_limits<double>::max(), numeric_limits<double>::max(), 5, 10);
     REQUIRE(extent == other);
 
     other = CopcExtent(-numeric_limits<double>::max(), 5);
@@ -108,12 +110,16 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
             extents->Intensity()->minimum = -numeric_limits<double>::max();
             extents->Intensity()->maximum = numeric_limits<double>::max();
+            extents->Intensity()->mean = 15;
+            extents->Intensity()->var = 5;
 
             extents->Classification()->minimum = 0;
             extents->Classification()->maximum = 255;
 
             extents->ExtraBytes()[0]->minimum = -numeric_limits<double>::max();
             extents->ExtraBytes()[0]->maximum = numeric_limits<double>::max();
+            extents->ExtraBytes()[0]->mean = 566;
+            extents->ExtraBytes()[0]->var = 158;
 
             // Vector accessor
             extents->Extents()[7]->minimum = 78;
@@ -131,12 +137,16 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
             REQUIRE(extents.Intensity()->minimum == -numeric_limits<double>::max());
             REQUIRE(extents.Intensity()->maximum == numeric_limits<double>::max());
+            REQUIRE(extents.Intensity()->mean == 15);
+            REQUIRE(extents.Intensity()->var == 5);
 
-            REQUIRE(extents.Classification()->minimum == 0);
-            REQUIRE(extents.Classification()->maximum == 255);
+            REQUIRE(*extents.Classification() == CopcExtent(0, 255));
+            REQUIRE(*extents.Classification() == CopcExtent(0, 255, 0, 1));
 
             REQUIRE(extents.ExtraBytes()[0]->minimum == -numeric_limits<double>::max());
             REQUIRE(extents.ExtraBytes()[0]->maximum == numeric_limits<double>::max());
+            REQUIRE(extents.ExtraBytes()[0]->mean == 566);
+            REQUIRE(extents.ExtraBytes()[0]->var == 158);
 
             // Vector accessor
             REQUIRE(*extents.UserData() == CopcExtent(78, 79));

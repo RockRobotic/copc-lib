@@ -15,9 +15,12 @@ namespace copc
 class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
 {
   public:
+    double mean{0};
+    double var{1};
+
     CopcExtent();
 
-    CopcExtent(double minimum, double maximum);
+    CopcExtent(double minimum, double maximum, double mean = 0, double var = 1);
 
     CopcExtent(const std::vector<double> &vec);
 
@@ -26,7 +29,10 @@ class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
     std::string ToString() const;
 
     // Operators
-    bool operator==(const CopcExtent &other) const { return minimum == other.minimum && maximum == other.maximum; }
+    bool operator==(const CopcExtent &other) const
+    {
+        return minimum == other.minimum && maximum == other.maximum && mean == other.mean && var == other.var;
+    }
     bool operator!=(const CopcExtent &other) const { return !(*this == other); }
 };
 
@@ -160,6 +166,11 @@ class CopcExtents
 
     // Convert to lazperf vlr
     las::CopcExtentsVlr ToLazPerf(const CopcExtent &x, const CopcExtent &y, const CopcExtent &z) const;
+
+    // Convert to lazperf vlr extended (mean,var)
+    las::CopcExtentsVlr ToLazPerfExtended() const;
+
+    void UpdateExtendedStats(const las::CopcExtentsVlr &vlr);
 
     // Return the total number of extents
     size_t NumberOfExtents() const { return extents_.size(); }

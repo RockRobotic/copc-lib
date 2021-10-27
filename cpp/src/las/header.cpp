@@ -74,7 +74,7 @@ lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_cou
     h.creation.year = creation_year;
     h.header_size = header_size_;
     h.point_offset = point_offset;
-    h.vlr_count = 3; // copc_info + copc_extent + laz;
+    h.vlr_count = 4; // copc_info + 2*copc_extent + laz;
     // If WKT is not empty, count an extra VLR
     if (wkt_flag)
         h.vlr_count++;

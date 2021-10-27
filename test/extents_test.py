@@ -56,11 +56,15 @@ def test_copc_extents():
 
     extents.classification.minimum = -float_info.max
     extents.classification.maximum = float_info.max
+    extents.classification.mean = 15
+    extents.classification.var = 5
 
     extents.intensity = (-10, 5)  # Tuple implicit conversion
 
     extents.extra_bytes[0].minimum = -float_info.max
     extents.extra_bytes[0].maximum = float_info.max
+    extents.extra_bytes[0].mean = 566
+    extents.extra_bytes[0].var = 158
 
     writer.Close()
 
@@ -70,12 +74,16 @@ def test_copc_extents():
 
     assert extents.classification.minimum == -float_info.max
     assert extents.classification.maximum == float_info.max
+    assert extents.classification.mean == 15
+    assert extents.classification.var == 5
 
-    assert extents.intensity.minimum == -10
-    assert extents.intensity.maximum == 5
+    assert extents.intensity == (-10, 5, 0, 1)  # Tuple implicit conversion
+    assert extents.intensity == (-10, 5)  # Tuple implicit conversion
 
     assert extents.extra_bytes[0].minimum == -float_info.max
     assert extents.extra_bytes[0].maximum == float_info.max
+    assert extents.extra_bytes[0].mean == 566
+    assert extents.extra_bytes[0].var == 158
 
     #### Extra byte list setter ####
     writer = copc.FileWriter(file_path, cfg)

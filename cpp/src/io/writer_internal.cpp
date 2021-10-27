@@ -30,7 +30,7 @@ size_t WriterInternal::OffsetToPointData() const
     if (eb_offset > 0)
         eb_offset += lazperf::vlr_header::Size;
 
-    return base_offset + extents_offset + wkt_offset + eb_offset;
+    return base_offset + 2 * extents_offset + wkt_offset + eb_offset; // 2*extents to store extended stats
 }
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
@@ -87,6 +87,16 @@ void WriterInternal::WriteHeader()
                                                                    {las_header_vlr.minz, las_header_vlr.maxz});
     extents_vlr.header().write(out_stream_);
     extents_vlr.write(out_stream_);
+
+    // Write the COPC Extended stats VLR.
+    auto extended_stats_vlr = copc_file_writer_->CopcExtents()->ToLazPerfExtended();
+
+    auto header = extended_stats_vlr.header();
+    header.record_id = 10001;
+    header.description = "COPC extended stats";
+
+    header.write(out_stream_);
+    extended_stats_vlr.write(out_stream_);
 
     // Write the LAZ VLR
     lazVlr.header().write(out_stream_);

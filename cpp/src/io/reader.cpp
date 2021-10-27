@@ -84,9 +84,18 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
         throw std::runtime_error("Reader::ReadCopcExtentsVlr: No COPC Extents VLR found in file.");
 
     in_stream_->seekg(offset + lazperf::vlr_header::Size);
-    return CopcExtents(las::CopcExtentsVlr::create(*in_stream_, vlrs[offset].data_length),
-                       static_cast<int8_t>(reader_->header().point_format_id),
-                       static_cast<uint16_t>(eb_vlr.items.size()));
+    CopcExtents extents(las::CopcExtentsVlr::create(*in_stream_, vlrs[offset].data_length),
+                        static_cast<int8_t>(reader_->header().point_format_id),
+                        static_cast<uint16_t>(eb_vlr.items.size()));
+
+    // Load mean/var if they exist
+    offset = FetchVlr(vlrs, "copc", 10001);
+    if (offset != 0)
+    {
+        in_stream_->seekg(offset + lazperf::vlr_header::Size);
+        extents.UpdateExtendedStats(las::CopcExtentsVlr::create(*in_stream_, vlrs[offset].data_length));
+    }
+    return extents;
 }
 
 las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)

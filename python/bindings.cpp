@@ -549,6 +549,8 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const std::vector<double> &>(), py::arg("list"))
         .def_readwrite("minimum", &CopcExtent::minimum)
         .def_readwrite("maximum", &CopcExtent::maximum)
+        .def_readwrite("mean", &CopcExtent::mean)
+        .def_readwrite("var", &CopcExtent::var)
         .def(py::self == py::self)
         .def("__str__", &CopcExtent::ToString)
         .def("__repr__", &CopcExtent::ToString);

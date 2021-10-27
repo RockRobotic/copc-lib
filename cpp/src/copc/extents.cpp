@@ -7,21 +7,28 @@ namespace copc
 
 CopcExtent::CopcExtent() : las::CopcExtentsVlr::CopcExtent() {}
 
-CopcExtent::CopcExtent(double minimum, double maximum) : las::CopcExtentsVlr::CopcExtent(minimum, maximum)
+CopcExtent::CopcExtent(double minimum, double maximum, double mean, double var)
+    : las::CopcExtentsVlr::CopcExtent(minimum, maximum), mean(mean), var(var)
 {
     if (minimum > maximum)
         throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
 }
 
-CopcExtent::CopcExtent(const std::vector<double> &vec) : las::CopcExtentsVlr::CopcExtent(0, 0)
+CopcExtent::CopcExtent(const std::vector<double> &vec)
 {
-    if (vec.size() != 2)
-        throw std::runtime_error("CopcExtent: Vector size must be 2.");
+    if (vec.size() != 2 && vec.size() != 4)
+        throw std::runtime_error("CopcExtent: Vector size must be 2 or 4.");
 
     if (vec[0] > vec[1])
         throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
     minimum = vec[0];
     maximum = vec[1];
+
+    if (vec.size() == 4)
+    {
+        mean = vec[2];
+        var = vec[3];
+    }
 }
 
 CopcExtent::CopcExtent(const las::CopcExtentsVlr::CopcExtent &other)
@@ -34,7 +41,7 @@ CopcExtent::CopcExtent(const las::CopcExtentsVlr::CopcExtent &other)
 std::string CopcExtent::ToString() const
 {
     std::stringstream ss;
-    ss << "(" << minimum << "/" << maximum << ")";
+    ss << "(" << minimum << "/" << maximum << "/" << mean << "/" << var << ")";
     return ss.str();
 }
 
@@ -87,6 +94,29 @@ las::CopcExtentsVlr CopcExtents::ToLazPerf(const CopcExtent &x, const CopcExtent
     return vlr;
 }
 
+las::CopcExtentsVlr CopcExtents::ToLazPerfExtended() const
+{
+    las::CopcExtentsVlr vlr;
+    vlr.items.reserve(extents_.size() + 3); // +3 takes into account extra extents for x,y,z from LAS header
+    vlr.items.emplace_back();               // TODO: Handle x,y,z later
+    vlr.items.emplace_back();
+    vlr.items.emplace_back();
+    for (const auto &extent : extents_)
+        vlr.items.emplace_back(extent->mean, extent->var); // Add mean/var instead of min/max
+    return vlr;
+}
+
+void CopcExtents::UpdateExtendedStats(const las::CopcExtentsVlr &vlr)
+{
+    if (vlr.items.size() - 3 != extents_.size()) // -3 takes into account extra extents for x,y,z from LAS header
+        throw std::runtime_error("CopcExtents: Number of extended extents incorrect.");
+    for (int i = 3; i < vlr.items.size(); i++)
+    {
+        extents_[i - 3]->mean = vlr.items[i].minimum;
+        extents_[i - 3]->var = vlr.items[i].maximum;
+    }
+}
+
 int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items)
 {
     return las::PointBaseNumberDimensions(point_format_id) - 3 +
@@ -101,7 +131,7 @@ size_t CopcExtents::ByteSize(int8_t point_format_id, uint16_t num_eb_items)
 std::string CopcExtents::ToString() const
 {
     std::stringstream ss;
-    ss << "Copc Extents (Min/Max):" << std::endl;
+    ss << "Copc Extents (Min/Max/Mean/Var):" << std::endl;
     ss << "\tIntensity: " << extents_[0]->ToString() << std::endl;
     ss << "\tReturn Number: " << extents_[1]->ToString() << std::endl;
     ss << "\tNumber Of Returns: " << extents_[2]->ToString() << std::endl;
