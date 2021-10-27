@@ -236,7 +236,7 @@ void NewFileExample()
 {
     // Create our new file with the specified format, scale, and offset
     CopcConfigWriter cfg(8, {0.1, 0.1, 0.1}, {50, 50, 50}, "TEST_WKT");
-    // As of now, the library will not automatically compute the min/max of added points
+    // copc-lib will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
     cfg.LasHeader()->min = MIN_BOUNDS;
     cfg.LasHeader()->max = MAX_BOUNDS;

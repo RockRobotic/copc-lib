@@ -60,17 +60,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add a new constructor to `Box` using `Vector3`
 - **\[Python/C++\]** Add scaling functions to `LasHeader`
 - **\[Python/C++\]** Add `ValidateSpatialBounds` function to `Reader`
+- **\[Python/C++\]** Add a check for `WKT` byte in `LasHeader::FromLazPerf`
 
 ### Changed
 
 - **\[Python/C++\]** Change order of arguments in `VoxelKey` spatial functions `Intersects`, `Contains`, and `Within`
 - **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, `GetPointsWithinBox`, and `GetAllPoints` . `resolution` can be used to limit the resolution during spatial queries
 - **\[Python/C++\]** Update `span` of `autzen-classified.copc.laz` test file from 0 to 128
+- **\[Python/C++\]** Rename `ExtendedReturnsBitFields` to `ReturnsBitField` and `ExtendedFlagsBitFields` to `FlagsBitField` in `Point` class
+- **\[Python/C++\]** Make WKT VLR optional
 
 ### Fixed
 
 - **\[Python\]** Fix typo in pickling of `Node`
-- **\[Python\]** Fix scale_ error and reformat `NewFileExample()` in example_writer.py and .cpp
+- **\[Python\]** Fix scale error and reformat `NewFileExample()` in example_writer.py and .cpp
 
 ## [1.3.0] - 2021-10-04
 

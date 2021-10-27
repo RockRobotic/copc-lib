@@ -58,6 +58,7 @@ class Reader : public BaseIO
     std::vector<Node> GetNodesIntersectBox(const Box &box, double resolution = 0);
     las::Points GetPointsWithinBox(const Box &box, double resolution = 0);
     bool ValidateSpatialBounds(bool verbose = false);
+    // TODO: Add a function to validate extents.
 
     copc::CopcConfig CopcConfig() { return config_; }
 
