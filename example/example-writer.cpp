@@ -234,8 +234,8 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
 // In this example, we'll create our own file from scratch
 void NewFileExample()
 {
-    // Create our new file with the specified format, scale, and offset
-    CopcConfigWriter cfg(8, {0.1, 0.1, 0.1}, {50, 50, 50}, "TEST_WKT");
+    // Create our new file with the specified format, scale, offset, wkt, and extended_stats
+    CopcConfigWriter cfg(8, {0.1, 0.1, 0.1}, {50, 50, 50}, "TEST_WKT", {}, true);
     // copc-lib will not automatically compute the min/max of added points
     // so we will have to calculate it ourselves
     cfg.LasHeader()->min = MIN_BOUNDS;
@@ -251,6 +251,9 @@ void NewFileExample()
 
     extents->Intensity()->minimum = 0;
     extents->Intensity()->maximum = 10000;
+    extents->Intensity()->mean = 50;
+    extents->Intensity()->var = 5;
+
     extents->Classification()->minimum = 5;
     extents->Classification()->maximum = 201;
 

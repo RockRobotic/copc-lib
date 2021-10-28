@@ -133,7 +133,7 @@ We use a modified lazperf COPC ``extents`` VLR to store mean and variance values
 
 This VLR is optional to process existing COPC files. If present, mean/variance are set appropriately for each dimension in `CopcExtents`; if not, `CopcExtents` will have default values of `mean=0` and `var=1`.
 
-This VLR is always written by the `Writer` and default to `mean=0` and `var=1`.
+This VLR is only written by the `Writer` if the flag `has_extended_stats` is true in `CopcConfigWriter::CopcExtents`.
 
 ## Helpful Links
 
