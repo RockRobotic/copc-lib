@@ -213,7 +213,7 @@ def test_points_iterator():
 
 def test_points_group_accessors():
     points = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
+        7, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
     )
 
     # generate points
@@ -223,8 +223,8 @@ def test_points_group_accessors():
         p.x = i
         p.y = i * 3
         p.z = i - 80
-        p.classification = i * 255 / num_points
-        p.point_source_id = i * 255 / num_points
+        p.classification = i * 255 // num_points
+        p.point_source_id = i * 255 // num_points
         p.red = i * 4
         p.green = i * 5
         p.blue = i * 6
@@ -237,8 +237,8 @@ def test_points_group_accessors():
         assert points.x[i] == i
         assert points.y[i] == i * 3
         assert points.z[i] == i - 80
-        assert points.classification[i] == i * 255 / num_points
-        assert points.point_source_id[i] == i * 255 / num_points
+        assert points.classification[i] == i * 255 // num_points
+        assert points.point_source_id[i] == i * 255 // num_points
         assert points.red[i] == i * 4
         assert points.green[i] == i * 5
         assert points.blue[i] == i * 6
