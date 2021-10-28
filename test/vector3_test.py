@@ -20,12 +20,12 @@ def test_vector3():
     assert vec.y == 2.0
     assert vec.z == 3.0
 
-    vec = copc.Vector3().DefaultScale()
+    vec = copc.Vector3.DefaultScale()
     assert vec.x == 0.01
     assert vec.y == 0.01
     assert vec.z == 0.01
 
-    vec = copc.Vector3().DefaultOffset()
+    vec = copc.Vector3.DefaultOffset()
     assert vec.x == 0.0
     assert vec.y == 0.0
     assert vec.z == 0.0

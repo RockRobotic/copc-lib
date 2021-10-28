@@ -2,15 +2,33 @@
 #define COPCLIB_LAS_VLR_H_
 
 #include <cstring>
+#include <stdexcept>
+#include <vector>
+
 #include <lazperf/vlr.hpp>
 
 namespace copc::las
 {
 
 using WktVlr = lazperf::wkt_vlr;
-using CopcVlr = lazperf::copc_vlr;
 using EbVlr = lazperf::eb_vlr;
-using VlrHeader = lazperf::vlr_header;
+using CopcExtentsVlr = lazperf::copc_extents_vlr;
+
+int NumBytesFromExtraBytes(const std::vector<EbVlr::ebfield> &items);
+
+class VlrHeader : public lazperf::evlr_header
+{
+  public:
+    bool evlr_flag{false};
+
+    VlrHeader() = default;
+    VlrHeader(const lazperf::evlr_header &evlr_header) : evlr_flag(true), lazperf::evlr_header(evlr_header){};
+    VlrHeader(const lazperf::vlr_header &vlr_header);
+    VlrHeader(const VlrHeader &vlr_header);
+
+    lazperf::vlr_header ToLazperfVlrHeader() const;
+    lazperf::evlr_header ToLazperfEvlrHeader() const;
+};
 
 } // namespace copc::las
 

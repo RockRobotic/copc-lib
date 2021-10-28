@@ -10,9 +10,22 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 
 copc-lib has the following dependencies:
 
-- [laz-perf](https://github.com/hobu/laz-perf) >= 2.1.0
+- laz-perf >= [commit 4819611](https://github.com/hobu/laz-perf/commits/4819611b279cb791508a0ac0cedd913f8c1d2103)
 - Catch2
 - Pybind11
+
+To build the latest version of laz-perf:
+
+```bash
+git clone https://github.com/hobu/laz-perf.git
+cd laz-perf
+git checkout 4819611b279cb791508a0ac0cedd913f8c1d2103
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+sudo cmake --install .
+```
 
 ### C++
 
@@ -56,7 +69,7 @@ To build the copc-lib examples and unit tests along with the main library, you m
 
 ```bash
 mkdir build && cd build
-cmake .. -DWITH_TESTS_AND_EXAMPLES=ON
+cmake .. -DWITH_TESTS=ON
 cmake --build .
 ```
 
@@ -97,8 +110,30 @@ for point in points.Get():
 - \[x\] Add writer for COPC data
 - \[x\] Python bindings
 - \[x\] JavaScript bindings (not planned, see below)
+- \[x\] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 - \[ \] Conda and pip packages
-- \[ \] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
+
+## Conformity to Spec
+
+This version of copc-lib is pinned to a draft version of COPC respective of the state at [COPC.io](https://github.com/copcio/copcio.github.io/tree/a6e8654f65db7c7d438ebea90993bd7a8d59091a).
+
+### ``extended stats`` VLR
+
+| User ID                    | Record ID        |
+| -------------------------- | ---------------- |
+| ``rock_robotic``                   | ``10001``        |
+
+We additionally add an ``extended stats extents`` VLR to store mean and (population) variance values for each dimension. This VLR can be parsed in the same way as the ``extents`` VLR defined by the COPC spec.
+
+    struct CopcExtentExtended
+    {
+        double mean; // replaces minimum
+        double var; // replaces maximum
+    }
+
+This VLR is optional to process existing COPC files. If present, mean/variance are set appropriately for each dimension in `CopcExtents`; if not, `CopcExtents` will have default values of `mean=0` and `var=1`.
+
+This VLR is only written by the `Writer` if the flag `has_extended_stats` is true in `CopcConfigWriter::CopcExtents`.
 
 ## Helpful Links
 
@@ -111,6 +146,68 @@ for point in points.Get():
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+### Naming Convention
+
+#### C++
+
+We mostly use Google's [Style Guide](https://google.github.io/styleguide/cppguide.html).
+```c++
+
+namespace name
+{
+class ClassName
+{
+public:
+// Default constructor
+ClassName() = default;
+ClassName(int public_variable, int private_variable, bool private_read_only)
+: public_variable(public_variable), private_variable_(private_variable),
+private_read_only_(private_read_only){};
+
+int public_variable{};
+
+// Getters and Setters
+void PrivateVariable(int private_variable) { private_variable_ = private_variable; }
+int PrivateVariable() const { return private_variable_; }
+bool PrivateReadOnly() const { return private_read_only_; }
+
+// Any other function
+int PrivateVariablePlusOne() const { return private_variable_ + 1; }
+int SumPublicAndPrivate() const { return public_variable + private_variable_; }
+static std::string ReturnEmptyString() { return {}; }
+
+private:
+int private_variable_{};
+bool private_read_only_{false};
+};
+} // namespace name
+```
+
+#### Python
+```python
+test_class = ClassName(public_variable=1,private_variable=2,private_read_only=True)
+
+# using pybind .def_readwrite
+test_class.public_variable = 4
+assert test_class.public_variable == 4
+
+# using pybind .def_property
+test_class.private_variable = 5
+assert test_class.private_variable == 5
+
+# using pybind .def_property_readonly
+assert test_class.private_read_only == True
+
+# using pybind .def
+assert test_class.PrivateVariablePlusOne() == 6
+assert test_class.SumPublicAndPrivate() == 9
+
+# using pybind .def_static
+assert test_class.ReturnEmptyString == ""
+```
+
+Note that dimension names for points follow the [laspy naming scheme](https://laspy.readthedocs.io/en/latest/intro.html#point-format-6), with the exception of `scan_angle`.
 
 ## License
 

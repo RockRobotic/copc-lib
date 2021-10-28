@@ -13,13 +13,13 @@ include(GNUInstallDirs)
 # Shared/Dynamic or Static library?
 option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
 
-option(WITH_TESTS_AND_EXAMPLES "Build test and example files." OFF)
+option(WITH_TESTS "Build test and example files." OFF)
 option(WITH_PYTHON "Build python bindings." OFF)
 option(ONLY_PYTHON "Build only python bindings, for setup.py env" OFF)
 
 if (ONLY_PYTHON)
     set(WITH_PYTHON ON)
-    set(WITH_TESTS_AND_EXAMPLES OFF)
+    set(WITH_TESTS OFF)
     set(BUILD_SHARED_LIBS ON)
 endif()
 
@@ -76,7 +76,7 @@ set(CMAKE_CXX_EXTENSIONS ON)
 # find_package(YCM REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-if(WITH_TESTS_AND_EXAMPLES)
+if(WITH_TESTS)
     enable_testing()
 endif()
 
@@ -89,6 +89,14 @@ add_install_rpath_support(BIN_DIRS "${CMAKE_INSTALL_FULL_BINDIR}"
                           LIB_DIRS "${CMAKE_INSTALL_FULL_LIBDIR}"
                           INSTALL_NAME_DIR "${CMAKE_INSTALL_FULL_LIBDIR}"
                           USE_LINK_PATH)
+
+# Encourage user to specify a build type (e.g. Release, Debug, etc.), otherwise set it to Release.
+if(NOT CMAKE_CONFIGURATION_TYPES)
+    if(NOT CMAKE_BUILD_TYPE)
+        message(STATUS "Setting build type to 'Release' as none was specified.")
+        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY VALUE "Release")
+    endif()
+endif()
 
 ### Compile- and install-related commands.
 add_subdirectory(cpp)
@@ -121,7 +129,7 @@ install_basic_package_files(${PROJECT_NAME}
 include(AddUninstallTarget)
 
 # Build Submodules
-if (WITH_TESTS_AND_EXAMPLES)
+if (WITH_TESTS)
     add_subdirectory(test)
     add_subdirectory(example)
 endif()

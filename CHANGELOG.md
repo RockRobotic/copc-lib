@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **\[Python/C++\]** Add `CopcExtent` and `CopcExtents` classes
+- **\[Python/C++\]** Add extended stats (mean/var) to `CopcExtent` using an additional Lazperf extents VLR (see README.md for more info).
+- **\[Python/C++\]** Add `GetCopcExtents` function to `CopcConfig`
+- **\[Python/C++\]** Add `GetCopcExtents` and `SetCopcExtents` functions to `Writer`
+- **\[Python\]** Add `reader.extents` property
+- **\[Python/C++\]** Add `CopcInfo` class
+- **\[Python/C++\]** Add vector(c++)/list(python) constructor to `VoxelKey`
+- **\[Python/C++\]** Add `CopcConfig` class
+- **\[Python/C++\]** Add `GetCopcConfig` function to `BaseIO`
+- **\[Python/C++\]** Support COPC Extents, WKT, and Extra Bytes as VLR or EVLR
+- **\[Python/C++\]** Add `SetCopcExtents` and `SetCopcInfo` to `Writer`
+- **\[Python/C++\]** Add `LasHeaderBase` class
+- **\[Python/C++\]** Add `ToString` to `LasHeader` class
+- **\[Python/C++\]** Add `VlrHeader` class
+- **\[Python/C++\]** Add a check for `WKT` byte in `LasHeader::FromLazPerf`
+
+### Changed
+
+- **\[Python/C++\]** Supported LAS point formats are now strictly 6 to 8 throughout the library
+- **\[Python/C++\]** Remove `point_count_14`, `points_by_return_14`, `header_size_`, `wave_offset`, and `version` from `LasHeader`
+- **\[Python/C++\]** Change lazperf version requirement to > 2.1.0
+- **\[Python/C++\]** Update autzen-classified.copc.laz test file to be latest official
+- **\[Python/C++\]** Change use of `las::CopcVlr::span` to `CopcInfo::spacing`
+- **\[Python/C++\]** Change `CopcConfig::GetWkt` return type from `las::WktVlr` to `std::string`
+- **\[Python/C++\]** Rename `CopcConfig::GetCopc` to `CopcConfig::GetCopcInfo` and now returns a `CopcInfo` class
+- **\[Python/C++\]** Rename `Reader::GetCopcHeader` to `Reader::GetCopcInfo` and now returns a `CopcInfo` class
+- **\[Python/C++\]** `VoxelKey::Resolution` and `VoxelKey::GetResolutionAtDepth`  now take `CopcInfo` argument instead of `las::CopcVlr`
+- **\[Python/C++\]** Remove `Writer::LasConfig`, now using `CopcConfig` instead.
+- **\[Python/C++\]** `Writer` and `FileWriter` constructors now takes a `CopcConfig` class as argument
+- **\[Python/C++\]** Rename `NumExtraBytes` to `EbByteSize`
+- **\[Python\]** Change `reader.GetCopcHeader()` function to `reader.copc_info` property
+- **\[Python\]** Change `reader.CopcConfig().LasHeader()` function to `reader.las_header` property
+- **\[Python\]** Change `reader.CopcConfig().Wkt()` function to `reader.wkt` property
+- **\[Python\]** Change `reader.CopcConfig().ExtraBytesVlr()` function to `reader.extra_bytes_vlr` property
+- **\[C++\]** Add `create_test_data.py` and `create_test_data.sh` to create data for `writer_node_test.cpp`
+- **\[Python\]** Make `VoxelKey.BaseKey` and `VoxelKey.InvalidKey` static functions
+- **\[Python\]** Update `Point` and `Points` property names from `CamelCase` to `under_score`
+- **\[Python/C++\]** Rename `Reader::GetAllChildren(VoxelKey)` to `Reader::GetAllChildrenOfPage(VoxelKey)`
+- **\[Python/C++\]** Rename `Reader::GetAllChildren()` to `Reader::GetAllNodes()`
+- **\[C++\]** Rename `PointFormatID` to `PointFormatId`
+- **\[C++\]** Rename `PointSourceID` to `PointSourceId`
+- **\[C++\]** Rename `HasRGB` and `HasNIR` to `HasRgb` and `HasNir` respectively
+- **\[C++\]** Rename `NIR` to `Nir`
+- **\[Python/C++\]** Rename `ScanAngleFloat` to `ScanAngleDegrees`
+- **\[Python\]** Rename `unscaled_x`, `unscaled_y`, `unscaled_z` to `x`, `y`, `z`
+- **\[General\]** Rename CMake flag `WITH_TESTS_AND_EXAMPLES` to `WITH_TESTS`
+- **\[Python/C++\]** Rename `Box::ZeroBox` to `Box::EmptyBox`
+- **\[Python/C++\]** Rename `VoxelKey::BaseKey` to `VoxelKey::RootKey`
+
 ## [1.3.1] - 2021-10-19
 
 ### Added
@@ -28,6 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Change order of arguments in `VoxelKey` spatial functions `Intersects`, `Contains`, and `Within`
 - **\[Python/C++\]** Add optional `resolution` argument to `Reader` spatial query functions `GetNodesWithinBox`, `GetNodesIntersectBox`, `GetPointsWithinBox`, and `GetAllPoints` . `resolution` can be used to limit the resolution during spatial queries
 - **\[Python/C++\]** Update `span` of `autzen-classified.copc.laz` test file from 0 to 128
+- **\[Python/C++\]** Rename `ExtendedReturnsBitFields` to `ReturnsBitField` and `ExtendedFlagsBitFields` to `FlagsBitField` in `Point` class
+- **\[Python/C++\]** Make WKT VLR optional
 
 ### Fixed
 

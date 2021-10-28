@@ -34,7 +34,7 @@ struct Vector3
     Vector3 operator+(const Vector3 &other) const { return Vector3(x + other.x, y + other.y, z + other.z); }
     Vector3 operator-(const Vector3 &other) const { return Vector3(x - other.x, y - other.y, z - other.z); }
 
-    std::string ToString()
+    std::string ToString() const
     {
         std::stringstream ss;
         ss << "Vector3: x=" << x << ", y=" << y << ", z=" << z;

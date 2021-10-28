@@ -1,5 +1,3 @@
-#include <cstring>
-
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
 #include "copc-lib/hierarchy/internal/page.hpp"
 #include "copc-lib/io/internal/writer_internal.hpp"
@@ -10,18 +8,17 @@
 namespace copc
 {
 
-void Writer::InitWriter(std::ostream &out_stream, LasConfig const &config, const int &span, const std::string &wkt)
+void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer)
 {
-    auto header = HeaderFromConfig(config);
-    this->file_ = std::make_shared<CopcFile>(header, span, wkt, config.extra_bytes);
+    this->config_ = std::make_shared<CopcConfigWriter>(copc_file_writer);
     this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
-    this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->file_, this->hierarchy_);
+    this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->config_, this->hierarchy_);
 }
 
 Writer::~Writer() { writer_->Close(); }
 void Writer::Close() { writer_->Close(); }
 
-Page Writer::GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
+Page Writer::GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::RootKey()]; }
 
 // Create a page, add it to the hierarchy and reference it as a subpage in the parent
 Page Writer::AddSubPage(Page &parent, VoxelKey key)
@@ -67,8 +64,8 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
 
 Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 {
-    auto header = file_->GetLasHeader();
-    if (points.PointFormatID() != header.point_format_id || points.PointRecordLength() != header.point_record_length)
+    if (points.PointFormatId() != config_->LasHeader()->PointFormatId() ||
+        points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
 
     std::vector<char> uncompressed = points.Pack();
@@ -77,7 +74,7 @@ Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
 
 Node Writer::AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed)
 {
-    int point_size = file_->GetLasHeader().point_record_length;
+    int point_size = config_->LasHeader()->PointRecordLength();
     if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
         throw std::runtime_error("Invalid point data array!");
 
@@ -93,71 +90,10 @@ Node Writer::AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char
     return DoAddNode(page, key, compressed, point_count, true);
 }
 
-uint8_t EXTRA_BYTE_DATA_TYPE[31]{0, 1,  1,  2, 2,  4, 4, 8, 8, 4,  8,  2,  2,  4,  4, 8,
-                                 8, 16, 16, 8, 16, 3, 3, 6, 6, 12, 12, 24, 24, 12, 24};
-
-int Writer::NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items)
-{
-    int out = 0;
-    for (const auto &item : items)
-    {
-        if (item.data_type == 0)
-            out += item.options;
-        else
-            out += EXTRA_BYTE_DATA_TYPE[item.data_type];
-    }
-    return out;
-}
-
-las::LasHeader Writer::HeaderFromConfig(LasConfig const &config)
-{
-    las::LasHeader h;
-    h.file_source_id = config.file_source_id;
-    h.global_encoding = config.global_encoding;
-    h.creation_day = config.creation_day;
-    h.creation_year = config.creation_year;
-    h.point_format_id = config.point_format_id;
-    h.point_record_length =
-        las::PointBaseByteSize(config.point_format_id) + NumBytesFromExtraBytes(config.extra_bytes.items);
-
-    h.GUID(config.GUID());
-    h.SystemIdentifier(config.SystemIdentifier());
-    h.GeneratingSoftware(config.GeneratingSoftware());
-
-    h.offset = config.offset;
-    h.scale = config.scale;
-    h.max = config.max;
-    h.min = config.min;
-
-    h.points_by_return_14 = config.points_by_return_14;
-    return h;
-}
-
-copc::Writer::LasConfig::LasConfig(const las::LasHeader &config, const las::EbVlr &extra_bytes_)
-{
-    file_source_id = config.file_source_id;
-    global_encoding = config.global_encoding;
-    creation_day = config.creation_day;
-    creation_year = config.creation_year;
-    point_format_id = config.point_format_id;
-
-    guid_ = config.GUID();
-    system_identifier_ = config.SystemIdentifier();
-    generating_software_ = config.GeneratingSoftware();
-
-    offset = config.offset;
-    scale = config.scale;
-
-    max = config.max;
-    min = config.min;
-
-    points_by_return_14 = config.points_by_return_14;
-    extra_bytes = extra_bytes_;
-}
-
 void FileWriter::Close()
 {
     writer_->Close();
     f_stream_.close();
 }
+
 } // namespace copc

@@ -15,180 +15,18 @@ TEST_CASE("Point tests", "[Point]")
     SECTION("Point Format Initialization")
     {
 
-        auto point = Point(0);
+        auto point = Point(6);
 
-        REQUIRE(point.HasExtendedPoint() == false);
-        REQUIRE(point.HasGPSTime() == false);
-        REQUIRE(point.HasRGB() == false);
-        REQUIRE(point.HasNIR() == false);
+        REQUIRE(point.HasRgb() == false);
+        REQUIRE(point.HasNir() == false);
 
         auto point_ext = Point(8);
 
-        REQUIRE(point_ext.HasExtendedPoint() == true);
-        REQUIRE(point_ext.HasGPSTime() == true);
-        REQUIRE(point_ext.HasRGB() == true);
-        REQUIRE(point_ext.HasNIR() == true);
+        REQUIRE(point_ext.HasRgb() == true);
+        REQUIRE(point_ext.HasNir() == true);
     }
 
-    SECTION("Point with format LAS 1.0 Test")
-    {
-        auto point0 = Point(0);
-        // Position
-        point0.UnscaledX(std::numeric_limits<int32_t>::max());
-        point0.UnscaledY(std::numeric_limits<int32_t>::max());
-        point0.UnscaledZ(std::numeric_limits<int32_t>::max());
-        REQUIRE(point0.UnscaledX() == std::numeric_limits<int32_t>::max());
-        REQUIRE(point0.UnscaledY() == std::numeric_limits<int32_t>::max());
-        REQUIRE(point0.UnscaledZ() == std::numeric_limits<int32_t>::max());
-
-        // Intensity
-        point0.Intensity(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point0.Intensity() == std::numeric_limits<uint16_t>::max());
-
-        // Return Number
-        point0.ReturnNumber(7);
-        REQUIRE(point0.ReturnNumber() == 7);
-        REQUIRE_THROWS(point0.ReturnNumber(8));
-
-        // Number of Returns
-        point0.NumberOfReturns(7);
-        REQUIRE(point0.NumberOfReturns() == 7);
-        REQUIRE_THROWS(point0.NumberOfReturns(8));
-
-        // Scan Direction
-        point0.ScanDirectionFlag(true);
-        REQUIRE(point0.ScanDirectionFlag() == true);
-
-        // Edge of Flight Line
-        point0.EdgeOfFlightLineFlag(true);
-        REQUIRE(point0.EdgeOfFlightLineFlag() == true);
-
-        // ReturnsScanDirEofBitField
-        point0.ReturnsScanDirEofBitFields(172);
-        REQUIRE(point0.ReturnNumber() == 4);
-        REQUIRE(point0.NumberOfReturns() == 5);
-        REQUIRE(point0.ScanDirectionFlag() == false);
-        REQUIRE(point0.EdgeOfFlightLineFlag() == true);
-
-        // Classification
-        point0.Classification(31);
-        REQUIRE(point0.Classification() == 31);
-        REQUIRE_THROWS(point0.Classification(32));
-
-        // Synthetic
-        point0.Synthetic(true);
-        REQUIRE(point0.Synthetic() == true);
-
-        // KeyPoint
-        point0.KeyPoint(true);
-        REQUIRE(point0.KeyPoint() == true);
-
-        // Withheld
-        point0.Withheld(true);
-        REQUIRE(point0.Withheld() == true);
-
-        // Classification Bitfield
-        point0.ClassificationBitFields(std::numeric_limits<uint8_t>::max());
-        REQUIRE(point0.ClassificationBitFields() == std::numeric_limits<uint8_t>::max());
-        point0.ClassificationBitFields(78);
-        REQUIRE(point0.Classification() == 14);
-        REQUIRE(point0.Synthetic() == false);
-        REQUIRE(point0.KeyPoint() == true);
-        REQUIRE(point0.Withheld() == false);
-
-        // Scan Angle
-        point0.ScanAngleRank(90);
-        REQUIRE(point0.ScanAngleRank() == 90);
-        REQUIRE(point0.ScanAngle() == 90.0);
-        REQUIRE_THROWS(point0.ScanAngleRank(91));
-        REQUIRE_THROWS(point0.ScanAngleRank(-91));
-
-        // User Data
-        point0.UserData(std::numeric_limits<uint8_t>::max());
-        REQUIRE(point0.UserData() == std::numeric_limits<uint8_t>::max());
-
-        // Point Source ID
-        point0.PointSourceID(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point0.PointSourceID() == std::numeric_limits<uint16_t>::max());
-
-        REQUIRE(point0.PointRecordLength() == 20);
-
-        // Checks
-        REQUIRE_THROWS(point0.ExtendedFlagsBitFields(0));
-        REQUIRE_THROWS(point0.ExtendedFlagsBitFields());
-        REQUIRE_THROWS(point0.ScannerChannel(0));
-        REQUIRE_THROWS(point0.ScannerChannel());
-        REQUIRE_THROWS(point0.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.NIR());
-        REQUIRE_THROWS(point0.Red(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.Red());
-        REQUIRE_THROWS(point0.Green(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.Green());
-        REQUIRE_THROWS(point0.Blue(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.Blue());
-        REQUIRE_THROWS(point0.GPSTime(std::numeric_limits<double>::max()));
-        REQUIRE_THROWS(point0.GPSTime());
-        REQUIRE_THROWS(point0.ExtendedScanAngle(std::numeric_limits<int16_t>::max()));
-        REQUIRE_THROWS(point0.ExtendedScanAngle());
-        REQUIRE_THROWS(point0.Overlap(true));
-        REQUIRE_THROWS(point0.Overlap());
-        REQUIRE_THROWS(point0.ExtendedReturnsBitFields(std::numeric_limits<uint8_t>::max()));
-        REQUIRE_THROWS(point0.ExtendedReturnsBitFields());
-        REQUIRE_THROWS(point0.ExtendedFlagsBitFields(std::numeric_limits<uint8_t>::max()));
-        REQUIRE_THROWS(point0.ExtendedFlagsBitFields());
-        REQUIRE_NOTHROW(point0.ToString());
-
-        auto point1 = Point(1);
-
-        point1.GPSTime(std::numeric_limits<double>::max());
-        REQUIRE(point1.GPSTime() == std::numeric_limits<double>::max());
-        REQUIRE(point1.PointRecordLength() == 28);
-
-        REQUIRE_THROWS(point0.Red(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.Red());
-        REQUIRE_THROWS(point0.Green(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.Green());
-        REQUIRE_THROWS(point0.Blue(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.Blue());
-        REQUIRE_THROWS(point0.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point0.NIR());
-
-        auto point2 = Point(2);
-        REQUIRE(point2.PointRecordLength() == 26);
-
-        point2.Red(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point2.Red() == std::numeric_limits<uint16_t>::max());
-        point2.Green(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point2.Green() == std::numeric_limits<uint16_t>::max());
-        point2.Blue(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point2.Blue() == std::numeric_limits<uint16_t>::max());
-
-        point2.RGB(std::numeric_limits<uint16_t>::max() / 2, std::numeric_limits<uint16_t>::max() / 2,
-                   std::numeric_limits<uint16_t>::max() / 2);
-        REQUIRE(point2.Red() == std::numeric_limits<uint16_t>::max() / 2);
-        REQUIRE(point2.Green() == std::numeric_limits<uint16_t>::max() / 2);
-        REQUIRE(point2.Blue() == std::numeric_limits<uint16_t>::max() / 2);
-
-        REQUIRE_THROWS(point2.GPSTime(std::numeric_limits<double>::max()));
-        REQUIRE_THROWS(point2.GPSTime());
-        REQUIRE_THROWS(point2.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point2.NIR());
-
-        auto point3 = Point(3);
-        REQUIRE(point3.PointRecordLength() == 34);
-
-        REQUIRE_NOTHROW(point3.GPSTime(std::numeric_limits<double>::max()));
-        REQUIRE_NOTHROW(point3.GPSTime());
-        REQUIRE_NOTHROW(point3.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
-                                   std::numeric_limits<uint16_t>::max()));
-        REQUIRE_NOTHROW(point3.Red());
-        REQUIRE_NOTHROW(point3.Green());
-        REQUIRE_NOTHROW(point3.Blue());
-        REQUIRE_THROWS(point3.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point3.NIR());
-    }
-
-    SECTION("Point with format LAS 1.4 Test")
+    SECTION("Point Test")
     {
         auto point6 = Point(6);
         // Position
@@ -204,8 +42,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.Intensity() == std::numeric_limits<uint16_t>::max());
 
         // Return BitField
-        point6.ExtendedReturnsBitFields(std::numeric_limits<uint8_t>::max());
-        REQUIRE(point6.ExtendedReturnsBitFields() == std::numeric_limits<uint8_t>::max());
+        point6.ReturnsBitField(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.ReturnsBitField() == std::numeric_limits<uint8_t>::max());
 
         // Return Number
         point6.ReturnNumber(0);
@@ -222,8 +60,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE_THROWS(point6.NumberOfReturns(16));
 
         // Flags
-        point6.ExtendedFlagsBitFields(std::numeric_limits<uint8_t>::max());
-        REQUIRE(point6.ExtendedFlagsBitFields() == std::numeric_limits<uint8_t>::max());
+        point6.FlagsBitField(std::numeric_limits<uint8_t>::max());
+        REQUIRE(point6.FlagsBitField() == std::numeric_limits<uint8_t>::max());
 
         // Synthetic
         point6.Synthetic(false);
@@ -275,22 +113,22 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.Classification() == 0);
 
         // Scan Angle
-        point6.ExtendedScanAngle(-30000);
-        REQUIRE(point6.ExtendedScanAngle() == -30000);
-        REQUIRE(point6.ScanAngle() == -180.0);
-        REQUIRE_THROWS(point6.ExtendedScanAngle(-30001));
-        point6.ExtendedScanAngle(30000);
-        REQUIRE(point6.ExtendedScanAngle() == 30000);
-        REQUIRE(point6.ScanAngle() == 180.0);
-        REQUIRE_THROWS(point6.ExtendedScanAngle(30001));
+        point6.ScanAngle(-30000);
+        REQUIRE(point6.ScanAngle() == -30000);
+        REQUIRE(point6.ScanAngleDegrees() == -180.0);
+        REQUIRE_THROWS(point6.ScanAngle(-30001));
+        point6.ScanAngle(30000);
+        REQUIRE(point6.ScanAngle() == 30000);
+        REQUIRE(point6.ScanAngleDegrees() == 180.0);
+        REQUIRE_THROWS(point6.ScanAngle(30001));
 
         // User Data
         point6.UserData(std::numeric_limits<uint8_t>::max());
         REQUIRE(point6.UserData() == std::numeric_limits<uint8_t>::max());
 
         // Point Source ID
-        point6.PointSourceID(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point6.PointSourceID() == std::numeric_limits<uint16_t>::max());
+        point6.PointSourceId(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point6.PointSourceId() == std::numeric_limits<uint16_t>::max());
 
         // GPS Time
         point6.GPSTime(std::numeric_limits<double>::max());
@@ -300,59 +138,35 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.PointRecordLength() == 30);
 
         // Checks
-        REQUIRE_THROWS(point6.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
+        REQUIRE_THROWS(point6.Rgb(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
                                   std::numeric_limits<uint16_t>::max()));
         REQUIRE_THROWS(point6.Red());
         REQUIRE_THROWS(point6.Green());
         REQUIRE_THROWS(point6.Blue());
-        REQUIRE_THROWS(point6.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point6.NIR());
-        REQUIRE_THROWS(point6.ScanAngleRank());
-        REQUIRE_THROWS(point6.ScanAngleRank(INT8_MAX));
-        REQUIRE_THROWS(point6.ReturnsScanDirEofBitFields(std::numeric_limits<uint8_t>::max()));
-        REQUIRE_THROWS(point6.ReturnsScanDirEofBitFields());
-        REQUIRE_THROWS(point6.ClassificationBitFields(std::numeric_limits<uint8_t>::max()));
-        REQUIRE_THROWS(point6.ClassificationBitFields());
+        REQUIRE_THROWS(point6.Nir(std::numeric_limits<uint16_t>::max()));
+        REQUIRE_THROWS(point6.Nir());
         REQUIRE_NOTHROW(point6.ToString());
 
         auto point7 = Point(7);
 
-        point7.RGB(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
+        point7.Rgb(std::numeric_limits<uint16_t>::max(), std::numeric_limits<uint16_t>::max(),
                    std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.Red() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.Green() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.Blue() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point7.PointRecordLength() == 36);
 
-        REQUIRE_THROWS(point7.NIR(std::numeric_limits<uint16_t>::max()));
-        REQUIRE_THROWS(point7.NIR());
+        REQUIRE_THROWS(point7.Nir(std::numeric_limits<uint16_t>::max()));
+        REQUIRE_THROWS(point7.Nir());
 
         auto point8 = Point(8);
 
-        point8.NIR(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point8.NIR() == std::numeric_limits<uint16_t>::max());
+        point8.Nir(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point8.Nir() == std::numeric_limits<uint16_t>::max());
         REQUIRE(point8.PointRecordLength() == 38);
     }
 
-    SECTION("Point conversion Point10")
-    {
-        auto point = Point(1);
-
-        REQUIRE(point.GPSTime() == 0);
-
-        point.ToPointFormat(2);
-        REQUIRE(point.Red() == 0);
-        REQUIRE(point.Green() == 0);
-        REQUIRE(point.Blue() == 0);
-
-        point.ToPointFormat(3);
-        REQUIRE(point.GPSTime() == 0);
-        REQUIRE(point.Red() == 0);
-        REQUIRE(point.Green() == 0);
-        REQUIRE(point.Blue() == 0);
-    }
-
-    SECTION("Point conversion Point14")
+    SECTION("Point format conversion")
     {
         auto point = Point(6);
 
@@ -378,12 +192,12 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Red() == 0);
         REQUIRE(point.Green() == 0);
         REQUIRE(point.Blue() == 0);
-        REQUIRE(point.NIR() == 0);
+        REQUIRE(point.Nir() == 0);
     }
 
-    SECTION("Point conversion Point10 to Poin14")
+    SECTION("Point conversion")
     {
-        auto point = Point(0);
+        auto point = Point(6);
 
         point.ReturnNumber(5);
         point.NumberOfReturns(6);
@@ -393,9 +207,9 @@ TEST_CASE("Point tests", "[Point]")
         point.Synthetic(true);
         point.KeyPoint(false);
         point.Withheld(true);
-        point.ScanAngleRank(45);
+        point.ScanAngleDegrees(45);
 
-        point.ToPointFormat(6);
+        point.ToPointFormat(7);
 
         REQUIRE(point.ReturnNumber() == 5);
         REQUIRE(point.NumberOfReturns() == 6);
@@ -406,11 +220,18 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.KeyPoint() == false);
         REQUIRE(point.Withheld() == true);
         REQUIRE(point.Overlap() == false);
-        REQUIRE(point.ExtendedScanAngle() == 7500);
+        REQUIRE(point.ScanAngleDegrees() == 45);
         REQUIRE(point.ScannerChannel() == 0);
-        REQUIRE_THROWS(point.ReturnsScanDirEofBitFields());
+        REQUIRE(point.Red() == 0);
+        REQUIRE(point.Green() == 0);
+        REQUIRE(point.Blue() == 0);
+        REQUIRE_THROWS(point.Nir());
 
-        point.ToPointFormat(0);
+        point.Red(150);
+        point.Green(200);
+        point.Blue(250);
+
+        point.ToPointFormat(8);
 
         REQUIRE(point.ReturnNumber() == 5);
         REQUIRE(point.NumberOfReturns() == 6);
@@ -420,71 +241,21 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Synthetic() == true);
         REQUIRE(point.KeyPoint() == false);
         REQUIRE(point.Withheld() == true);
-        REQUIRE(point.ScanAngleRank() == 45);
-
-        point.ToPointFormat(6);
-
-        point.ReturnNumber(13);
-        point.NumberOfReturns(14);
-        point.Classification(134);
-        point.ScannerChannel(2);
-        point.Synthetic(true);
-        point.KeyPoint(false);
-        point.Withheld(true);
-        point.ExtendedScanAngle(28000);
-
-        point.ToPointFormat(0);
-
-        REQUIRE(point.ReturnNumber() == 7);
-        REQUIRE(point.NumberOfReturns() == 7);
-        REQUIRE(point.Classification() == 31);
-        REQUIRE(point.ScanAngleRank() == 90);
-        REQUIRE_THROWS(point.Overlap());
-        REQUIRE_THROWS(point.ScannerChannel());
-        REQUIRE_THROWS(point.ExtendedReturnsBitFields());
-        REQUIRE_THROWS(point.ExtendedFlagsBitFields());
-
-        point.ToPointFormat(6);
-
-        REQUIRE(point.ReturnNumber() == 7);
-        REQUIRE(point.NumberOfReturns() == 7);
-        REQUIRE(point.Classification() == 31);
-        REQUIRE(point.ExtendedScanAngle() == 15000);
         REQUIRE(point.Overlap() == false);
+        REQUIRE(point.ScanAngleDegrees() == 45);
         REQUIRE(point.ScannerChannel() == 0);
+        REQUIRE(point.Red() == 150);
+        REQUIRE(point.Green() == 200);
+        REQUIRE(point.Blue() == 250);
+        REQUIRE(point.Nir() == 0);
     }
 
     SECTION("Operator == and !=")
     {
 
-        // Format 0
-        auto point = Point(0);
-        auto point_other = Point(0);
-
-        REQUIRE(point == point_other);
-
-        // Format 1
-        point_other.ToPointFormat(1);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(1);
-        REQUIRE(point == point_other);
-
-        // Format 2
-        point_other.ToPointFormat(2);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(2);
-        REQUIRE(point == point_other);
-
-        // Format 3
-        point_other.ToPointFormat(3);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(3);
-        REQUIRE(point == point_other);
-
         // Format 6
-        point_other.ToPointFormat(6);
-        REQUIRE(point != point_other);
-        point.ToPointFormat(6);
+        auto point = Point(6);
+        auto point_other = Point(6);
         REQUIRE(point == point_other);
 
         // Format 7
@@ -576,9 +347,9 @@ TEST_CASE("Point tests", "[Point]")
         point_other.UserData(4);
         REQUIRE(point == point_other);
 
-        point.PointSourceID(4);
+        point.PointSourceId(4);
         REQUIRE(point != point_other);
-        point_other.PointSourceID(4);
+        point_other.PointSourceId(4);
         REQUIRE(point == point_other);
 
         point.GPSTime(4.0);
@@ -601,37 +372,29 @@ TEST_CASE("Point tests", "[Point]")
         point_other.Blue(4);
         REQUIRE(point == point_other);
 
-        point.NIR(4);
+        point.Nir(4);
         REQUIRE(point != point_other);
-        point_other.NIR(4);
+        point_other.Nir(4);
         REQUIRE(point == point_other);
     }
 
     SECTION("Point ExtraByte")
     {
-        auto point = Point(0);
-        REQUIRE(point.PointFormatID() == 0);
-        REQUIRE(point.PointRecordLength() == 20);
+        auto point = Point(6);
+        REQUIRE(point.PointFormatId() == 6);
+        REQUIRE(point.PointRecordLength() == 30);
         REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
         REQUIRE(point.ExtraBytes().size() == 0);
-        REQUIRE(point.NumExtraBytes() == 0);
+        REQUIRE(point.EbByteSize() == 0);
 
-        point = Point(0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 5);
-        REQUIRE(point.PointFormatID() == 0);
-        REQUIRE(point.PointRecordLength() == 20 + 5);
-        REQUIRE(point.NumExtraBytes() == 5);
+        point = Point(6, {}, {}, 5);
+        REQUIRE(point.PointFormatId() == 6);
+        REQUIRE(point.PointRecordLength() == 30 + 5);
+        REQUIRE(point.EbByteSize() == 5);
         REQUIRE(point.ExtraBytes().size() == 5);
         REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
         REQUIRE_NOTHROW(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4, 5, 6}));
         REQUIRE(point.ExtraBytes() == std::vector<uint8_t>{2, 3, 4, 5, 6});
-
-        point.ToPointFormat(6);
-        REQUIRE(point.PointFormatID() == 6);
-        REQUIRE(point.PointRecordLength() == 30 + 5);
-        REQUIRE(point.NumExtraBytes() == 5);
-        REQUIRE(point.ExtraBytes().size() == 5);
-        REQUIRE(point.ExtraBytes() == std::vector<uint8_t>{2, 3, 4, 5, 6});
-        REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
     }
 
     SECTION("Operator =")
@@ -644,11 +407,11 @@ TEST_CASE("Point tests", "[Point]")
 
         point.GPSTime(4.0);
         point.Red(4.0);
-        point.NIR(4.0);
+        point.Nir(4.0);
 
         point.ExtraBytes(std::vector<uint8_t>{2, 5});
 
-        auto point_other = Point(0);
+        auto point_other = Point(6);
         point_other = point;
 
         REQUIRE(point == point_other);
@@ -659,64 +422,32 @@ TEST_CASE("Point tests", "[Point]")
 
         std::stringstream ss;
         auto orig_point =
-            Point(0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2); // use two extra bytes
+            Point(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2); // use two extra bytes
         orig_point.UnscaledX(20);
         orig_point.UnscaledY(-20);
         orig_point.UnscaledZ(100000);
-        orig_point.ScanAngleRank(90);
-        orig_point.ClassificationBitFields(124);
+        orig_point.ScanAngle(2000);
 
-        // Format 0
+        // Format 6
         auto point = orig_point;
         point.Pack(ss);
         auto point_other =
-            *Point::Unpack(ss, 0, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
-        REQUIRE(point == point_other);
-
-        // Format 1
-        point.ToPointFormat(1);
-        point.Pack(ss);
-        point_other =
-            *Point::Unpack(ss, 1, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
-        REQUIRE(point == point_other);
-
-        // Format 2
-        point.ToPointFormat(2);
-        point.Pack(ss);
-        point_other =
-            *Point::Unpack(ss, 2, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
-        REQUIRE(point == point_other);
-
-        // Format 3
-        point.ToPointFormat(3);
-        point.Pack(ss);
-        point_other =
-            *Point::Unpack(ss, 3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
-        REQUIRE(point == point_other);
-
-        // Format 6
-        point.ToPointFormat(6);
-        point.Pack(ss);
-        point_other =
-            *Point::Unpack(ss, 6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 7
         point.ToPointFormat(7);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 8
         point.ToPointFormat(8);
         point.Pack(ss);
         point_other =
-            *Point::Unpack(ss, 8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.NumExtraBytes());
+            *Point::Unpack(ss, 8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
-
-        point.ToPointFormat(0);
-        REQUIRE(point == orig_point);
     }
 
     SECTION("Scaled XYZ")
@@ -832,14 +563,14 @@ TEST_CASE("Point tests", "[Point]")
     }
     SECTION("Within")
     {
-        auto point = Point(3, {1, 1, 1}, copc::Vector3::DefaultOffset());
+        auto point = Point(6, {1, 1, 1}, copc::Vector3::DefaultOffset());
 
         point.X(5);
         point.Y(5);
         point.Z(5);
 
         REQUIRE(point.Within(copc::Box::MaxBox()));
-        REQUIRE(!point.Within(copc::Box::ZeroBox()));
+        REQUIRE(!point.Within(copc::Box::EmptyBox()));
 
         // 2D box
         REQUIRE(point.Within(copc::Box(0, 0, 5, 5)));

@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "copc-lib/copc/info.hpp"
 #include "copc-lib/geometry/box.hpp"
 #include "copc-lib/geometry/vector3.hpp"
 #include "copc-lib/las/vlr.hpp"
@@ -26,9 +27,18 @@ class VoxelKey
   public:
     VoxelKey(int32_t d, int32_t x, int32_t y, int32_t z) : d(d), x(x), y(y), z(z) {}
     VoxelKey() : VoxelKey(-1, -1, -1, -1) {}
+    VoxelKey(const std::vector<int32_t> &vec)
+    {
+        if (vec.size() != 4)
+            throw std::runtime_error("Vector size must be 4.");
+        d = vec[0];
+        x = vec[1];
+        y = vec[2];
+        z = vec[3];
+    };
 
     static VoxelKey InvalidKey() { return VoxelKey(); }
-    static VoxelKey BaseKey() { return VoxelKey(0, 0, 0, 0); }
+    static VoxelKey RootKey() { return VoxelKey(0, 0, 0, 0); }
 
     bool IsValid() const { return d >= 0 && x >= 0 && y >= 0 && z >= 0; }
 
@@ -43,7 +53,7 @@ class VoxelKey
 
     // A list of the key's parents from the key to the root node
     // optionally including the key itself
-    std::vector<VoxelKey> GetParents(bool include_current = false) const;
+    std::vector<VoxelKey> GetParents(bool include_self = false) const;
 
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;
@@ -56,8 +66,8 @@ class VoxelKey
     bool Within(const las::LasHeader &header, const Box &box) const;
     bool Crosses(const las::LasHeader &header, const Box &box) const;
 
-    double Resolution(const las::LasHeader &header, const las::CopcVlr &copc_info) const;
-    static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info);
+    double Resolution(const las::LasHeader &header, const CopcInfo &copc_info) const;
+    static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const CopcInfo &copc_info);
 
     int32_t d;
     int32_t x;

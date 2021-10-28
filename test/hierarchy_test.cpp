@@ -37,26 +37,3 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
         REQUIRE(point_data_read == point_data_write);
     }
 }
-
-//
-// TEST_CASE("LoadChildren Checks", "[Hierarchy]")
-//{
-//    fstream in_stream;
-//    in_stream.open("autzen-classified.copc.laz", ios::in | ios::binary);
-//    io::CopcReader reader(in_stream);
-//
-//    auto copc = reader.GetCopcHeader();
-//
-//    auto rootPage = reader.ReadPage(copc.root_hier_offset, copc.root_hier_size);
-//
-//    Hierarchy hier = Hierarchy(&reader);
-//
-//    auto hier_entry = hier.GetKey(VoxelKey(0, 0, 0, 0));
-//    REQUIRE(hier.LoadChildren(hier_entry) == 4);
-//    hier_entry = hier.GetKey(VoxelKey(1, 0, 0, 0));
-//    REQUIRE(hier.LoadChildren(hier_entry) == 4);
-//    hier_entry = hier.GetKey(VoxelKey(4, 11, 9, 0));
-//    REQUIRE(hier.LoadChildren(hier_entry) == 0);
-//    hier_entry = hier.GetKey(VoxelKey(-1, -1, -1, -1));
-//    REQUIRE(hier.LoadChildren(hier_entry) == 0);
-//}

@@ -3,11 +3,10 @@
 
 #include <istream>
 #include <limits>
+#include <map>
 #include <string>
 
-#include "copc-lib/copc/file.hpp"
-#include "copc-lib/hierarchy/node.hpp"
-#include "copc-lib/hierarchy/page.hpp"
+#include "copc-lib/copc/config.hpp"
 #include "copc-lib/io/base_io.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/vlr.hpp"
@@ -38,9 +37,9 @@ class Reader : public BaseIO
 
     // Return all children of a page with a given key
     // (or the node itself, if it exists, if there isn't a page with that key)
-    std::vector<Node> GetAllChildren(const VoxelKey &key);
+    std::vector<Node> GetAllChildrenOfPage(const VoxelKey &key);
     // Helper function to get all nodes from the root
-    std::vector<Node> GetAllChildren() { return GetAllChildren(VoxelKey::BaseKey()); }
+    std::vector<Node> GetAllNodes() { return GetAllChildrenOfPage(VoxelKey::RootKey()); }
 
     // Helper function to get all points from the root
     las::Points GetAllPoints(double resolution = 0);
@@ -59,9 +58,15 @@ class Reader : public BaseIO
     std::vector<Node> GetNodesIntersectBox(const Box &box, double resolution = 0);
     las::Points GetPointsWithinBox(const Box &box, double resolution = 0);
     bool ValidateSpatialBounds(bool verbose = false);
+    // TODO: Add a function to validate extents.
+
+    copc::CopcConfig CopcConfig() { return config_; }
 
   protected:
     Reader() = default;
+
+    copc::CopcConfig config_;
+    std::map<uint64_t, las::VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
 
     std::istream *in_stream_;
 
@@ -69,14 +74,19 @@ class Reader : public BaseIO
 
     // Constructor helper function, initializes the file and hierarchy
     void InitReader();
-    // Reads file VLRs into vlrs_
-    std::map<uint64_t, las::VlrHeader> ReadVlrs();
+    // Reads file VLRs and EVLRs into vlrs_
+    std::map<uint64_t, las::VlrHeader> ReadVlrHeaders(); // TODO: Allow user to create/reader arbitrary VLRs
+    // Fetchs the map key for a query vlr user and record IDs
+    static uint64_t FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
+                             uint16_t record_id);
     // Finds and loads the COPC vlr
-    las::CopcVlr ReadCopcData();
+    CopcInfo ReadCopcInfoVlr();
+    // Finds and loads the COPC vlr
+    CopcExtents ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr) const;
     // Finds and loads the WKT vlr
-    las::WktVlr ReadWktData(const las::CopcVlr &copc_data);
-    // finds and loads EB vlr
-    las::EbVlr ReadExtraByteVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
+    las::WktVlr ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
+    // Finds and loads EB vlr
+    las::EbVlr ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
 
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override;
 };
@@ -88,6 +98,8 @@ class FileReader : public Reader
     {
         auto f_stream = new std::fstream;
         f_stream->open(file_path.c_str(), std::ios::in | std::ios::binary);
+        if (!f_stream->good())
+            throw std::runtime_error("FileReader: Error while opening file path.");
         in_stream_ = f_stream;
 
         InitReader();

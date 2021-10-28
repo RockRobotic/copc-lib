@@ -19,11 +19,10 @@ class Box
     Box() = default;
 
     // 3D box constructor
-    Box(const double &x_min, const double &y_min, const double &z_min, const double &x_max, const double &y_max,
-        const double &z_max);
+    Box(double x_min, double y_min, double z_min, double x_max, double y_max, double z_max);
 
     // 2D box constructor
-    Box(const double &x_min, const double &y_min, const double &x_max, const double &y_max);
+    Box(double x_min, double y_min, double x_max, double y_max);
 
     // Vector3 constructor
     Box(const Vector3 &min, const Vector3 &max);
@@ -34,7 +33,7 @@ class Box
     // Constructor from Node
     Box(const VoxelKey &key, const las::LasHeader &header);
 
-    static Box ZeroBox() { return Box(); }
+    static Box EmptyBox() { return Box(); }
     static Box MaxBox();
 
     bool Intersects(const Box &box) const;

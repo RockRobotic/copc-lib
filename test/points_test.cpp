@@ -14,9 +14,9 @@ TEST_CASE("Points tests", "[Point]")
 {
     SECTION("Points constructors")
     {
-        auto points = Points(3, {1, 1, 1}, {0, 0, 0}, 4);
-        REQUIRE(points.PointFormatID() == 3);
-        REQUIRE(points.PointRecordLength() == 38);
+        auto points = Points(6, {1, 1, 1}, {0, 0, 0}, 4);
+        REQUIRE(points.PointFormatId() == 6);
+        REQUIRE(points.PointRecordLength() == 34);
         REQUIRE(points.Get().empty());
 
         auto point_vec = std::vector<std::shared_ptr<Point>>();
@@ -33,11 +33,10 @@ TEST_CASE("Points tests", "[Point]")
         point_vec.push_back(point3);
 
         points = Points(point_vec);
-        REQUIRE(points.PointFormatID() == 3);
-        REQUIRE(points.PointRecordLength() == 38);
+        REQUIRE(points.PointFormatId() == 6);
+        REQUIRE(points.PointRecordLength() == 34);
         for (const auto &point : points.Get())
-            REQUIRE(point->PointFormatID() == 3);
-        REQUIRE(points.PointRecordLength() == 38);
+            REQUIRE(point->PointFormatId() == 6);
         REQUIRE(points.Get(0)->UnscaledX() == 11);
         REQUIRE(points.Get(0)->UnscaledY() == 11);
         REQUIRE(points.Get(0)->UnscaledZ() == 11);
@@ -47,7 +46,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Adding Point to Points")
     {
-        auto points = Points(3, {1, 1, 1}, {0, 0, 0}, 0);
+        auto points = Points(6, {1, 1, 1}, {0, 0, 0}, 0);
         auto point = points.CreatePoint();
         point->UnscaledX(11);
         point->UnscaledY(11);
@@ -72,20 +71,20 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get(1)->UnscaledZ() == 22);
 
         // Test check on point format
-        point = std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 0);
+        point = std::make_shared<Point>(7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 0);
         REQUIRE_THROWS(points.AddPoint(point));
 
         // Test check on extra bytes
-        point = std::make_shared<Point>(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1);
+        point = std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1);
         REQUIRE_THROWS(points.AddPoint(point));
     }
 
     SECTION("Adding Points to Points")
     {
         auto points = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
         auto points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
 
         points.AddPoints(points_other);
 
@@ -93,28 +92,28 @@ TEST_CASE("Points tests", "[Point]")
 
         // Test check on point format
         points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+            10, std::make_shared<Point>(7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
         REQUIRE_THROWS(points.AddPoints(points_other));
 
         // Test check on extra bytes
         points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1)));
+            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1)));
         REQUIRE_THROWS(points.AddPoints(points_other));
     }
 
     SECTION("Points format conversion")
     {
         auto points = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
-        points.ToPointFormat(6);
+            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+        points.ToPointFormat(7);
 
-        REQUIRE(points.PointFormatID() == 6);
-        REQUIRE(points.PointRecordLength() == 38);
-        REQUIRE(points.Get(1)->PointFormatID() == 6);
-        REQUIRE(points.Get(1)->PointRecordLength() == 34);
+        REQUIRE(points.PointFormatId() == 7);
+        REQUIRE(points.PointRecordLength() == 40);
+        REQUIRE(points.Get(1)->PointFormatId() == 7);
+        REQUIRE(points.Get(1)->PointRecordLength() == 40);
 
-        REQUIRE_THROWS(points.ToPointFormat(-1));
-        REQUIRE_THROWS(points.ToPointFormat(11));
+        REQUIRE_THROWS(points.ToPointFormat(5));
+        REQUIRE_THROWS(points.ToPointFormat(9));
     }
 
     SECTION("Points Group Accessors")
@@ -130,7 +129,7 @@ TEST_CASE("Points tests", "[Point]")
             p->Y(i * 3);
             p->Z(i - 80);
             p->Classification(i * 255 / num_points);
-            p->PointSourceID(i * 255 / num_points);
+            p->PointSourceId(i * 255 / num_points);
             p->Red(i * 4);
             p->Green(i * 5);
             p->Blue(i * 6);
@@ -144,7 +143,7 @@ TEST_CASE("Points tests", "[Point]")
         auto Y = points.Y();
         auto Z = points.Z();
         auto classification = points.Classification();
-        auto point_source_id = points.PointSourceID();
+        auto point_source_id = points.PointSourceId();
         auto red = points.Red();
         auto green = points.Green();
         auto blue = points.Blue();
@@ -174,7 +173,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
         REQUIRE_THROWS(points.Classification(classification_n));
-        REQUIRE_THROWS(points.PointSourceID(point_source_id_n));
+        REQUIRE_THROWS(points.PointSourceId(point_source_id_n));
         REQUIRE_THROWS(points.Red(red_n));
         REQUIRE_THROWS(points.Green(green_n));
         REQUIRE_THROWS(points.Blue(blue_n));
@@ -195,7 +194,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
         REQUIRE_THROWS(points.Classification(classification_n));
-        REQUIRE_THROWS(points.PointSourceID(point_source_id_n));
+        REQUIRE_THROWS(points.PointSourceId(point_source_id_n));
         REQUIRE_THROWS(points.Red(red_n));
         REQUIRE_THROWS(points.Green(green_n));
         REQUIRE_THROWS(points.Blue(blue_n));
@@ -215,7 +214,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_NOTHROW(points.Y(Yn));
         REQUIRE_NOTHROW(points.Z(Zn));
         REQUIRE_NOTHROW(points.Classification(classification_n));
-        REQUIRE_NOTHROW(points.PointSourceID(point_source_id_n));
+        REQUIRE_NOTHROW(points.PointSourceId(point_source_id_n));
         REQUIRE_NOTHROW(points.Red(red_n));
         REQUIRE_NOTHROW(points.Green(green_n));
         REQUIRE_NOTHROW(points.Blue(blue_n));
@@ -227,7 +226,7 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(p->Y() == i + 800);
             REQUIRE(p->Z() == i * 4);
             REQUIRE(p->Classification() == i * 255 / 2000);
-            REQUIRE(p->PointSourceID() == i * 255 / 2000);
+            REQUIRE(p->PointSourceId() == i * 255 / 2000);
             REQUIRE(p->Red() == i * 4);
             REQUIRE(p->Green() == i * 5);
             REQUIRE(p->Blue() == i * 6);
@@ -239,7 +238,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point->Y() == 2);
         REQUIRE(last_point->Z() == 3);
         REQUIRE(last_point->Classification() == 255);
-        REQUIRE(last_point->PointSourceID() == 255);
+        REQUIRE(last_point->PointSourceId() == 255);
         REQUIRE(last_point->Red() == num_points * 4);
         REQUIRE(last_point->Green() == num_points * 5);
         REQUIRE(last_point->Blue() == num_points * 6);
@@ -247,7 +246,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Points Indexers")
     {
-        auto points = Points(3, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
+        auto points = Points(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
 
         // generate points
         int num_points = 2000;
@@ -342,7 +341,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Within")
     {
-        auto points = Points(3, {1, 1, 1}, copc::Vector3::DefaultOffset());
+        auto points = Points(6, {1, 1, 1}, copc::Vector3::DefaultOffset());
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -372,7 +371,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("GetWithin")
     {
-        auto points = Points(3, {1, 1, 1}, copc::Vector3::DefaultOffset());
+        auto points = Points(6, {1, 1, 1}, copc::Vector3::DefaultOffset());
 
         std::random_device rd;
         std::mt19937 gen(rd());

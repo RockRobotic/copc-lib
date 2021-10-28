@@ -5,24 +5,41 @@ def reader_example():
     # Create a reader object
     reader = copc.FileReader("autzen-classified.copc.laz")
 
-    # We can get the CopcData struct
-    copc_vlr = reader.GetCopcHeader()
-    print("CopcData: ")
-    print("\tSpan: %d" % copc_vlr.span)
-    print("\tRoot Offset: %d" % copc_vlr.root_hier_offset)
-    print("\tRoot Size: %d" % copc_vlr.root_hier_size)
-
     # Get the Las Header
-    las_header = reader.GetLasHeader()
+    las_header = reader.copc_config.las_header
+    cfg = reader.copc_config
     print()
     print("Las Header:")
     print("\tPoint Format: %d" % las_header.point_format_id)
     print("\tPoint Count: %d" % las_header.point_count)
 
-    # Get the WKT string
-    print("WKT: %s" % reader.GetWkt())
+    # Get the Copc Info
+    copc_info = reader.copc_config.copc_info
+    print("Copc Info: ")
+    print("\tSpacing: %d" % copc_info.spacing)
+    print("\tRoot Offset: %d" % copc_info.root_hier_offset)
+    print("\tRoot Size: %d" % copc_info.root_hier_size)
 
-    load_key = copc.VoxelKey(4, 11, 9, 0)
+    # Get the Copc Extents
+    copc_extents = reader.copc_config.copc_extents
+    print("Copc Extents (Min/Max): ")
+    print(
+        "\tIntensity: (%f,%f)"
+        % (copc_extents.intensity.minimum, copc_extents.intensity.maximum)
+    )
+    print(
+        "\tClassification: (%f,%f)"
+        % (copc_extents.classification.minimum, copc_extents.classification.maximum)
+    )
+    print(
+        "\tUser Data: (%f,%f)"
+        % (copc_extents.user_data.minimum, copc_extents.user_data.maximum)
+    )
+
+    # Get the WKT string
+    print("WKT: %s" % reader.copc_config.wkt)
+
+    load_key = (4, 11, 9, 0)
 
     # FindNode will automatically load the minimum pages needed
     # to find the key you request
@@ -43,7 +60,7 @@ def reader_example():
 
     # We can also get the raw compressed data if we want to decompress it ourselves:
 
-    loadKey = copc.VoxelKey(4, 11, 9, 0)
+    loadKey = (4, 11, 9, 0)
 
     node = reader.FindNode(loadKey)
     if not node.IsValid():

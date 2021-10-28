@@ -9,22 +9,30 @@ void ReaderExample()
     // Create a reader object
     FileReader reader("autzen-classified.copc.laz");
 
-    // We can get the CopcData struct
-    auto copc_vlr = reader.GetCopcHeader();
-    cout << "CopcData: " << endl;
-    cout << "\tSpan: " << copc_vlr.span << endl
-         << "\tRoot Offset: " << copc_vlr.root_hier_offset << endl
-         << "\tRoot Size: " << copc_vlr.root_hier_size << endl;
-
     // Get the Las Header
-    auto las_header = reader.GetLasHeader();
+    auto las_header = reader.CopcConfig().LasHeader();
     cout << endl << "Las Header:" << endl;
-    cout << "\tPoint Format: " << (int)las_header.point_format_id << endl
-         << "\tPoint Count: " << (int)las_header.point_count << endl;
+    cout << "\tPoint Format: " << (int)las_header.PointFormatId() << endl
+         << "\tPoint Count: " << (int)las_header.PointCount() << endl;
+
+    // Get the CopcInfo struct
+    auto copc_info = reader.CopcConfig().CopcInfo();
+    cout << "Copc Info: " << endl;
+    cout << "\tSpacing: " << copc_info.spacing << endl
+         << "\tRoot Offset: " << copc_info.root_hier_offset << endl
+         << "\tRoot Size: " << copc_info.root_hier_size << endl;
+
+    // Get the CopcInfo struct
+    auto copc_extents = reader.CopcConfig().CopcExtents();
+    cout << "Copc Extents (Min/Max): " << endl;
+    cout << "\tIntensity : (" << copc_extents.Intensity()->minimum << "/" << copc_extents.Intensity()->maximum << ")"
+         << endl
+         << "\tClassification : (" << copc_extents.Classification()->minimum << "/"
+         << copc_extents.Classification()->maximum << ")" << endl
+         << "\tGpsTime : (" << copc_extents.GpsTime()->minimum << "/" << copc_extents.GpsTime()->maximum << ")" << endl;
 
     // Get the WKT string
-    auto wkt = reader.GetWkt();
-    cout << endl << "WKT: " << endl << wkt << endl;
+    cout << "WKT: " << reader.CopcConfig().Wkt() << endl;
 
     cout << endl;
 
@@ -67,7 +75,7 @@ void ReaderExample()
             copc::laz::Decompressor::DecompressBytes(compressed_data, las_header, num_points_to_decompress);
 
         cout << endl
-             << "Successfully decompressed " << uncompressed_data.size() / las_header.point_record_length << " points!"
+             << "Successfully decompressed " << uncompressed_data.size() / las_header.PointRecordLength() << "points!"
              << endl;
     }
 }

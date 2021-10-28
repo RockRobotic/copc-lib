@@ -8,7 +8,7 @@ find_package(pybind11 CONFIG REQUIRED)
 pybind11_add_module(${COPC_PYTHON_LIB} bindings.cpp)
 target_link_libraries(${COPC_PYTHON_LIB} PRIVATE COPCLIB::copc-lib)
 
-if(WITH_TESTS_AND_EXAMPLES)
+if(WITH_TESTS)
     set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
                                                         # have the python lib output to the python build dir
                                                         # not the /lib dir

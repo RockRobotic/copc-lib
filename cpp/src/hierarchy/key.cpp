@@ -48,13 +48,13 @@ VoxelKey VoxelKey::GetParent() const
         return {};
 }
 
-std::vector<VoxelKey> VoxelKey::GetParents(bool include_current) const
+std::vector<VoxelKey> VoxelKey::GetParents(bool include_self) const
 {
     std::vector<VoxelKey> out;
     if (!IsValid())
         return out;
 
-    if (include_current)
+    if (include_self)
         out.push_back(*this);
 
     auto parentKey = this->GetParent();
@@ -77,14 +77,12 @@ bool VoxelKey::ChildOf(VoxelKey parent_key) const
     return false;
 }
 
-double VoxelKey::Resolution(const las::LasHeader &header, const las::CopcVlr &copc_info) const
+double VoxelKey::Resolution(const las::LasHeader &header, const CopcInfo &copc_info) const
 {
-    if (copc_info.span <= 0)
-        throw std::runtime_error("VoxelKey::Resolution: Octree span must be greater than 0.");
-    return (header.max.x - header.min.x) / copc_info.span / std::pow(2, d);
+    return copc_info.spacing / std::pow(2, d);
 }
 
-double VoxelKey::GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const las::CopcVlr &copc_info)
+double VoxelKey::GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const CopcInfo &copc_info)
 {
     return VoxelKey(d, 0, 0, 0).Resolution(header, copc_info);
 }

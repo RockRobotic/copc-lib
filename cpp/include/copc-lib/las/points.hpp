@@ -19,15 +19,15 @@ class Points
 {
   public:
     Points(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
-           const uint16_t &num_extra_bytes = 0);
+           const uint16_t &eb_byte_size = 0);
     Points(const LasHeader &header);
     // Will create Points object given a points vector
     Points(const std::vector<std::shared_ptr<Point>> &points);
 
     // Getters
-    int8_t PointFormatID() const { return point_format_id_; }
+    int8_t PointFormatId() const { return point_format_id_; }
     uint32_t PointRecordLength() const { return point_record_length_; }
-    uint32_t NumExtraBytes() const { return ComputeNumExtraBytes(point_format_id_, point_record_length_); }
+    uint32_t EbByteSize() const { return copc::las::EbByteSize(point_format_id_, point_record_length_); }
 
     // Vector functions
     std::vector<std::shared_ptr<Point>> Get() { return points_; }
@@ -44,13 +44,12 @@ class Points
     // Add points functions
     void AddPoint(const std::shared_ptr<Point> &point);
     void AddPoints(Points points);
-    // TODO[Leo]: Add this to tests
     void AddPoints(std::vector<std::shared_ptr<Point>> points);
 
     // Point functions
     std::shared_ptr<Point> CreatePoint()
     {
-        return std::make_shared<Point>(point_format_id_, scale_, offset_, NumExtraBytes());
+        return std::make_shared<Point>(point_format_id_, scale_, offset_, EbByteSize());
     }
     void ToPointFormat(const int8_t &point_format_id);
 
@@ -58,7 +57,7 @@ class Points
     std::vector<char> Pack();
     void Pack(std::ostream &out_stream);
     static Points Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
-                         const uint16_t &num_extra_bytes, const Vector3 &scale, const Vector3 &offset);
+                         const uint16_t &eb_byte_size, const Vector3 &scale, const Vector3 &offset);
     static Points Unpack(const std::vector<char> &point_data, const LasHeader &header);
 
     std::string ToString() const;
@@ -131,21 +130,21 @@ class Points
             points_[i]->Classification(in[i]);
     }
 
-    std::vector<uint8_t> PointSourceID() const
+    std::vector<uint8_t> PointSourceId() const
     {
         std::vector<uint8_t> out;
         out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(),
-                       [](const std::shared_ptr<Point> &p) { return p->PointSourceID(); });
+                       [](const std::shared_ptr<Point> &p) { return p->PointSourceId(); });
         return out;
     }
-    void PointSourceID(const std::vector<uint8_t> &in)
+    void PointSourceId(const std::vector<uint8_t> &in)
     {
         if (in.size() != Size())
-            throw std::runtime_error("PointSourceID setter array must be same size as Points array!");
+            throw std::runtime_error("PointSourceId setter array must be same size as Points array!");
 
         for (unsigned i = 0; i < points_.size(); ++i)
-            points_[i]->PointSourceID(in[i]);
+            points_[i]->PointSourceId(in[i]);
     }
 
     std::vector<uint16_t> Red() const

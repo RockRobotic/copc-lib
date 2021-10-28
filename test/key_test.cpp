@@ -28,9 +28,9 @@ TEST_CASE("GetParent Checks", "[Key]")
     REQUIRE(VoxelKey(4, 5, 6, 13).GetParent() == VoxelKey(3, 2, 3, 6));
     REQUIRE(VoxelKey(3, 2, 3, 6).GetParent() == VoxelKey(2, 1, 1, 3));
 
-    REQUIRE(!(VoxelKey(3, 2, 3, 6).GetParent() == VoxelKey::BaseKey()));
+    REQUIRE(VoxelKey(3, 2, 3, 6).GetParent() != VoxelKey::RootKey());
 
-    REQUIRE(VoxelKey(1, 1, 1, 1).GetParent() == VoxelKey::BaseKey());
+    REQUIRE(VoxelKey(1, 1, 1, 1).GetParent() == VoxelKey::RootKey());
     REQUIRE(VoxelKey(1, 1, 1, -1).GetParent() == VoxelKey::InvalidKey());
 
     REQUIRE(VoxelKey(1, 1, 1, -1).GetParent().IsValid() == false);
@@ -39,7 +39,7 @@ TEST_CASE("GetParent Checks", "[Key]")
 
 TEST_CASE("GetChildren Checks", "[Key]")
 {
-    auto key = VoxelKey::BaseKey();
+    auto key = VoxelKey::RootKey();
     auto children = key.GetChildren();
     for (int i = 0; i < 8; i++)
         REQUIRE(key.Bisect(i) == children[i]);
@@ -55,12 +55,12 @@ TEST_CASE("GetChildren Checks", "[Key]")
 
 TEST_CASE("IsChild Checks", "[Key]")
 {
-    REQUIRE(VoxelKey(-1, -1, -1, -1).ChildOf(VoxelKey::BaseKey()) == false);
-    REQUIRE(VoxelKey::BaseKey().ChildOf(VoxelKey::InvalidKey()) == false);
+    REQUIRE(VoxelKey(-1, -1, -1, -1).ChildOf(VoxelKey::RootKey()) == false);
+    REQUIRE(VoxelKey::RootKey().ChildOf(VoxelKey::InvalidKey()) == false);
 
     REQUIRE(VoxelKey(4, 4, 6, 12).ChildOf(VoxelKey(3, 2, 3, 6)));
     REQUIRE(VoxelKey(3, 2, 3, 6).ChildOf(VoxelKey(2, 1, 1, 3)));
-    REQUIRE(VoxelKey(3, 2, 3, 6).ChildOf(VoxelKey::BaseKey()));
+    REQUIRE(VoxelKey(3, 2, 3, 6).ChildOf(VoxelKey::RootKey()));
 
     REQUIRE(!VoxelKey(4, 4, 6, 12).ChildOf(VoxelKey(3, 4, 8, 6)));
     REQUIRE(!VoxelKey(3, 2, 3, 6).ChildOf(VoxelKey(2, 2, 2, 2)));
@@ -117,8 +117,7 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
         REQUIRE(VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, 1, 1, 1)));
         REQUIRE(!VoxelKey(2, 0, 0, 0).Contains(header, Box(0, 0, 0, 1, 1, 1)));
         // A box contains itself
-        REQUIRE(
-            VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Contains(header, Box(0, 0, 0, header.Span(), header.Span(), header.Span())));
     }
 
     SECTION("Contains vector")
@@ -131,8 +130,7 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
     {
         REQUIRE(VoxelKey(1, 1, 1, 1).Within(header, Box(0.99, 0.99, 0.99, 2.01, 2.01, 2.01)));
         // A box is within itself
-        REQUIRE(
-            VoxelKey(0, 0, 0, 0).Within(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        REQUIRE(VoxelKey(0, 0, 0, 0).Within(header, Box(0, 0, 0, header.Span(), header.Span(), header.Span())));
     }
 
     SECTION("Crosses")
@@ -142,8 +140,7 @@ TEST_CASE("VoxelKey Spatial functions", "[VoxelKey]")
         // Crossing on all axis
         REQUIRE(VoxelKey(1, 0, 0, 0).Crosses(header, Box(0.5, 0.5, 0.5, 1.5, 1.5, 1.5)));
         // Within
-        REQUIRE(
-            !VoxelKey(0, 0, 0, 0).Crosses(header, Box(0, 0, 0, header.GetSpan(), header.GetSpan(), header.GetSpan())));
+        REQUIRE(!VoxelKey(0, 0, 0, 0).Crosses(header, Box(0, 0, 0, header.Span(), header.Span(), header.Span())));
         // Outside
         REQUIRE(!VoxelKey(1, 0, 0, 0).Crosses(header, Box(1.1, 1.1, 1.1, 2, 2, 2)));
     }
