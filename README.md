@@ -113,22 +113,22 @@ for point in points.Get():
 - \[x\] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
 - \[ \] Conda and pip packages
 
-## Note
+## Conformity to Spec
 
 This version of copc-lib is pinned to a draft version of COPC respective of the state at [COPC.io](https://github.com/copcio/copcio.github.io/tree/a6e8654f65db7c7d438ebea90993bd7a8d59091a).
 
-## ``extended stats`` VLR
+### ``extended stats`` VLR
 
 | User ID                    | Record ID        |
 | -------------------------- | ---------------- |
 | ``rock_robotic``                   | ``10001``        |
 
-We use a modified lazperf COPC ``extents`` VLR to store mean and variance values for each dimension.
+We additionally add an ``extended stats extents`` VLR to store mean and (population) variance values for each dimension. This VLR can be parsed in the same way as the ``extents`` VLR defined by the COPC spec.
 
-    struct CopcExtent
+    struct CopcExtentExtended
     {
-        double minimum; // mean
-        double maximum; // var
+        double mean; // replaces minimum
+        double var; // replaces maximum
     }
 
 This VLR is optional to process existing COPC files. If present, mean/variance are set appropriately for each dimension in `CopcExtents`; if not, `CopcExtents` will have default values of `mean=0` and `var=1`.
@@ -206,6 +206,8 @@ assert test_class.SumPublicAndPrivate() == 9
 # using pybind .def_static
 assert test_class.ReturnEmptyString == ""
 ```
+
+Note that dimension names for points follow the [laspy naming scheme](https://laspy.readthedocs.io/en/latest/intro.html#point-format-6), with the exception of `scan_angle`.
 
 ## License
 

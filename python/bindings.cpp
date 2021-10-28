@@ -212,11 +212,11 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const double &>(&las::Point::Y))
         .def_property("z", py::overload_cast<>(&las::Point::Z, py::const_),
                       py::overload_cast<const double &>(&las::Point::Z))
-        .def_property("unscaled_x", py::overload_cast<>(&las::Point::UnscaledX, py::const_),
+        .def_property("X", py::overload_cast<>(&las::Point::UnscaledX, py::const_),
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledX))
-        .def_property("unscaled_y", py::overload_cast<>(&las::Point::UnscaledY, py::const_),
+        .def_property("Y", py::overload_cast<>(&las::Point::UnscaledY, py::const_),
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledY))
-        .def_property("unscaled_z", py::overload_cast<>(&las::Point::UnscaledZ, py::const_),
+        .def_property("Z", py::overload_cast<>(&las::Point::UnscaledZ, py::const_),
                       py::overload_cast<const int32_t &>(&las::Point::UnscaledZ))
         .def_property("intensity", py::overload_cast<>(&las::Point::Intensity, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Intensity))
