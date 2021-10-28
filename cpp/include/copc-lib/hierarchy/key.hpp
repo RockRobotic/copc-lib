@@ -38,7 +38,7 @@ class VoxelKey
     };
 
     static VoxelKey InvalidKey() { return VoxelKey(); }
-    static VoxelKey BaseKey() { return VoxelKey(0, 0, 0, 0); }
+    static VoxelKey RootKey() { return VoxelKey(0, 0, 0, 0); }
 
     bool IsValid() const { return d >= 0 && x >= 0 && y >= 0 && z >= 0; }
 
@@ -53,7 +53,7 @@ class VoxelKey
 
     // A list of the key's parents from the key to the root node
     // optionally including the key itself
-    std::vector<VoxelKey> GetParents(bool include_current = false) const;
+    std::vector<VoxelKey> GetParents(bool include_self = false) const;
 
     // Tests whether the current key is a child of a given key
     bool ChildOf(VoxelKey parent_key) const;

@@ -48,13 +48,13 @@ VoxelKey VoxelKey::GetParent() const
         return {};
 }
 
-std::vector<VoxelKey> VoxelKey::GetParents(bool include_current) const
+std::vector<VoxelKey> VoxelKey::GetParents(bool include_self) const
 {
     std::vector<VoxelKey> out;
     if (!IsValid())
         return out;
 
-    if (include_current)
+    if (include_self)
         out.push_back(*this);
 
     auto parentKey = this->GetParent();

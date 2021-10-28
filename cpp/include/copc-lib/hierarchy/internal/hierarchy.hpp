@@ -17,16 +17,16 @@ class Hierarchy
     Hierarchy()
     {
         // add the root page to the pages list
-        seen_pages_[VoxelKey::BaseKey()] = std::make_shared<PageInternal>(VoxelKey::BaseKey(), -1, -1);
+        seen_pages_[VoxelKey::RootKey()] = std::make_shared<PageInternal>(VoxelKey::RootKey(), -1, -1);
         // Set as "loaded" for the writer
-        seen_pages_[VoxelKey::BaseKey()]->loaded = true;
+        seen_pages_[VoxelKey::RootKey()]->loaded = true;
     }
     // Reader Constructor
     Hierarchy(int64_t root_hier_offset, int32_t root_hier_size)
     {
         // add the root page to the pages list
-        seen_pages_[VoxelKey::BaseKey()] =
-            std::make_shared<PageInternal>(VoxelKey::BaseKey(), root_hier_offset, root_hier_size);
+        seen_pages_[VoxelKey::RootKey()] =
+            std::make_shared<PageInternal>(VoxelKey::RootKey(), root_hier_offset, root_hier_size);
     };
 
     // Find the lowest depth page that has been seen within a hierarchy list

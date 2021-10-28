@@ -221,7 +221,7 @@ def test_writer_pages():
 
     writer = copc.FileWriter(file_path, copc.CopcConfigWriter(6))
 
-    assert not writer.FindNode(copc.VoxelKey.BaseKey()).IsValid()
+    assert not writer.FindNode(copc.VoxelKey.RootKey()).IsValid()
     assert not writer.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
     assert not writer.FindNode((5, 4, 3, 2)).IsValid()
 

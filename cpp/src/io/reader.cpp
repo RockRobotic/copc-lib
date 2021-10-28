@@ -93,7 +93,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
     if (extended_offset != 0)
     {
         in_stream_->seekg(extended_offset + lazperf::vlr_header::Size);
-        extents.UpdateExtendedStats(las::CopcExtentsVlr::create(*in_stream_, vlrs[extended_offset].data_length));
+        extents.SetExtendedStats(las::CopcExtentsVlr::create(*in_stream_, vlrs[extended_offset].data_length));
     }
     return extents;
 }

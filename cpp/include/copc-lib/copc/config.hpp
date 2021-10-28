@@ -52,7 +52,7 @@ class CopcConfigWriter : public CopcConfig
                      const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
                      const las::EbVlr &extra_bytes_vlr = las::EbVlr(0), bool has_extended_stats = false);
 
-    //    // Copy constructor
+    // Copy constructor
     CopcConfigWriter(const CopcConfigWriter &copc_config)
         : CopcConfig(copc_config.LasHeader(), copc_config.CopcInfo(), copc_config.CopcExtents(), copc_config.Wkt(),
                      copc_config.ExtraBytesVlr())

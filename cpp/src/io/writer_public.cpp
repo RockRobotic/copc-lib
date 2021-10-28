@@ -18,7 +18,7 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_f
 Writer::~Writer() { writer_->Close(); }
 void Writer::Close() { writer_->Close(); }
 
-Page Writer::GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::BaseKey()]; }
+Page Writer::GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::RootKey()]; }
 
 // Create a page, add it to the hierarchy and reference it as a subpage in the parent
 Page Writer::AddSubPage(Page &parent, VoxelKey key)

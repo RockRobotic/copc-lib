@@ -173,7 +173,7 @@ class CopcExtents
     // Convert to lazperf vlr extended (mean,var)
     las::CopcExtentsVlr ToLazPerfExtended() const;
 
-    void UpdateExtendedStats(const las::CopcExtentsVlr &vlr);
+    void SetExtendedStats(const las::CopcExtentsVlr &vlr);
 
     // Return the total number of extents
     size_t NumberOfExtents() const { return extents_.size(); }

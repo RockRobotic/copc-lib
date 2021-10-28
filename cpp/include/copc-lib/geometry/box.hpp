@@ -33,7 +33,7 @@ class Box
     // Constructor from Node
     Box(const VoxelKey &key, const las::LasHeader &header);
 
-    static Box ZeroBox() { return Box(); }
+    static Box EmptyBox() { return Box(); }
     static Box MaxBox();
 
     bool Intersects(const Box &box) const;

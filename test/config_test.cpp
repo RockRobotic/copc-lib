@@ -1,5 +1,6 @@
 #include <catch2/catch.hpp>
 #include <copc-lib/copc/config.hpp>
+#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/utils.hpp>

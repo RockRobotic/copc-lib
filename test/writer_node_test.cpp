@@ -30,7 +30,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         REQUIRE(reader.CopcConfig().CopcInfo().root_hier_offset > 0);
         REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 32);
 
-        auto node = reader.FindNode(VoxelKey::BaseKey());
+        auto node = reader.FindNode(VoxelKey::RootKey());
         REQUIRE(node.IsValid());
         auto root_node_test = reader.GetPointData(node);
 
@@ -63,7 +63,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 32 * 3);
 
         {
-            auto node = reader.FindNode(VoxelKey::BaseKey());
+            auto node = reader.FindNode(VoxelKey::RootKey());
             REQUIRE(node.IsValid());
             auto node_data = reader.GetPointData(node);
             REQUIRE(node_data == twenty);
@@ -174,7 +174,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         REQUIRE(reader.CopcConfig().CopcInfo().root_hier_offset > 0);
         REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 32);
 
-        auto node = reader.FindNode(VoxelKey::BaseKey());
+        auto node = reader.FindNode(VoxelKey::RootKey());
         REQUIRE(node.IsValid());
         auto root_node_test = reader.GetPointData(node);
 
@@ -207,7 +207,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 32 * 3);
 
         {
-            auto sub_node = reader.FindNode(VoxelKey::BaseKey());
+            auto sub_node = reader.FindNode(VoxelKey::RootKey());
             REQUIRE(sub_node.IsValid());
             auto sub_node_data = reader.GetPointData(sub_node);
             REQUIRE(sub_node_data == std::vector<char>(first_20_pts, first_20_pts + sizeof(first_20_pts)));

@@ -570,7 +570,7 @@ TEST_CASE("Point tests", "[Point]")
         point.Z(5);
 
         REQUIRE(point.Within(copc::Box::MaxBox()));
-        REQUIRE(!point.Within(copc::Box::ZeroBox()));
+        REQUIRE(!point.Within(copc::Box::EmptyBox()));
 
         // 2D box
         REQUIRE(point.Within(copc::Box(0, 0, 5, 5)));

@@ -28,12 +28,12 @@ def test_point():
         6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
     # Position
-    point6.unscaled_x = 2147483647
-    point6.unscaled_y = 2147483647
-    point6.unscaled_z = 2147483647
-    assert point6.unscaled_x == 2147483647
-    assert point6.unscaled_y == 2147483647
-    assert point6.unscaled_z == 2147483647
+    point6.X = 2147483647
+    point6.Y = 2147483647
+    point6.Z = 2147483647
+    assert point6.X == 2147483647
+    assert point6.Y == 2147483647
+    assert point6.Z == 2147483647
 
     # intensity
     point6.intensity = 65535
@@ -233,19 +233,19 @@ def test_operators_equal():
 
     # Atributes
 
-    point.unscaled_x = 4
+    point.X = 4
     assert point != point_other
-    point_other.unscaled_x = 4
+    point_other.X = 4
     assert point == point_other
 
-    point.unscaled_y = 4
+    point.Y = 4
     assert point != point_other
-    point_other.unscaled_y = 4
+    point_other.Y = 4
     assert point == point_other
 
-    point.unscaled_z = 4
+    point.Z = 4
     assert point != point_other
-    point_other.unscaled_z = 4
+    point_other.Z = 4
     assert point == point_other
 
     point.intensity = 4
@@ -374,9 +374,9 @@ def test_operator_copy():
         eb_byte_size=2,
     ).CreatePoint()
 
-    point.unscaled_x = 4
-    point.unscaled_y = 4
-    point.unscaled_z = 4
+    point.X = 4
+    point.Y = 4
+    point.Z = 4
 
     point.gps_time = 4.0
     point.red = 4
@@ -396,9 +396,9 @@ def test_scaled_xyz():
     # No scale and offset
     point = copc.Points(pfid, scale=[1, 1, 1], offset=[0, 0, 0]).CreatePoint()
 
-    point.unscaled_x = 4
-    point.unscaled_y = 4
-    point.unscaled_z = 4
+    point.X = 4
+    point.Y = 4
+    point.Z = 4
 
     assert point.x == 4
     assert point.y == 4
@@ -408,18 +408,18 @@ def test_scaled_xyz():
     point.y = 6
     point.z = 7
 
-    assert point.unscaled_x == 5
-    assert point.unscaled_y == 6
-    assert point.unscaled_z == 7
+    assert point.X == 5
+    assert point.Y == 6
+    assert point.Z == 7
 
     # Scale test
     point = copc.Points(
         pfid, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
     ).CreatePoint()
 
-    point.unscaled_x = 1
-    point.unscaled_y = 2
-    point.unscaled_z = 3
+    point.X = 1
+    point.Y = 2
+    point.Z = 3
 
     assert point.x == 0.01
     assert point.y == 0.02
@@ -429,18 +429,18 @@ def test_scaled_xyz():
     point.y = 300
     point.z = 400
 
-    assert point.unscaled_x == 200 * 100
-    assert point.unscaled_y == 300 * 100
-    assert point.unscaled_z == 400 * 100
+    assert point.X == 200 * 100
+    assert point.Y == 300 * 100
+    assert point.Z == 400 * 100
     # Offset test
 
     scale = [1, 1, 1]
     offset = copc.Vector3([50001.456, 4443.123, -255.001])
     point = copc.Points(pfid, scale, offset).CreatePoint()
 
-    point.unscaled_x = 0
-    point.unscaled_y = -800
-    point.unscaled_z = 3
+    point.X = 0
+    point.Y = -800
+    point.Z = 3
 
     assert point.x == 0 + offset.x
     assert point.y == -800 + offset.y
@@ -450,9 +450,9 @@ def test_scaled_xyz():
     point.y = 4002.111
     point.z = -80.5
 
-    assert point.unscaled_x == 501  # 50502.888 - 50001.456 = 501.432
-    assert point.unscaled_y == -441
-    assert point.unscaled_z == 175  # -80.5 - -255.001 = 255.001 - 80.5 = 175
+    assert point.X == 501  # 50502.888 - 50001.456 = 501.432
+    assert point.Y == -441
+    assert point.Z == 175  # -80.5 - -255.001 = 255.001 - 80.5 = 175
 
     # (value * scale) + offset
     assert point.x == pytest.approx(50502.456, 0.000001)
@@ -464,9 +464,9 @@ def test_scaled_xyz():
         pfid, scale=[0.001, 0.001, 0.001], offset=[50001.456, 4443.123, -255.001]
     ).CreatePoint()
 
-    point.unscaled_x = 0
-    point.unscaled_y = -800
-    point.unscaled_z = 300532
+    point.X = 0
+    point.Y = -800
+    point.Z = 300532
 
     assert point.x == pytest.approx(50001.456, 0.000001)
     assert point.y == pytest.approx(4442.323, 0.000001)
@@ -476,9 +476,9 @@ def test_scaled_xyz():
     point.y = 4002.111
     point.z = -80.5
 
-    assert point.unscaled_x == 501432
-    assert point.unscaled_y == -441012
-    assert point.unscaled_z == 174501
+    assert point.X == 501432
+    assert point.Y == -441012
+    assert point.Z == 174501
 
     # (value * scale) + offset
     assert point.x == pytest.approx(50502.888, 0.000001)
@@ -504,7 +504,7 @@ def test_within():
     point.z = 5
 
     assert point.Within(copc.Box.MaxBox())
-    assert not point.Within(copc.Box.ZeroBox())
+    assert not point.Within(copc.Box.EmptyBox())
 
     # 2D box
     assert point.Within(copc.Box(0, 0, 5, 5))

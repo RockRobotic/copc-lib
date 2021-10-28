@@ -109,12 +109,12 @@ las::CopcExtentsVlr CopcExtents::ToLazPerfExtended() const
     return vlr;
 }
 
-void CopcExtents::UpdateExtendedStats(const las::CopcExtentsVlr &vlr)
+void CopcExtents::SetExtendedStats(const las::CopcExtentsVlr &vlr)
 {
     if (!has_extended_stats_)
-        throw std::runtime_error("CopcExtents::UpdateExtendedStats: This instance does not have extended stats.");
+        throw std::runtime_error("CopcExtents::SetExtendedStats: This instance does not have extended stats.");
     if (vlr.items.size() - 3 != extents_.size()) // -3 takes into account extra extents for x,y,z from LAS header
-        throw std::runtime_error("CopcExtents::UpdateExtendedStats: Number of extended extents incorrect.");
+        throw std::runtime_error("CopcExtents::SetExtendedStats: Number of extended extents incorrect.");
     for (int i = 3; i < vlr.items.size(); i++)
     {
         extents_[i - 3]->mean = vlr.items[i].minimum;

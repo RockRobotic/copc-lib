@@ -17,9 +17,9 @@ def test_points_constructor():
         copc.Vector3.DefaultOffset(),
         eb_byte_size=4,
     ).CreatePoint()
-    point1.unscaled_x = 11
-    point1.unscaled_y = 11
-    point1.unscaled_z = 11
+    point1.X = 11
+    point1.Y = 11
+    point1.Z = 11
 
     point_list = [
         point1,
@@ -42,8 +42,8 @@ def test_points_constructor():
     assert points.point_record_length == 34
     for point in points:
         assert point.point_format_id == 6
-    assert points[0].unscaled_y == 11
-    assert points[0].unscaled_z == 11
+    assert points[0].Y == 11
+    assert points[0].Z == 11
 
     str(points)
 
@@ -58,16 +58,16 @@ def test_adding_point_to_points():
         copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
-    point.unscaled_x = 11
-    point.unscaled_y = 11
-    point.unscaled_z = 11
+    point.X = 11
+    point.Y = 11
+    point.Z = 11
 
     points.AddPoint(point)
 
     assert len(points) == 1
-    assert points[0].unscaled_x == 11
-    assert points[0].unscaled_y == 11
-    assert points[0].unscaled_z == 11
+    assert points[0].X == 11
+    assert points[0].Y == 11
+    assert points[0].Z == 11
 
     point = copc.Points(
         6,
@@ -75,15 +75,15 @@ def test_adding_point_to_points():
         copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
-    point.unscaled_x = 22
-    point.unscaled_y = 22
-    point.unscaled_z = 22
+    point.X = 22
+    point.Y = 22
+    point.Z = 22
 
     points.AddPoint(point)
     assert len(points) == 2
-    assert points[1].unscaled_x == 22
-    assert points[1].unscaled_y == 22
-    assert points[1].unscaled_z == 22
+    assert points[1].X == 22
+    assert points[1].Y == 22
+    assert points[1].Z == 22
 
     # Test check on point format
     point = copc.Points(

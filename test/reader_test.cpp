@@ -119,7 +119,7 @@ TEST_CASE("FindKey Check", "[Reader]")
     {
         FileReader reader("autzen-classified.copc.laz");
 
-        auto key = VoxelKey::BaseKey();
+        auto key = VoxelKey::RootKey();
         auto hier_entry = reader.FindNode(key);
 
         REQUIRE(hier_entry.IsValid() == true);
@@ -223,7 +223,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
     SECTION("GetNodesWithinBox")
     {
         // Check that no nodes fit in a zero-sized box
-        auto subset_nodes = reader.GetNodesWithinBox(Box::ZeroBox());
+        auto subset_nodes = reader.GetNodesWithinBox(Box::EmptyBox());
         REQUIRE(subset_nodes.empty());
 
         // Check that all nodes fit in a max-sized box
@@ -242,7 +242,7 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
     {
         {
             // Check that no points fit in a zero-sized box
-            auto subset_points = reader.GetPointsWithinBox(Box::ZeroBox());
+            auto subset_points = reader.GetPointsWithinBox(Box::EmptyBox());
             REQUIRE(subset_points.Get().empty());
         }
         {

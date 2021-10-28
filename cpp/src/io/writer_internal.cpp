@@ -59,7 +59,7 @@ void WriterInternal::Close()
 
     // Page writing must be done in a postorder traversal because each parent
     // has to write the offset of all of its children, which we don't know in advance
-    WritePageTree(hierarchy_->seen_pages_[VoxelKey::BaseKey()]);
+    WritePageTree(hierarchy_->seen_pages_[VoxelKey::RootKey()]);
 
     WriteHeader();
 
@@ -214,7 +214,7 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     page->byte_size = static_cast<int32_t>(page_size);
 
     // Set the copc header info if needed
-    if (page->key == VoxelKey::BaseKey())
+    if (page->key == VoxelKey::RootKey())
     {
         copc_config_->CopcInfo()->root_hier_offset = offset;
         copc_config_->CopcInfo()->root_hier_size = page_size;

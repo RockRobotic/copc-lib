@@ -308,7 +308,7 @@ TEST_CASE("Writer Pages", "[Writer]")
 
         Writer writer(out_stream, {6});
 
-        REQUIRE(!writer.FindNode(VoxelKey::BaseKey()).IsValid());
+        REQUIRE(!writer.FindNode(VoxelKey::RootKey()).IsValid());
         REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
         REQUIRE(!writer.FindNode(VoxelKey(5, 4, 3, 2)).IsValid());
 

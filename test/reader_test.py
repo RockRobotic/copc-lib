@@ -69,7 +69,7 @@ def test_find_key():
     # Given a valid file path
     reader = copc.FileReader("autzen-classified.copc.laz")
 
-    key = copc.VoxelKey.BaseKey()
+    key = copc.VoxelKey.RootKey()
     hier_entry = reader.FindNode(key)
 
     assert hier_entry.IsValid() == True
@@ -148,7 +148,7 @@ def test_spatial_query_functions():
     # GetNodesWithinBox
 
     ## Check that no nodes fit in a zero-sized box
-    subset_nodes = reader.GetNodesWithinBox(copc.Box.ZeroBox())
+    subset_nodes = reader.GetNodesWithinBox(copc.Box.EmptyBox())
     assert len(subset_nodes) == 0
 
     ## Check that all nodes fit in a max-sized box
@@ -164,7 +164,7 @@ def test_spatial_query_functions():
     # GetPointsWithinBox
 
     ## Check that no points fit in a zero-sized box
-    subset_points = reader.GetPointsWithinBox(copc.Box.ZeroBox())
+    subset_points = reader.GetPointsWithinBox(copc.Box.EmptyBox())
     assert len(subset_points) == 0
 
     # TODO[Leo]: Make this test optional
