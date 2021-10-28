@@ -115,11 +115,11 @@ TEST_CASE("Point tests", "[Point]")
         // Scan Angle
         point6.ScanAngle(-30000);
         REQUIRE(point6.ScanAngle() == -30000);
-        REQUIRE(point6.ScanAngleFloat() == -180.0);
+        REQUIRE(point6.ScanAngleDegrees() == -180.0);
         REQUIRE_THROWS(point6.ScanAngle(-30001));
         point6.ScanAngle(30000);
         REQUIRE(point6.ScanAngle() == 30000);
-        REQUIRE(point6.ScanAngleFloat() == 180.0);
+        REQUIRE(point6.ScanAngleDegrees() == 180.0);
         REQUIRE_THROWS(point6.ScanAngle(30001));
 
         // User Data
@@ -207,7 +207,7 @@ TEST_CASE("Point tests", "[Point]")
         point.Synthetic(true);
         point.KeyPoint(false);
         point.Withheld(true);
-        point.ScanAngleFloat(45);
+        point.ScanAngleDegrees(45);
 
         point.ToPointFormat(7);
 
@@ -220,7 +220,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.KeyPoint() == false);
         REQUIRE(point.Withheld() == true);
         REQUIRE(point.Overlap() == false);
-        REQUIRE(point.ScanAngleFloat() == 45);
+        REQUIRE(point.ScanAngleDegrees() == 45);
         REQUIRE(point.ScannerChannel() == 0);
         REQUIRE(point.Red() == 0);
         REQUIRE(point.Green() == 0);
@@ -242,7 +242,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.KeyPoint() == false);
         REQUIRE(point.Withheld() == true);
         REQUIRE(point.Overlap() == false);
-        REQUIRE(point.ScanAngleFloat() == 45);
+        REQUIRE(point.ScanAngleDegrees() == 45);
         REQUIRE(point.ScannerChannel() == 0);
         REQUIRE(point.Red() == 150);
         REQUIRE(point.Green() == 200);

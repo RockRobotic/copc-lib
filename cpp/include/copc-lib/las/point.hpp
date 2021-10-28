@@ -73,9 +73,9 @@ class Point
         scan_angle_ = scan_angle;
     }
 
-    float ScanAngleFloat() const { return 0.006f * float(scan_angle_); }
+    float ScanAngleDegrees() const { return 0.006f * float(scan_angle_); }
 
-    void ScanAngleFloat(const float &scan_angle) { scan_angle_ = static_cast<int16_t>(scan_angle / 0.006f); }
+    void ScanAngleDegrees(const float &scan_angle) { scan_angle_ = static_cast<int16_t>(scan_angle / 0.006f); }
 
     uint8_t UserData() const { return user_data_; }
     void UserData(const uint8_t &user_data) { user_data_ = user_data; }

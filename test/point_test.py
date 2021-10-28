@@ -116,10 +116,10 @@ def test_point():
     # Scan Angle
     point6.scan_angle = -30000
     assert point6.scan_angle == -30000
-    assert point6.scan_angle_float == -180.0
+    assert point6.scan_angle_degrees == -180.0
     point6.scan_angle = 30000
     assert point6.scan_angle == 30000
-    assert point6.scan_angle_float == 180.0
+    assert point6.scan_angle_degrees == 180.0
     with pytest.raises(RuntimeError):
         point6.scan_angle = 30001
 

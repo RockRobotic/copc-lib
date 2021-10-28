@@ -246,8 +246,8 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const uint8_t &>(&las::Point::Classification))
         .def_property("scan_angle", py::overload_cast<>(&las::Point::ScanAngle, py::const_),
                       py::overload_cast<const int16_t &>(&las::Point::ScanAngle))
-        .def_property("scan_angle_float", py::overload_cast<>(&las::Point::ScanAngleFloat, py::const_),
-                      py::overload_cast<const float &>(&las::Point::ScanAngleFloat))
+        .def_property("scan_angle_degrees", py::overload_cast<>(&las::Point::ScanAngleDegrees, py::const_),
+                      py::overload_cast<const float &>(&las::Point::ScanAngleDegrees))
         .def_property("user_data", py::overload_cast<>(&las::Point::UserData, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::UserData))
         .def_property("point_source_id", py::overload_cast<>(&las::Point::PointSourceID, py::const_),

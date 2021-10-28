@@ -86,7 +86,7 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points[0]->EdgeOfFlightLineFlag() == false);
         REQUIRE(points[0]->Classification() == 5);
         REQUIRE(points[0]->ScanAngle() == 1667);
-        REQUIRE_THAT(points[0]->ScanAngleFloat(), Catch::Matchers::WithinAbs(10, 0.01));
+        REQUIRE_THAT(points[0]->ScanAngleDegrees(), Catch::Matchers::WithinAbs(10, 0.01));
         REQUIRE(points[0]->UserData() == 124);
         REQUIRE(points[0]->PointSourceID() == 7327);
         REQUIRE_THAT(points[0]->GPSTime(), Catch::Matchers::WithinAbs(246098.8141472744, 0.0001));
