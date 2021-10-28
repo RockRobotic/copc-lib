@@ -35,7 +35,7 @@ class WriterInternal
     bool open_{};
 
     std::ostream &out_stream_;
-    std::shared_ptr<CopcConfigWriter> copc_file_writer_;
+    std::shared_ptr<CopcConfigWriter> copc_config_;
     std::shared_ptr<Hierarchy> hierarchy_;
 
     std::vector<lazperf::chunk> chunks_;

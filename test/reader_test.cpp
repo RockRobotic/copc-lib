@@ -38,6 +38,8 @@ TEST_CASE("Reader tests", "[Reader]")
         SECTION("GetCopcExtents Test")
         {
             auto copc_extents = reader.CopcConfig().CopcExtents();
+            REQUIRE(!copc_extents.HasExtendedStats());
+            REQUIRE(copc_extents.PointFormatId() == 7);
             REQUIRE_THAT(copc_extents.Intensity()->minimum, Catch::Matchers::WithinAbs(0, 0.0001));
             REQUIRE_THAT(copc_extents.Intensity()->maximum, Catch::Matchers::WithinAbs(254, 0.0001));
             REQUIRE_THAT(copc_extents.ReturnNumber()->minimum, Catch::Matchers::WithinAbs(1, 0.0001));
@@ -56,8 +58,8 @@ TEST_CASE("Reader tests", "[Reader]")
             REQUIRE_THAT(copc_extents.UserData()->maximum, Catch::Matchers::WithinAbs(156, 0.0001));
             REQUIRE_THAT(copc_extents.ScanAngle()->minimum, Catch::Matchers::WithinAbs(-21, 0.0001));
             REQUIRE_THAT(copc_extents.ScanAngle()->maximum, Catch::Matchers::WithinAbs(20, 0.0001));
-            REQUIRE_THAT(copc_extents.PointSourceID()->minimum, Catch::Matchers::WithinAbs(7326, 0.0001));
-            REQUIRE_THAT(copc_extents.PointSourceID()->maximum, Catch::Matchers::WithinAbs(7334, 0.0001));
+            REQUIRE_THAT(copc_extents.PointSourceId()->minimum, Catch::Matchers::WithinAbs(7326, 0.0001));
+            REQUIRE_THAT(copc_extents.PointSourceId()->maximum, Catch::Matchers::WithinAbs(7334, 0.0001));
             REQUIRE_THAT(copc_extents.GpsTime()->minimum, Catch::Matchers::WithinAbs(245369.89656857715, 0.0001));
             REQUIRE_THAT(copc_extents.GpsTime()->maximum, Catch::Matchers::WithinAbs(249783.70312432514, 0.0001));
             REQUIRE_THAT(copc_extents.Red()->minimum, Catch::Matchers::WithinAbs(4352, 0.0001));

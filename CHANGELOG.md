@@ -48,6 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python\]** Update `Point` and `Points` property names from `CamelCase` to `under_score`
 - **\[Python/C++\]** Rename `Reader::GetAllChildren(VoxelKey)` to `Reader::GetAllChildrenOfPage(VoxelKey)`
 - **\[Python/C++\]** Rename `Reader::GetAllChildren()` to `Reader::GetAllNodes()`
+- **\[C++\]** Rename `PointFormatID` to `PointFormatId`
+- **\[C++\]** Rename `PointSourceID` to `PointSourceId`
+- **\[C++\]** Rename `HasRGB` and `HasNIR` to `HasRgb` and `HasNir` respectively
+- **\[C++\]** Rename `NIR` to `Nir`
 
 ## [1.3.1] - 2021-10-19
 
@@ -58,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `Vector3` operators to `Vector3`
 - **\[Python/C++\]** Add resolution query functions `GetDepthAtResolution`, `GetNodesAtResolution` and `GetNodesWithinResolution` to `Reader`
 - **\[Python/C++\]** Add `BoundsTrimFileExample` and `ResolutionTrimFileExample` to example-writer files
-- **\[Python/C++\]** Add `Classification` and `PointSourceID` getter and setter to `Points`
+- **\[Python/C++\]** Add `Classification` and `PointSourceId` getter and setter to `Points`
 - **\[Python/C++\]** Add `GetChildren` to `VoxelKey`
 - **\[Python\]** Make `Node` and `VoxelKey` picklable
 - **\[Python/C++\]** Add a new constructor to `Box` using `Vector3`

@@ -14,7 +14,8 @@ TEST_CASE("Test constructor and conversions", "[LasHeader]")
         auto las_header = reader.CopcConfig().LasHeader();
         auto lazperf_header =
             las_header.ToLazPerf(las_header.PointOffset(), las_header.PointCount(), las_header.EvlrOffset(),
-                                 las_header.EvlrCount(), !reader.CopcConfig().Wkt().empty(), las_header.EbByteSize());
+                                 las_header.EvlrCount(), !reader.CopcConfig().Wkt().empty(), las_header.EbByteSize(),
+                                 reader.CopcConfig().CopcExtents().HasExtendedStats());
         // Correct the bitshift happening in ToLazPerf for test purpose
         lazperf_header.point_format_id = las_header.PointFormatId();
         auto las_header_origin = las::LasHeader::FromLazPerf(lazperf_header);

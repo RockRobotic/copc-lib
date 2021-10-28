@@ -46,7 +46,8 @@ std::string CopcExtent::ToString() const
 }
 
 // Empty constructor
-CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items) : point_format_id_(point_format_id)
+CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items, bool has_extended_stats)
+    : point_format_id_(point_format_id), has_extended_stats_(has_extended_stats)
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
@@ -57,7 +58,8 @@ CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items) : point_
 }
 
 // Copy constructor
-CopcExtents::CopcExtents(const CopcExtents &extents) : point_format_id_(extents.PointFormatId())
+CopcExtents::CopcExtents(const CopcExtents &extents)
+    : point_format_id_(extents.PointFormatId()), has_extended_stats_(extents.HasExtendedStats())
 {
     extents_.reserve(extents.NumberOfExtents());
     for (int i{0}; i < extents.NumberOfExtents(); i++)
@@ -65,8 +67,9 @@ CopcExtents::CopcExtents(const CopcExtents &extents) : point_format_id_(extents.
 }
 
 // VLR constructor
-CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items)
-    : point_format_id_(point_format_id)
+CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items,
+                         bool has_extended_stats)
+    : point_format_id_(point_format_id), has_extended_stats_(has_extended_stats)
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
@@ -108,8 +111,10 @@ las::CopcExtentsVlr CopcExtents::ToLazPerfExtended() const
 
 void CopcExtents::UpdateExtendedStats(const las::CopcExtentsVlr &vlr)
 {
+    if (!has_extended_stats_)
+        throw std::runtime_error("CopcExtents::UpdateExtendedStats: This instance does not have extended stats.");
     if (vlr.items.size() - 3 != extents_.size()) // -3 takes into account extra extents for x,y,z from LAS header
-        throw std::runtime_error("CopcExtents: Number of extended extents incorrect.");
+        throw std::runtime_error("CopcExtents::UpdateExtendedStats: Number of extended extents incorrect.");
     for (int i = 3; i < vlr.items.size(); i++)
     {
         extents_[i - 3]->mean = vlr.items[i].minimum;

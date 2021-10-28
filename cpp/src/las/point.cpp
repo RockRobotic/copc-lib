@@ -63,7 +63,7 @@ bool Point::operator==(const Point &other) const
         return false;
     if (classification_ != other.Classification())
         return false;
-    if (scan_angle_ != other.ScanAngle() || user_data_ != other.UserData() || point_source_id_ != other.PointSourceID())
+    if (scan_angle_ != other.ScanAngle() || user_data_ != other.UserData() || point_source_id_ != other.PointSourceId())
         return false;
     if (extra_bytes_ != other.ExtraBytes())
         return false;

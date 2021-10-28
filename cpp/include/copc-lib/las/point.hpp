@@ -80,8 +80,8 @@ class Point
     uint8_t UserData() const { return user_data_; }
     void UserData(const uint8_t &user_data) { user_data_ = user_data; }
 
-    uint16_t PointSourceID() const { return point_source_id_; }
-    void PointSourceID(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
+    uint16_t PointSourceId() const { return point_source_id_; }
+    void PointSourceId(const uint16_t &point_source_id) { point_source_id_ = point_source_id; }
 
 #pragma region Flags
 

@@ -127,8 +127,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point6.UserData() == std::numeric_limits<uint8_t>::max());
 
         // Point Source ID
-        point6.PointSourceID(std::numeric_limits<uint16_t>::max());
-        REQUIRE(point6.PointSourceID() == std::numeric_limits<uint16_t>::max());
+        point6.PointSourceId(std::numeric_limits<uint16_t>::max());
+        REQUIRE(point6.PointSourceId() == std::numeric_limits<uint16_t>::max());
 
         // GPS Time
         point6.GPSTime(std::numeric_limits<double>::max());
@@ -347,9 +347,9 @@ TEST_CASE("Point tests", "[Point]")
         point_other.UserData(4);
         REQUIRE(point == point_other);
 
-        point.PointSourceID(4);
+        point.PointSourceId(4);
         REQUIRE(point != point_other);
-        point_other.PointSourceID(4);
+        point_other.PointSourceId(4);
         REQUIRE(point == point_other);
 
         point.GPSTime(4.0);

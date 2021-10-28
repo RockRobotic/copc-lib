@@ -36,7 +36,7 @@ class CopcConfig
 
   protected:
     CopcConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const std::string &wkt,
-               const las::EbVlr &extra_bytes_vlr);
+               const las::EbVlr &extra_bytes_vlr, bool has_extended_stats);
 
     std::shared_ptr<las::LasHeader> header_;
     std::shared_ptr<copc::CopcInfo> copc_info_;
@@ -50,7 +50,7 @@ class CopcConfigWriter : public CopcConfig
   public:
     CopcConfigWriter(const int8_t &point_format_id, const Vector3 &scale = Vector3::DefaultScale(),
                      const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
-                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
+                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0), bool has_extended_stats = false);
 
     //    // Copy constructor
     CopcConfigWriter(const CopcConfigWriter &copc_config)

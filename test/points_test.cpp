@@ -129,7 +129,7 @@ TEST_CASE("Points tests", "[Point]")
             p->Y(i * 3);
             p->Z(i - 80);
             p->Classification(i * 255 / num_points);
-            p->PointSourceID(i * 255 / num_points);
+            p->PointSourceId(i * 255 / num_points);
             p->Red(i * 4);
             p->Green(i * 5);
             p->Blue(i * 6);
@@ -143,7 +143,7 @@ TEST_CASE("Points tests", "[Point]")
         auto Y = points.Y();
         auto Z = points.Z();
         auto classification = points.Classification();
-        auto point_source_id = points.PointSourceID();
+        auto point_source_id = points.PointSourceId();
         auto red = points.Red();
         auto green = points.Green();
         auto blue = points.Blue();
@@ -173,7 +173,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
         REQUIRE_THROWS(points.Classification(classification_n));
-        REQUIRE_THROWS(points.PointSourceID(point_source_id_n));
+        REQUIRE_THROWS(points.PointSourceId(point_source_id_n));
         REQUIRE_THROWS(points.Red(red_n));
         REQUIRE_THROWS(points.Green(green_n));
         REQUIRE_THROWS(points.Blue(blue_n));
@@ -194,7 +194,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
         REQUIRE_THROWS(points.Classification(classification_n));
-        REQUIRE_THROWS(points.PointSourceID(point_source_id_n));
+        REQUIRE_THROWS(points.PointSourceId(point_source_id_n));
         REQUIRE_THROWS(points.Red(red_n));
         REQUIRE_THROWS(points.Green(green_n));
         REQUIRE_THROWS(points.Blue(blue_n));
@@ -214,7 +214,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_NOTHROW(points.Y(Yn));
         REQUIRE_NOTHROW(points.Z(Zn));
         REQUIRE_NOTHROW(points.Classification(classification_n));
-        REQUIRE_NOTHROW(points.PointSourceID(point_source_id_n));
+        REQUIRE_NOTHROW(points.PointSourceId(point_source_id_n));
         REQUIRE_NOTHROW(points.Red(red_n));
         REQUIRE_NOTHROW(points.Green(green_n));
         REQUIRE_NOTHROW(points.Blue(blue_n));
@@ -226,7 +226,7 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(p->Y() == i + 800);
             REQUIRE(p->Z() == i * 4);
             REQUIRE(p->Classification() == i * 255 / 2000);
-            REQUIRE(p->PointSourceID() == i * 255 / 2000);
+            REQUIRE(p->PointSourceId() == i * 255 / 2000);
             REQUIRE(p->Red() == i * 4);
             REQUIRE(p->Green() == i * 5);
             REQUIRE(p->Blue() == i * 6);
@@ -238,7 +238,7 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point->Y() == 2);
         REQUIRE(last_point->Z() == 3);
         REQUIRE(last_point->Classification() == 255);
-        REQUIRE(last_point->PointSourceID() == 255);
+        REQUIRE(last_point->PointSourceId() == 255);
         REQUIRE(last_point->Red() == num_points * 4);
         REQUIRE(last_point->Green() == num_points * 5);
         REQUIRE(last_point->Blue() == num_points * 6);

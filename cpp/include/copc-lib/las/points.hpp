@@ -130,21 +130,21 @@ class Points
             points_[i]->Classification(in[i]);
     }
 
-    std::vector<uint8_t> PointSourceID() const
+    std::vector<uint8_t> PointSourceId() const
     {
         std::vector<uint8_t> out;
         out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(),
-                       [](const std::shared_ptr<Point> &p) { return p->PointSourceID(); });
+                       [](const std::shared_ptr<Point> &p) { return p->PointSourceId(); });
         return out;
     }
-    void PointSourceID(const std::vector<uint8_t> &in)
+    void PointSourceId(const std::vector<uint8_t> &in)
     {
         if (in.size() != Size())
-            throw std::runtime_error("PointSourceID setter array must be same size as Points array!");
+            throw std::runtime_error("PointSourceId setter array must be same size as Points array!");
 
         for (unsigned i = 0; i < points_.size(); ++i)
-            points_[i]->PointSourceID(in[i]);
+            points_[i]->PointSourceId(in[i]);
     }
 
     std::vector<uint16_t> Red() const

@@ -224,7 +224,7 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
         point->UnscaledY(rand_y(gen));
         point->UnscaledZ(rand_z(gen));
         // For visualization purposes
-        point->PointSourceID(key.d + key.x + key.y + key.z);
+        point->PointSourceId(key.d + key.x + key.y + key.z);
 
         points.AddPoint(point);
     }

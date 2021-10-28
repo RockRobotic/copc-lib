@@ -250,8 +250,8 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const float &>(&las::Point::ScanAngleDegrees))
         .def_property("user_data", py::overload_cast<>(&las::Point::UserData, py::const_),
                       py::overload_cast<const uint8_t &>(&las::Point::UserData))
-        .def_property("point_source_id", py::overload_cast<>(&las::Point::PointSourceID, py::const_),
-                      py::overload_cast<const uint16_t &>(&las::Point::PointSourceID))
+        .def_property("point_source_id", py::overload_cast<>(&las::Point::PointSourceId, py::const_),
+                      py::overload_cast<const uint16_t &>(&las::Point::PointSourceId))
         .def_property("rgb", nullptr, py::overload_cast<const std::vector<uint16_t> &>(&las::Point::Rgb))
         .def_property("red", py::overload_cast<>(&las::Point::Red, py::const_),
                       py::overload_cast<const uint16_t &>(&las::Point::Red))
@@ -302,8 +302,8 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::vector<double> &>(&las::Points::Z))
         .def_property("classification", py::overload_cast<>(&las::Points::Classification, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::Classification))
-        .def_property("point_source_id", py::overload_cast<>(&las::Points::PointSourceID, py::const_),
-                      py::overload_cast<const std::vector<uint8_t> &>(&las::Points::PointSourceID))
+        .def_property("point_source_id", py::overload_cast<>(&las::Points::PointSourceId, py::const_),
+                      py::overload_cast<const std::vector<uint8_t> &>(&las::Points::PointSourceId))
         .def_property("red", py::overload_cast<>(&las::Points::Red, py::const_),
                       py::overload_cast<const std::vector<uint16_t> &>(&las::Points::Red))
         .def_property("green", py::overload_cast<>(&las::Points::Green, py::const_),
@@ -509,10 +509,11 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("wkt", &CopcConfig::Wkt);
 
     py::class_<CopcConfigWriter, std::shared_ptr<CopcConfigWriter>>(m, "CopcConfigWriter")
-        .def(py::init<const int8_t &, const Vector3 &, const Vector3 &, const std::string &, const las::EbVlr &>(),
-             py::arg("point_format_id"), py::arg("scale") = Vector3::DefaultScale(),
-             py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
-             py::arg("extra_bytes_vlr") = las::EbVlr(0))
+        .def(
+            py::init<const int8_t &, const Vector3 &, const Vector3 &, const std::string &, const las::EbVlr &, bool>(),
+            py::arg("point_format_id"), py::arg("scale") = Vector3::DefaultScale(),
+            py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
+            py::arg("extra_bytes_vlr") = las::EbVlr(0), py::arg("has_extended_stats") = false)
         .def(py::init<const CopcConfig &>())
         .def_property_readonly("las_header", py::overload_cast<>(&CopcConfigWriter::LasHeader))
         .def_property_readonly("copc_info", py::overload_cast<>(&CopcConfigWriter::CopcInfo))
@@ -552,6 +553,7 @@ PYBIND11_MODULE(copclib, m)
     py::class_<CopcExtents, std::shared_ptr<CopcExtents>>(m, "CopcExtents")
         .def(py::init<int8_t, uint16_t>(), py::arg("point_format_id"), py::arg("num_eb_items") = 0)
         .def_property_readonly("point_format_id", &CopcExtents::PointFormatId)
+        .def_property_readonly("has_extended_stats", &CopcExtents::HasExtendedStats)
         .def_property("intensity", py::overload_cast<>(&CopcExtents::Intensity),
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::Intensity))
         .def_property("return_number", py::overload_cast<>(&CopcExtents::ReturnNumber),
@@ -570,8 +572,8 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::UserData))
         .def_property("scan_angle", py::overload_cast<>(&CopcExtents::ScanAngle),
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::ScanAngle))
-        .def_property("point_source_id", py::overload_cast<>(&CopcExtents::PointSourceID),
-                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::PointSourceID))
+        .def_property("point_source_id", py::overload_cast<>(&CopcExtents::PointSourceId),
+                      py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::PointSourceId))
         .def_property("gps_time", py::overload_cast<>(&CopcExtents::GpsTime),
                       py::overload_cast<std::shared_ptr<CopcExtent>>(&CopcExtents::GpsTime))
         .def_property("red", py::overload_cast<>(&CopcExtents::Red),

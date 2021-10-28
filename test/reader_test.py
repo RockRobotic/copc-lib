@@ -26,6 +26,8 @@ def test_reader():
 
     # GetCopcExtents Test
     copc_extents = reader.copc_config.copc_extents
+    assert ~copc_extents.has_extended_stats
+    assert copc_extents.point_format_id == 7
     assert copc_extents.intensity.minimum == pytest.approx(0, 0.0001)
     assert copc_extents.intensity.maximum == pytest.approx(254, 0.0001)
     assert copc_extents.return_number.minimum == pytest.approx(1, 0.0001)

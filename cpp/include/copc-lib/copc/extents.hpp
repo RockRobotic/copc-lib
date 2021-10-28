@@ -15,6 +15,7 @@ namespace copc
 class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
 {
   public:
+    // TODO[Leo]: Make mean and var only accessible if has_extended_stats
     double mean{0};
     double var{1};
 
@@ -40,16 +41,18 @@ class CopcExtents
 {
   public:
     // Empty constructor
-    CopcExtents(int8_t point_format_id, uint16_t num_eb_items = 0);
+    CopcExtents(int8_t point_format_id, uint16_t num_eb_items = 0, bool has_extended_stats = false);
 
     // Copy constructor
     CopcExtents(const CopcExtents &extents);
 
     // VLR constructor
-    CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items = 0);
+    CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items = 0,
+                bool has_extended_stats = false);
 
     // Getters
     int8_t PointFormatId() const { return point_format_id_; }
+    bool HasExtendedStats() const { return has_extended_stats_; }
 
     // Get all extents as a vector of shared_ptrs
     std::vector<std::shared_ptr<CopcExtent>> Extents() { return extents_; }
@@ -74,7 +77,7 @@ class CopcExtents
     std::shared_ptr<CopcExtent> Classification() { return extents_[6]; }
     std::shared_ptr<CopcExtent> UserData() { return extents_[7]; }
     std::shared_ptr<CopcExtent> ScanAngle() { return extents_[8]; }
-    std::shared_ptr<CopcExtent> PointSourceID() { return extents_[9]; }
+    std::shared_ptr<CopcExtent> PointSourceId() { return extents_[9]; }
     std::shared_ptr<CopcExtent> GpsTime() { return extents_[10]; }
 
     std::shared_ptr<CopcExtent> Red()
@@ -125,7 +128,7 @@ class CopcExtents
     void Classification(std::shared_ptr<CopcExtent> classification) { extents_[6] = classification; }
     void UserData(std::shared_ptr<CopcExtent> user_data) { extents_[7] = user_data; }
     void ScanAngle(std::shared_ptr<CopcExtent> scan_angle) { extents_[8] = scan_angle; }
-    void PointSourceID(std::shared_ptr<CopcExtent> point_source_id) { extents_[9] = point_source_id; }
+    void PointSourceId(std::shared_ptr<CopcExtent> point_source_id) { extents_[9] = point_source_id; }
     void GpsTime(std::shared_ptr<CopcExtent> gps_time) { extents_[10] = gps_time; }
     void Red(std::shared_ptr<CopcExtent> red)
     {
@@ -185,6 +188,7 @@ class CopcExtents
 
   private:
     int8_t point_format_id_;
+    bool has_extended_stats_{false};
     std::vector<std::shared_ptr<CopcExtent>> extents_;
 };
 } // namespace copc
