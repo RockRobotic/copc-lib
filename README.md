@@ -2,8 +2,6 @@
 
 copc-lib is a library which provides an easy-to-use reader and writer interface for [COPC](https://copc.io/) point clouds. This project provides a complete interface for handling COPC files, so that no additional LAZ or LAS libraries are required.
 
-*Note: This library is in beta and API may change*
-
 ## Build from source
 
 ### Dependencies
