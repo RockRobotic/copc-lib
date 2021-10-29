@@ -301,6 +301,184 @@ def test_writer_copy():
     ) == reader.GetPointData(reader.FindNode((5, 9, 7, 0)))
 
 
+def test_writer_copy_and_update():
+
+    file_path = "writer_test.copc.laz"
+
+    orig = copc.FileReader("autzen-classified.copc.laz")
+
+    cfg = orig.copc_config
+
+    new_scale = copc.Vector3(10, 10, 10)
+    new_offset = (100, 100, 100)
+    new_wkt = "test_wkt"
+    new_has_extended_stats = True
+    new_eb_vlr = copc.EbVlr(2)
+
+    # Update Scale
+    writer = copc.FileWriter(file_path, cfg, new_scale=new_scale)
+
+    assert writer.copc_config.las_header.scale == new_scale
+    assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert writer.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert (
+        writer.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert (
+        writer.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.copc_config.las_header.scale == new_scale
+    assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert reader.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert (
+        reader.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert (
+        reader.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+
+    # Update Offset
+    writer = copc.FileWriter(file_path, cfg, new_offset=new_offset)
+
+    assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert writer.copc_config.las_header.offset == new_offset
+    assert writer.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert (
+        writer.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert (
+        writer.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert reader.copc_config.las_header.offset == new_offset
+    assert reader.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert (
+        reader.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert (
+        reader.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+
+    # Update WKT
+    writer = copc.FileWriter(file_path, cfg, new_wkt=new_wkt)
+
+    assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert writer.copc_config.Wkt() == new_wkt
+    assert (
+        writer.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert (
+        writer.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert reader.copc_config.Wkt() == new_wkt
+    assert (
+        reader.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert (
+        reader.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+
+    # Update Extra Byte VLR
+
+    writer = copc.FileWriter(file_path, cfg, new_eb_vlr=new_eb_vlr)
+
+    assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert writer.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert writer.copc_config.ExtraBytesVlr().items.size() == new_eb_vlr.items.size()
+    assert (
+        writer.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert reader.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert reader.copc_config.ExtraBytesVlr().items.size() == new_eb_vlr.items.size()
+    assert (
+        reader.copc_config.CopcExtents().HasExtendedStats()
+        == orig.copc_config.CopcExtents().HasExtendedStats()
+    )
+
+    # Update HasExtendedStats
+
+    writer = copc.FileWriter(
+        file_path, cfg, new_has_extended_stats=new_has_extended_stats
+    )
+
+    assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert writer.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert (
+        writer.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert writer.copc_config.CopcExtents().HasExtendedStats() == new_has_extended_stats
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert reader.copc_config.Wkt() == orig.copc_config.Wkt()
+    assert (
+        reader.copc_config.ExtraBytesVlr().items.size()
+        == orig.copc_config.ExtraBytesVlr().items.size()
+    )
+    assert reader.copc_config.CopcExtents().HasExtendedStats() == new_has_extended_stats
+
+    # Update All
+
+    writer = copc.FileWriter(
+        file_path,
+        cfg,
+        new_scale,
+        new_offset,
+        new_wkt,
+        new_eb_vlr,
+        new_has_extended_stats,
+    )
+
+    assert writer.copc_config.las_header.scale == new_scale
+    assert writer.copc_config.las_header.offset == new_offset
+    assert writer.copc_config.Wkt() == new_wkt
+    assert writer.copc_config.ExtraBytesVlr().items.size() == new_eb_vlr.items.size()
+    assert writer.copc_config.CopcExtents().HasExtendedStats() == new_has_extended_stats
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    assert reader.copc_config.las_header.scale == new_scale
+    assert reader.copc_config.las_header.offset == new_offset
+    assert reader.copc_config.Wkt() == new_wkt
+    assert reader.copc_config.ExtraBytesVlr().items.size() == new_eb_vlr.items.size()
+    assert reader.copc_config.CopcExtents().HasExtendedStats() == new_has_extended_stats
+
+
 def test_check_spatial_bounds():
 
     file_path = "writer_test.copc.laz"

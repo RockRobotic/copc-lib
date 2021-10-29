@@ -404,7 +404,10 @@ PYBIND11_MODULE(copclib, m)
         .def("ValidateSpatialBounds", &Reader::ValidateSpatialBounds, py::arg("verbose") = false);
 
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, CopcConfigWriter const &>(), py::arg("file_path"), py::arg("config"))
+        .def(py::init<const std::string &, CopcConfigWriter const &, Vector3 *, Vector3 *, std::string *, las::EbVlr *,
+                      bool *>(),
+             py::arg("file_path"), py::arg("config"), py::arg("scale") = nullptr, py::arg("offset") = nullptr,
+             py::arg("wkt") = nullptr, py::arg("extra_bytes_vlr") = nullptr, py::arg("has_extended_stats") = nullptr)
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
         .def("GetRootPage", &Writer::GetRootPage)
@@ -447,8 +450,8 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("vlr_count", &las::LasHeader::VlrCount)
         .def_property_readonly("point_format_id", &las::LasHeader::PointFormatId)
         .def_property_readonly("point_record_length", &las::LasHeader::PointRecordLength)
-        .def_readwrite("scale", &las::LasHeader::scale)
-        .def_readwrite("offset", &las::LasHeader::offset)
+        .def_property_readonly("scale", &las::LasHeader::Scale)
+        .def_property_readonly("offset", &las::LasHeader::Offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
         .def_property_readonly("evlr_offset", &las::LasHeader::EvlrOffset)

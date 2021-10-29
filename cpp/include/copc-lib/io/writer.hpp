@@ -24,9 +24,11 @@ class WriterInternal;
 class Writer : public BaseIO
 {
   public:
-    Writer(std::ostream &out_stream, CopcConfigWriter const &copc_file_writer)
+    Writer(std::ostream &out_stream, const CopcConfigWriter &copc_config_writer, Vector3 *scale = nullptr,
+           Vector3 *offset = nullptr, std::string *wkt = nullptr, las::EbVlr *extra_bytes_vlr = nullptr,
+           bool *has_extended_stats = nullptr)
     {
-        InitWriter(out_stream, copc_file_writer);
+        InitWriter(out_stream, copc_config_writer, scale, offset, wkt, extra_bytes_vlr, has_extended_stats);
     }
 
     Page GetRootPage();
@@ -60,7 +62,8 @@ class Writer : public BaseIO
     };
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer);
+    void InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer, Vector3 *scale, Vector3 *offset,
+                    std::string *wkt, las::EbVlr *extra_bytes_vlr, bool *has_extended_stats);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
     static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
@@ -68,13 +71,15 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_file_writer)
+    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_file_writer, Vector3 *scale = nullptr,
+               Vector3 *offset = nullptr, std::string *wkt = nullptr, las::EbVlr *extra_bytes_vlr = nullptr,
+               bool *has_extended_stats = nullptr)
     {
 
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
         if (!f_stream_.good())
             throw std::runtime_error("FileWriter: Error while opening file path.");
-        InitWriter(f_stream_, copc_file_writer);
+        InitWriter(f_stream_, copc_file_writer, scale, offset, wkt, extra_bytes_vlr, has_extended_stats);
     }
 
     void Close() override;

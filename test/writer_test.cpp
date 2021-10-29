@@ -3,10 +3,10 @@
 #include <string>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/copc/extents.hpp>
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/io/reader.hpp>
 #include <copc-lib/io/writer.hpp>
+#include <copc-lib/las/vlr.hpp>
 #include <lazperf/readers.hpp>
 
 using namespace copc;
@@ -147,6 +147,150 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             REQUIRE(reader.CopcConfig().LasHeader().PointCount() == 0);
             REQUIRE(reader.CopcConfig().LasHeader().Scale() == reader.CopcConfig().LasHeader().Scale());
             REQUIRE(reader.CopcConfig().LasHeader().Offset() == reader.CopcConfig().LasHeader().Offset());
+        }
+
+        SECTION("Copy and update")
+        {
+            FileReader orig("autzen-classified.copc.laz");
+
+            string file_path = "writer_test.copc.laz";
+            auto cfg = orig.CopcConfig();
+
+            Vector3 new_scale(10, 10, 10);
+            Vector3 new_offset(100, 100, 100);
+            std::string new_wkt("test_wkt");
+            bool new_has_extended_stats(true);
+            las::EbVlr new_eb_vlr(2);
+            // Update Scale
+            {
+                FileWriter writer(file_path, cfg, &new_scale);
+
+                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
+                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+                writer.Close();
+
+                FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().Scale() == new_scale);
+                REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(reader.CopcConfig().CopcExtents().HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+            }
+            // Update Offset
+            {
+                FileWriter writer(file_path, cfg, {}, &new_offset);
+
+                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);
+                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+                writer.Close();
+
+                FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(reader.CopcConfig().LasHeader().Offset() == new_offset);
+                REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(reader.CopcConfig().CopcExtents().HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+            }
+
+            // Update WKT
+            {
+                FileWriter writer(file_path, cfg, {}, {}, &new_wkt);
+
+                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(writer.CopcConfig()->Wkt() == new_wkt);
+                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+                writer.Close();
+
+                FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(reader.CopcConfig().Wkt() == new_wkt);
+                REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(reader.CopcConfig().CopcExtents().HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+            }
+
+            // Update Extra Byte VLR
+            {
+
+                FileWriter writer(file_path, cfg, {}, {}, {}, &new_eb_vlr);
+
+                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+                writer.Close();
+
+                FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
+                REQUIRE(reader.CopcConfig().CopcExtents().HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+            }
+
+            // Update HasExtendedStats
+            {
+                FileWriter writer(file_path, cfg, {}, {}, {}, {}, &new_has_extended_stats);
+
+                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
+                writer.Close();
+
+                FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(reader.CopcConfig().CopcExtents().HasExtendedStats() == new_has_extended_stats);
+            }
+
+            // Update All
+            {
+                FileWriter writer(file_path, cfg, &new_scale, &new_offset, &new_wkt, &new_eb_vlr,
+                                  &new_has_extended_stats);
+
+                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
+                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);
+                REQUIRE(writer.CopcConfig()->Wkt() == new_wkt);
+                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
+                writer.Close();
+
+                FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().Scale() == new_scale);
+                REQUIRE(reader.CopcConfig().LasHeader().Offset() == new_offset);
+                REQUIRE(reader.CopcConfig().Wkt() == new_wkt);
+                REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
+                REQUIRE(reader.CopcConfig().CopcExtents().HasExtendedStats() == new_has_extended_stats);
+            }
         }
     }
     GIVEN("A valid output stream")
