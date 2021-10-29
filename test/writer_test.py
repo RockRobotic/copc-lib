@@ -316,13 +316,13 @@ def test_writer_copy_and_update():
     new_eb_vlr = copc.EbVlr(2)
 
     # Update Scale
-    writer = copc.FileWriter(file_path, cfg, new_scale=new_scale)
+    writer = copc.FileWriter(file_path, cfg, scale=new_scale)
 
     assert writer.copc_config.las_header.scale == new_scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
-    assert len(writer.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(writer.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert (
         writer.copc_config.copc_extents.has_extended_stats
@@ -334,8 +334,8 @@ def test_writer_copy_and_update():
     assert reader.copc_config.las_header.scale == new_scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
-    assert len(reader.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(reader.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert (
         reader.copc_config.copc_extents.has_extended_stats
@@ -343,13 +343,13 @@ def test_writer_copy_and_update():
     )
 
     # Update Offset
-    writer = copc.FileWriter(file_path, cfg, new_offset=new_offset)
+    writer = copc.FileWriter(file_path, cfg, offset=new_offset)
 
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == new_offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
-    assert len(writer.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(writer.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert (
         writer.copc_config.copc_extents.has_extended_stats
@@ -361,8 +361,8 @@ def test_writer_copy_and_update():
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == new_offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
-    assert len(reader.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(reader.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert (
         reader.copc_config.copc_extents.has_extended_stats
@@ -370,13 +370,13 @@ def test_writer_copy_and_update():
     )
 
     # Update WKT
-    writer = copc.FileWriter(file_path, cfg, new_wkt=new_wkt)
+    writer = copc.FileWriter(file_path, cfg, wkt=new_wkt)
 
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == new_wkt
-    assert len(writer.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(writer.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert (
         writer.copc_config.copc_extents.has_extended_stats
@@ -388,8 +388,8 @@ def test_writer_copy_and_update():
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == new_wkt
-    assert len(reader.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(reader.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert (
         reader.copc_config.copc_extents.has_extended_stats
@@ -398,12 +398,12 @@ def test_writer_copy_and_update():
 
     # Update Extra Byte VLR
 
-    writer = copc.FileWriter(file_path, cfg, new_eb_vlr=new_eb_vlr)
+    writer = copc.FileWriter(file_path, cfg, eb_vlr=new_eb_vlr)
 
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
-    assert len(writer.copc_config.extra_bytes_vlr) == len(new_eb_vlr.item)
+    assert len(writer.copc_config.extra_bytes_vlr.items) == len(new_eb_vlr.item)
     assert (
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
@@ -414,7 +414,7 @@ def test_writer_copy_and_update():
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
-    assert len(reader.copc_config.extra_bytes_vlr) == len(new_eb_vlr.item)
+    assert len(reader.copc_config.extra_bytes_vlr.items) == len(new_eb_vlr.item)
     assert (
         reader.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
@@ -422,15 +422,13 @@ def test_writer_copy_and_update():
 
     # Update HasExtendedStats
 
-    writer = copc.FileWriter(
-        file_path, cfg, new_has_extended_stats=new_has_extended_stats
-    )
+    writer = copc.FileWriter(file_path, cfg, has_extended_stats=new_has_extended_stats)
 
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
-    assert len(writer.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(writer.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert writer.copc_config.copc_extents.has_extended_stats == new_has_extended_stats
     writer.Close()
@@ -439,8 +437,8 @@ def test_writer_copy_and_update():
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
-    assert len(reader.copc_config.extra_bytes_vlr) == len(
-        orig.copc_config.extra_bytes_vlr
+    assert len(reader.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
     )
     assert reader.copc_config.copc_extents.has_extended_stats == new_has_extended_stats
 
