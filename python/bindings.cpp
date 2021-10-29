@@ -403,11 +403,15 @@ PYBIND11_MODULE(copclib, m)
         .def("GetNodesWithinResolution", &Reader::GetNodesWithinResolution, py::arg("resolution"))
         .def("ValidateSpatialBounds", &Reader::ValidateSpatialBounds, py::arg("verbose") = false);
 
+    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
+
     py::class_<FileWriter>(m, "FileWriter")
         .def(py::init<const std::string &, CopcConfigWriter const &, Vector3 *, Vector3 *, std::string *, las::EbVlr *,
                       bool *>(),
-             py::arg("file_path"), py::arg("config"), py::arg("scale") = nullptr, py::arg("offset") = nullptr,
-             py::arg("wkt") = nullptr, py::arg("extra_bytes_vlr") = nullptr, py::arg("has_extended_stats") = nullptr)
+             py::arg("file_path"), py::arg("config"), py::arg("scale") = static_cast<Vector3 *>(nullptr),
+             py::arg("offset") = static_cast<Vector3 *>(nullptr), py::arg("wkt") = static_cast<std::string *>(nullptr),
+             py::arg("extra_bytes_vlr") = static_cast<las::EbVlr *>(nullptr),
+             py::arg("has_extended_stats") = static_cast<bool *>(nullptr))
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
         .def("GetRootPage", &Writer::GetRootPage)
@@ -499,8 +503,6 @@ PYBIND11_MODULE(copclib, m)
                 h.points_by_return = t[18].cast<std::array<uint64_t, 15>>();
                 return h;
             }));
-
-    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
 
     py::class_<las::EbVlr::ebfield>(m, "EbField").def(py::init<>());
 
