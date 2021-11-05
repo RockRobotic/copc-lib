@@ -68,7 +68,7 @@ class Point
 
     void ScanAngle(const int16_t &scan_angle)
     {
-        //if (scan_angle < -30000 || scan_angle > 30000)
+        // if (scan_angle < -30000 || scan_angle > 30000)
         //    throw std::runtime_error("Scan Angle must be between -30000 and 30000");
         scan_angle_ = scan_angle;
     }
