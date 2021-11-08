@@ -116,11 +116,9 @@ TEST_CASE("Point tests", "[Point]")
         point6.ScanAngle(-30000);
         REQUIRE(point6.ScanAngle() == -30000);
         REQUIRE(point6.ScanAngleDegrees() == -180.0);
-        REQUIRE_THROWS(point6.ScanAngle(-30001));
         point6.ScanAngle(30000);
         REQUIRE(point6.ScanAngle() == 30000);
         REQUIRE(point6.ScanAngleDegrees() == 180.0);
-        REQUIRE_THROWS(point6.ScanAngle(30001));
 
         // User Data
         point6.UserData(std::numeric_limits<uint8_t>::max());

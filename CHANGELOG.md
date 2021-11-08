@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **\[Python/C++\]** Write WKT as EVLR instead of VLR to align with laspy.
+- **\[Python/C++\]** Removed the error when scan angle is not within LAS specs [-30000,30000].
 
 ## [2.0.0] - 2021-10-28
 
