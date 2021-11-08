@@ -37,7 +37,7 @@ class LasHeader
 
     static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset, uint32_t evlr_count,
-                                bool wkt_flag, bool eb_flag, bool extended_stats_flag) const;
+                                bool eb_flag, bool extended_stats_flag) const;
 
     std::string ToString() const;
 

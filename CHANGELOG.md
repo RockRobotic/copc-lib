@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **\[Python/C++\]** Write WKT as EVLR instead of VLR to align with laspy.
+
 ## [2.0.0] - 2021-10-28
 
 ### Added

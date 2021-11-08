@@ -25,15 +25,11 @@ size_t WriterInternal::OffsetToPointData() const
     if (copc_config_->CopcExtents()->HasExtendedStats())
         extents_offset *= 2;
 
-    size_t wkt_offset = copc_config_->Wkt().size();
-    if (wkt_offset > 0)
-        wkt_offset += lazperf::vlr_header::Size;
-
     size_t eb_offset = copc_config_->ExtraBytesVlr().size();
     if (eb_offset > 0)
         eb_offset += lazperf::vlr_header::Size;
 
-    return base_offset + extents_offset + wkt_offset + eb_offset;
+    return base_offset + extents_offset + eb_offset;
 }
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
@@ -61,6 +57,15 @@ void WriterInternal::Close()
     // has to write the offset of all of its children, which we don't know in advance
     WritePageTree(hierarchy_->seen_pages_[VoxelKey::RootKey()]);
 
+    // If WKT is provided, write it as EVLR
+    if (!copc_config_->Wkt().empty())
+    {
+        evlr_count_++;
+        lazperf::wkt_vlr wkt_vlr(copc_config_->Wkt());
+        wkt_vlr.eheader().write(out_stream_);
+        wkt_vlr.write(out_stream_);
+    }
+
     WriteHeader();
 
     open_ = false;
@@ -72,9 +77,9 @@ void WriterInternal::WriteHeader()
     laz_vlr lazVlr(copc_config_->LasHeader()->PointFormatId(), copc_config_->LasHeader()->EbByteSize(),
                    VARIABLE_CHUNK_SIZE);
 
-    auto las_header_vlr = copc_config_->LasHeader()->ToLazPerf(
-        OffsetToPointData(), point_count_, evlr_offset_, evlr_count_, !copc_config_->Wkt().empty(),
-        copc_config_->LasHeader()->EbByteSize(), copc_config_->CopcExtents()->HasExtendedStats());
+    auto las_header_vlr = copc_config_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_,
+                                                               evlr_count_, copc_config_->LasHeader()->EbByteSize(),
+                                                               copc_config_->CopcExtents()->HasExtendedStats());
 
     out_stream_.seekp(0);
     las_header_vlr.write(out_stream_);
@@ -108,14 +113,6 @@ void WriterInternal::WriteHeader()
     // Write the LAZ VLR
     lazVlr.header().write(out_stream_);
     lazVlr.write(out_stream_);
-
-    // Write optional WKT VLR
-    if (!copc_config_->Wkt().empty())
-    {
-        lazperf::wkt_vlr wkt_vlr(copc_config_->Wkt());
-        wkt_vlr.header().write(out_stream_);
-        wkt_vlr.write(out_stream_);
-    }
 
     // Write optional Extra Byte VLR
     if (copc_config_->LasHeader()->EbByteSize() > 0)
