@@ -59,7 +59,7 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     return h;
 }
 lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset,
-                                       uint32_t evlr_count, bool wkt_flag, bool eb_flag, bool extended_stats_flag) const
+                                       uint32_t evlr_count, bool eb_flag, bool extended_stats_flag) const
 {
     lazperf::header14 h;
     h.file_source_id = file_source_id;
@@ -75,9 +75,6 @@ lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_cou
     h.header_size = header_size_;
     h.point_offset = point_offset;
     h.vlr_count = 3; // copc_info + copc_extent + laz;
-    // If WKT is not empty, count an extra VLR
-    if (wkt_flag)
-        h.vlr_count++;
     // If there are Extra Bytes, count an extra VLR
     if (eb_flag)
         h.vlr_count++;

@@ -116,7 +116,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
         {
             string file_path = "writer_test.copc.laz";
 
-            CopcConfigWriter cfg(6, {}, {}, "TEST_WKT");
+            CopcConfigWriter cfg(6, Vector3::DefaultScale(), Vector3::DefaultOffset(), "TEST_WKT");
             FileWriter writer(file_path, cfg);
 
             REQUIRE(writer.CopcConfig()->Wkt() == "TEST_WKT");

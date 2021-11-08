@@ -120,8 +120,6 @@ def test_point():
     point6.scan_angle = 30000
     assert point6.scan_angle == 30000
     assert point6.scan_angle_degrees == 180.0
-    with pytest.raises(RuntimeError):
-        point6.scan_angle = 30001
 
     # User Data
     point6.user_data = 255

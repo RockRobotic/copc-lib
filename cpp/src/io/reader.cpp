@@ -103,7 +103,7 @@ las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
     auto offset = FetchVlr(vlrs, "LASF_Projection", 2112);
     if (offset != 0)
     {
-        in_stream_->seekg(offset + lazperf::vlr_header::Size);
+        in_stream_->seekg(offset + lazperf::evlr_header::Size);
         return las::WktVlr::create(*in_stream_, vlrs[offset].data_length);
     }
     return las::WktVlr();
