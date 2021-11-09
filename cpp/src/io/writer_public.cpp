@@ -27,7 +27,7 @@ Page Writer::GetPage(const VoxelKey &key)
 Page Writer::GetRootPage() { return GetPage(VoxelKey::RootKey()); }
 
 // Create a page, add it to the hierarchy and reference it as a subpage in the parent
-Page Writer::AddSubPage(Page &parent, VoxelKey key)
+Page Writer::AddSubPage(const Page &parent, const VoxelKey &key)
 {
     if (!key.IsValid())
         throw std::runtime_error("Invalid key!");
@@ -50,7 +50,7 @@ Page Writer::AddSubPage(Page &parent, VoxelKey key)
 }
 
 // Writes a node to the file and reference it in the hierarchy and in the parent page
-Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed)
+Node Writer::DoAddNode(const Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed)
 {
     if (!page.IsPage() || !page.IsValid() || !key.IsValid())
         throw std::runtime_error("Invalid page or target key!");
@@ -68,7 +68,7 @@ Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t 
     return *node;
 }
 
-Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
+Node Writer::AddNode(const Page &page, const VoxelKey &key, las::Points &points)
 {
     if (points.PointFormatId() != config_->LasHeader()->PointFormatId() ||
         points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
@@ -78,7 +78,7 @@ Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
     return AddNode(page, key, uncompressed);
 }
 
-Node Writer::AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed)
+Node Writer::AddNode(const Page &page, const VoxelKey &key, std::vector<char> const &uncompressed)
 {
     int point_size = config_->LasHeader()->PointRecordLength();
     if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
@@ -87,7 +87,7 @@ Node Writer::AddNode(Page &page, const VoxelKey &key, std::vector<char> const &u
     return DoAddNode(page, key, uncompressed, 0, false);
 }
 
-Node Writer::AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed,
+Node Writer::AddNodeCompressed(const Page &page, const VoxelKey &key, std::vector<char> const &compressed,
                                uint64_t point_count)
 {
     if (point_count == 0)

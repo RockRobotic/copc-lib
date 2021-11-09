@@ -411,10 +411,10 @@ PYBIND11_MODULE(copclib, m)
         .def("GetPage", &Writer::GetPage, py::arg("key"))
         .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &FileWriter::Close)
-        .def("AddNode", py::overload_cast<Page &, const VoxelKey &, las::Points &>(&Writer::AddNode), py::arg("page"),
-             py::arg("key"), py::arg("points"))
+        .def("AddNode", py::overload_cast<const Page &, const VoxelKey &, las::Points &>(&Writer::AddNode),
+             py::arg("page"), py::arg("key"), py::arg("points"))
         .def("AddNodeCompressed", &Writer::AddNodeCompressed)
-        .def("AddNode", py::overload_cast<Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode),
+        .def("AddNode", py::overload_cast<const Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode),
              py::arg("page"), py::arg("key"), py::arg("uncompressed_data"))
         .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"));
 

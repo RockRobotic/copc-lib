@@ -35,12 +35,13 @@ class Writer : public BaseIO
     virtual void Close();
 
     // Adds a node to a given page
-    Node AddNode(Page &page, const VoxelKey &key, las::Points &points);
-    Node AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed, uint64_t point_count);
-    Node AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed);
+    Node AddNode(const Page &page, const VoxelKey &key, las::Points &points);
+    Node AddNodeCompressed(const Page &page, const VoxelKey &key, std::vector<char> const &compressed,
+                           uint64_t point_count);
+    Node AddNode(const Page &page, const VoxelKey &key, std::vector<char> const &uncompressed);
 
     // Adds a subpage to a given page
-    Page AddSubPage(Page &page, VoxelKey key);
+    Page AddSubPage(const Page &page, const VoxelKey &key);
 
     std::shared_ptr<CopcConfigWriter> CopcConfig() { return config_; }
 
@@ -53,7 +54,7 @@ class Writer : public BaseIO
 
     std::shared_ptr<Internal::WriterInternal> writer_;
 
-    Node DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
+    Node DoAddNode(const Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override
     {
         throw std::runtime_error("No pages should be unloaded!");
