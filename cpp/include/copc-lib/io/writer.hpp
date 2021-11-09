@@ -28,8 +28,7 @@ class Writer : public BaseIO
     {
         InitWriter(out_stream, copc_file_writer);
     }
-
-    Page GetRootPage();
+    Page GetPage(const VoxelKey &key = VoxelKey::RootKey());
 
     // Writes the file out
     virtual void Close();

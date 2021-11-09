@@ -29,7 +29,7 @@ void TrimFileExample(bool compressor_example_flag)
         FileWriter writer("autzen-trimmed.copc.laz", cfg);
 
         // The root page is automatically created and added for us
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         // GetAllNodes will load the entire hierarchy under a given key
         for (const auto &node : reader.GetAllChildrenOfPage(root_page.key))
@@ -100,7 +100,7 @@ void BoundsTrimFileExample()
         FileWriter writer("autzen-bounds-trimmed.copc.laz", cfg);
 
         // The root page is automatically created and added for us
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         for (const auto &node : reader.GetAllNodes())
         {
@@ -153,7 +153,7 @@ void ResolutionTrimFileExample()
         FileWriter writer("autzen-resolution-trimmed.copc.laz", cfg);
 
         // The root page is automatically created and added for us
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         for (const auto &node : reader.GetAllNodes())
         {
@@ -258,7 +258,7 @@ void NewFileExample()
     extents->Classification()->maximum = 201;
 
     // The root page is automatically created
-    Page root_page = writer.GetRootPage();
+    Page root_page = writer.GetPage();
 
     // First we'll add a root node
     VoxelKey key(0, 0, 0, 0);

@@ -18,7 +18,12 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_f
 Writer::~Writer() { writer_->Close(); }
 void Writer::Close() { writer_->Close(); }
 
-Page Writer::GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::RootKey()]; }
+Page Writer::GetPage(const VoxelKey &key)
+{
+    if (hierarchy_->seen_pages_.find(key) == hierarchy_->seen_pages_.end())
+        throw std::runtime_error("Writer::GetPage: Requested page does not exist.");
+    return *hierarchy_->seen_pages_[key];
+}
 
 // Create a page, add it to the hierarchy and reference it as a subpage in the parent
 Page Writer::AddSubPage(Page &parent, VoxelKey key)

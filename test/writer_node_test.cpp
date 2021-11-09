@@ -16,7 +16,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         REQUIRE_THROWS(writer.AddNode(root_page, VoxelKey::InvalidKey(), std::vector<char>()));
         REQUIRE_THROWS(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), std::vector<char>()));
@@ -44,7 +44,7 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         std::vector<char> twenty(first_20_pts, first_20_pts + sizeof(first_20_pts));
         REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), twenty));
@@ -91,9 +91,22 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
         Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
         Page sub_page2 = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 1));
+
+        // Test GetPage
+        auto found_page = writer.GetPage(VoxelKey(1, 0, 0, 0));
+        REQUIRE(found_page.offset == sub_page1.offset);
+        REQUIRE(found_page.byte_size == sub_page1.byte_size);
+        REQUIRE(found_page.point_count == sub_page1.point_count);
+
+        found_page = writer.GetPage(VoxelKey(1, 1, 1, 1));
+        REQUIRE(found_page.offset == sub_page2.offset);
+        REQUIRE(found_page.byte_size == sub_page2.byte_size);
+        REQUIRE(found_page.point_count == sub_page2.point_count);
+
+        REQUIRE_THROWS(writer.GetPage(VoxelKey(2, 2, 2, 2)));
 
         std::vector<char> twenty(first_20_pts, first_20_pts + sizeof(first_20_pts));
         REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), twenty));
@@ -161,7 +174,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         REQUIRE_THROWS(writer.AddNodeCompressed(root_page, VoxelKey::InvalidKey(), std::vector<char>(), 0));
 
@@ -188,7 +201,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         std::vector<char> twenty(first_20_pts_compressed, first_20_pts_compressed + sizeof(first_20_pts_compressed));
         REQUIRE_NOTHROW(writer.AddNodeCompressed(root_page, VoxelKey(0, 0, 0, 0), twenty, 20));
@@ -235,7 +248,7 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
         Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
         Page sub_page2 = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 1));
 

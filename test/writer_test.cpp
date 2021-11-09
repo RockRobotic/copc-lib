@@ -312,8 +312,8 @@ TEST_CASE("Writer Pages", "[Writer]")
         REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
         REQUIRE(!writer.FindNode(VoxelKey(5, 4, 3, 2)).IsValid());
 
-        REQUIRE_NOTHROW(writer.GetRootPage());
-        Page root_page = writer.GetRootPage();
+        REQUIRE_NOTHROW(writer.GetPage());
+        Page root_page = writer.GetPage();
         REQUIRE(root_page.IsValid());
         REQUIRE(root_page.IsPage());
         REQUIRE(root_page.loaded == true);
@@ -334,7 +334,7 @@ TEST_CASE("Writer Pages", "[Writer]")
 
         Writer writer(out_stream, {6});
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         auto sub_page = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 1));
         REQUIRE(sub_page.IsPage());
@@ -446,7 +446,7 @@ TEST_CASE("Writer Copy", "[Writer]")
 
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         for (const auto &node : reader.GetAllNodes())
         {
@@ -488,7 +488,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         FileWriter writer(file_path, cfg);
 
         auto header = *writer.CopcConfig()->LasHeader();
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
@@ -511,7 +511,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         FileWriter writer(file_path, cfg);
 
         auto header = *writer.CopcConfig()->LasHeader();
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
@@ -534,7 +534,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         FileWriter writer(file_path, cfg);
 
         auto header = *writer.CopcConfig()->LasHeader();
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
@@ -557,7 +557,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         FileWriter writer(file_path, cfg);
 
         auto header = *writer.CopcConfig()->LasHeader();
-        Page root_page = writer.GetRootPage();
+        Page root_page = writer.GetPage();
 
         las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
