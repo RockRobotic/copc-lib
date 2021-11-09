@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **\[Python/C++\]** Added `GetPage(VoxelKey key)` to `Writer`
+- **\[Python/C++\]** Added `GetParentAtDepth(int32_t depth)` to `VoxelKey`
 
 ### Changed
 

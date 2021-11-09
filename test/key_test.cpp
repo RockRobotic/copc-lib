@@ -37,6 +37,19 @@ TEST_CASE("GetParent Checks", "[Key]")
     REQUIRE(VoxelKey(0, 0, 0, 0).GetParent().IsValid() == false);
 }
 
+TEST_CASE("GetParentAtDepth Checks", "[Key]")
+{
+    REQUIRE(VoxelKey(-1, -1, -1, -1).GetParentAtDepth(0).IsValid() == false);
+
+    REQUIRE(VoxelKey(4, 4, 6, 12).GetParentAtDepth(3) == VoxelKey(3, 2, 3, 6));
+    REQUIRE(VoxelKey(4, 4, 6, 12).GetParentAtDepth(2) == VoxelKey(2, 1, 1, 3));
+    REQUIRE(VoxelKey(4, 4, 6, 12).GetParentAtDepth(1) == VoxelKey(1, 0, 0, 1));
+    REQUIRE(VoxelKey(4, 4, 6, 12).GetParentAtDepth(0) == VoxelKey(0, 0, 0, 0));
+
+    REQUIRE_THROWS(VoxelKey(4, 4, 6, 12).GetParentAtDepth(-1));
+    REQUIRE_THROWS(VoxelKey(4, 4, 6, 12).GetParentAtDepth(4));
+}
+
 TEST_CASE("GetChildren Checks", "[Key]")
 {
     auto key = VoxelKey::RootKey();
