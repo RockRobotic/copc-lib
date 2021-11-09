@@ -21,9 +21,10 @@ void Writer::Close() { writer_->Close(); }
 Page Writer::GetPage(const VoxelKey &key)
 {
     if (hierarchy_->seen_pages_.find(key) == hierarchy_->seen_pages_.end())
-        throw std::runtime_error("Writer::GetPage: Requested page does not exist.");
+        throw std::runtime_error("Writer::GetRootPage: Requested page does not exist.");
     return *hierarchy_->seen_pages_[key];
 }
+Page Writer::GetRootPage() { return GetPage(VoxelKey::RootKey()); }
 
 // Create a page, add it to the hierarchy and reference it as a subpage in the parent
 Page Writer::AddSubPage(Page &parent, VoxelKey key)

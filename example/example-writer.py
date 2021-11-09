@@ -17,7 +17,7 @@ def TrimFileExample(compressor_example_flag):
     writer = copc.FileWriter("autzen-trimmed.copc.laz", cfg)
 
     # The root page is automatically created and added for us
-    root_page = writer.GetPage()
+    root_page = writer.GetRootPage()
 
     # GetAllNodes will load the entire hierarchy under a given key
     for node in reader.GetAllNodes():
@@ -84,7 +84,7 @@ def BoundsTrimFileExample():
     writer = copc.FileWriter("autzen-bounds-trimmed.copc.laz", cfg)
 
     # The root page is automatically created and added for us
-    root_page = writer.GetPage()
+    root_page = writer.GetRootPage()
 
     for node in reader.GetAllNodes():
         if node.key.Within(old_header, box):
@@ -135,7 +135,7 @@ def ResolutionTrimFileExample():
     writer = copc.FileWriter("autzen-resolution-trimmed.copc.laz", cfg)
 
     # The root page is automatically created and added for us
-    root_page = writer.GetPage()
+    root_page = writer.GetRootPage()
 
     for node in reader.GetAllNodes():
         if node.key.d <= target_depth:
@@ -257,7 +257,7 @@ def NewFileExample():
     extents.classification.maximum = 201
 
     # The root page is automatically created
-    root_page = writer.GetPage()
+    root_page = writer.GetRootPage()
 
     # First we'll add a root node
     key = copc.VoxelKey(0, 0, 0, 0)

@@ -226,8 +226,8 @@ def test_writer_pages():
     assert not writer.FindNode((5, 4, 3, 2)).IsValid()
 
     # Root Page
-    writer.GetPage()
-    root_page = writer.GetPage()
+    writer.GetRootPage()
+    root_page = writer.GetRootPage()
     assert root_page.IsValid()
     assert root_page.IsPage()
     assert root_page.loaded is True
@@ -244,12 +244,18 @@ def test_writer_pages():
     # Nested page
     writer = copc.FileWriter(file_path, copc.CopcConfigWriter(6))
 
-    root_page = writer.GetPage()
+    root_page = writer.GetRootPage()
 
     sub_page = writer.AddSubPage(root_page, (1, 1, 1, 1))
     assert sub_page.IsPage()
     assert sub_page.IsValid()
     assert sub_page.loaded is True
+
+    # GetPage Test
+    found_page = writer.GetPage((1, 1, 1, 1))
+    assert found_page.offset == sub_page.offset
+    with pytest.raises(RuntimeError):
+        writer.GetPage((2, 2, 2, 2))
 
     with pytest.raises(RuntimeError):
         writer.AddSubPage(sub_page, (1, 1, 1, 0))
@@ -272,7 +278,7 @@ def test_writer_copy():
     cfg = reader.copc_config
     writer = copc.FileWriter(file_path, cfg)
 
-    root_page = writer.GetPage()
+    root_page = writer.GetRootPage()
 
     for node in reader.GetAllNodes():
         # only write/compare compressed data or otherwise tests take too long
@@ -325,7 +331,7 @@ def test_check_spatial_bounds():
 
     points.AddPoint(point)
 
-    writer.AddNode(writer.GetPage(), (1, 1, 1, 1), points)
+    writer.AddNode(writer.GetRootPage(), (1, 1, 1, 1), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -345,7 +351,7 @@ def test_check_spatial_bounds():
     point.z = 5.1
 
     points.AddPoint(point)
-    writer.AddNode(writer.GetPage(), (2, 3, 3, 3), points)
+    writer.AddNode(writer.GetRootPage(), (2, 3, 3, 3), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -365,7 +371,7 @@ def test_check_spatial_bounds():
     point.z = 5.1
 
     points.AddPoint(point)
-    writer.AddNode(writer.GetPage(), (1, 1, 1, 1), points)
+    writer.AddNode(writer.GetRootPage(), (1, 1, 1, 1), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -384,7 +390,7 @@ def test_check_spatial_bounds():
     point.z = 0.1
 
     points.AddPoint(point)
-    writer.AddNode(writer.GetPage(), (1, 0, 0, 0), points)
+    writer.AddNode(writer.GetRootPage(), (1, 0, 0, 0), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
