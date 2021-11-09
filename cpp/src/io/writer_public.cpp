@@ -25,7 +25,7 @@ bool Writer::PageExists(const VoxelKey &key)
 Page Writer::GetPage(const VoxelKey &key)
 {
     if (!PageExists(key))
-        throw std::runtime_error("Writer::GetRootPage: Requested page does not exist.");
+        throw std::runtime_error("Writer::GetPage: Requested page does not exist.");
     return *hierarchy_->seen_pages_[key];
 }
 Page Writer::GetRootPage() { return GetPage(VoxelKey::RootKey()); }
