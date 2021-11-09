@@ -251,6 +251,11 @@ def test_writer_pages():
     assert sub_page.IsValid()
     assert sub_page.loaded is True
 
+    # PageExists Test
+    assert writer.PageExists(copc.VoxelKey.RootKey())
+    assert writer.PageExists(copc.VoxelKey(1, 1, 1, 1))
+    assert not writer.PageExists(copc.VoxelKey(2, 2, 2, 2))
+
     # GetPage Test
     found_page = writer.GetPage((1, 1, 1, 1))
     assert found_page.offset == sub_page.offset

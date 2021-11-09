@@ -28,6 +28,7 @@ class Writer : public BaseIO
     {
         InitWriter(out_stream, copc_file_writer);
     }
+    bool PageExists(const VoxelKey &key);
     Page GetPage(const VoxelKey &key);
     Page GetRootPage();
 

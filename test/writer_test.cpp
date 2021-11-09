@@ -341,6 +341,11 @@ TEST_CASE("Writer Pages", "[Writer]")
         REQUIRE(sub_page.IsValid());
         REQUIRE(sub_page.loaded == true);
 
+        // PageExists Test
+        REQUIRE(writer.PageExists(VoxelKey::RootKey()));
+        REQUIRE(writer.PageExists(VoxelKey(1, 1, 1, 1)));
+        REQUIRE(!writer.PageExists(VoxelKey(2, 2, 2, 2)));
+
         // GetPage Test
         auto found_page = writer.GetPage(VoxelKey(1, 1, 1, 1));
         REQUIRE(found_page.offset == sub_page.offset);

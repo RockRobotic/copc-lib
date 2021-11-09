@@ -18,9 +18,13 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_f
 Writer::~Writer() { writer_->Close(); }
 void Writer::Close() { writer_->Close(); }
 
+bool Writer::PageExists(const VoxelKey &key)
+{
+    return !(hierarchy_->seen_pages_.find(key) == hierarchy_->seen_pages_.end());
+}
 Page Writer::GetPage(const VoxelKey &key)
 {
-    if (hierarchy_->seen_pages_.find(key) == hierarchy_->seen_pages_.end())
+    if (!PageExists(key))
         throw std::runtime_error("Writer::GetRootPage: Requested page does not exist.");
     return *hierarchy_->seen_pages_[key];
 }
