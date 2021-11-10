@@ -291,6 +291,15 @@ def NewFileExample():
     reader = copc.FileReader("new-copc.copc.laz")
     assert reader.ValidateSpatialBounds()
 
+    # We can get the keys of all existing pages
+    page_keys = reader.GetAllPageKeys()
+    # Check that a page exists
+    assert (3, 4, 4, 0) in page_keys
+
+    # We can get the page of any node (useful to copy the file along with the hierarchy)
+    node = reader.FindNode((2, 2, 2, 0))
+    assert node.page == (1, 1, 1, 0)
+
 
 if __name__ == "__main__":
     TrimFileExample(False)

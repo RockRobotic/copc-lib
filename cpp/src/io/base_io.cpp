@@ -51,7 +51,6 @@ void BaseIO::LoadPageHierarchy(const std::shared_ptr<Internal::PageInternal> &pa
 
 void BaseIO::ReadAndParsePage(const std::shared_ptr<Internal::PageInternal> &page)
 {
-
     auto children = ReadPage(page);
     for (const Entry &e : children)
     {
@@ -63,7 +62,7 @@ void BaseIO::ReadAndParsePage(const std::shared_ptr<Internal::PageInternal> &pag
         }
         else
         {
-            auto node = std::make_shared<Node>(e);
+            auto node = std::make_shared<Node>(e, page->key);
             hierarchy_->loaded_nodes_[e.key] = node;
             page->nodes.push_back(node);
         }

@@ -292,6 +292,15 @@ void NewFileExample()
     // We can check that the spatial bounds of the file have been respected
     FileReader reader("new-copc.copc.laz");
     assert(reader.ValidateSpatialBounds());
+
+    // We can get the keys of all existing pages
+    auto page_keys = reader.GetAllPageKeys();
+    // Check that a page exists
+    assert(std::find(page_keys.begin(), page_keys.end(), VoxelKey(3, 4, 4, 0)) != page_keys.end());
+
+    // We can get the page of any node (useful to copy the file along with the hierarchy)
+    auto node = reader.FindNode(VoxelKey(2, 2, 2, 0));
+    assert(node.page == VoxelKey(1, 1, 1, 0));
 }
 
 int main()

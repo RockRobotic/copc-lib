@@ -357,12 +357,21 @@ TEST_CASE("Writer Pages", "[Writer]")
         REQUIRE_THROWS(writer.AddSubPage(sub_page, VoxelKey(1, 1, 1, 0)));
         REQUIRE_THROWS(writer.AddSubPage(sub_page, VoxelKey(2, 4, 5, 0)));
 
+        writer.AddSubPage(sub_page, VoxelKey(2, 2, 2, 2));
+        writer.AddSubPage(root_page, VoxelKey(1, 0, 1, 1));
+
         writer.Close();
 
         Reader reader(&out_stream);
         REQUIRE(reader.CopcConfig().CopcInfo().root_hier_offset > 0);
-        REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 32);
+        REQUIRE(reader.CopcConfig().CopcInfo().root_hier_size == 64); // size of two sub pages of the root page
         REQUIRE(!reader.FindNode(VoxelKey::InvalidKey()).IsValid());
+
+        auto page_keys = reader.GetAllPageKeys();
+        REQUIRE(page_keys.size() == 4);
+        REQUIRE(std::find(page_keys.begin(), page_keys.end(), VoxelKey(1, 1, 1, 1)) != page_keys.end());
+        REQUIRE(std::find(page_keys.begin(), page_keys.end(), VoxelKey(2, 2, 2, 2)) != page_keys.end());
+        REQUIRE(std::find(page_keys.begin(), page_keys.end(), VoxelKey(1, 0, 1, 1)) != page_keys.end());
     }
 }
 

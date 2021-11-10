@@ -14,10 +14,11 @@ class Page;
 class Node : public Entry
 {
   public:
-    Node(Entry e) : Entry(e){};
+    Node(Entry e, VoxelKey page = VoxelKey::InvalidKey()) : Entry(e), page(page){};
     Node() : Entry(){};
 
     bool operator==(const Node &rhs) { return IsEqual(rhs); }
+    VoxelKey page{};
 };
 
 } // namespace copc

@@ -245,6 +245,21 @@ std::vector<Node> Reader::GetAllChildrenOfPage(const VoxelKey &key)
     return out;
 }
 
+std::vector<VoxelKey> Reader::GetAllPageKeys()
+{
+    // Load all nodes and pages in hierarchy
+    GetAllNodes();
+
+    std::vector<VoxelKey> page_keys;
+    page_keys.reserve(hierarchy_->seen_pages_.size());
+
+    for (auto &seen_page : hierarchy_->seen_pages_)
+    {
+        page_keys.push_back(seen_page.second->key);
+    }
+    return page_keys;
+}
+
 las::Points Reader::GetAllPoints(double resolution)
 {
     auto out = las::Points(config_.LasHeader());

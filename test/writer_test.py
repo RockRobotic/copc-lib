@@ -216,7 +216,6 @@ def test_writer_config():
 
 
 def test_writer_pages():
-    # Given a valid file path
     file_path = "writer_test.copc.laz"
 
     writer = copc.FileWriter(file_path, copc.CopcConfigWriter(6))
@@ -226,7 +225,6 @@ def test_writer_pages():
     assert not writer.FindNode((5, 4, 3, 2)).IsValid()
 
     # Root Page
-    writer.GetRootPage()
     root_page = writer.GetRootPage()
     assert root_page.IsValid()
     assert root_page.IsPage()
@@ -266,12 +264,23 @@ def test_writer_pages():
         writer.AddSubPage(sub_page, (1, 1, 1, 0))
         writer.AddSubPage(sub_page, (2, 4, 5, 0))
 
+    writer.AddSubPage(sub_page, (2, 2, 2, 2))
+    writer.AddSubPage(root_page, (1, 0, 1, 1))
+
     writer.Close()
 
     reader = copc.FileReader(file_path)
     assert reader.copc_config.copc_info.root_hier_offset > 0
-    assert reader.copc_config.copc_info.root_hier_size == 32
+    assert (
+        reader.copc_config.copc_info.root_hier_size == 64
+    )  # size of two sub pages of the root page
     assert not reader.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
+
+    page_keys = reader.GetAllPageKeys()
+    assert len(page_keys) == 4
+    assert (1, 1, 1, 1) in page_keys
+    assert (2, 2, 2, 2) in page_keys
+    assert (1, 0, 1, 1) in page_keys
 
 
 def test_writer_copy():

@@ -106,6 +106,11 @@ def test_get_all_children():
     assert len(nodes) == 0
 
 
+def test_get_all_page_keys():
+    reader = copc.FileReader("autzen-classified.copc.laz")
+    assert len(reader.GetAllPageKeys()) == 1
+
+
 # TODO[Leo]: Make this test optional
 
 # def test_get_all_points():

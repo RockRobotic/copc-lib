@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `GetPage(VoxelKey key)` to `Writer`
 - **\[Python/C++\]** Add `PageExists(VoxelKey key)` to `Writer`
 - **\[Python/C++\]** Add `GetParentAtDepth(int32_t depth)` to `VoxelKey`
+- **\[Python/C++\]** Add `GetAllPageKeys()` to `Reader`
+- **\[Python/C++\]** Add `page` member to `Node`
 
 ### Changed
 
