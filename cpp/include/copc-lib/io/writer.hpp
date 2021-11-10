@@ -59,9 +59,6 @@ class Writer : public BaseIO
         throw std::runtime_error("No pages should be unloaded!");
     };
 
-    // Adds a subpage to a given page
-    Page AddSubPage(const VoxelKey &parent_key, const VoxelKey &key);
-
     // Constructor helper function, initializes the file and hierarchy
     void InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len

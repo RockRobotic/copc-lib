@@ -53,6 +53,8 @@ void WriterInternal::Close()
     evlr_offset_ = static_cast<int64_t>(out_stream_.tellp());
     evlr_count_ += hierarchy_->seen_pages_.size();
 
+    // Compute the hierarchy between existing pages
+    ComputePageHierarchy();
     // Page writing must be done in a postorder traversal because each parent
     // has to write the offset of all of its children, which we don't know in advance
     WritePageTree(hierarchy_->seen_pages_[VoxelKey::RootKey()]);
@@ -221,6 +223,21 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
         node->Pack(out_stream_);
     for (const auto &node : page->sub_pages)
         node->Pack(out_stream_);
+}
+
+void WriterInternal::ComputePageHierarchy()
+{
+    // loop through each page
+    for (const auto &page : hierarchy_->seen_pages_)
+    {
+        if (page.first != VoxelKey::RootKey())
+        {
+            auto parent_key = page.first.GetParent();
+            while (!hierarchy_->PageExists(parent_key))
+                parent_key = parent_key.GetParent();
+            hierarchy_->seen_pages_[parent_key]->sub_pages.push_back(page.second);
+        }
+    }
 }
 
 // https://en.wikipedia.org/wiki/Tree_traversal#Arbitrary_trees

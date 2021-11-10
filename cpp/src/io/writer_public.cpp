@@ -18,29 +18,6 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_f
 Writer::~Writer() { writer_->Close(); }
 void Writer::Close() { writer_->Close(); }
 
-// Create a page, add it to the hierarchy and reference it as a subpage in the parent
-Page Writer::AddSubPage(const VoxelKey &parent_key, const VoxelKey &key)
-{
-    if (!key.IsValid())
-        throw std::runtime_error("Invalid key!");
-    if (hierarchy_->PageExists(key))
-        throw std::runtime_error("Page already exists!");
-    if (!hierarchy_->PageExists(parent_key))
-        throw std::runtime_error("Parent page does not exist!");
-    if (!key.ChildOf(parent_key))
-        throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
-                                 parent_key.ToString());
-
-    auto child_page = std::make_shared<Internal::PageInternal>(key);
-    child_page->loaded = true;
-
-    auto parent_page = hierarchy_->seen_pages_[parent_key];
-    parent_page->sub_pages.push_back(child_page);
-    hierarchy_->seen_pages_[key] = child_page;
-
-    return *child_page;
-}
-
 bool Writer::PageExists(const VoxelKey &key) { return hierarchy_->PageExists(key); }
 
 // Writes a node to the file and reference it in the hierarchy and in the parent page
@@ -59,15 +36,12 @@ Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point
 
     auto node = std::make_shared<Node>(e);
     hierarchy_->loaded_nodes_[key] = node;
-    // If page doesn't exist then create it with the nearest existing parent as parent page
+    // If page doesn't exist then create it
     if (!PageExists(page_key))
     {
-        // Find the nearest existing parent page
-        auto parent = key.GetParent();
-        while (!PageExists(parent))
-            parent = parent.GetParent();
-        // Add page
-        AddSubPage(parent, page_key);
+        auto new_page = std::make_shared<Internal::PageInternal>(page_key);
+        new_page->loaded = true;
+        hierarchy_->seen_pages_[page_key] = new_page;
     }
     // Add node to page
     hierarchy_->seen_pages_[page_key]->nodes.push_back(node);
