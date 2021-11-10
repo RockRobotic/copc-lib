@@ -18,10 +18,7 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_f
 Writer::~Writer() { writer_->Close(); }
 void Writer::Close() { writer_->Close(); }
 
-bool Writer::PageExists(const VoxelKey &key)
-{
-    return !(hierarchy_->seen_pages_.find(key) == hierarchy_->seen_pages_.end());
-}
+bool Writer::PageExists(const VoxelKey &key) { return hierarchy_->PageExists(key); }
 Page Writer::GetPage(const VoxelKey &key)
 {
     if (!PageExists(key))
