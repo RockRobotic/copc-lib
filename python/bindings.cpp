@@ -410,16 +410,14 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const std::string &, CopcConfigWriter const &>(), py::arg("file_path"), py::arg("config"))
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
-        .def("PageExists", &Writer::PageExists, py::arg("key"))
-        .def("GetPage", &Writer::GetPage, py::arg("key"))
-        .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &FileWriter::Close)
-        .def("AddNode", py::overload_cast<const Page &, const VoxelKey &, las::Points &>(&Writer::AddNode),
-             py::arg("page"), py::arg("key"), py::arg("points"))
-        .def("AddNodeCompressed", &Writer::AddNodeCompressed)
-        .def("AddNode", py::overload_cast<const Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode),
-             py::arg("page"), py::arg("key"), py::arg("uncompressed_data"))
-        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"));
+        .def("AddNode", py::overload_cast<const VoxelKey &, las::Points &, const VoxelKey &>(&Writer::AddNode),
+             py::arg("key"), py::arg("points"), py::arg("page_key") = VoxelKey::RootKey())
+        .def("AddNodeCompressed", &Writer::AddNodeCompressed, py::arg("key"), py::arg("compressed_data"),
+             py::arg("point_count"), py::arg("page_key") = VoxelKey::RootKey())
+        .def("AddNode",
+             py::overload_cast<const VoxelKey &, std::vector<char> const &, const VoxelKey &>(&Writer::AddNode),
+             py::arg("key"), py::arg("uncompressed_data"), py::arg("page_key") = VoxelKey::RootKey());
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),

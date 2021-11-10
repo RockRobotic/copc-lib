@@ -28,21 +28,16 @@ class Writer : public BaseIO
     {
         InitWriter(out_stream, copc_file_writer);
     }
-    bool PageExists(const VoxelKey &key);
-    Page GetPage(const VoxelKey &key);
-    Page GetRootPage();
 
     // Writes the file out
     virtual void Close();
 
     // Adds a node to a given page
-    Node AddNode(const Page &page, const VoxelKey &key, las::Points &points);
-    Node AddNodeCompressed(const Page &page, const VoxelKey &key, std::vector<char> const &compressed,
-                           uint64_t point_count);
-    Node AddNode(const Page &page, const VoxelKey &key, std::vector<char> const &uncompressed);
-
-    // Adds a subpage to a given page
-    Page AddSubPage(const Page &page, const VoxelKey &key);
+    Node AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key = VoxelKey::RootKey());
+    Node AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, uint64_t point_count,
+                           const VoxelKey &page_key = VoxelKey::RootKey());
+    Node AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data,
+                 const VoxelKey &page_key = VoxelKey::RootKey());
 
     std::shared_ptr<CopcConfigWriter> CopcConfig() { return config_; }
 
@@ -55,11 +50,17 @@ class Writer : public BaseIO
 
     std::shared_ptr<Internal::WriterInternal> writer_;
 
-    Node DoAddNode(const Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
+    bool PageExists(const VoxelKey &key);
+
+    Node DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point_count, bool compressed_data,
+                   const VoxelKey &page_key);
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override
     {
         throw std::runtime_error("No pages should be unloaded!");
     };
+
+    // Adds a subpage to a given page
+    Page AddSubPage(const VoxelKey &parent_key, const VoxelKey &key);
 
     // Constructor helper function, initializes the file and hierarchy
     void InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer);

@@ -16,9 +16,6 @@ def TrimFileExample(compressor_example_flag):
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-trimmed.copc.laz", cfg)
 
-    # The root page is automatically created and added for us
-    root_page = writer.GetRootPage()
-
     # GetAllNodes will load the entire hierarchy under a given key
     for node in reader.GetAllNodes():
         # In this example, we'll only save up to depth level 3.
@@ -28,7 +25,6 @@ def TrimFileExample(compressor_example_flag):
         # It's much faster to write and read compressed data, to avoid compression and decompression
         if not compressor_example_flag:
             writer.AddNodeCompressed(
-                root_page,
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
@@ -43,8 +39,8 @@ def TrimFileExample(compressor_example_flag):
                 uncompressed_points, writer.copc_config.las_header
             )
             writer.AddNodeCompressed(
-                root_page, node.key, compressed_points, node.point_count
-            )
+                node.key, compressed_points, node.point_count, copc.VoxelKey.RootKey()
+            )  # We can provide the optional page key
     # Make sure we call close to finish writing the file!
     writer.Close()
 
@@ -83,14 +79,10 @@ def BoundsTrimFileExample():
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-bounds-trimmed.copc.laz", cfg)
 
-    # The root page is automatically created and added for us
-    root_page = writer.GetRootPage()
-
     for node in reader.GetAllNodes():
         if node.key.Within(old_header, box):
             # If node is within the box then add all points (without decompressing)
             writer.AddNodeCompressed(
-                root_page,
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
@@ -98,7 +90,7 @@ def BoundsTrimFileExample():
         elif node.key.Intersects(old_header, box):
             # If node only crosses the box then decompress points data and get subset of points that are within the box
             points = reader.GetPoints(node).GetWithin(box)
-            writer.AddNode(root_page, node.key, copc.Points(points).Pack())
+            writer.AddNode(node.key, copc.Points(points).Pack())
 
     # Make sure we call close to finish writing the file!
     writer.Close()
@@ -134,13 +126,9 @@ def ResolutionTrimFileExample():
     # Now, we can create our actual writer:
     writer = copc.FileWriter("autzen-resolution-trimmed.copc.laz", cfg)
 
-    # The root page is automatically created and added for us
-    root_page = writer.GetRootPage()
-
     for node in reader.GetAllNodes():
         if node.key.d <= target_depth:
             writer.AddNodeCompressed(
-                root_page,
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
@@ -256,33 +244,30 @@ def NewFileExample():
     extents.classification.minimum = 5
     extents.classification.maximum = 201
 
-    # The root page is automatically created
-    root_page = writer.GetRootPage()
-
     # First we'll add a root node
     key = copc.VoxelKey(0, 0, 0, 0)
     points = RandomPoints(key, header, NUM_POINTS)
     # The node will be written to the file when we call AddNode
-    writer.AddNode(root_page, key, points)
+    writer.AddNode(key, points)
 
     # We can also add pages in the same way, as long as the Key we specify
     # is a child of the parent page
 
-    page = writer.AddSubPage(root_page, (1, 1, 1, 0))
+    page_key = copc.VoxelKey(1, 1, 1, 0)
 
     # Once our page is created, we can add nodes to it like before
     key = copc.VoxelKey(1, 1, 1, 0)
     points = RandomPoints(key, header, NUM_POINTS)
-    writer.AddNode(page, key, points)
+    writer.AddNode(key, points, page_key)
 
     key = copc.VoxelKey(2, 2, 2, 0)
     points = RandomPoints(key, header, NUM_POINTS)
-    writer.AddNode(page, key, points)
+    writer.AddNode(key, points, page_key)
 
     # We can nest subpages as much as we want, as long as they are children of the parent
-    sub_page = writer.AddSubPage(page, (3, 4, 4, 0))
-    points = RandomPoints(sub_page.key, header, NUM_POINTS)
-    writer.AddNode(page, sub_page.key, points)
+    sub_page_key = copc.VoxelKey(3, 4, 4, 0)
+    points = RandomPoints(sub_page_key, header, NUM_POINTS)
+    writer.AddNode(sub_page_key, points, sub_page_key)
 
     # Make sure we call close to finish writing the file!
     writer.Close()
