@@ -417,7 +417,8 @@ PYBIND11_MODULE(copclib, m)
              py::arg("point_count"), py::arg("page_key") = VoxelKey::RootKey())
         .def("AddNode",
              py::overload_cast<const VoxelKey &, std::vector<char> const &, const VoxelKey &>(&Writer::AddNode),
-             py::arg("key"), py::arg("uncompressed_data"), py::arg("page_key") = VoxelKey::RootKey());
+             py::arg("key"), py::arg("uncompressed_data"), py::arg("page_key") = VoxelKey::RootKey())
+        .def("ChangeNodePage", &Writer::ChangeNodePage, py::arg("node_key"), py::arg("new_page_key"));
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),

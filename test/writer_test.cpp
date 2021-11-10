@@ -352,6 +352,35 @@ TEST_CASE("Writer Pages", "[Writer]")
         REQUIRE(std::find(page_keys.begin(), page_keys.end(), VoxelKey(2, 2, 2, 2)) != page_keys.end());
         REQUIRE(std::find(page_keys.begin(), page_keys.end(), VoxelKey(1, 0, 1, 1)) != page_keys.end());
     }
+
+    SECTION("Change Node Page")
+    {
+        stringstream out_stream;
+
+        Writer writer(out_stream, {6});
+
+        auto header = *writer.CopcConfig()->LasHeader();
+        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        points.AddPoint(points.CreatePoint());
+
+        writer.AddNode(VoxelKey(3, 4, 4, 4), points, VoxelKey(2, 2, 2, 2));
+
+        writer.ChangeNodePage(VoxelKey(3, 4, 4, 4), VoxelKey(1, 1, 1, 1));
+
+        // Check for validity
+        REQUIRE_THROWS(writer.ChangeNodePage(VoxelKey(3, 4, 4, 3), VoxelKey(1, 0, 0, 0)));  // Node doesn't exist
+        REQUIRE_THROWS(writer.ChangeNodePage(VoxelKey(3, 4, 4, -1), VoxelKey(1, 0, 0, 0))); // Invalid Node
+        REQUIRE_THROWS(writer.ChangeNodePage(VoxelKey(3, 4, 4, 4), VoxelKey(1, 0, 0, -1))); // Invalid New Page
+
+        // Check for parental link
+        REQUIRE_THROWS(writer.ChangeNodePage(VoxelKey(3, 4, 4, 4), VoxelKey(1, 0, 0, 0)));
+
+        writer.Close();
+
+        Reader reader(&out_stream);
+        auto node = reader.FindNode(VoxelKey(3, 4, 4, 4));
+        REQUIRE(node.page == VoxelKey(1, 1, 1, 1));
+    }
 }
 
 TEST_CASE("Writer EBs", "[Writer]")

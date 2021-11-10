@@ -45,7 +45,7 @@ void BaseIO::LoadPageHierarchy(const std::shared_ptr<Internal::PageInternal> &pa
     }
     for (const auto &node : page->nodes)
     {
-        loaded_nodes.push_back(*node);
+        loaded_nodes.push_back(*node.second);
     }
 }
 
@@ -58,13 +58,13 @@ void BaseIO::ReadAndParsePage(const std::shared_ptr<Internal::PageInternal> &pag
         {
             auto subpage = std::make_shared<Internal::PageInternal>(e);
             hierarchy_->seen_pages_[e.key] = subpage;
-            page->sub_pages.push_back(subpage);
+            page->sub_pages.insert(subpage);
         }
         else
         {
             auto node = std::make_shared<Node>(e, page->key);
             hierarchy_->loaded_nodes_[e.key] = node;
-            page->nodes.push_back(node);
+            page->nodes[node->key] = node;
         }
     }
 }

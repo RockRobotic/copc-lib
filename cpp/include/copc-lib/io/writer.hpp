@@ -39,6 +39,8 @@ class Writer : public BaseIO
     Node AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data,
                  const VoxelKey &page_key = VoxelKey::RootKey());
 
+    void ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_key);
+
     std::shared_ptr<CopcConfigWriter> CopcConfig() { return config_; }
 
     virtual ~Writer();

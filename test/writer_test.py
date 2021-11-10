@@ -265,6 +265,30 @@ def test_writer_pages():
     assert (2, 2, 2, 2) in page_keys
     assert (1, 0, 1, 1) in page_keys
 
+    # Change Node Page
+    writer = copc.FileWriter(file_path, copc.CopcConfigWriter(6))
+
+    header = writer.copc_config.las_header
+    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points.AddPoint(points.CreatePoint())
+
+    writer.AddNode((3, 4, 4, 4), points, page_key=(2, 2, 2, 2))
+
+    writer.ChangeNodePage((3, 4, 4, 4), (1, 1, 1, 1))
+
+    with pytest.raises(RuntimeError):
+        # Check for validity
+        writer.ChangeNodePage((3, 4, 4, 3), (1, 0, 0, 0))  # Node doesn't exist
+        writer.ChangeNodePage((3, 4, 4, -1), (1, 0, 0, 0))  # Invalid Node
+        writer.ChangeNodePage((3, 4, 4, 4), (1, 0, 0, -1))  # Invalid New Page
+        # Check for parental link
+        writer.ChangeNodePage((3, 4, 4, 4), (1, 0, 0, 0))
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+    node = reader.FindNode((3, 4, 4, 4))
+    assert node.page == (1, 1, 1, 1)
+
 
 def test_writer_copy():
     # Given a valid file path

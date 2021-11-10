@@ -34,7 +34,7 @@ Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point
     Entry e = writer_->WriteNode(std::move(in), point_count, compressed_data);
     e.key = key;
 
-    auto node = std::make_shared<Node>(e);
+    auto node = std::make_shared<Node>(e, page_key);
     hierarchy_->loaded_nodes_[key] = node;
     // If page doesn't exist then create it
     if (!PageExists(page_key))
@@ -44,7 +44,7 @@ Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point
         hierarchy_->seen_pages_[page_key] = new_page;
     }
     // Add node to page
-    hierarchy_->seen_pages_[page_key]->nodes.push_back(node);
+    hierarchy_->seen_pages_[page_key]->nodes[node->key] = node;
     return *node;
 }
 
@@ -74,6 +74,36 @@ Node Writer::AddNodeCompressed(const VoxelKey &key, std::vector<char> const &com
         throw std::runtime_error("Point count must be >0!");
 
     return DoAddNode(key, compressed_data, point_count, true, page_key);
+}
+
+void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_key)
+{
+    if (!node_key.IsValid())
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() + " is invalid.");
+    if (!new_page_key.IsValid())
+        throw std::runtime_error("Writer::ChangeNodePage: New Page Key " + node_key.ToString() + " is invalid.");
+    if (hierarchy_->loaded_nodes_.find(node_key) == hierarchy_->loaded_nodes_.end())
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key" + node_key.ToString() + " does not exist.");
+    if (!node_key.ChildOf(new_page_key))
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key" + node_key.ToString() +
+                                 " is not a child of New Page Key " + new_page_key.ToString() + ".");
+    // If new page doesn't exist then create it
+    if (!PageExists(new_page_key))
+    {
+        auto new_page = std::make_shared<Internal::PageInternal>(new_page_key);
+        new_page->loaded = true;
+        hierarchy_->seen_pages_[new_page_key] = new_page;
+    }
+    // Add node to new page
+    auto node = hierarchy_->loaded_nodes_[node_key];
+    hierarchy_->seen_pages_[new_page_key]->nodes[node_key] = node;
+
+    // Remove node from old page
+    hierarchy_->seen_pages_[node->page]->nodes.erase(node_key);
+
+    // If old page has no nodes left then remove it
+    if (hierarchy_->seen_pages_[node->page]->nodes.empty())
+        hierarchy_->seen_pages_.erase(node->page);
 }
 
 void FileWriter::Close()

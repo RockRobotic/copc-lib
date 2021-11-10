@@ -220,7 +220,7 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     }
 
     for (const auto &node : page->nodes)
-        node->Pack(out_stream_);
+        node.second->Pack(out_stream_);
     for (const auto &node : page->sub_pages)
         node->Pack(out_stream_);
 }
@@ -235,7 +235,7 @@ void WriterInternal::ComputePageHierarchy()
             auto parent_key = page.first.GetParent();
             while (!hierarchy_->PageExists(parent_key))
                 parent_key = parent_key.GetParent();
-            hierarchy_->seen_pages_[parent_key]->sub_pages.push_back(page.second);
+            hierarchy_->seen_pages_[parent_key]->sub_pages.insert(page.second);
         }
     }
 }
