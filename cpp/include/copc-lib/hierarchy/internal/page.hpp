@@ -1,6 +1,9 @@
 #ifndef COPCLIB_HIERARCHY_PAGE_INTERNAL_H_
 #define COPCLIB_HIERARCHY_PAGE_INTERNAL_H_
 
+#include <set>
+#include <unordered_map>
+
 #include "copc-lib/hierarchy/page.hpp"
 
 namespace copc::Internal
@@ -14,8 +17,8 @@ class PageInternal : public Page
     PageInternal(VoxelKey key, int64_t offset, int32_t byte_size) : Page(key, offset, byte_size){};
     PageInternal(VoxelKey key) : Page(key, -1, -1){};
 
-    std::vector<std::shared_ptr<PageInternal>> sub_pages;
-    std::vector<std::shared_ptr<Node>> nodes;
+    std::set<std::shared_ptr<PageInternal>> sub_pages;
+    std::unordered_map<VoxelKey, std::shared_ptr<Node>> nodes;
 };
 
 } // namespace copc::Internal

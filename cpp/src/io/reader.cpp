@@ -103,7 +103,7 @@ las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
     auto offset = FetchVlr(vlrs, "LASF_Projection", 2112);
     if (offset != 0)
     {
-        in_stream_->seekg(offset + lazperf::vlr_header::Size);
+        in_stream_->seekg(offset + lazperf::evlr_header::Size);
         return las::WktVlr::create(*in_stream_, vlrs[offset].data_length);
     }
     return las::WktVlr();
@@ -243,6 +243,21 @@ std::vector<Node> Reader::GetAllChildrenOfPage(const VoxelKey &key)
     // If the page does exist, we need to read all its children and subpages into memory recursively
     LoadPageHierarchy(hierarchy_->seen_pages_[key], out);
     return out;
+}
+
+std::vector<VoxelKey> Reader::GetPageList()
+{
+    // Load all nodes and pages in hierarchy
+    GetAllNodes();
+
+    std::vector<VoxelKey> page_keys;
+    page_keys.reserve(hierarchy_->seen_pages_.size());
+
+    for (auto &seen_page : hierarchy_->seen_pages_)
+    {
+        page_keys.push_back(seen_page.second->key);
+    }
+    return page_keys;
 }
 
 las::Points Reader::GetAllPoints(double resolution)

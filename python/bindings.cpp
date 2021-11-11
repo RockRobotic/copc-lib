@@ -57,6 +57,7 @@ PYBIND11_MODULE(copclib, m)
         .def("Bisect", &VoxelKey::Bisect)
         .def("GetChildren", &VoxelKey::GetChildren)
         .def("GetParent", &VoxelKey::GetParent)
+        .def("GetParentAtDepth", &VoxelKey::GetParentAtDepth, py::arg("depth"))
         .def("GetParents", &VoxelKey::GetParents, py::arg("include_current"))
         .def("ChildOf", &VoxelKey::ChildOf, py::arg("parent_key"))
         .def("Resolution", &VoxelKey::Resolution, py::arg("las_header"), py::arg("copc_header"))
@@ -121,6 +122,7 @@ PYBIND11_MODULE(copclib, m)
         .def_readwrite("key", &Node::key)
         .def_readwrite("offset", &Node::offset)
         .def_readwrite("byte_size", &Node::byte_size)
+        .def_readwrite("page_key", &Node::page_key)
         .def("IsValid", &Node::IsValid)
         .def("IsPage", &Node::IsPage)
         .def("__str__", &Node::ToString)
@@ -394,6 +396,7 @@ PYBIND11_MODULE(copclib, m)
              py::arg("key"))
         .def("GetAllChildrenOfPage", &Reader::GetAllChildrenOfPage, py::arg("key"))
         .def("GetAllNodes", &Reader::GetAllNodes)
+        .def("GetPageList", &Reader::GetPageList)
         .def("GetAllPoints", &Reader::GetAllPoints, py::arg("resolution") = 0)
         .def("GetNodesWithinBox", &Reader::GetNodesWithinBox, py::arg("box"), py::arg("resolution") = 0)
         .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox, py::arg("box"), py::arg("resolution") = 0)
@@ -407,14 +410,15 @@ PYBIND11_MODULE(copclib, m)
         .def(py::init<const std::string &, CopcConfigWriter const &>(), py::arg("file_path"), py::arg("config"))
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
-        .def("GetRootPage", &Writer::GetRootPage)
         .def("Close", &FileWriter::Close)
-        .def("AddNode", py::overload_cast<Page &, const VoxelKey &, las::Points &>(&Writer::AddNode), py::arg("page"),
-             py::arg("key"), py::arg("points"))
-        .def("AddNodeCompressed", &Writer::AddNodeCompressed)
-        .def("AddNode", py::overload_cast<Page &, const VoxelKey &, std::vector<char> const &>(&Writer::AddNode),
-             py::arg("page"), py::arg("key"), py::arg("uncompressed_data"))
-        .def("AddSubPage", &Writer::AddSubPage, py::arg("parent_page"), py::arg("key"));
+        .def("AddNode", py::overload_cast<const VoxelKey &, las::Points &, const VoxelKey &>(&Writer::AddNode),
+             py::arg("key"), py::arg("points"), py::arg("page_key") = VoxelKey::RootKey())
+        .def("AddNodeCompressed", &Writer::AddNodeCompressed, py::arg("key"), py::arg("compressed_data"),
+             py::arg("point_count"), py::arg("page_key") = VoxelKey::RootKey())
+        .def("AddNode",
+             py::overload_cast<const VoxelKey &, std::vector<char> const &, const VoxelKey &>(&Writer::AddNode),
+             py::arg("key"), py::arg("uncompressed_data"), py::arg("page_key") = VoxelKey::RootKey())
+        .def("ChangeNodePage", &Writer::ChangeNodePage, py::arg("node_key"), py::arg("new_page_key"));
 
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
@@ -447,8 +451,8 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("vlr_count", &las::LasHeader::VlrCount)
         .def_property_readonly("point_format_id", &las::LasHeader::PointFormatId)
         .def_property_readonly("point_record_length", &las::LasHeader::PointRecordLength)
-        .def_property_readonly("scale", &las::LasHeader::Scale)
-        .def_property_readonly("offset", &las::LasHeader::Offset)
+        .def_readwrite("scale", &las::LasHeader::scale)
+        .def_readwrite("offset", &las::LasHeader::offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
         .def_property_readonly("evlr_offset", &las::LasHeader::EvlrOffset)

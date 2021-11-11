@@ -18,76 +18,100 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_f
 Writer::~Writer() { writer_->Close(); }
 void Writer::Close() { writer_->Close(); }
 
-Page Writer::GetRootPage() { return *this->hierarchy_->seen_pages_[VoxelKey::RootKey()]; }
-
-// Create a page, add it to the hierarchy and reference it as a subpage in the parent
-Page Writer::AddSubPage(Page &parent, VoxelKey key)
-{
-    if (!key.IsValid())
-        throw std::runtime_error("Invalid key!");
-    if (hierarchy_->PageExists(key))
-        throw std::runtime_error("Page already exists!");
-    if (!hierarchy_->PageExists(parent.key))
-        throw std::runtime_error("Parent page does not exist!");
-    if (!key.ChildOf(parent.key))
-        throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
-                                 parent.key.ToString());
-
-    auto child_page = std::make_shared<Internal::PageInternal>(key);
-    child_page->loaded = true;
-
-    auto parent_page = hierarchy_->seen_pages_[parent.key];
-    parent_page->sub_pages.push_back(child_page);
-    hierarchy_->seen_pages_[key] = child_page;
-
-    return *child_page;
-}
+bool Writer::PageExists(const VoxelKey &key) { return hierarchy_->PageExists(key); }
 
 // Writes a node to the file and reference it in the hierarchy and in the parent page
-Node Writer::DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed)
+Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point_count, bool compressed_data,
+                       const VoxelKey &page_key)
 {
-    if (!page.IsPage() || !page.IsValid() || !key.IsValid())
-        throw std::runtime_error("Invalid page or target key!");
+    if (!page_key.IsValid() || !key.IsValid())
+        throw std::runtime_error("Invalid page or node key!");
+    // TODO[leo]: Check if node already loaded
 
-    if (!key.ChildOf(page.key))
-        throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " +
-                                 page.key.ToString());
+    if (!key.ChildOf(page_key))
+        throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " + key.ToString());
 
-    Entry e = writer_->WriteNode(std::move(in), point_count, compressed);
+    Entry e = writer_->WriteNode(std::move(in), point_count, compressed_data);
     e.key = key;
 
-    auto node = std::make_shared<Node>(e);
+    auto node = std::make_shared<Node>(e, page_key);
     hierarchy_->loaded_nodes_[key] = node;
-    hierarchy_->seen_pages_[page.key]->nodes.push_back(node);
+    // If page doesn't exist then create it
+    if (!PageExists(page_key))
+    {
+        auto new_page = std::make_shared<Internal::PageInternal>(page_key);
+        new_page->loaded = true;
+        hierarchy_->seen_pages_[page_key] = new_page;
+    }
+    // Add node to page
+    hierarchy_->seen_pages_[page_key]->nodes[node->key] = node;
     return *node;
 }
 
-Node Writer::AddNode(Page &page, const VoxelKey &key, las::Points &points)
+Node Writer::AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key)
 {
     if (points.PointFormatId() != config_->LasHeader()->PointFormatId() ||
         points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
 
-    std::vector<char> uncompressed = points.Pack();
-    return AddNode(page, key, uncompressed);
+    std::vector<char> uncompressed_data = points.Pack();
+    return AddNode(key, uncompressed_data, page_key);
 }
 
-Node Writer::AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed)
+Node Writer::AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data, const VoxelKey &page_key)
 {
     int point_size = config_->LasHeader()->PointRecordLength();
-    if (uncompressed.size() < point_size || uncompressed.size() % point_size != 0)
+    if (uncompressed_data.size() < point_size || uncompressed_data.size() % point_size != 0)
         throw std::runtime_error("Invalid point data array!");
 
-    return DoAddNode(page, key, uncompressed, 0, false);
+    return DoAddNode(key, uncompressed_data, 0, false, page_key);
 }
 
-Node Writer::AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed,
-                               uint64_t point_count)
+Node Writer::AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, uint64_t point_count,
+                               const VoxelKey &page_key)
 {
     if (point_count == 0)
         throw std::runtime_error("Point count must be >0!");
 
-    return DoAddNode(page, key, compressed, point_count, true);
+    return DoAddNode(key, compressed_data, point_count, true, page_key);
+}
+
+void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_key)
+{
+    if (!node_key.IsValid())
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() + " is invalid.");
+    if (!new_page_key.IsValid())
+        throw std::runtime_error("Writer::ChangeNodePage: New Page Key " + node_key.ToString() + " is invalid.");
+    if (hierarchy_->loaded_nodes_.find(node_key) == hierarchy_->loaded_nodes_.end())
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() + " does not exist.");
+    if (!node_key.ChildOf(new_page_key))
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() +
+                                 " is not a child of New Page Key " + new_page_key.ToString() + ".");
+
+    // Load the Node object based on the key
+    auto node = hierarchy_->loaded_nodes_[node_key];
+
+    // If new page is current page then do nothing
+    if (node->page_key == new_page_key)
+        return;
+
+    // If new page doesn't exist then create it
+    if (!PageExists(new_page_key))
+    {
+        auto new_page = std::make_shared<Internal::PageInternal>(new_page_key);
+        new_page->loaded = true;
+        hierarchy_->seen_pages_[new_page_key] = new_page;
+    }
+
+    // Add node to new page
+    hierarchy_->seen_pages_[new_page_key]->nodes[node_key] = node;
+
+    // Remove node from old page
+    hierarchy_->seen_pages_[node->page_key]->nodes.erase(node_key);
+
+    // If old page has no nodes left then remove it, unless it is root page
+    if (node->page_key != VoxelKey::RootKey() && hierarchy_->seen_pages_[node->page_key]->nodes.empty())
+        hierarchy_->seen_pages_.erase(node->page_key);
 }
 
 void FileWriter::Close()

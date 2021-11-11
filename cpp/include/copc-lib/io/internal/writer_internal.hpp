@@ -49,6 +49,8 @@ class WriterInternal
     void WriteChunkTable();
     void WritePage(const std::shared_ptr<PageInternal> &page);
 
+    void ComputePageHierarchy();
+
     // Iterates through a given page in a postorder traversal and writes the pages
     void WritePageTree(const std::shared_ptr<PageInternal> &current);
 };

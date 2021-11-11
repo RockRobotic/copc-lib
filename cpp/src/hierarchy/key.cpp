@@ -48,6 +48,17 @@ VoxelKey VoxelKey::GetParent() const
         return {};
 }
 
+VoxelKey VoxelKey::GetParentAtDepth(int32_t depth) const
+{
+    if (!IsValid())
+        return {};
+    if (depth < 0 || depth > d)
+        throw std::runtime_error("VoxelKey::GetParentAtDepth: Invalid depth requested.");
+
+    int reduction_factor = (int)std::pow(2, d - depth);
+    return {depth, x / reduction_factor, y / reduction_factor, z / reduction_factor};
+}
+
 std::vector<VoxelKey> VoxelKey::GetParents(bool include_self) const
 {
     std::vector<VoxelKey> out;

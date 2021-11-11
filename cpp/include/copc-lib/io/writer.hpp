@@ -29,18 +29,17 @@ class Writer : public BaseIO
         InitWriter(out_stream, copc_file_writer);
     }
 
-    Page GetRootPage();
-
     // Writes the file out
     virtual void Close();
 
     // Adds a node to a given page
-    Node AddNode(Page &page, const VoxelKey &key, las::Points &points);
-    Node AddNodeCompressed(Page &page, const VoxelKey &key, std::vector<char> const &compressed, uint64_t point_count);
-    Node AddNode(Page &page, const VoxelKey &key, std::vector<char> const &uncompressed);
+    Node AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key = VoxelKey::RootKey());
+    Node AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, uint64_t point_count,
+                           const VoxelKey &page_key = VoxelKey::RootKey());
+    Node AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data,
+                 const VoxelKey &page_key = VoxelKey::RootKey());
 
-    // Adds a subpage to a given page
-    Page AddSubPage(Page &page, VoxelKey key);
+    void ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_key);
 
     std::shared_ptr<CopcConfigWriter> CopcConfig() { return config_; }
 
@@ -53,7 +52,10 @@ class Writer : public BaseIO
 
     std::shared_ptr<Internal::WriterInternal> writer_;
 
-    Node DoAddNode(Page &page, VoxelKey key, std::vector<char> in, uint64_t point_count, bool compressed);
+    bool PageExists(const VoxelKey &key);
+
+    Node DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point_count, bool compressed_data,
+                   const VoxelKey &page_key);
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override
     {
         throw std::runtime_error("No pages should be unloaded!");

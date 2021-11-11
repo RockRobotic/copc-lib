@@ -38,12 +38,12 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.point_format_id_ = static_cast<int8_t>(header.point_format_id);
     h.point_record_length_ = header.point_record_length;
     std::copy(std::begin(header.points_by_return), std::end(header.points_by_return), std::begin(h.points_by_return));
-    h.scale_.x = header.scale.x;
-    h.scale_.y = header.scale.y;
-    h.scale_.z = header.scale.z;
-    h.offset_.x = header.offset.x;
-    h.offset_.y = header.offset.y;
-    h.offset_.z = header.offset.z;
+    h.scale.x = header.scale.x;
+    h.scale.y = header.scale.y;
+    h.scale.z = header.scale.z;
+    h.offset.x = header.offset.x;
+    h.offset.y = header.offset.y;
+    h.offset.z = header.offset.z;
     h.max.x = header.maxx;
     h.min.x = header.minx;
     h.max.y = header.maxy;
@@ -59,7 +59,7 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     return h;
 }
 lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset,
-                                       uint32_t evlr_count, bool wkt_flag, bool eb_flag, bool extended_stats_flag) const
+                                       uint32_t evlr_count, bool eb_flag, bool extended_stats_flag) const
 {
     lazperf::header14 h;
     h.file_source_id = file_source_id;
@@ -75,9 +75,6 @@ lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_cou
     h.header_size = header_size_;
     h.point_offset = point_offset;
     h.vlr_count = 3; // copc_info + copc_extent + laz;
-    // If WKT is not empty, count an extra VLR
-    if (wkt_flag)
-        h.vlr_count++;
     // If there are Extra Bytes, count an extra VLR
     if (eb_flag)
         h.vlr_count++;
@@ -94,13 +91,13 @@ lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_cou
         h.point_count = (uint32_t)point_count;
     std::fill(h.points_by_return, h.points_by_return + 5, 0); // Fill with zeros
 
-    h.offset.x = offset_.x;
-    h.offset.y = offset_.y;
-    h.offset.z = offset_.z;
+    h.offset.x = offset.x;
+    h.offset.y = offset.y;
+    h.offset.z = offset.z;
 
-    h.scale.x = scale_.x;
-    h.scale.y = scale_.y;
-    h.scale.z = scale_.z;
+    h.scale.x = scale.x;
+    h.scale.y = scale.y;
+    h.scale.z = scale.z;
 
     h.maxx = max.x;
     h.minx = min.x;
@@ -134,8 +131,8 @@ std::string LasHeader::ToString() const
     ss << "\tPoint Format ID: " << static_cast<int>(point_format_id_) << std::endl;
     ss << "\tPoint Record Length: " << point_record_length_ << std::endl;
     ss << "\tPoint Count: " << point_count_ << std::endl;
-    ss << "\tScale: " << scale_.ToString() << std::endl;
-    ss << "\tOffset: " << offset_.ToString() << std::endl;
+    ss << "\tScale: " << scale.ToString() << std::endl;
+    ss << "\tOffset: " << offset.ToString() << std::endl;
     ss << "\tMax: " << max.ToString() << std::endl;
     ss << "\tMin: " << min.ToString() << std::endl;
     ss << "\tEVLR Offset: " << evlr_offset_ << std::endl;

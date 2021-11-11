@@ -51,6 +51,9 @@ class VoxelKey
     // The hierarchial parent of this key
     VoxelKey GetParent() const;
 
+    // The hierarchial parent of this key at requested depth
+    VoxelKey GetParentAtDepth(int32_t depth) const;
+
     // A list of the key's parents from the key to the root node
     // optionally including the key itself
     std::vector<VoxelKey> GetParents(bool include_self = false) const;
