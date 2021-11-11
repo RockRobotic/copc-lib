@@ -16,13 +16,11 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
-
-        REQUIRE_THROWS(writer.AddNode(root_page, VoxelKey::InvalidKey(), std::vector<char>()));
-        REQUIRE_THROWS(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), std::vector<char>()));
+        REQUIRE_THROWS(writer.AddNode(VoxelKey::InvalidKey(), std::vector<char>()));
+        REQUIRE_THROWS(writer.AddNode(VoxelKey(0, 0, 0, 0), std::vector<char>()));
 
         std::vector<char> root_node(first_20_pts, first_20_pts + sizeof(first_20_pts));
-        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), root_node));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(0, 0, 0, 0), root_node));
 
         writer.Close();
 
@@ -44,16 +42,14 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
-
         std::vector<char> twenty(first_20_pts, first_20_pts + sizeof(first_20_pts));
-        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), twenty));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(0, 0, 0, 0), twenty));
 
         std::vector<char> twelve(next_12_pts, next_12_pts + sizeof(next_12_pts));
-        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(1, 1, 1, 1), twelve));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(1, 1, 1, 1), twelve));
 
         std::vector<char> sixty(last_60_pts, last_60_pts + sizeof(last_60_pts));
-        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(1, 1, 1, 0), sixty));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(1, 1, 1, 0), sixty));
 
         writer.Close();
 
@@ -91,22 +87,21 @@ TEST_CASE("Writer Node Uncompressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
-        Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
-        Page sub_page2 = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 1));
+        VoxelKey sub_page1_key(1, 0, 0, 0);
+        VoxelKey sub_page2_key(1, 1, 1, 1);
 
         std::vector<char> twenty(first_20_pts, first_20_pts + sizeof(first_20_pts));
-        REQUIRE_NOTHROW(writer.AddNode(root_page, VoxelKey(0, 0, 0, 0), twenty));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(0, 0, 0, 0), twenty));
 
         std::vector<char> twelve(next_12_pts, next_12_pts + sizeof(next_12_pts));
-        REQUIRE_NOTHROW(writer.AddNode(sub_page1, VoxelKey(1, 0, 0, 0), twelve));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(1, 0, 0, 0), twelve, sub_page1_key));
 
         std::vector<char> sixty(last_60_pts, last_60_pts + sizeof(last_60_pts));
-        REQUIRE_NOTHROW(writer.AddNode(sub_page2, VoxelKey(1, 1, 1, 1), sixty));
-        REQUIRE_NOTHROW(writer.AddNode(sub_page2, VoxelKey(2, 2, 2, 2), twenty));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(1, 1, 1, 1), sixty, sub_page2_key));
+        REQUIRE_NOTHROW(writer.AddNode(VoxelKey(2, 2, 2, 2), twenty, sub_page2_key));
 
         // Can't add a node that's not a child of the page
-        REQUIRE_THROWS(writer.AddNode(sub_page2, VoxelKey(1, 2, 2, 2), twenty));
+        REQUIRE_THROWS(writer.AddNode(VoxelKey(1, 2, 2, 2), twenty, sub_page2_key));
 
         writer.Close();
 
@@ -161,12 +156,10 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
-
-        REQUIRE_THROWS(writer.AddNodeCompressed(root_page, VoxelKey::InvalidKey(), std::vector<char>(), 0));
+        REQUIRE_THROWS(writer.AddNodeCompressed(VoxelKey::InvalidKey(), std::vector<char>(), 0));
 
         std::vector<char> root_node(first_20_pts_compressed, first_20_pts_compressed + sizeof(first_20_pts_compressed));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(root_page, VoxelKey(0, 0, 0, 0), root_node, 20));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(0, 0, 0, 0), root_node, 20));
 
         writer.Close();
 
@@ -188,16 +181,14 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
-
         std::vector<char> twenty(first_20_pts_compressed, first_20_pts_compressed + sizeof(first_20_pts_compressed));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(root_page, VoxelKey(0, 0, 0, 0), twenty, 20));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(0, 0, 0, 0), twenty, 20));
 
         std::vector<char> twelve(next_12_pts_compressed, next_12_pts_compressed + sizeof(next_12_pts_compressed));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(root_page, VoxelKey(1, 1, 1, 1), twelve, 12));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(1, 1, 1, 1), twelve, 12));
 
         std::vector<char> sixty(last_60_pts_compressed, last_60_pts_compressed + sizeof(last_60_pts_compressed));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(root_page, VoxelKey(1, 1, 1, 0), sixty, 60));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(1, 1, 1, 0), sixty, 60));
 
         writer.Close();
 
@@ -235,22 +226,21 @@ TEST_CASE("Writer Node Compressed", "[Writer]")
         CopcConfigWriter cfg(7);
         Writer writer(out_stream, cfg);
 
-        Page root_page = writer.GetRootPage();
-        Page sub_page1 = writer.AddSubPage(root_page, VoxelKey(1, 0, 0, 0));
-        Page sub_page2 = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 1));
+        VoxelKey sub_page1_key(1, 0, 0, 0);
+        VoxelKey sub_page2_key(1, 1, 1, 1);
 
         std::vector<char> twenty(first_20_pts_compressed, first_20_pts_compressed + sizeof(first_20_pts_compressed));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(root_page, VoxelKey(0, 0, 0, 0), twenty, 20));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(0, 0, 0, 0), twenty, 20));
 
         std::vector<char> twelve(next_12_pts_compressed, next_12_pts_compressed + sizeof(next_12_pts_compressed));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(sub_page1, VoxelKey(1, 0, 0, 0), twelve, 12));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(1, 0, 0, 0), twelve, 12), sub_page1_key);
 
         std::vector<char> sixty(last_60_pts_compressed, last_60_pts_compressed + sizeof(last_60_pts_compressed));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(sub_page2, VoxelKey(1, 1, 1, 1), sixty, 60));
-        REQUIRE_NOTHROW(writer.AddNodeCompressed(sub_page2, VoxelKey(2, 2, 2, 2), twenty, 20));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(1, 1, 1, 1), sixty, 60, sub_page2_key));
+        REQUIRE_NOTHROW(writer.AddNodeCompressed(VoxelKey(2, 2, 2, 2), twenty, 20, sub_page2_key));
 
         // Can't add a node that's not a child of the page
-        REQUIRE_THROWS(writer.AddNodeCompressed(sub_page2, VoxelKey(1, 2, 2, 2), twenty, 20));
+        REQUIRE_THROWS(writer.AddNodeCompressed(VoxelKey(1, 2, 2, 2), twenty, 20, sub_page2_key));
 
         writer.Close();
 
