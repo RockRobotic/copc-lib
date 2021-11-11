@@ -108,7 +108,7 @@ def test_get_all_children():
 
 def test_get_all_page_keys():
     reader = copc.FileReader("autzen-classified.copc.laz")
-    assert len(reader.GetAllPageKeys()) == 1
+    assert len(reader.GetPageList()) == 1
 
 
 # TODO[Leo]: Make this test optional

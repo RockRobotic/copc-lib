@@ -259,7 +259,7 @@ def test_writer_pages():
     )  # size of two sub pages of the root page
     assert not reader.FindNode(copc.VoxelKey.InvalidKey()).IsValid()
 
-    page_keys = reader.GetAllPageKeys()
+    page_keys = reader.GetPageList()
     assert len(page_keys) == 4
     assert (1, 1, 1, 1) in page_keys
     assert (2, 2, 2, 2) in page_keys
@@ -287,7 +287,7 @@ def test_writer_pages():
 
     reader = copc.FileReader(file_path)
     node = reader.FindNode((3, 4, 4, 4))
-    assert node.page == (1, 1, 1, 1)
+    assert node.page_key == (1, 1, 1, 1)
 
 
 def test_writer_copy():

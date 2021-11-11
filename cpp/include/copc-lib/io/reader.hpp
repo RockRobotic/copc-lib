@@ -43,7 +43,7 @@ class Reader : public BaseIO
     std::vector<Node> GetAllNodes() { return GetAllChildrenOfPage(VoxelKey::RootKey()); }
 
     // Return all keys of pages in copc hierarchy
-    std::vector<VoxelKey> GetAllPageKeys();
+    std::vector<VoxelKey> GetPageList();
 
     // Helper function to get all points from the root
     las::Points GetAllPoints(double resolution = 0);

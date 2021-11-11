@@ -83,9 +83,9 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
     if (!new_page_key.IsValid())
         throw std::runtime_error("Writer::ChangeNodePage: New Page Key " + node_key.ToString() + " is invalid.");
     if (hierarchy_->loaded_nodes_.find(node_key) == hierarchy_->loaded_nodes_.end())
-        throw std::runtime_error("Writer::ChangeNodePage: Node Key" + node_key.ToString() + " does not exist.");
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() + " does not exist.");
     if (!node_key.ChildOf(new_page_key))
-        throw std::runtime_error("Writer::ChangeNodePage: Node Key" + node_key.ToString() +
+        throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() +
                                  " is not a child of New Page Key " + new_page_key.ToString() + ".");
     // If new page doesn't exist then create it
     if (!PageExists(new_page_key))
@@ -99,11 +99,11 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
     hierarchy_->seen_pages_[new_page_key]->nodes[node_key] = node;
 
     // Remove node from old page
-    hierarchy_->seen_pages_[node->page]->nodes.erase(node_key);
+    hierarchy_->seen_pages_[node->page_key]->nodes.erase(node_key);
 
     // If old page has no nodes left then remove it
-    if (hierarchy_->seen_pages_[node->page]->nodes.empty())
-        hierarchy_->seen_pages_.erase(node->page);
+    if (hierarchy_->seen_pages_[node->page_key]->nodes.empty())
+        hierarchy_->seen_pages_.erase(node->page_key);
 }
 
 void FileWriter::Close()

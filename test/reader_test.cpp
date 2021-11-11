@@ -180,11 +180,11 @@ TEST_CASE("GetAllChildrenOfPage Test", "[Reader]")
     }
 }
 
-TEST_CASE("GetAllPageKeys Test", "[Reader]")
+TEST_CASE("GetPageList Test", "[Reader]")
 {
     FileReader reader("autzen-classified.copc.laz");
 
-    REQUIRE(reader.GetAllPageKeys().size() == 1);
+    REQUIRE(reader.GetPageList().size() == 1);
 }
 
 // TODO[Leo]: Make this test optional

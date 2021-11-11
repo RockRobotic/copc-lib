@@ -28,7 +28,7 @@ def TrimFileExample(compressor_example_flag):
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
-                node.page,  # We can provide the optional page key to preserve the page hierarchy
+                node.page_key,  # We can provide the optional page key to preserve the page hierarchy
             )
 
         # Alternatively, if we have uncompressed data and want to compress it without writing it to the file,
@@ -40,7 +40,7 @@ def TrimFileExample(compressor_example_flag):
                 uncompressed_points, writer.copc_config.las_header
             )
             writer.AddNodeCompressed(
-                node.key, compressed_points, node.point_count, node.page
+                node.key, compressed_points, node.point_count, node.page_key
             )
     # Make sure we call close to finish writing the file!
     writer.Close()
@@ -87,12 +87,12 @@ def BoundsTrimFileExample():
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
-                node.page,
+                node.page_key,
             )
         elif node.key.Intersects(old_header, box):
             # If node only crosses the box then decompress points data and get subset of points that are within the box
             points = reader.GetPoints(node).GetWithin(box)
-            writer.AddNode(node.key, copc.Points(points).Pack(), node.page)
+            writer.AddNode(node.key, copc.Points(points).Pack(), node.page_key)
 
     # Make sure we call close to finish writing the file!
     writer.Close()
@@ -134,7 +134,7 @@ def ResolutionTrimFileExample():
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
-                node.page,
+                node.page_key,
             )
 
     # Make sure we call close to finish writing the file!
@@ -280,13 +280,13 @@ def NewFileExample():
     assert reader.ValidateSpatialBounds()
 
     # We can get the keys of all existing pages
-    page_keys = reader.GetAllPageKeys()
+    page_keys = reader.GetPageList()
     # Check that a page exists
     assert (3, 4, 4, 0) in page_keys
 
     # We can get the page of any node (useful to copy the file along with the hierarchy)
     node = reader.FindNode((2, 2, 2, 0))
-    assert node.page == (1, 1, 1, 0)
+    assert node.page_key == (1, 1, 1, 0)
 
 
 if __name__ == "__main__":

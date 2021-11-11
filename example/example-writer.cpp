@@ -40,7 +40,7 @@ void TrimFileExample(bool compressor_example_flag)
                 // It's much faster to write and read compressed data, to avoid compression and decompression
                 writer.AddNodeCompressed(
                     node.key, reader.GetPointDataCompressed(node), node.point_count,
-                    node.page); // We can provide the optional page key to preserve the page hierarchy (here root)
+                    node.page_key); // We can provide the optional page key to preserve the page hierarchy (here root)
             }
             else
             {
@@ -51,7 +51,7 @@ void TrimFileExample(bool compressor_example_flag)
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
                 std::vector<char> compressed_points =
                     laz::Compressor::CompressBytes(uncompressed_points, *writer.CopcConfig()->LasHeader());
-                writer.AddNodeCompressed(node.key, compressed_points, node.point_count, node.page);
+                writer.AddNodeCompressed(node.key, compressed_points, node.point_count, node.page_key);
             }
         }
 
@@ -104,14 +104,15 @@ void BoundsTrimFileExample()
             if (node.key.Within(old_header, box))
             {
                 // If node is within the box then add all points (without decompressing)
-                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count, node.page);
+                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count,
+                                         node.page_key);
             }
             else if (node.key.Intersects(old_header, box))
             {
                 // If node only crosses the box then decompress points data and get subset of points that are within the
                 // box
                 auto points = reader.GetPoints(node).GetWithin(box);
-                writer.AddNode(node.key, las::Points(points).Pack(), node.page);
+                writer.AddNode(node.key, las::Points(points).Pack(), node.page_key);
             }
         }
 
@@ -152,7 +153,8 @@ void ResolutionTrimFileExample()
         {
             if (node.key.d <= target_depth)
             {
-                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count, node.page);
+                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count,
+                                         node.page_key);
             }
         }
 
@@ -283,13 +285,13 @@ void NewFileExample()
     assert(reader.ValidateSpatialBounds());
 
     // We can get the keys of all existing pages
-    auto page_keys = reader.GetAllPageKeys();
+    auto page_keys = reader.GetPageList();
     // Check that a page exists
     assert(std::find(page_keys.begin(), page_keys.end(), VoxelKey(3, 4, 4, 0)) != page_keys.end());
 
     // We can get the page of any node (useful to copy the file along with the hierarchy)
     auto node = reader.FindNode(VoxelKey(2, 2, 2, 0));
-    assert(node.page == VoxelKey(1, 1, 1, 0));
+    assert(node.page_key == VoxelKey(1, 1, 1, 0));
 }
 
 int main()

@@ -245,7 +245,7 @@ std::vector<Node> Reader::GetAllChildrenOfPage(const VoxelKey &key)
     return out;
 }
 
-std::vector<VoxelKey> Reader::GetAllPageKeys()
+std::vector<VoxelKey> Reader::GetPageList()
 {
     // Load all nodes and pages in hierarchy
     GetAllNodes();
