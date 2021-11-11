@@ -87,6 +87,12 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
     if (!node_key.ChildOf(new_page_key))
         throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() +
                                  " is not a child of New Page Key " + new_page_key.ToString() + ".");
+    auto node = hierarchy_->loaded_nodes_[node_key];
+
+    // If new page is current page then do nothing
+    if (node->page_key == new_page_key)
+        return;
+
     // If new page doesn't exist then create it
     if (!PageExists(new_page_key))
     {
@@ -94,9 +100,6 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
         new_page->loaded = true;
         hierarchy_->seen_pages_[new_page_key] = new_page;
     }
-    auto node = hierarchy_->loaded_nodes_[node_key];
-    if (node->page_key == new_page_key)
-        return;
 
     // Add node to new page
     hierarchy_->seen_pages_[new_page_key]->nodes[node_key] = node;
@@ -104,7 +107,7 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
     // Remove node from old page
     hierarchy_->seen_pages_[node->page_key]->nodes.erase(node_key);
 
-    // If old page has no nodes left then remove it
+    // If old page has no nodes left then remove it, unless it is root page
     if (node->page_key != VoxelKey::RootKey() && hierarchy_->seen_pages_[node->page_key]->nodes.empty())
         hierarchy_->seen_pages_.erase(node->page_key);
 }
