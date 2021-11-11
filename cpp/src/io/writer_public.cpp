@@ -94,8 +94,11 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
         new_page->loaded = true;
         hierarchy_->seen_pages_[new_page_key] = new_page;
     }
-    // Add node to new page
     auto node = hierarchy_->loaded_nodes_[node_key];
+    if (node->page == new_page_key)
+        return;
+
+    // Add node to new page
     hierarchy_->seen_pages_[new_page_key]->nodes[node_key] = node;
 
     // Remove node from old page
