@@ -234,7 +234,11 @@ void WriterInternal::ComputePageHierarchy()
         {
             auto parent_key = page.first.GetParent();
             while (!hierarchy_->PageExists(parent_key))
+            {
                 parent_key = parent_key.GetParent();
+                if (!parent_key.IsValid())
+                    throw std::runtime_error("Can't find parent of node: " + page.first.ToString());
+            }
             hierarchy_->seen_pages_[parent_key]->sub_pages.insert(page.second);
         }
     }
