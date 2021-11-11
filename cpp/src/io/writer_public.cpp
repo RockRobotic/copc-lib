@@ -87,6 +87,8 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
     if (!node_key.ChildOf(new_page_key))
         throw std::runtime_error("Writer::ChangeNodePage: Node Key " + node_key.ToString() +
                                  " is not a child of New Page Key " + new_page_key.ToString() + ".");
+
+    // Load the Node object based on the key
     auto node = hierarchy_->loaded_nodes_[node_key];
 
     // If new page is current page then do nothing
