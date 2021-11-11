@@ -102,7 +102,7 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
     hierarchy_->seen_pages_[node->page]->nodes.erase(node_key);
 
     // If old page has no nodes left then remove it
-    if (hierarchy_->seen_pages_[node->page]->nodes.empty())
+    if (node->page != VoxelKey::RootKey() && hierarchy_->seen_pages_[node->page]->nodes.empty())
         hierarchy_->seen_pages_.erase(node->page);
 }
 
