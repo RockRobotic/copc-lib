@@ -28,6 +28,7 @@ def TrimFileExample(compressor_example_flag):
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
+                node.page,  # We can provide the optional page key to preserve the page hierarchy
             )
 
         # Alternatively, if we have uncompressed data and want to compress it without writing it to the file,
@@ -39,8 +40,8 @@ def TrimFileExample(compressor_example_flag):
                 uncompressed_points, writer.copc_config.las_header
             )
             writer.AddNodeCompressed(
-                node.key, compressed_points, node.point_count, copc.VoxelKey.RootKey()
-            )  # We can provide the optional page key
+                node.key, compressed_points, node.point_count, node.page
+            )
     # Make sure we call close to finish writing the file!
     writer.Close()
 
@@ -86,11 +87,12 @@ def BoundsTrimFileExample():
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
+                node.page,
             )
         elif node.key.Intersects(old_header, box):
             # If node only crosses the box then decompress points data and get subset of points that are within the box
             points = reader.GetPoints(node).GetWithin(box)
-            writer.AddNode(node.key, copc.Points(points).Pack())
+            writer.AddNode(node.key, copc.Points(points).Pack(), node.page)
 
     # Make sure we call close to finish writing the file!
     writer.Close()
@@ -132,6 +134,7 @@ def ResolutionTrimFileExample():
                 node.key,
                 reader.GetPointDataCompressed(node),
                 node.point_count,
+                node.page,
             )
 
     # Make sure we call close to finish writing the file!

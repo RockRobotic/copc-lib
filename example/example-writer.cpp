@@ -38,7 +38,9 @@ void TrimFileExample(bool compressor_example_flag)
             if (!compressor_example_flag)
             {
                 // It's much faster to write and read compressed data, to avoid compression and decompression
-                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count);
+                writer.AddNodeCompressed(
+                    node.key, reader.GetPointDataCompressed(node), node.point_count,
+                    node.page); // We can provide the optional page key to preserve the page hierarchy (here root)
             }
             else
             {
@@ -49,8 +51,7 @@ void TrimFileExample(bool compressor_example_flag)
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
                 std::vector<char> compressed_points =
                     laz::Compressor::CompressBytes(uncompressed_points, *writer.CopcConfig()->LasHeader());
-                writer.AddNodeCompressed(node.key, compressed_points, node.point_count,
-                                         VoxelKey::RootKey()); // We can provide the optional parent key (here root)
+                writer.AddNodeCompressed(node.key, compressed_points, node.point_count, node.page);
             }
         }
 
@@ -103,14 +104,14 @@ void BoundsTrimFileExample()
             if (node.key.Within(old_header, box))
             {
                 // If node is within the box then add all points (without decompressing)
-                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count);
+                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count, node.page);
             }
             else if (node.key.Intersects(old_header, box))
             {
                 // If node only crosses the box then decompress points data and get subset of points that are within the
                 // box
                 auto points = reader.GetPoints(node).GetWithin(box);
-                writer.AddNode(node.key, las::Points(points).Pack());
+                writer.AddNode(node.key, las::Points(points).Pack(), node.page);
             }
         }
 
@@ -151,7 +152,7 @@ void ResolutionTrimFileExample()
         {
             if (node.key.d <= target_depth)
             {
-                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count);
+                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count, node.page);
             }
         }
 
