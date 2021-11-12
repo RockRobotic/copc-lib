@@ -128,12 +128,12 @@ PYBIND11_MODULE(copclib, m)
         .def("__str__", &Node::ToString)
         .def("__repr__", &Node::ToString)
         .def(py::pickle(
-            [](const Node &h) { // __getstate__
+            [](const Node &n) { // __getstate__
                 /* Return a tuple that fully encodes the state of the object */
-                return py::make_tuple(h.key, h.offset, h.byte_size, h.point_count);
+                return py::make_tuple(n.key, n.offset, n.byte_size, n.point_count, n.page_key);
             },
             [](py::tuple t) { // __setstate__
-                if (t.size() != 4)
+                if (t.size() != 5)
                     throw std::runtime_error("Invalid state!");
 
                 /* Create a new C++ instance */
@@ -142,6 +142,7 @@ PYBIND11_MODULE(copclib, m)
                 node.offset = t[1].cast<uint64_t>();
                 node.byte_size = t[2].cast<int32_t>();
                 node.point_count = t[3].cast<int32_t>();
+                node.page_key = t[4].cast<VoxelKey>();
                 return node;
             }));
 
