@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1] - 2021-11-12
+
 ### Fixed
 
 - **\[Python\]** Add pickling of `Node::page_key`
@@ -160,8 +162,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.1.0]: https://github.com/RockRobotic/copc-lib/compare/v1.0...v1.1.0
 [1.2.0]: https://github.com/RockRobotic/copc-lib/compare/v1.1.0...v1.2.0
+[2.1.1]: https://github.com/RockRobotic/copc-lib/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/RockRobotic/copc-lib/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/RockRobotic/copc-lib/compare/v1.3.1...v2.0.0
 [1.3.1]: https://github.com/RockRobotic/copc-lib/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/RockRobotic/copc-lib/compare/v1.2.0...v1.3.0
-[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.1.1...HEAD

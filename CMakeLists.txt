@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 # ref https://github.com/robotology/how-to-export-cpp-library/blob/master/CMakeLists.txt
 project(COPCLIB
         LANGUAGES CXX C
-        VERSION 2.1.0)
+        VERSION 2.1.1)
 
 # Defines the CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR and many other useful macros.
 # See https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
@@ -81,7 +81,7 @@ if(WITH_TESTS)
 endif()
 
 # Find required packages
-find_package(LAZPERF 2.1.0 REQUIRED)
+find_package(LAZPERF 2.1.1 REQUIRED)
 
 # Enable RPATH support for installed binaries and libraries
 include(AddInstallRPATHSupport)
@@ -122,7 +122,7 @@ install_basic_package_files(${PROJECT_NAME}
                             VERSION ${${PROJECT_NAME}_VERSION}
                             COMPATIBILITY AnyNewerVersion
                             VARS_PREFIX ${PROJECT_NAME}
-                            DEPENDENCIES "LAZPERF 2.1.0 REQUIRED"
+                            DEPENDENCIES "LAZPERF 2.1.1 REQUIRED"
                             FIRST_TARGET copc-lib
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 # Add the uninstall target
