@@ -133,7 +133,7 @@ PYBIND11_MODULE(copclib, m)
                 return py::make_tuple(n.key, n.offset, n.byte_size, n.point_count, n.page_key);
             },
             [](py::tuple t) { // __setstate__
-                if (t.size() != 4)
+                if (t.size() != 5)
                     throw std::runtime_error("Invalid state!");
 
                 /* Create a new C++ instance */
