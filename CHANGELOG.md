@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **\[Python\]** Add pickling of `Node::page_key`
+
 ## [2.1.0] - 2021-11-11
 
 ### Added
