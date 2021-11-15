@@ -92,6 +92,7 @@ bool Box::Within(const Box &other) const { return other.Contains(*this); }
 std::string Box::ToString() const
 {
     std::stringstream ss;
+    ss.precision(std::numeric_limits<double>::max_digits10);
     ss << "Box: x_min=" << x_min << " y_min=" << y_min << " z_min=" << z_min << " x_max=" << x_max << " y_max=" << y_max
        << " z_max=" << z_max;
     return ss.str();
