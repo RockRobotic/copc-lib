@@ -7,7 +7,7 @@ namespace copc
 std::string VoxelKey::ToString() const
 {
     std::stringstream ss;
-    ss << d << "-" << x << "-" << y << "-" << z;
+    ss << "(" << d << "," << x << "," << y << "," << z << ")";
     return ss.str();
 }
 

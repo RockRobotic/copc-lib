@@ -163,7 +163,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             las::EbVlr new_eb_vlr(2);
             // Update Scale
             {
-                FileWriter writer(file_path, cfg, &new_scale);
+                FileWriter writer(file_path, cfg, new_scale);
 
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
@@ -185,7 +185,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             }
             // Update Offset
             {
-                FileWriter writer(file_path, cfg, {}, &new_offset);
+                FileWriter writer(file_path, cfg, {}, new_offset);
 
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);
@@ -208,7 +208,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update WKT
             {
-                FileWriter writer(file_path, cfg, {}, {}, &new_wkt);
+                FileWriter writer(file_path, cfg, {}, {}, new_wkt);
 
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
@@ -232,7 +232,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             // Update Extra Byte VLR
             {
 
-                FileWriter writer(file_path, cfg, {}, {}, {}, &new_eb_vlr);
+                FileWriter writer(file_path, cfg, {}, {}, {}, new_eb_vlr);
 
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
@@ -253,7 +253,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update HasExtendedStats
             {
-                FileWriter writer(file_path, cfg, {}, {}, {}, {}, &new_has_extended_stats);
+                FileWriter writer(file_path, cfg, {}, {}, {}, {}, new_has_extended_stats);
 
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
@@ -274,8 +274,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update All
             {
-                FileWriter writer(file_path, cfg, &new_scale, &new_offset, &new_wkt, &new_eb_vlr,
-                                  &new_has_extended_stats);
+                FileWriter writer(file_path, cfg, new_scale, new_offset, new_wkt, new_eb_vlr, new_has_extended_stats);
 
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);

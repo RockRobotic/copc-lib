@@ -103,14 +103,14 @@ class LasHeader
     Vector3 max{};
     Vector3 min{};
 
-    // xyz scale/offset
-    Vector3 scale{Vector3::DefaultScale()};
-    Vector3 offset{Vector3::DefaultOffset()};
-
     // # of points per return 0-14
     std::array<uint64_t, 15> points_by_return{};
 
   protected:
+    // xyz scale/offset
+    Vector3 scale{Vector3::DefaultScale()};
+    Vector3 offset{Vector3::DefaultOffset()};
+
     int8_t point_format_id_{6};
     uint16_t point_record_length_{};
 

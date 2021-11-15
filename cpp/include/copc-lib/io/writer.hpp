@@ -2,6 +2,7 @@
 #define COPCLIB_IO_WRITER_H_
 
 #include <array>
+#include <optional>
 #include <ostream>
 #include <stdexcept>
 #include <string>
@@ -24,9 +25,10 @@ class WriterInternal;
 class Writer : public BaseIO
 {
   public:
-    Writer(std::ostream &out_stream, const CopcConfigWriter &copc_config_writer, Vector3 *scale = nullptr,
-           Vector3 *offset = nullptr, std::string *wkt = nullptr, las::EbVlr *extra_bytes_vlr = nullptr,
-           bool *has_extended_stats = nullptr)
+    Writer(std::ostream &out_stream, const CopcConfigWriter &copc_config_writer,
+           const std::optional<Vector3> &scale = {}, const std::optional<Vector3> &offset = {},
+           const std::optional<std::string> &wkt = {}, const std::optional<las::EbVlr> &extra_bytes_vlr = {},
+           const std::optional<bool> &has_extended_stats = {})
     {
         InitWriter(out_stream, copc_config_writer, scale, offset, wkt, extra_bytes_vlr, has_extended_stats);
     }
@@ -64,8 +66,10 @@ class Writer : public BaseIO
     };
 
     // Constructor helper function, initializes the file and hierarchy
-    void InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer, Vector3 *scale, Vector3 *offset,
-                    std::string *wkt, las::EbVlr *extra_bytes_vlr, bool *has_extended_stats);
+    void InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer,
+                    const std::optional<Vector3> &scale, const std::optional<Vector3> &offset,
+                    const std::optional<std::string> &wkt, const std::optional<las::EbVlr> &extra_bytes_vlr,
+                    const std::optional<bool> &has_extended_stats);
     // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
     static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
@@ -73,9 +77,10 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_file_writer, Vector3 *scale = nullptr,
-               Vector3 *offset = nullptr, std::string *wkt = nullptr, las::EbVlr *extra_bytes_vlr = nullptr,
-               bool *has_extended_stats = nullptr)
+    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_file_writer,
+               const std::optional<Vector3> &scale = {}, const std::optional<Vector3> &offset = {},
+               const std::optional<std::string> &wkt = {}, const std::optional<las::EbVlr> &extra_bytes_vlr = {},
+               const std::optional<bool> &has_extended_stats = {})
     {
 
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);

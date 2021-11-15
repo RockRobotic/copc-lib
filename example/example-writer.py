@@ -234,6 +234,8 @@ def NewFileExample():
 
     # Now, we can create our COPC writer:
     writer = copc.FileWriter("new-copc.copc.laz", cfg)
+    # writer = copc.FileWriter("new-copc.copc.laz", cfg,None,None,None,None,None)
+    # writer = copc.FileWriter("new-copc.copc.laz", cfg,(1,1,1),(1,1,1),"test",)
     header = writer.copc_config.las_header
 
     # Set the COPC Extents
