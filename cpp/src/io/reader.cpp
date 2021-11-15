@@ -396,6 +396,10 @@ bool Reader::ValidateSpatialBounds(bool verbose)
     int total_points_outside_header_bounds{0};
     int total_points_outside_node_bounds{0};
 
+    // If verbose, print the las header.
+    if (verbose)
+        std::cout << header.ToString() << std::endl;
+
     for (const auto &node : GetAllNodes())
     {
 
