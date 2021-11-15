@@ -52,6 +52,19 @@ def test_get_parent():
     assert copc.VoxelKey(0, 0, 0, 0).GetParent().IsValid() is False
 
 
+def test_get_parent_at_depth():
+    assert copc.VoxelKey(-1, -1, -1, -1).GetParentAtDepth(0).IsValid() == False
+
+    assert copc.VoxelKey(4, 4, 6, 12).GetParentAtDepth(4) == (4, 4, 6, 12)
+    assert copc.VoxelKey(4, 4, 6, 12).GetParentAtDepth(3) == (3, 2, 3, 6)
+    assert copc.VoxelKey(4, 4, 6, 12).GetParentAtDepth(2) == (2, 1, 1, 3)
+    assert copc.VoxelKey(4, 4, 6, 12).GetParentAtDepth(1) == (1, 0, 0, 1)
+    assert copc.VoxelKey(4, 4, 6, 12).GetParentAtDepth(0) == (0, 0, 0, 0)
+
+    with pytest.raises(RuntimeError):
+        copc.VoxelKey(4, 4, 6, 12).GetParentAtDepth(-1)
+
+
 def test_is_child():
     assert (
         copc.VoxelKey(-1, -1, -1, -1).ChildOf(parent_key=copc.VoxelKey.RootKey())

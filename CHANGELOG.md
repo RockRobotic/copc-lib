@@ -7,10 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.2] - 2021-11-12
+
+### Fixed
+
+- **\[General\]**  Fix unintentional CMakeList version bump
+
+## [2.1.1] - 2021-11-12
+
+### Fixed
+
+- **\[Python\]** Add pickling of `Node::page_key`
+
+## [2.1.0] - 2021-11-11
+
+### Added
+
+- **\[Python/C++\]** Add `PageExists(VoxelKey key)` to `Writer`
+- **\[Python/C++\]** Add `GetParentAtDepth(int32_t depth)` to `VoxelKey`
+- **\[Python/C++\]** Add `GetPageList()` to `Reader`
+- **\[Python/C++\]** Add `page` member to `Node`
+- **\[Python/C++\]** Add `ChangeNodePage` to `Writer`
+
 ### Changed
 
-- **\[Python/C++\]** Write WKT as EVLR instead of VLR to align with laspy.
-- **\[Python/C++\]** Removed the error when scan angle is not within LAS specs [-30000,30000].
+- **\[Python/C++\]** Write WKT as EVLR instead of VLR to align with laspy
+- **\[Python/C++\]** Remove the error when scan angle is not within LAS specs [-30000,30000]
+- **\[Python/C++\]** !!!Potential Breakage!!! Replaced `Page page` argument with optional `VoxelKey page_key` in `Writer`'s `AddNode` and `AddNodeCompressed`. If no `page_key` is provided the node is added to the root page, if a `page_key` is provided then the node is added to that page. If the requested page doesn't exist, it is created using the nearest existing hierarchical parent as page parent.
 
 ## [2.0.0] - 2021-10-28
 
@@ -145,7 +168,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.1.0]: https://github.com/RockRobotic/copc-lib/compare/v1.0...v1.1.0
 [1.2.0]: https://github.com/RockRobotic/copc-lib/compare/v1.1.0...v1.2.0
+[2.1.2]: https://github.com/RockRobotic/copc-lib/compare/v2.1.1...v2.1.2
+[2.1.1]: https://github.com/RockRobotic/copc-lib/compare/v2.1.0...v2.1.1
+[2.1.0]: https://github.com/RockRobotic/copc-lib/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/RockRobotic/copc-lib/compare/v1.3.1...v2.0.0
 [1.3.1]: https://github.com/RockRobotic/copc-lib/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/RockRobotic/copc-lib/compare/v1.2.0...v1.3.0
-[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.1.2...HEAD

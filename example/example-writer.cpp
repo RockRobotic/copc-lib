@@ -28,11 +28,8 @@ void TrimFileExample(bool compressor_example_flag)
         // Now, we can create our actual writer, with an optional `spacing` and `wkt`:
         FileWriter writer("autzen-trimmed.copc.laz", cfg);
 
-        // The root page is automatically created and added for us
-        Page root_page = writer.GetRootPage();
-
-        // GetAllNodes will load the entire hierarchy under a given key
-        for (const auto &node : reader.GetAllChildrenOfPage(root_page.key))
+        // GetAllChildrenOfPage will load the entire hierarchy under a given key
+        for (const auto &node : reader.GetAllChildrenOfPage(VoxelKey::RootKey()))
         {
             // In this example, we'll only save up to depth level 3.
             if (node.key.d > 3)
@@ -41,7 +38,9 @@ void TrimFileExample(bool compressor_example_flag)
             if (!compressor_example_flag)
             {
                 // It's much faster to write and read compressed data, to avoid compression and decompression
-                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+                writer.AddNodeCompressed(
+                    node.key, reader.GetPointDataCompressed(node), node.point_count,
+                    node.page_key); // We can provide the optional page key to preserve the page hierarchy (here root)
             }
             else
             {
@@ -52,7 +51,7 @@ void TrimFileExample(bool compressor_example_flag)
                 std::vector<char> uncompressed_points = reader.GetPointData(node);
                 std::vector<char> compressed_points =
                     laz::Compressor::CompressBytes(uncompressed_points, *writer.CopcConfig()->LasHeader());
-                writer.AddNodeCompressed(root_page, node.key, compressed_points, node.point_count);
+                writer.AddNodeCompressed(node.key, compressed_points, node.point_count, node.page_key);
             }
         }
 
@@ -99,23 +98,21 @@ void BoundsTrimFileExample()
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
         FileWriter writer("autzen-bounds-trimmed.copc.laz", cfg);
 
-        // The root page is automatically created and added for us
-        Page root_page = writer.GetRootPage();
-
         for (const auto &node : reader.GetAllNodes())
         {
 
             if (node.key.Within(old_header, box))
             {
                 // If node is within the box then add all points (without decompressing)
-                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count,
+                                         node.page_key);
             }
             else if (node.key.Intersects(old_header, box))
             {
                 // If node only crosses the box then decompress points data and get subset of points that are within the
                 // box
                 auto points = reader.GetPoints(node).GetWithin(box);
-                writer.AddNode(root_page, node.key, las::Points(points).Pack());
+                writer.AddNode(node.key, las::Points(points).Pack(), node.page_key);
             }
         }
 
@@ -152,14 +149,12 @@ void ResolutionTrimFileExample()
         // Now, we can create our actual writer, with an optional `span` and `wkt`:
         FileWriter writer("autzen-resolution-trimmed.copc.laz", cfg);
 
-        // The root page is automatically created and added for us
-        Page root_page = writer.GetRootPage();
-
         for (const auto &node : reader.GetAllNodes())
         {
             if (node.key.d <= target_depth)
             {
-                writer.AddNodeCompressed(root_page, node.key, reader.GetPointDataCompressed(node), node.point_count);
+                writer.AddNodeCompressed(node.key, reader.GetPointDataCompressed(node), node.point_count,
+                                         node.page_key);
             }
         }
 
@@ -257,33 +252,29 @@ void NewFileExample()
     extents->Classification()->minimum = 5;
     extents->Classification()->maximum = 201;
 
-    // The root page is automatically created
-    Page root_page = writer.GetRootPage();
-
     // First we'll add a root node
     VoxelKey key(0, 0, 0, 0);
     auto points = RandomPoints(key, *header, NUM_POINTS);
     // The node will be written to the file when we call AddNode
-    writer.AddNode(root_page, key, points);
+    writer.AddNode(key, points);
 
-    // We can also add pages in the same way, as long as the Key we specify
-    // is a child of the parent page
+    // We can also add pages, as long as the key we specify is a child of the parent page
     {
-        auto page = writer.AddSubPage(root_page, VoxelKey(1, 1, 1, 0));
+        auto page_key = VoxelKey(1, 1, 1, 0);
 
         // Once our page is created, we can add nodes to it like before
         key = VoxelKey(1, 1, 1, 0);
         points = RandomPoints(key, *header, NUM_POINTS);
-        writer.AddNode(page, key, points);
+        writer.AddNode(key, points, page_key);
 
         key = VoxelKey(2, 2, 2, 0);
         points = RandomPoints(key, *header, NUM_POINTS);
-        writer.AddNode(page, key, points);
+        writer.AddNode(key, points, page_key);
 
         // We can nest subpages as much as we want, as long as they are children of the parent
-        auto sub_page = writer.AddSubPage(page, VoxelKey(3, 4, 4, 0));
-        points = RandomPoints(sub_page.key, *header, NUM_POINTS);
-        writer.AddNode(page, sub_page.key, points);
+        auto sub_page_key = VoxelKey(3, 4, 4, 0);
+        points = RandomPoints(sub_page_key, *header, NUM_POINTS);
+        writer.AddNode(sub_page_key, points, sub_page_key);
     }
 
     // Make sure we call close to finish writing the file!
@@ -292,6 +283,15 @@ void NewFileExample()
     // We can check that the spatial bounds of the file have been respected
     FileReader reader("new-copc.copc.laz");
     assert(reader.ValidateSpatialBounds());
+
+    // We can get the keys of all existing pages
+    auto page_keys = reader.GetPageList();
+    // Check that a page exists
+    assert(std::find(page_keys.begin(), page_keys.end(), VoxelKey(3, 4, 4, 0)) != page_keys.end());
+
+    // We can get the page of any node (useful to copy the file along with the hierarchy)
+    auto node = reader.FindNode(VoxelKey(2, 2, 2, 0));
+    assert(node.page_key == VoxelKey(1, 1, 1, 0));
 }
 
 int main()

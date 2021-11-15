@@ -7,6 +7,7 @@
 #include <string>
 
 #include "copc-lib/copc/config.hpp"
+#include "copc-lib/hierarchy/key.hpp"
 #include "copc-lib/io/base_io.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/vlr.hpp"
@@ -40,6 +41,9 @@ class Reader : public BaseIO
     std::vector<Node> GetAllChildrenOfPage(const VoxelKey &key);
     // Helper function to get all nodes from the root
     std::vector<Node> GetAllNodes() { return GetAllChildrenOfPage(VoxelKey::RootKey()); }
+
+    // Return all keys of pages in copc hierarchy
+    std::vector<VoxelKey> GetPageList();
 
     // Helper function to get all points from the root
     las::Points GetAllPoints(double resolution = 0);

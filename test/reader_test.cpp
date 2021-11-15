@@ -180,6 +180,13 @@ TEST_CASE("GetAllChildrenOfPage Test", "[Reader]")
     }
 }
 
+TEST_CASE("GetPageList Test", "[Reader]")
+{
+    FileReader reader("autzen-classified.copc.laz");
+
+    REQUIRE(reader.GetPageList().size() == 1);
+}
+
 // TODO[Leo]: Make this test optional
 TEST_CASE("GetAllPoints Test", "[Reader]")
 {
