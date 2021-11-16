@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 
@@ -389,16 +390,25 @@ std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
 
 bool Reader::ValidateSpatialBounds(bool verbose)
 {
-    std::cout.precision(std::numeric_limits<double>::max_digits10);
     bool is_valid = true;
     auto header = config_.LasHeader();
 
     int total_points_outside_header_bounds{0};
     int total_points_outside_node_bounds{0};
 
-    // If verbose, print the las header.
+    // If verbose, set precision and print the las header.
     if (verbose)
-        std::cout << header.ToString() << std::endl;
+    {
+        std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
+        std::cout << "Validating Spatial Bounds" << std::endl;
+        std::cout << "File info:" << std::endl;
+        std::cout << "\tPoint Count: " << header.PointCount() << std::endl;
+        std::cout << "\tScale: " << header.Scale().ToString() << std::endl;
+        std::cout << "\tOffset: " << header.Offset().ToString() << std::endl;
+        std::cout << "\tMin Bounds: " << header.min.ToString() << std::endl;
+        std::cout << "\tMax Bounds: " << header.max.ToString() << std::endl;
+        std::cout << std::endl << "Analyzing bounds..." << std::endl << std::endl;
+    }
 
     for (const auto &node : GetAllNodes())
     {
@@ -451,10 +461,16 @@ bool Reader::ValidateSpatialBounds(bool verbose)
         }
     }
 
-    std::cout << std::endl;
-    std::cout << "Number of points outside header bounds: " << total_points_outside_header_bounds << std::endl;
-    std::cout << "Number of points outside node bounds: " << total_points_outside_node_bounds << std::endl;
-
+    if (verbose)
+    {
+        std::cout << std::endl;
+        std::cout << "...Bounds analysis done." << std::endl << std::endl;
+        std::cout << "Number of points outside header bounds: " << total_points_outside_header_bounds << std::endl;
+        std::cout << "Number of points outside node bounds: " << total_points_outside_node_bounds << std::endl;
+        std::cout << std::endl;
+        is_valid ? std::cout << "Spatial bounds are valid!" : std::cout << "Spatial bounds are invalid!";
+        std::cout << std::endl;
+    }
     return is_valid;
 }
 
