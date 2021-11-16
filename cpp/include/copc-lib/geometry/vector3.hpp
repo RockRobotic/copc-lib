@@ -37,7 +37,8 @@ struct Vector3
     std::string ToString() const
     {
         std::stringstream ss;
-        ss << "Vector3: x=" << x << ", y=" << y << ", z=" << z;
+        ss.precision(std::numeric_limits<double>::max_digits10);
+        ss << "(" << x << ", " << y << ", " << z << ")";
         return ss.str();
     }
 
