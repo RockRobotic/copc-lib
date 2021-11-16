@@ -407,7 +407,7 @@ bool Reader::ValidateSpatialBounds(bool verbose)
         std::cout << "\tOffset: " << header.Offset().ToString() << std::endl;
         std::cout << "\tMin Bounds: " << header.min.ToString() << std::endl;
         std::cout << "\tMax Bounds: " << header.max.ToString() << std::endl;
-        std::cout << std::endl << "Analyzing bounds..." << std::endl << std::endl;
+        std::cout << std::endl << "Validating bounds..." << std::endl << std::endl;
     }
 
     for (const auto &node : GetAllNodes())
@@ -464,7 +464,7 @@ bool Reader::ValidateSpatialBounds(bool verbose)
     if (verbose)
     {
         std::cout << std::endl;
-        std::cout << "...Bounds analysis done." << std::endl << std::endl;
+        std::cout << "...Bounds validation done." << std::endl << std::endl;
         std::cout << "Number of points outside header bounds: " << total_points_outside_header_bounds << std::endl;
         std::cout << "Number of points outside node bounds: " << total_points_outside_node_bounds << std::endl;
         std::cout << std::endl;
