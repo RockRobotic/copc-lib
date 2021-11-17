@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.3] - 2021-11-17
+
 ### Changed
 
 - **\[Python/C++\]** Update `CopcFileWriter` constructor to provide optional arguments to update information when using a `CopcConfig` object from a `Reader`. Optional arguments are `scale`, `offset`, `wkt`, `extra_bytes_vlr`, and `has_extended_stats`.
@@ -173,10 +175,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.1.0]: https://github.com/RockRobotic/copc-lib/compare/v1.0...v1.1.0
 [1.2.0]: https://github.com/RockRobotic/copc-lib/compare/v1.1.0...v1.2.0
+[2.1.3]: https://github.com/RockRobotic/copc-lib/compare/v2.1.2...v2.1.3
 [2.1.2]: https://github.com/RockRobotic/copc-lib/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/RockRobotic/copc-lib/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/RockRobotic/copc-lib/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/RockRobotic/copc-lib/compare/v1.3.1...v2.0.0
 [1.3.1]: https://github.com/RockRobotic/copc-lib/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/RockRobotic/copc-lib/compare/v1.2.0...v1.3.0
-[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.1.2...HEAD
+[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.1.3...HEAD
