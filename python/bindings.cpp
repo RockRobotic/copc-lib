@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -407,8 +408,15 @@ PYBIND11_MODULE(copclib, m)
         .def("GetNodesWithinResolution", &Reader::GetNodesWithinResolution, py::arg("resolution"))
         .def("ValidateSpatialBounds", &Reader::ValidateSpatialBounds, py::arg("verbose") = false);
 
+    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
+
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, CopcConfigWriter const &>(), py::arg("file_path"), py::arg("config"))
+        .def(py::init<const std::string &, const CopcConfigWriter &, const std::optional<Vector3> &,
+                      const std::optional<Vector3> &, const std::optional<std::string> &,
+                      const std::optional<las::EbVlr> &, const std::optional<bool> &>(),
+             py::arg("file_path"), py::arg("config"), py::arg("scale") = py::none(), py::arg("offset") = py::none(),
+             py::arg("wkt") = py::none(), py::arg("extra_bytes_vlr") = py::none(),
+             py::arg("has_extended_stats") = py::none())
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
         .def("Close", &FileWriter::Close)
@@ -452,8 +460,8 @@ PYBIND11_MODULE(copclib, m)
         .def_property_readonly("vlr_count", &las::LasHeader::VlrCount)
         .def_property_readonly("point_format_id", &las::LasHeader::PointFormatId)
         .def_property_readonly("point_record_length", &las::LasHeader::PointRecordLength)
-        .def_readwrite("scale", &las::LasHeader::scale)
-        .def_readwrite("offset", &las::LasHeader::offset)
+        .def_property_readonly("scale", &las::LasHeader::Scale)
+        .def_property_readonly("offset", &las::LasHeader::Offset)
         .def_readwrite("max", &las::LasHeader::max)
         .def_readwrite("min", &las::LasHeader::min)
         .def_property_readonly("evlr_offset", &las::LasHeader::EvlrOffset)
@@ -501,8 +509,6 @@ PYBIND11_MODULE(copclib, m)
                 h.points_by_return = t[18].cast<std::array<uint64_t, 15>>();
                 return h;
             }));
-
-    py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
 
     py::class_<las::EbVlr::ebfield>(m, "EbField").def(py::init<>());
 

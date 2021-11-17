@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **\[Python/C++\]** Update `CopcFileWriter` constructor to provide optional arguments to update information when using a `CopcConfig` object from a `Reader`. Optional arguments are `scale`, `offset`, `wkt`, `extra_bytes_vlr`, and `has_extended_stats`.
+- **\[Python/C++\]** Make `LasHeader`'s `scale` and `offset` read-only.
+
 ## [2.1.2] - 2021-11-12
 
 ### Fixed

@@ -8,9 +8,45 @@
 namespace copc
 {
 
-void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_file_writer)
+void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_config_writer,
+                        const std::optional<Vector3> &scale, const std::optional<Vector3> &offset,
+                        const std::optional<std::string> &wkt, const std::optional<las::EbVlr> &extra_bytes_vlr,
+                        const std::optional<bool> &has_extended_stats)
 {
-    this->config_ = std::make_shared<CopcConfigWriter>(copc_file_writer);
+
+    if (scale || offset || wkt || extra_bytes_vlr || has_extended_stats)
+    {
+        // If we need to update either parameter we need to create a new ConfigFileWriter
+        auto new_scale = copc_config_writer.LasHeader().Scale();
+        if (scale)
+            new_scale = *scale;
+
+        auto new_offset = copc_config_writer.LasHeader().Offset();
+        if (offset)
+            new_offset = *offset;
+
+        auto new_wkt = copc_config_writer.Wkt();
+        if (wkt)
+            new_wkt = *wkt;
+
+        auto new_extra_bytes_vlr = copc_config_writer.ExtraBytesVlr();
+        if (extra_bytes_vlr)
+            new_extra_bytes_vlr = *extra_bytes_vlr;
+
+        auto new_has_extended_stats = copc_config_writer.CopcExtents().HasExtendedStats();
+        if (has_extended_stats)
+            new_has_extended_stats = *has_extended_stats;
+
+        CopcConfigWriter cfg(copc_config_writer.LasHeader().PointFormatId(), new_scale, new_offset, new_wkt,
+                             new_extra_bytes_vlr, new_has_extended_stats);
+        this->config_ = std::make_shared<CopcConfigWriter>(cfg);
+    }
+    else
+    {
+        // If not we use the copc_config_writer provided
+        this->config_ = std::make_shared<CopcConfigWriter>(copc_config_writer);
+    }
+
     this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->config_, this->hierarchy_);
 }

@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <stdexcept>
 
@@ -389,9 +390,25 @@ std::vector<Node> Reader::GetNodesWithinResolution(double resolution)
 
 bool Reader::ValidateSpatialBounds(bool verbose)
 {
-
     bool is_valid = true;
     auto header = config_.LasHeader();
+
+    int total_points_outside_header_bounds{0};
+    int total_points_outside_node_bounds{0};
+
+    // If verbose, set precision and print the las header.
+    if (verbose)
+    {
+        std::cout << std::setprecision(std::numeric_limits<double>::max_digits10);
+        std::cout << "Validating Spatial Bounds" << std::endl;
+        std::cout << "File info:" << std::endl;
+        std::cout << "\tPoint Count: " << header.PointCount() << std::endl;
+        std::cout << "\tScale: " << header.Scale().ToString() << std::endl;
+        std::cout << "\tOffset: " << header.Offset().ToString() << std::endl;
+        std::cout << "\tMin Bounds: " << header.min.ToString() << std::endl;
+        std::cout << "\tMax Bounds: " << header.max.ToString() << std::endl;
+        std::cout << std::endl << "Validating bounds..." << std::endl << std::endl;
+    }
 
     for (const auto &node : GetAllNodes())
     {
@@ -400,10 +417,11 @@ bool Reader::ValidateSpatialBounds(bool verbose)
         if (!Box(node.key, header).Intersects(header.Bounds()))
         {
             is_valid = false;
-            if (verbose)
-                std::cout << "Node " << node.key.ToString() << " is outside of las header bounds." << std::endl;
-            else
+            if (!verbose)
                 return false;
+            std::cout << "Node " << node.key.ToString() << " is outside of las header bounds ("
+                      << header.Bounds().ToString() << ")." << std::endl;
+            total_points_outside_header_bounds += node.point_count;
         }
         else
         {
@@ -416,29 +434,42 @@ bool Reader::ValidateSpatialBounds(bool verbose)
                     if (!point->Within(header.Bounds()))
                     {
                         is_valid = false;
-                        if (verbose)
-                            std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
-                                      << ") from node " << node.key.ToString() << " is outside of las header bounds."
-                                      << std::endl;
-                        else
+                        if (!verbose)
                             return false;
+                        std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z() << ") from node "
+                                  << node.key.ToString() << " is outside of las header bounds ("
+                                  << header.Bounds().ToString() << ")." << std::endl;
+                        total_points_outside_header_bounds++;
                     }
                 }
             }
             // Check that points fall within the node bounds
+            auto box = Box(node.key, header);
             for (auto const &point : points)
             {
-                if (!point->Within(Box(node.key, header)))
+                if (!point->Within(box))
                 {
                     is_valid = false;
-                    if (verbose)
-                        std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
-                                  << ") is outside of node " << node.key.ToString() << " bounds." << std::endl;
-                    else
+                    if (!verbose)
                         return false;
+                    std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
+                              << ") is outside of node " << node.key.ToString() << " bounds (" << box.ToString() << ")."
+                              << std::endl;
+                    total_points_outside_node_bounds++;
                 }
             }
         }
+    }
+
+    if (verbose)
+    {
+        std::cout << std::endl;
+        std::cout << "...Bounds validation done." << std::endl << std::endl;
+        std::cout << "Number of points outside header bounds: " << total_points_outside_header_bounds << std::endl;
+        std::cout << "Number of points outside node bounds: " << total_points_outside_node_bounds << std::endl;
+        std::cout << std::endl;
+        is_valid ? std::cout << "Spatial bounds are valid!" : std::cout << "Spatial bounds are invalid!";
+        std::cout << std::endl;
     }
     return is_valid;
 }
