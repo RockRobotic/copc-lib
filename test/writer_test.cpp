@@ -156,15 +156,74 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             string file_path = "writer_test.copc.laz";
             auto cfg = orig.CopcConfig();
 
+            uint8_t new_point_format_id(8);
             Vector3 new_scale(10, 10, 10);
             Vector3 new_offset(100, 100, 100);
             std::string new_wkt("test_wkt");
             bool new_has_extended_stats(true);
             las::EbVlr new_eb_vlr(2);
+            // Update Point Format ID
+            {
+                FileWriter writer(file_path, cfg, new_point_format_id);
+
+                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() == new_point_format_id);
+                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+
+                // Check that we can add a point of new format
+                auto new_points = las::Points(new_point_format_id, writer.CopcConfig()->LasHeader()->Scale(),
+                                              writer.CopcConfig()->LasHeader()->Offset());
+                auto new_point = new_points.CreatePoint();
+                new_point->UnscaledX(10);
+                new_point->UnscaledY(15);
+                new_point->UnscaledZ(20);
+                new_point->GPSTime(1.5);
+                new_point->Red(25);
+                new_point->Nir(30);
+
+                new_points.AddPoint(new_point);
+                REQUIRE_NOTHROW(writer.AddNode(VoxelKey::RootKey(), new_points));
+
+                // Check that adding a point of the old format errors out
+                auto old_points = las::Points(orig.CopcConfig().LasHeader());
+                auto old_point = old_points.CreatePoint();
+                old_points.AddPoint(old_point);
+                REQUIRE_THROWS(writer.AddNode(VoxelKey::RootKey(), old_points));
+
+                writer.Close();
+
+                FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() == new_point_format_id);
+                REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(reader.CopcConfig().ExtraBytesVlr().items.size() ==
+                        orig.CopcConfig().ExtraBytesVlr().items.size());
+                REQUIRE(reader.CopcConfig().CopcExtents().HasExtendedStats() ==
+                        orig.CopcConfig().CopcExtents().HasExtendedStats());
+
+                // Check that the written point is read correctly
+                auto points = reader.GetPoints(VoxelKey::RootKey());
+                REQUIRE(points.Size() == 1);
+                REQUIRE(points[0]->UnscaledX() == 10);
+                REQUIRE(points[0]->UnscaledY() == 15);
+                REQUIRE(points[0]->UnscaledZ() == 20);
+                REQUIRE(points[0]->GPSTime() == 1.5);
+                REQUIRE(points[0]->Red() == 25);
+                REQUIRE(points[0]->Nir() == 30);
+            }
+
             // Update Scale
             {
-                FileWriter writer(file_path, cfg, new_scale);
+                FileWriter writer(file_path, cfg, {}, new_scale);
 
+                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
@@ -175,6 +234,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 writer.Close();
 
                 FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(reader.CopcConfig().LasHeader().Scale() == new_scale);
                 REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
@@ -185,8 +246,10 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             }
             // Update Offset
             {
-                FileWriter writer(file_path, cfg, {}, new_offset);
+                FileWriter writer(file_path, cfg, {}, {}, new_offset);
 
+                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);
                 REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
@@ -197,6 +260,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 writer.Close();
 
                 FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(reader.CopcConfig().LasHeader().Offset() == new_offset);
                 REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
@@ -208,8 +273,10 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update WKT
             {
-                FileWriter writer(file_path, cfg, {}, {}, new_wkt);
+                FileWriter writer(file_path, cfg, {}, {}, {}, new_wkt);
 
+                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(writer.CopcConfig()->Wkt() == new_wkt);
@@ -220,6 +287,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 writer.Close();
 
                 FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(reader.CopcConfig().Wkt() == new_wkt);
@@ -232,8 +301,10 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             // Update Extra Byte VLR
             {
 
-                FileWriter writer(file_path, cfg, {}, {}, {}, new_eb_vlr);
+                FileWriter writer(file_path, cfg, {}, {}, {}, {}, new_eb_vlr);
 
+                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
@@ -243,6 +314,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 writer.Close();
 
                 FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
@@ -253,8 +326,10 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update HasExtendedStats
             {
-                FileWriter writer(file_path, cfg, {}, {}, {}, {}, new_has_extended_stats);
+                FileWriter writer(file_path, cfg, {}, {}, {}, {}, {}, new_has_extended_stats);
 
+                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
@@ -264,6 +339,8 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 writer.Close();
 
                 FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
+                        orig.CopcConfig().LasHeader().PointFormatId());
                 REQUIRE(reader.CopcConfig().LasHeader().Scale() == orig.CopcConfig().LasHeader().Scale());
                 REQUIRE(reader.CopcConfig().LasHeader().Offset() == orig.CopcConfig().LasHeader().Offset());
                 REQUIRE(reader.CopcConfig().Wkt() == orig.CopcConfig().Wkt());
@@ -274,8 +351,10 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update All
             {
-                FileWriter writer(file_path, cfg, new_scale, new_offset, new_wkt, new_eb_vlr, new_has_extended_stats);
+                FileWriter writer(file_path, cfg, new_point_format_id, new_scale, new_offset, new_wkt, new_eb_vlr,
+                                  new_has_extended_stats);
 
+                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() == new_point_format_id);
                 REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
                 REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);
                 REQUIRE(writer.CopcConfig()->Wkt() == new_wkt);
@@ -284,6 +363,7 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 writer.Close();
 
                 FileReader reader(file_path);
+                REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() == new_point_format_id);
                 REQUIRE(reader.CopcConfig().LasHeader().Scale() == new_scale);
                 REQUIRE(reader.CopcConfig().LasHeader().Offset() == new_offset);
                 REQUIRE(reader.CopcConfig().Wkt() == new_wkt);
