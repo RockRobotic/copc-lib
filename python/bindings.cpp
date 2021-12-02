@@ -411,12 +411,13 @@ PYBIND11_MODULE(copclib, m)
     py::class_<las::EbVlr>(m, "EbVlr").def(py::init<int>()).def_readwrite("items", &las::EbVlr::items);
 
     py::class_<FileWriter>(m, "FileWriter")
-        .def(py::init<const std::string &, const CopcConfigWriter &, const std::optional<Vector3> &,
-                      const std::optional<Vector3> &, const std::optional<std::string> &,
-                      const std::optional<las::EbVlr> &, const std::optional<bool> &>(),
-             py::arg("file_path"), py::arg("config"), py::arg("scale") = py::none(), py::arg("offset") = py::none(),
-             py::arg("wkt") = py::none(), py::arg("extra_bytes_vlr") = py::none(),
-             py::arg("has_extended_stats") = py::none())
+        .def(
+            py::init<const std::string &, const CopcConfigWriter &, const std::optional<uint8_t> &,
+                     const std::optional<Vector3> &, const std::optional<Vector3> &, const std::optional<std::string> &,
+                     const std::optional<las::EbVlr> &, const std::optional<bool> &>(),
+            py::arg("file_path"), py::arg("config"), py::arg("point_format_id") = py::none(),
+            py::arg("scale") = py::none(), py::arg("offset") = py::none(), py::arg("wkt") = py::none(),
+            py::arg("extra_bytes_vlr") = py::none(), py::arg("has_extended_stats") = py::none())
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
         .def("Close", &FileWriter::Close)

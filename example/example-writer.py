@@ -77,8 +77,8 @@ def BoundsTrimFileExample():
     # Copy the header to the new file
     cfg = reader.copc_config
 
-    # Now, we can create our actual writer:
-    writer = copc.FileWriter("autzen-bounds-trimmed.copc.laz", cfg)
+    # Now, we can create our actual writer, here we will update the Point Format ID in the new file to be 8
+    writer = copc.FileWriter("autzen-bounds-trimmed.copc.laz", cfg, point_format_id=8)
 
     for node in reader.GetAllNodes():
         if node.key.Within(old_header, box):
@@ -91,8 +91,11 @@ def BoundsTrimFileExample():
             )
         elif node.key.Intersects(old_header, box):
             # If node only crosses the box then decompress points data and get subset of points that are within the box
-            points = reader.GetPoints(node).GetWithin(box)
-            writer.AddNode(node.key, copc.Points(points).Pack(), node.page_key)
+            point_vec = reader.GetPoints(node).GetWithin(box)
+            points = copc.Points(point_vec)
+            # Here we update the Point Format ID to 8 since we updated the point format ID of the writer to 8
+            points.ToPointFormat(8)
+            writer.AddNode(node.key, points, node.page_key)
 
     # Make sure we call close to finish writing the file!
     writer.Close()
