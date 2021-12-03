@@ -113,6 +113,57 @@ class Points
             points_[i]->Z(in[i]);
     }
 
+    std::vector<int32_t> UnscaledX() const
+    {
+        std::vector<int32_t> out;
+        out.resize(Size());
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](std::shared_ptr<Point> p) { return p->UnscaledX(); });
+        return out;
+    }
+    void UnscaledX(const std::vector<int32_t> &in)
+    {
+        if (in.size() != Size())
+            throw std::runtime_error("UnscaledX setter array must be same size as Points array!");
+
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i]->UnscaledX(in[i]);
+    }
+
+    std::vector<int32_t> UnscaledY() const
+    {
+        std::vector<int32_t> out;
+        out.resize(Size());
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](const std::shared_ptr<Point> &p) { return p->UnscaledY(); });
+        return out;
+    }
+    void UnscaledY(const std::vector<int32_t> &in)
+    {
+        if (in.size() != Size())
+            throw std::runtime_error("UnscaledY setter array must be same size as Points array!");
+
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i]->UnscaledY(in[i]);
+    }
+
+    std::vector<int32_t> UnscaledZ() const
+    {
+        std::vector<int32_t> out;
+        out.resize(Size());
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](const std::shared_ptr<Point> &p) { return p->UnscaledZ(); });
+        return out;
+    }
+    void UnscaledZ(const std::vector<int32_t> &in)
+    {
+        if (in.size() != Size())
+            throw std::runtime_error("UnscaledZ setter array must be same size as Points array!");
+
+        for (unsigned i = 0; i < points_.size(); ++i)
+            points_[i]->UnscaledZ(in[i]);
+    }
+
     std::vector<uint8_t> Classification() const
     {
         std::vector<uint8_t> out;
