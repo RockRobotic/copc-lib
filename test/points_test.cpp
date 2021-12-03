@@ -156,8 +156,10 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(Y[i] == i * 3);
             REQUIRE(Z[i] == i - 80);
             REQUIRE(UnscaledX[i] == int32_t((i - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
-            REQUIRE(UnscaledY[i] == int32_t(((i * 3) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
-            REQUIRE(UnscaledZ[i] == int32_t(((i - 80) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
+            REQUIRE(UnscaledY[i] ==
+                    int32_t(((i * 3) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
+            REQUIRE(UnscaledZ[i] ==
+                    int32_t(((i - 80) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
             REQUIRE(classification[i] == i * 255 / num_points);
             REQUIRE(point_source_id[i] == i * 255 / num_points);
             REQUIRE(red[i] == i * 4);
@@ -237,9 +239,12 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(p->X() == i * 50 + 8);
             REQUIRE(p->Y() == i + 800);
             REQUIRE(p->Z() == i * 4);
-            REQUIRE(p->UnscaledX() == int32_t(((i * 50 + 8) - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
-            REQUIRE(p->UnscaledY() == int32_t(((i + 800) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
-            REQUIRE(p->UnscaledZ() == int32_t(((i * 4) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
+            REQUIRE(p->UnscaledX() ==
+                    int32_t(((i * 50 + 8) - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
+            REQUIRE(p->UnscaledY() ==
+                    int32_t(((i + 800) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
+            REQUIRE(p->UnscaledZ() ==
+                    int32_t(((i * 4) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
             REQUIRE(p->Classification() == i * 255 / 2000);
             REQUIRE(p->PointSourceId() == i * 255 / 2000);
             REQUIRE(p->Red() == i * 4);
@@ -252,9 +257,12 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point->X() == 1);
         REQUIRE(last_point->Y() == 2);
         REQUIRE(last_point->Z() == 3);
-        REQUIRE(last_point->UnscaledX() == int32_t((1 - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
-        REQUIRE(last_point->UnscaledY() == int32_t((2 - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
-        REQUIRE(last_point->UnscaledZ() == int32_t((3 - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
+        REQUIRE(last_point->UnscaledX() ==
+                int32_t((1 - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
+        REQUIRE(last_point->UnscaledY() ==
+                int32_t((2 - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
+        REQUIRE(last_point->UnscaledZ() ==
+                int32_t((3 - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
         REQUIRE(last_point->Classification() == 255);
         REQUIRE(last_point->PointSourceId() == 255);
         REQUIRE(last_point->Red() == num_points * 4);

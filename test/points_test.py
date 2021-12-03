@@ -237,9 +237,18 @@ def test_points_group_accessors():
         assert points.x[i] == i
         assert points.y[i] == i * 3
         assert points.z[i] == i - 80
-        assert points.X[i] == (i - copc.Vector3.DefaultOffset().x) / copc.Vector3.DefaultScale().x
-        assert points.Y[i] == (i * 3 - copc.Vector3.DefaultOffset().y) / copc.Vector3.DefaultScale().y
-        assert points.Z[i] == (i - 80 - copc.Vector3.DefaultOffset().z) / copc.Vector3.DefaultScale().z
+        assert (
+            points.X[i]
+            == (i - copc.Vector3.DefaultOffset().x) / copc.Vector3.DefaultScale().x
+        )
+        assert (
+            points.Y[i]
+            == (i * 3 - copc.Vector3.DefaultOffset().y) / copc.Vector3.DefaultScale().y
+        )
+        assert (
+            points.Z[i]
+            == (i - 80 - copc.Vector3.DefaultOffset().z) / copc.Vector3.DefaultScale().z
+        )
         assert points.classification[i] == i * 255 // num_points
         assert points.point_source_id[i] == i * 255 // num_points
         assert points.red[i] == i * 4
@@ -281,9 +290,20 @@ def test_points_group_accessors():
         assert p.y == i + 800
         assert p.z == i * 4
 
-        assert p.X == (i * 50 + 8 - copc.Vector3.DefaultOffset().x) / copc.Vector3.DefaultScale().x
-        assert p.Y == (i + 800 - copc.Vector3.DefaultOffset().y) / copc.Vector3.DefaultScale().y
-        assert p.Z == (i * 4 - copc.Vector3.DefaultOffset().z) / copc.Vector3.DefaultScale().z
+        assert (
+            p.X
+            == (i * 50 + 8 - copc.Vector3.DefaultOffset().x)
+            / copc.Vector3.DefaultScale().x
+        )
+        assert (
+            p.Y
+            == (i + 800 - copc.Vector3.DefaultOffset().y)
+            / copc.Vector3.DefaultScale().y
+        )
+        assert (
+            p.Z
+            == (i * 4 - copc.Vector3.DefaultOffset().z) / copc.Vector3.DefaultScale().z
+        )
 
     # test negative indices
     last_point = points[-1]
