@@ -304,6 +304,12 @@ PYBIND11_MODULE(copclib, m)
                       py::overload_cast<const std::vector<double> &>(&las::Points::Y))
         .def_property("z", py::overload_cast<>(&las::Points::Z, py::const_),
                       py::overload_cast<const std::vector<double> &>(&las::Points::Z))
+        .def_property("X", py::overload_cast<>(&las::Points::UnscaledX, py::const_),
+                      py::overload_cast<const std::vector<int32_t> &>(&las::Points::UnscaledX))
+        .def_property("Y", py::overload_cast<>(&las::Points::UnscaledY, py::const_),
+                      py::overload_cast<const std::vector<int32_t> &>(&las::Points::UnscaledY))
+        .def_property("Z", py::overload_cast<>(&las::Points::UnscaledZ, py::const_),
+                      py::overload_cast<const std::vector<int32_t> &>(&las::Points::UnscaledZ))
         .def_property("classification", py::overload_cast<>(&las::Points::Classification, py::const_),
                       py::overload_cast<const std::vector<uint8_t> &>(&las::Points::Classification))
         .def_property("point_source_id", py::overload_cast<>(&las::Points::PointSourceId, py::const_),
