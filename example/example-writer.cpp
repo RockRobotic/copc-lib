@@ -25,7 +25,7 @@ void TrimFileExample(bool compressor_example_flag)
         // Copy the config to the new file
         auto cfg = reader.CopcConfig();
 
-        // Now, we can create our actual writer, with an optional `spacing` and `wkt`:
+        // Now, we can create our actual writer
         FileWriter writer("autzen-trimmed.copc.laz", cfg);
 
         // GetAllChildrenOfPage will load the entire hierarchy under a given key
@@ -95,8 +95,8 @@ void BoundsTrimFileExample()
         // Copy the config to the new file
         auto cfg = reader.CopcConfig();
 
-        // Now, we can create our actual writer, with an optional `span` and `wkt`:
-        FileWriter writer("autzen-bounds-trimmed.copc.laz", cfg);
+        // Now, we can create our actual writer, here we will update the Point Format ID in the new file to be 8
+        FileWriter writer("autzen-bounds-trimmed.copc.laz", cfg, 8);
 
         for (const auto &node : reader.GetAllNodes())
         {
@@ -111,8 +111,11 @@ void BoundsTrimFileExample()
             {
                 // If node only crosses the box then decompress points data and get subset of points that are within the
                 // box
-                auto points = reader.GetPoints(node).GetWithin(box);
-                writer.AddNode(node.key, las::Points(points).Pack(), node.page_key);
+                auto point_vector = reader.GetPoints(node).GetWithin(box);
+                auto points = las::Points(point_vector);
+                // Here we update the Point Format ID to 8 since we updated the point format ID of the writer to 8
+                points.ToPointFormat(8);
+                writer.AddNode(node.key, points, node.page_key);
             }
         }
 
@@ -146,7 +149,7 @@ void ResolutionTrimFileExample()
         // Copy the config to the new file
         auto cfg = reader.CopcConfig();
 
-        // Now, we can create our actual writer, with an optional `span` and `wkt`:
+        // Now, we can create our actual writer
         FileWriter writer("autzen-resolution-trimmed.copc.laz", cfg);
 
         for (const auto &node : reader.GetAllNodes())
@@ -237,7 +240,7 @@ void NewFileExample()
     cfg.LasHeader()->max = MAX_BOUNDS;
 
     cfg.CopcInfo()->spacing = 10;
-    // Now, we can create our COPC writer, with an optional `span` and `wkt`:
+    // Now, we can create our COPC writer
     FileWriter writer("new-copc.copc.laz", cfg);
     auto header = writer.CopcConfig()->LasHeader();
 

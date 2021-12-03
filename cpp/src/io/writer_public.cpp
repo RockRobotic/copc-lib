@@ -9,14 +9,18 @@ namespace copc
 {
 
 void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_config_writer,
-                        const std::optional<Vector3> &scale, const std::optional<Vector3> &offset,
-                        const std::optional<std::string> &wkt, const std::optional<las::EbVlr> &extra_bytes_vlr,
-                        const std::optional<bool> &has_extended_stats)
+                        const std::optional<int8_t> &point_format_id, const std::optional<Vector3> &scale,
+                        const std::optional<Vector3> &offset, const std::optional<std::string> &wkt,
+                        const std::optional<las::EbVlr> &extra_bytes_vlr, const std::optional<bool> &has_extended_stats)
 {
 
-    if (scale || offset || wkt || extra_bytes_vlr || has_extended_stats)
+    if (point_format_id || scale || offset || wkt || extra_bytes_vlr || has_extended_stats)
     {
         // If we need to update either parameter we need to create a new ConfigFileWriter
+        auto new_point_format_id = copc_config_writer.LasHeader().PointFormatId();
+        if (point_format_id)
+            new_point_format_id = *point_format_id;
+
         auto new_scale = copc_config_writer.LasHeader().Scale();
         if (scale)
             new_scale = *scale;
@@ -37,8 +41,8 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_c
         if (has_extended_stats)
             new_has_extended_stats = *has_extended_stats;
 
-        CopcConfigWriter cfg(copc_config_writer.LasHeader().PointFormatId(), new_scale, new_offset, new_wkt,
-                             new_extra_bytes_vlr, new_has_extended_stats);
+        CopcConfigWriter cfg(new_point_format_id, new_scale, new_offset, new_wkt, new_extra_bytes_vlr,
+                             new_has_extended_stats);
         this->config_ = std::make_shared<CopcConfigWriter>(cfg);
     }
     else
@@ -86,6 +90,8 @@ Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point
 
 Node Writer::AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key)
 {
+    if (points.Size() == 0)
+        throw std::runtime_error("Writer::AddNode: Cannot add empty las::Points.");
     if (points.PointFormatId() != config_->LasHeader()->PointFormatId() ||
         points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
@@ -97,8 +103,11 @@ Node Writer::AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &p
 Node Writer::AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data, const VoxelKey &page_key)
 {
     int point_size = config_->LasHeader()->PointRecordLength();
-    if (uncompressed_data.size() < point_size || uncompressed_data.size() % point_size != 0)
-        throw std::runtime_error("Invalid point data array!");
+
+    if (uncompressed_data.empty())
+        throw std::runtime_error("Writer::AddNode: Empty point data array.");
+    if (uncompressed_data.size() % point_size != 0)
+        throw std::runtime_error("Writer::AddNode: Invalid point data array.");
 
     return DoAddNode(key, uncompressed_data, 0, false, page_key);
 }

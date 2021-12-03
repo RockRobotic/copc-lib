@@ -334,15 +334,85 @@ def test_writer_copy_and_update():
 
     cfg = orig.copc_config
 
+    new_point_format_id = 8
     new_scale = copc.Vector3(10, 10, 10)
     new_offset = (100, 100, 100)
     new_wkt = "test_wkt"
     new_has_extended_stats = True
     new_eb_vlr = copc.EbVlr(2)
 
+    # Update Point Format ID
+    writer = copc.FileWriter(file_path, cfg, point_format_id=new_point_format_id)
+
+    assert writer.copc_config.las_header.point_format_id == new_point_format_id
+    assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert writer.copc_config.wkt == orig.copc_config.wkt
+    assert len(writer.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
+    )
+    assert (
+        writer.copc_config.copc_extents.has_extended_stats
+        == orig.copc_config.copc_extents.has_extended_stats
+    )
+
+    # Check that we can add a point of new format
+    new_points = copc.Points(
+        new_point_format_id,
+        writer.copc_config.las_header.scale,
+        writer.copc_config.las_header.offset,
+    )
+    new_point = new_points.CreatePoint()
+    new_point.X = 10
+    new_point.Y = 15
+    new_point.Z = 20
+    new_point.gps_time = 1.5
+    new_point.red = 25
+    new_point.nir = 30
+
+    new_points.AddPoint(new_point)
+    assert writer.AddNode(copc.VoxelKey.RootKey(), new_points)
+
+    # Check that adding a point of the old format errors out
+    old_points = copc.Points(orig.copc_config.las_header)
+    old_point = old_points.CreatePoint()
+    old_points.AddPoint(old_point)
+    with pytest.raises(RuntimeError):
+        writer.AddNode(copc.VoxelKey.RootKey(), old_points)
+
+    writer.Close()
+
+    reader = copc.FileReader(file_path)
+
+    assert reader.copc_config.las_header.point_format_id == new_point_format_id
+    assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
+    assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
+    assert reader.copc_config.wkt == orig.copc_config.wkt
+    assert len(reader.copc_config.extra_bytes_vlr.items) == len(
+        orig.copc_config.extra_bytes_vlr.items
+    )
+    assert (
+        reader.copc_config.copc_extents.has_extended_stats
+        == orig.copc_config.copc_extents.has_extended_stats
+    )
+
+    # Check that the written point is read correctly
+    points = reader.GetPoints(copc.VoxelKey.RootKey())
+    assert len(points) == 1
+    assert points[0].X == 10
+    assert points[0].Y == 15
+    assert points[0].Z == 20
+    assert points[0].gps_time == 1.5
+    assert points[0].red == 25
+    assert points[0].nir == 30
+
     # Update Scale
     writer = copc.FileWriter(file_path, cfg, scale=new_scale)
 
+    assert (
+        writer.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert writer.copc_config.las_header.scale == new_scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
@@ -356,6 +426,11 @@ def test_writer_copy_and_update():
     writer.Close()
 
     reader = copc.FileReader(file_path)
+
+    assert (
+        reader.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert reader.copc_config.las_header.scale == new_scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
@@ -370,6 +445,10 @@ def test_writer_copy_and_update():
     # Update Offset
     writer = copc.FileWriter(file_path, cfg, offset=new_offset)
 
+    assert (
+        writer.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == new_offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
@@ -383,6 +462,11 @@ def test_writer_copy_and_update():
     writer.Close()
 
     reader = copc.FileReader(file_path)
+
+    assert (
+        reader.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == new_offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
@@ -397,6 +481,10 @@ def test_writer_copy_and_update():
     # Update WKT
     writer = copc.FileWriter(file_path, cfg, wkt=new_wkt)
 
+    assert (
+        writer.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == new_wkt
@@ -410,6 +498,11 @@ def test_writer_copy_and_update():
     writer.Close()
 
     reader = copc.FileReader(file_path)
+
+    assert (
+        reader.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == new_wkt
@@ -425,6 +518,10 @@ def test_writer_copy_and_update():
 
     writer = copc.FileWriter(file_path, cfg, extra_bytes_vlr=new_eb_vlr)
 
+    assert (
+        writer.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
@@ -436,6 +533,11 @@ def test_writer_copy_and_update():
     writer.Close()
 
     reader = copc.FileReader(file_path)
+
+    assert (
+        reader.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
@@ -449,6 +551,10 @@ def test_writer_copy_and_update():
 
     writer = copc.FileWriter(file_path, cfg, has_extended_stats=new_has_extended_stats)
 
+    assert (
+        writer.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert writer.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert writer.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert writer.copc_config.wkt == orig.copc_config.wkt
@@ -459,6 +565,11 @@ def test_writer_copy_and_update():
     writer.Close()
 
     reader = copc.FileReader(file_path)
+
+    assert (
+        reader.copc_config.las_header.point_format_id
+        == orig.copc_config.las_header.point_format_id
+    )
     assert reader.copc_config.las_header.scale == orig.copc_config.las_header.scale
     assert reader.copc_config.las_header.offset == orig.copc_config.las_header.offset
     assert reader.copc_config.wkt == orig.copc_config.wkt
@@ -472,6 +583,7 @@ def test_writer_copy_and_update():
     writer = copc.FileWriter(
         file_path,
         cfg,
+        new_point_format_id,
         new_scale,
         new_offset,
         new_wkt,
@@ -479,6 +591,7 @@ def test_writer_copy_and_update():
         new_has_extended_stats,
     )
 
+    assert writer.copc_config.las_header.point_format_id == new_point_format_id
     assert writer.copc_config.las_header.scale == new_scale
     assert writer.copc_config.las_header.offset == new_offset
     assert writer.copc_config.wkt == new_wkt
@@ -487,6 +600,7 @@ def test_writer_copy_and_update():
     writer.Close()
 
     reader = copc.FileReader(file_path)
+    assert reader.copc_config.las_header.point_format_id == new_point_format_id
     assert reader.copc_config.las_header.scale == new_scale
     assert reader.copc_config.las_header.offset == new_offset
     assert reader.copc_config.wkt == new_wkt
