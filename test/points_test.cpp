@@ -142,6 +142,9 @@ TEST_CASE("Points tests", "[Point]")
         auto X = points.X();
         auto Y = points.Y();
         auto Z = points.Z();
+        auto UnscaledX = points.UnscaledX();
+        auto UnscaledY = points.UnscaledY();
+        auto UnscaledZ = points.UnscaledZ();
         auto classification = points.Classification();
         auto point_source_id = points.PointSourceId();
         auto red = points.Red();
@@ -152,6 +155,9 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(X[i] == i);
             REQUIRE(Y[i] == i * 3);
             REQUIRE(Z[i] == i - 80);
+            REQUIRE(UnscaledX[i] == int32_t((i - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
+            REQUIRE(UnscaledY[i] == int32_t(((i * 3) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
+            REQUIRE(UnscaledZ[i] == int32_t(((i - 80) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
             REQUIRE(classification[i] == i * 255 / num_points);
             REQUIRE(point_source_id[i] == i * 255 / num_points);
             REQUIRE(red[i] == i * 4);
@@ -163,6 +169,9 @@ TEST_CASE("Points tests", "[Point]")
         std::vector<double> Xn;
         std::vector<double> Yn;
         std::vector<double> Zn;
+        std::vector<int32_t> UnscaledXn;
+        std::vector<int32_t> UnscaledYn;
+        std::vector<int32_t> UnscaledZn;
         std::vector<uint8_t> classification_n;
         std::vector<uint8_t> point_source_id_n;
         std::vector<uint16_t> red_n;
@@ -172,6 +181,9 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.X(Xn));
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
+        REQUIRE_THROWS(points.UnscaledX(UnscaledXn));
+        REQUIRE_THROWS(points.UnscaledY(UnscaledYn));
+        REQUIRE_THROWS(points.UnscaledZ(UnscaledZn));
         REQUIRE_THROWS(points.Classification(classification_n));
         REQUIRE_THROWS(points.PointSourceId(point_source_id_n));
         REQUIRE_THROWS(points.Red(red_n));
@@ -225,6 +237,9 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(p->X() == i * 50 + 8);
             REQUIRE(p->Y() == i + 800);
             REQUIRE(p->Z() == i * 4);
+            REQUIRE(p->UnscaledX() == int32_t(((i * 50 + 8) - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
+            REQUIRE(p->UnscaledY() == int32_t(((i + 800) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
+            REQUIRE(p->UnscaledZ() == int32_t(((i * 4) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
             REQUIRE(p->Classification() == i * 255 / 2000);
             REQUIRE(p->PointSourceId() == i * 255 / 2000);
             REQUIRE(p->Red() == i * 4);
@@ -237,6 +252,9 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point->X() == 1);
         REQUIRE(last_point->Y() == 2);
         REQUIRE(last_point->Z() == 3);
+        REQUIRE(last_point->UnscaledX() == int32_t((1 - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
+        REQUIRE(last_point->UnscaledY() == int32_t((2 - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
+        REQUIRE(last_point->UnscaledZ() == int32_t((3 - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
         REQUIRE(last_point->Classification() == 255);
         REQUIRE(last_point->PointSourceId() == 255);
         REQUIRE(last_point->Red() == num_points * 4);
