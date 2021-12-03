@@ -117,7 +117,8 @@ class Points
     {
         std::vector<int32_t> out;
         out.resize(Size());
-        std::transform(points_.begin(), points_.end(), out.begin(), [](std::shared_ptr<Point> p) { return p->UnscaledX(); });
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](std::shared_ptr<Point> p) { return p->UnscaledX(); });
         return out;
     }
     void UnscaledX(const std::vector<int32_t> &in)
