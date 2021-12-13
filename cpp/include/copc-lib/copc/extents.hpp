@@ -12,20 +12,27 @@
 namespace copc
 {
 
-class CopcExtent : public lazperf::copc_extents_vlr::CopcExtent
+namespace las
+{
+class CopcExtentsVlr;
+}
+
+class CopcExtent
 {
   public:
     // TODO[Leo]: Make mean and var only accessible if has_extended_stats
+    double minimum{0};
+    double maximum{0};
     double mean{0};
     double var{1};
 
-    CopcExtent();
+    CopcExtent() = default;
 
     CopcExtent(double minimum, double maximum, double mean = 0, double var = 1);
 
     CopcExtent(const std::vector<double> &vec);
 
-    CopcExtent(const las::CopcExtentsVlr::CopcExtent &other);
+    CopcExtent(const CopcExtent &other);
 
     std::string ToString() const;
 
