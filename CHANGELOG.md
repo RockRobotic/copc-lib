@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **\[Python/C++\]** Add `UnscaledX`, `UnscaledY`, `UnscaledZ` properties to `las::Points`
+
 ### Changed
 - **\[Python/C++\]** Add `point_format_id` argument to `Writer` constructor to allow update of the point format between reader and writer.
-- **\[Python/C++\]** Add `UnscaledX`, `UnscaledY`, `UnscaledZ` properties to `las::Points`
+- **\[Python/C++\]** Implement `CopcExtentVlr` for compatibility with lazperf 3.0.0
+- **\[Python/C++\]** Update lazperf dependency version to 3.0.0
 
 ## [2.1.3] - 2021-11-17
 

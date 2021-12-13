@@ -15,7 +15,7 @@ CopcInfo::CopcInfo(const lazperf::copc_info_vlr &copc_info_vlr)
     root_hier_size = copc_info_vlr.root_hier_size;
 }
 
-lazperf::copc_info_vlr CopcInfo::ToLazPerf() const
+lazperf::copc_info_vlr CopcInfo::ToLazPerf(const CopcExtent &gps_time_extent) const
 {
     lazperf::copc_info_vlr copc_info_vlr;
 
@@ -24,6 +24,8 @@ lazperf::copc_info_vlr CopcInfo::ToLazPerf() const
     copc_info_vlr.center_z = center_z;
     copc_info_vlr.halfsize = halfsize;
     copc_info_vlr.spacing = spacing;
+    copc_info_vlr.gpstime_minimum = gps_time_extent.minimum;
+    copc_info_vlr.gpstime_maximum = gps_time_extent.maximum;
     copc_info_vlr.root_hier_offset = root_hier_offset;
     copc_info_vlr.root_hier_size = root_hier_size;
 

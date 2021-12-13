@@ -87,7 +87,7 @@ void WriterInternal::WriteHeader()
     las_header_vlr.write(out_stream_);
 
     // Write the COPC Info VLR.
-    auto copc_info_vlr = copc_config_->CopcInfo()->ToLazPerf();
+    auto copc_info_vlr = copc_config_->CopcInfo()->ToLazPerf(*copc_config_->CopcExtents()->GpsTime());
     copc_info_vlr.header().write(out_stream_);
     copc_info_vlr.write(out_stream_);
 
