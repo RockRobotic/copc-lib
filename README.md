@@ -8,7 +8,7 @@ copc-lib is a library which provides an easy-to-use reader and writer interface 
 
 copc-lib has the following dependencies:
 
-- laz-perf [3.0.0](https://github.com/hobu/laz-perf/releases/tag/3.0.0)
+- laz-perf>=[3.0.0](https://github.com/hobu/laz-perf/releases/tag/3.0.0)
 - Catch2
 - Pybind11
 
@@ -25,7 +25,7 @@ sudo cmake --install .
 ```
 To install laz-perf using conda:
 ```bash
-conda install -c conda-forge laz-perf
+conda install -c conda-forge laz-perf>=3.0.0
 ```
 
 ### C++
