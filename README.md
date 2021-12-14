@@ -25,7 +25,7 @@ sudo cmake --install .
 ```
 To install laz-perf using conda:
 ```bash
-conda install -c conda-forge laz-perf>=3.0.0
+conda install -c conda-forge "laz-perf>=3.0"
 ```
 
 ### C++
