@@ -12,20 +12,9 @@ copc-lib has the following dependencies:
 - Catch2
 - Pybind11
 
-To build the version 3.0.0 of laz-perf:
+To install dependencies:
 ```bash
-git clone https://github.com/hobu/laz-perf.git
-cd laz-perf
-git checkout 3.0.0
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build .
-sudo cmake --install .
-```
-To install laz-perf using conda:
-```bash
-conda install -c conda-forge "laz-perf>=3.0"
+conda install -c conda-forge "laz-perf>=3.0" Catch2 pybind11
 ```
 
 ### C++
