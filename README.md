@@ -13,7 +13,6 @@ copc-lib has the following dependencies:
 - Pybind11
 
 To build the version 3.0.0 of laz-perf:
-
 ```bash
 git clone https://github.com/hobu/laz-perf.git
 cd laz-perf
@@ -23,6 +22,10 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 sudo cmake --install .
+```
+To install laz-perf using conda:
+```bash
+conda install -c conda-forge laz-perf
 ```
 
 ### C++
