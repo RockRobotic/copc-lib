@@ -1,4 +1,5 @@
 #include "copc-lib/las/vlr.hpp"
+#include "copc-lib/las/utils.hpp"
 
 namespace copc::las
 {
@@ -55,4 +56,59 @@ lazperf::evlr_header VlrHeader::ToLazperfEvlrHeader() const
     return header;
 }
 
+// COPC Extents VLR
+
+CopcExtentsVlr::CopcExtentsVlr() {}
+
+CopcExtentsVlr::CopcExtentsVlr(int numExtents) : items(numExtents) {}
+
+void CopcExtentsVlr::addItem(const CopcExtent &item) { items.push_back(item); }
+
+void CopcExtentsVlr::setItem(int i, const CopcExtent &item) { items[i] = item; }
+
+CopcExtentsVlr::~CopcExtentsVlr() {}
+
+CopcExtentsVlr CopcExtentsVlr::create(std::istream &in, int byteSize)
+{
+    CopcExtentsVlr extentsVlr;
+    extentsVlr.read(in, byteSize);
+    return extentsVlr;
+}
+
+void CopcExtentsVlr::read(std::istream &in, int byteSize)
+{
+    int numItems = byteSize / (sizeof(double) * 2);
+    items.clear();
+
+    double minimum;
+    double maximum;
+
+    for (int i = 0; i < numItems; ++i)
+    {
+        in.read(reinterpret_cast<char *>(&minimum), sizeof(double));
+        in.read(reinterpret_cast<char *>(&maximum), sizeof(double));
+        items.emplace_back(minimum, maximum);
+    }
+}
+
+void CopcExtentsVlr::write(std::ostream &out) const
+{
+    for (const auto &i : items)
+    {
+        pack(i.minimum, out);
+        pack(i.maximum, out);
+    }
+}
+
+uint64_t CopcExtentsVlr::size() const { return items.size() * sizeof(double) * 2; }
+
+lazperf::vlr_header CopcExtentsVlr::header() const
+{
+    return lazperf::vlr_header{0, "copc", 10000, (uint16_t)size(), "COPC extents"};
+}
+
+lazperf::evlr_header CopcExtentsVlr::eheader() const
+{
+    return lazperf::evlr_header{0, "copc", 10000, size(), "COPC extents"};
+}
 } // namespace copc::las

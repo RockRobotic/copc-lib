@@ -29,6 +29,11 @@ void Reader::InitReader()
     // Load vlrs and evlrs
     vlrs_ = ReadVlrHeaders();
 
+    // Check that required info and hierarchy VLRs are present
+    if (FetchVlr(vlrs_, "copc", 1) == 0 || FetchVlr(vlrs_, "copc", 1000) == 0)
+        throw std::runtime_error(
+            "Reader::InitReader: Either Info or Hierarchy VLR missing, make sure you are loading a COPC file.");
+
     auto copc_info = ReadCopcInfoVlr();
     auto wkt = ReadWktVlr(vlrs_);
     auto eb = ReadExtraBytesVlr(vlrs_);

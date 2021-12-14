@@ -81,7 +81,7 @@ if(WITH_TESTS)
 endif()
 
 # Find required packages
-find_package(LAZPERF 2.1.0 REQUIRED)
+find_package(LAZPERF 3.0.0 REQUIRED)
 
 # Enable RPATH support for installed binaries and libraries
 include(AddInstallRPATHSupport)

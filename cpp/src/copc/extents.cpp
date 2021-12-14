@@ -5,13 +5,13 @@
 namespace copc
 {
 
-CopcExtent::CopcExtent() : las::CopcExtentsVlr::CopcExtent() {}
-
 CopcExtent::CopcExtent(double minimum, double maximum, double mean, double var)
-    : las::CopcExtentsVlr::CopcExtent(minimum, maximum), mean(mean), var(var)
+    : minimum(minimum), maximum(maximum), mean(mean), var(var)
 {
     if (minimum > maximum)
         throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+    if (var < 0)
+        throw std::runtime_error("CopcExtent: Variance must be >= 0.");
 }
 
 CopcExtent::CopcExtent(const std::vector<double> &vec)
@@ -31,11 +31,13 @@ CopcExtent::CopcExtent(const std::vector<double> &vec)
     }
 }
 
-CopcExtent::CopcExtent(const las::CopcExtentsVlr::CopcExtent &other)
-    : las::CopcExtentsVlr::CopcExtent(other.minimum, other.maximum)
+CopcExtent::CopcExtent(const CopcExtent &other)
+    : minimum(other.minimum), maximum(other.maximum), mean(other.mean), var(other.var)
 {
     if (other.minimum > other.maximum)
         throw std::runtime_error("CopcExtent: Minimum value must be less or equal than maximum value.");
+    if (var < 0)
+        throw std::runtime_error("CopcExtent: Variance must be >= 0.");
 }
 
 std::string CopcExtent::ToString() const
@@ -80,7 +82,7 @@ CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id,
     extents_.reserve(NumberOfExtents(point_format_id, num_eb_items));
     for (int i = 3; i < vlr.items.size(); i++)
     {
-        extents_.push_back(std::make_shared<CopcExtent>(vlr.items[i]));
+        extents_.push_back(std::make_shared<CopcExtent>(vlr.items[i].minimum, vlr.items[i].maximum));
     }
 }
 
@@ -88,11 +90,11 @@ las::CopcExtentsVlr CopcExtents::ToLazPerf(const CopcExtent &x, const CopcExtent
 {
     las::CopcExtentsVlr vlr;
     vlr.items.reserve(extents_.size() + 3); // +3 takes into account extra extents for x,y,z from LAS header
-    vlr.items.push_back(x);
-    vlr.items.push_back(y);
-    vlr.items.push_back(z);
+    vlr.items.emplace_back(x.minimum, x.maximum);
+    vlr.items.emplace_back(y.minimum, y.maximum);
+    vlr.items.emplace_back(z.minimum, z.maximum);
     for (const auto &extent : extents_)
-        vlr.items.push_back(*extent);
+        vlr.items.emplace_back(extent->minimum, extent->maximum);
 
     return vlr;
 }
