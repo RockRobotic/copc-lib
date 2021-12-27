@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1  # Use the ref you want to point at
+    rev: v4.1.0  # Use the ref you want to point at
     hooks:
     - id: trailing-whitespace
       name: (Common) Remove trailing whitespaces
@@ -16,7 +16,7 @@ repos:
 #        name: (Markdown) Format with mdformat
 
 -   repo: git://github.com/pocc/pre-commit-hooks
-    rev: v1.3.4
+    rev: v1.3.5
     hooks:
     -   id: clang-format
         always_run: true
