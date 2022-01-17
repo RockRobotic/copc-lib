@@ -1,0 +1,11 @@
+include CMakeLists.txt cpp/CMakeLists.txt python/CMakeLists.txt
+recursive-include cmake *.cmake
+recursive-include cpp *.cpp *.hpp
+recursive-include python *.cpp *.py
+include README.md CHANGELOG.md LICENSE.md setup.py version pyproject.toml
+
+include libs/laz-perf/CMakeLists.txt libs/laz-perf/cpp/CMakeLists.txt
+recursive-include libs/laz-perf/cpp/lazperf *.cpp *.hpp
+recursive-include libs/laz-perf/cmake *.cmake
+recursive-include libs/laz-perf/cpp/benchmarks *.*
+recursive-include libs/laz-perf/cpp/tools *.*
