@@ -5,6 +5,19 @@ project(COPCLIB
         LANGUAGES CXX C
         VERSION ${ver})
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+if(SKBUILD)
+  # Scikit-Build does not add your site-packages to the search path
+  # automatically, so we need to add it _or_ the pybind11 specific directory
+  # here.
+  execute_process(
+    COMMAND "${PYTHON_EXECUTABLE}" -c
+            "import pybind11; print(pybind11.get_cmake_dir())"
+    OUTPUT_VARIABLE _tmp_dir
+    OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT)
+  list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
+endif()
+
 # Find required packages
 find_package(pybind11 CONFIG REQUIRED)
 
@@ -20,6 +33,6 @@ add_subdirectory(cpp)
 
 set(COPC_PYTHON_LIB copclib)
 
-pybind11_add_module(${COPC_PYTHON_LIB} python/bindings.cpp)
-target_link_libraries(${COPC_PYTHON_LIB} PRIVATE copc-lib-s)
-install(TARGETS ${COPC_PYTHON_LIB} DESTINATION .)
+pybind11_add_module(_core python/bindings.cpp)
+target_link_libraries(_core PRIVATE copc-lib-s)
+install(TARGETS _core DESTINATION .)

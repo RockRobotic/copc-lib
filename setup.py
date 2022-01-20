@@ -8,7 +8,7 @@ with open("version", "r") as file:
 from setuptools import find_packages
 setup(
     name="copclib",
-    version=version,
+    version="3.0.5",
     description=" copc-lib provides an easy-to-use interface for reading and creating Cloud Optimized Point Clouds",
     license="BSD",
     keywords="point cloud spatial copc",
@@ -20,7 +20,7 @@ setup(
     extras_require={"test": ["pytest"]},
     cmake_args=['-DWITH_PYTHON:BOOL=ON', '-DWITH_TESTS=OFF', '-DEMSCRIPTEN=OFF'],
     cmake_install_dir="python/copclib",
-    packages=find_packages(where="python/copclib"),
+    packages=find_packages(where="python"),
     package_dir={"": "python"},
     exclude_package_data={"":["libs/laz-perf"]}
 )

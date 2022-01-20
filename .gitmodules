@@ -5,3 +5,6 @@
 	path = lib/pybind11
 	url = git@github.com:pybind/pybind11.git
 	branch = stable
+[submodule "libs/laz-perf"]
+	path = libs/laz-perf
+	url = https://github.com/hobu/laz-perf.git
