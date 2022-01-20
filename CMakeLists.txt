@@ -17,6 +17,7 @@ if(SKBUILD)
     OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT)
   list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
 endif()
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Find required packages
 find_package(pybind11 CONFIG REQUIRED)
@@ -37,12 +38,12 @@ pybind11_add_module(_core python/bindings.cpp)
 target_link_libraries(_core PRIVATE copc-lib-s)
 install(TARGETS _core DESTINATION .)
 
-    set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
+    set_target_properties(_core PROPERTIES
                                                         # have the python lib output to the python build dir
                                                         # not the /lib dir
                                                         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                                                         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-
+enable_testing()
     include(DownloadExampleFiles)
     download_test_files("${CMAKE_CURRENT_BINARY_DIR}/autzen-classified.copc.laz")
 
