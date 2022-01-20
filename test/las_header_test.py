@@ -3,6 +3,7 @@ import copclib as copc
 
 from utils import get_autzen_file
 
+
 def test_get_bounds():
     reader = copc.FileReader(get_autzen_file())
     las_header = reader.copc_config.las_header

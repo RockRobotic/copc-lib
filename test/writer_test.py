@@ -5,6 +5,7 @@ import os
 
 from utils import get_autzen_file, get_data_dir
 
+
 def test_writer_config():
     # Given a valid file path
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")

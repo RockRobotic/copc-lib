@@ -3,6 +3,7 @@ import os
 
 DATADIRECTORY = os.path.join(os.path.dirname(__file__), "..", "test", "data")
 
+
 def reader_example():
     # Create a reader object
     reader = copc.FileReader(os.path.join(DATADIRECTORY, "autzen-classified.copc.laz"))

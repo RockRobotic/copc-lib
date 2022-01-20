@@ -16,7 +16,9 @@ def TrimFileExample(compressor_example_flag):
     cfg = reader.copc_config
 
     # Now, we can create our actual writer:
-    writer = copc.FileWriter(os.path.join(DATADIRECTORY, "out", "autzen-trimmed.copc.laz"), cfg)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "autzen-trimmed.copc.laz"), cfg
+    )
 
     # GetAllNodes will load the entire hierarchy under a given key
     for node in reader.GetAllNodes():
@@ -48,7 +50,9 @@ def TrimFileExample(compressor_example_flag):
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader(os.path.join(DATADIRECTORY, "out", "autzen-trimmed.copc.laz"))
+    new_reader = copc.FileReader(
+        os.path.join(DATADIRECTORY, "out", "autzen-trimmed.copc.laz")
+    )
 
     # Let's go through each node we've written and make sure it matches the original
     for node in new_reader.GetAllNodes():
@@ -80,7 +84,11 @@ def BoundsTrimFileExample():
     cfg = reader.copc_config
 
     # Now, we can create our actual writer, here we will update the Point Format ID in the new file to be 8
-    writer = copc.FileWriter(os.path.join(DATADIRECTORY, "out", "autzen-bounds-trimmed.copc.laz"), cfg, point_format_id=8)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "autzen-bounds-trimmed.copc.laz"),
+        cfg,
+        point_format_id=8,
+    )
 
     for node in reader.GetAllNodes():
         if node.key.Within(old_header, box):
@@ -103,7 +111,9 @@ def BoundsTrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader(os.path.join(DATADIRECTORY, "out", "autzen-bounds-trimmed.copc.laz"))
+    new_reader = copc.FileReader(
+        os.path.join(DATADIRECTORY, "out", "autzen-bounds-trimmed.copc.laz")
+    )
 
     # Let's go through each point and make sure they fit in the within the Box
     for node in new_reader.GetAllNodes():
@@ -131,7 +141,9 @@ def ResolutionTrimFileExample():
     cfg = reader.copc_config
 
     # Now, we can create our actual writer:
-    writer = copc.FileWriter(os.path.join(DATADIRECTORY, "out", "autzen-resolution-trimmed.copc.laz"), cfg)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "autzen-resolution-trimmed.copc.laz"), cfg
+    )
 
     for node in reader.GetAllNodes():
         if node.key.d <= target_depth:
@@ -146,7 +158,9 @@ def ResolutionTrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader(os.path.join(DATADIRECTORY, "out", "autzen-resolution-trimmed.copc.laz"))
+    new_reader = copc.FileReader(
+        os.path.join(DATADIRECTORY, "out", "autzen-resolution-trimmed.copc.laz")
+    )
 
     new_header = new_reader.copc_config.las_header
     new_copc_info = new_reader.copc_config.copc_info
@@ -238,7 +252,9 @@ def NewFileExample():
     cfg.copc_info.spacing = 10
 
     # Now, we can create our COPC writer:
-    writer = copc.FileWriter(os.path.join(DATADIRECTORY, "out", "new-copc.copc.laz"), cfg)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "new-copc.copc.laz"), cfg
+    )
     # writer = copc.FileWriter("new-copc.copc.laz", cfg,None,None,None,None,None)
     # writer = copc.FileWriter("new-copc.copc.laz", cfg,(1,1,1),(1,1,1),"test",)
     header = writer.copc_config.las_header

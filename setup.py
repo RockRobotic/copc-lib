@@ -6,6 +6,7 @@ with open("version", "r") as file:
     version = lines[0]
 
 from setuptools import find_packages
+
 setup(
     name="copclib",
     version="3.0.5",
@@ -18,9 +19,9 @@ setup(
     maintainer_email="support@rockrobotic.com",
     url="https://github.com/RockRobotic/copc-lib",
     extras_require={"test": ["pytest"]},
-    cmake_args=['-DWITH_PYTHON:BOOL=ON', '-DWITH_TESTS=OFF', '-DEMSCRIPTEN=OFF'],
+    cmake_args=["-DWITH_PYTHON:BOOL=ON", "-DWITH_TESTS=OFF", "-DEMSCRIPTEN=OFF"],
     cmake_install_dir="python/copclib",
     packages=find_packages(where="python"),
     package_dir={"": "python"},
-    exclude_package_data={"":["libs/laz-perf"]}
+    exclude_package_data={"": ["libs/laz-perf"]},
 )

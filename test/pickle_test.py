@@ -3,6 +3,7 @@ import copclib as copc
 
 from utils import get_autzen_file
 
+
 def test_vector_char():
     char_vec = copc.VectorChar()
     char_vec.append("t")

@@ -4,6 +4,7 @@ from sys import float_info
 
 from utils import get_autzen_file
 
+
 def test_reader():
     # Given a valid file path
     reader = copc.FileReader(get_autzen_file())
