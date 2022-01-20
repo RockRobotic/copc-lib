@@ -81,7 +81,9 @@ if(WITH_TESTS)
 endif()
 
 # Find required packages
-find_package(LAZPERF 3.0.0 REQUIRED)
+# LAZPERF
+set(LAZPERF_VERSION "3.0.0")
+find_package(LAZPERF ${LAZPERF_VERSION} REQUIRED)
 
 # Enable RPATH support for installed binaries and libraries
 include(AddInstallRPATHSupport)
@@ -122,7 +124,7 @@ install_basic_package_files(${PROJECT_NAME}
                             VERSION ${${PROJECT_NAME}_VERSION}
                             COMPATIBILITY AnyNewerVersion
                             VARS_PREFIX ${PROJECT_NAME}
-                            DEPENDENCIES "LAZPERF 2.1.0 REQUIRED"
+                            DEPENDENCIES "LAZPERF ${LAZPERF_VERSION} REQUIRED"
                             FIRST_TARGET copc-lib
                             NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 # Add the uninstall target
