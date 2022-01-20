@@ -1,6 +1,7 @@
 import pickle
 import copclib as copc
 
+from utils import get_autzen_file
 
 def test_vector_char():
     char_vec = copc.VectorChar()
@@ -36,7 +37,7 @@ def test_node():
 
 def test_las_header():
 
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
     las_header = reader.copc_config.las_header
 
     las_header_other = pickle.loads(pickle.dumps(las_header, -1))
