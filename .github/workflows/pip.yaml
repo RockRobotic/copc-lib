@@ -11,8 +11,8 @@ on:
       - published
 
 env:
-  CIBW_TEST_COMMAND: pytest {project}/test
-  CIBW_TEST_EXTRAS: test
+  CIBW_TEST_COMMAND: ctest {project}/build --output-on-failure
+  CIBW_TEST_EXTRAS: cmake
 
 
 jobs:
