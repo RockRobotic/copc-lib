@@ -20,7 +20,7 @@ option(WITH_PYTHON "Build python bindings." OFF)
 if (SKBUILD)
     set(EMSCRIPTEN ON)
     set(WITH_PYTHON ON)
-    # set(WITH_TESTS OFF)
+    set(WITH_TESTS OFF)
     set(BUILD_SHARED_LIBS ON)
 endif()
 
