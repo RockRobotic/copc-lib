@@ -116,10 +116,10 @@ def test_point():
     # Scan Angle
     point6.scan_angle = -30000
     assert point6.scan_angle == -30000
-    assert point6.scan_angle_degrees == -180.0
+    assert point6.scan_angle_degrees == pytest.approx(-180.0)
     point6.scan_angle = 30000
     assert point6.scan_angle == 30000
-    assert point6.scan_angle_degrees == 180.0
+    assert point6.scan_angle_degrees == pytest.approx(180.0)
 
     # User Data
     point6.user_data = 255
