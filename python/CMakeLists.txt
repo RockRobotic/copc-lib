@@ -37,17 +37,6 @@ if(WITH_TESTS)
     # PY_SOURCE_DIR is the folder we'll copy the python scripts into
     set(PY_SOURCE_DIR ${CMAKE_SOURCE_DIR}/test)
 
-    # gather all the python scripts
-    file(GLOB COPC_PYTHON_FILES
-            ${CMAKE_SOURCE_DIR}/test/*.py
-            ${CMAKE_SOURCE_DIR}/example/*.py
-    )
-
-    # copy all the python scripts into the build folder
-    foreach(filename ${COPC_PYTHON_FILES})
-        configure_file(${filename} ${PY_SOURCE_DIR} COPYONLY)
-    endforeach(filename)
-
     # add the tests
     add_test(NAME python-tests
              COMMAND ${PYTHON_EXECUTABLE} -m pytest "${PY_SOURCE_DIR}"
