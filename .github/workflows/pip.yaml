@@ -13,7 +13,7 @@ on:
 env:
   CIBW_TEST_COMMAND: pytest {project}/test
   CIBW_TEST_EXTRAS: test
-  CIBW_SKIP: cp310-win32 # just exclude platforms that error :))
+  CIBW_SKIP: cp310-win* # just exclude platforms that error :))
 
 
 jobs:
