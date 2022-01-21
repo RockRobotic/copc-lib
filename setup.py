@@ -9,7 +9,7 @@ from setuptools import find_packages
 
 setup(
     name="copclib",
-    version="3.0.5",
+    version=version,
     description=" copc-lib provides an easy-to-use interface for reading and creating Cloud Optimized Point Clouds",
     license="BSD",
     keywords="point cloud spatial copc",

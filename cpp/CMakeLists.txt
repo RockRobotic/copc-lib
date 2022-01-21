@@ -45,16 +45,40 @@ set(${LIBRARY_TARGET_NAME}_SRC
         src/las/vlr.cpp
 )
 
-add_library(copc-lib-s STATIC ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
-#add_library(${PROJECT_NAME}::${LIBRARY_TARGET_NAME} ALIAS ${LIBRARY_TARGET_NAME})
+add_library(${LIBRARY_TARGET_NAME} ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
+add_library(${PROJECT_NAME}::${LIBRARY_TARGET_NAME} ALIAS ${LIBRARY_TARGET_NAME})
 
-set_target_properties(copc-lib-s PROPERTIES VERSION       ${${PROJECT_NAME}_VERSION})
-                                                        #PUBLIC_HEADER "${${LIBRARY_TARGET_NAME}_HDR}")
+set_target_properties(${LIBRARY_TARGET_NAME} PROPERTIES VERSION       ${${PROJECT_NAME}_VERSION})
 
 # Specify include directories for both compilation and installation process.
 # The $<INSTALL_PREFIX> generator expression is useful to ensure to create
 # relocatable configuration files, see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#creating-relocatable-packages
-target_include_directories(copc-lib-s PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                                                          "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
 
-target_link_libraries(copc-lib-s PRIVATE lazperf_s)
+target_link_libraries(${LIBRARY_TARGET_NAME} PUBLIC lazperf)
+
+# Specify installation targets, typology and destination folders.
+install(TARGETS ${LIBRARY_TARGET_NAME} lazperf
+        EXPORT  ${PROJECT_NAME}
+        LIBRARY       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT shlib
+        ARCHIVE       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT lib
+        RUNTIME       DESTINATION "${CMAKE_INSTALL_BINDIR}"                            COMPONENT bin)
+        # PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBRARY_TARGET_NAME}" COMPONENT dev)
+
+# Keep header file hierarchy
+install(DIRECTORY "include/${LIBRARY_TARGET_NAME}" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+message(STATUS "Created target ${LIBRARY_TARGET_NAME} for export ${PROJECT_NAME}.")
+
+
+# Compile static library for pip wheels
+if (SKBUILD)
+    add_library(${LIBRARY_TARGET_NAME}-s STATIC ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
+    add_library(${PROJECT_NAME}::${LIBRARY_TARGET_NAME}-s ALIAS ${LIBRARY_TARGET_NAME})
+    set_target_properties(${LIBRARY_TARGET_NAME}-s PROPERTIES VERSION       ${${PROJECT_NAME}_VERSION})
+    target_include_directories(${LIBRARY_TARGET_NAME}-s PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                                                         "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+    target_link_libraries(${LIBRARY_TARGET_NAME}-s PRIVATE lazperf_s)
+    message(STATUS "Created target ${LIBRARY_TARGET_NAME}-s for export ${PROJECT_NAME}.")
+endif()

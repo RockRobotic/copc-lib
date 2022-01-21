@@ -1,6 +1,8 @@
 import pytest
 from sys import float_info
 import copclib as copc
+from utils import get_data_dir
+import os
 
 
 def test_copc_extents():
@@ -23,7 +25,7 @@ def test_copc_extents():
 
     #### Default Extents ####
 
-    file_path = "writer_test.copc.laz"
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
     eb_vlr = copc.EbVlr(num_eb_items)
     cfg = copc.CopcConfigWriter(point_format_id, extra_bytes_vlr=eb_vlr)
