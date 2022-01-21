@@ -44,7 +44,7 @@ class LasHeader
 
     // Getters/Setters for protected attributes
 
-    uint8_t PointFormatId() const { return point_format_id_; }
+    int8_t PointFormatId() const { return point_format_id_; }
     uint16_t PointRecordLength() const { return point_record_length_; }
     Vector3 Scale() const { return scale_; }
     Vector3 Offset() const { return offset_; }
