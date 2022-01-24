@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **\[Python\]** Pip release workflow
+
+### Changed
+- **\[Python\]** Python build uses scikit-build instead of custom solution
+
 ## [2.2.0] - 2022-01-10
 
 ### Added
