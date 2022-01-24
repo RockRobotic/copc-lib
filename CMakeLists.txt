@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
 # ref https://github.com/robotology/how-to-export-cpp-library/blob/master/CMakeLists.txt
+file(READ "version" ver)
 project(COPCLIB
         LANGUAGES CXX C
-        VERSION 2.2.0)
+        VERSION ${ver})
 
 # Defines the CMAKE_INSTALL_LIBDIR, CMAKE_INSTALL_BINDIR and many other useful macros.
 # See https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
@@ -15,9 +16,8 @@ option(BUILD_SHARED_LIBS "Build libraries as shared as opposed to static" ON)
 
 option(WITH_TESTS "Build test and example files." OFF)
 option(WITH_PYTHON "Build python bindings." OFF)
-option(ONLY_PYTHON "Build only python bindings, for setup.py env" OFF)
 
-if (ONLY_PYTHON)
+if (SKBUILD)
     set(WITH_PYTHON ON)
     set(WITH_TESTS OFF)
     set(BUILD_SHARED_LIBS ON)
@@ -51,6 +51,9 @@ endif()
 # See https://blog.kitware.com/create-dlls-on-windows-without-declspec-using-new-cmake-export-all-feature/
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
+# fix for static libraries
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # Under MSVC, we set CMAKE_DEBUG_POSTFIX to "d" to add a trailing "d" to library
 # built in debug mode. In this Windows user can compile, build and install the
 # library in both Release and Debug configuration avoiding naming clashes in the
@@ -80,10 +83,26 @@ if(WITH_TESTS)
     enable_testing()
 endif()
 
-# Find required packages
-# LAZPERF
+## Find required packages
+
 set(LAZPERF_VERSION "3.0.0")
-find_package(LAZPERF ${LAZPERF_VERSION} REQUIRED)
+# First, see if the repo is cloned locally, and if so, compile it
+# this is required for CI build of sdist
+if(EXISTS "${CMAKE_SOURCE_DIR}/libs/laz-perf")
+    set(WITH_TEST_TEMP ${WITH_TESTS})
+    set(WITH_TESTS OFF) # never build lazperf tests
+    add_subdirectory(libs/laz-perf)
+    include_directories(libs/laz-perf/cpp)
+    set(WITH_TESTS ${WITH_TEST_TEMP})
+    set(LAZPERF_LIB_NAME "lazperf")
+    set(LAZPERF_IS_FOUND ON)
+    set(EXTRA_EXPORT_TARGETS "lazperf")
+else()
+    # if not, assume lazperf is installed on the system
+    find_package(LAZPERF ${LAZPERF_VERSION} REQUIRED)
+    set(LAZPERF_LIB_NAME "LAZPERF::lazperf")
+    set(EXTRA_EXPORT_TARGETS "")
+endif()
 
 # Enable RPATH support for installed binaries and libraries
 include(AddInstallRPATHSupport)
@@ -101,6 +120,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 ### Compile- and install-related commands.
+
 add_subdirectory(cpp)
 
 # Create and install CMake configuration files for your project that are
@@ -120,13 +140,15 @@ add_subdirectory(cpp)
 # Note that if your library depends from other libraries, you are probably
 # required to used the install_basic_package_files() DEPENDENCIES option.
 include(InstallBasicPackageFiles)
-install_basic_package_files(${PROJECT_NAME}
-                            VERSION ${${PROJECT_NAME}_VERSION}
-                            COMPATIBILITY AnyNewerVersion
-                            VARS_PREFIX ${PROJECT_NAME}
-                            DEPENDENCIES "LAZPERF ${LAZPERF_VERSION} REQUIRED"
-                            FIRST_TARGET copc-lib
-                            NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+if (NOT SKBUILD)
+    install_basic_package_files(${PROJECT_NAME}
+                                VERSION ${${PROJECT_NAME}_VERSION}
+                                COMPATIBILITY AnyNewerVersion
+                                VARS_PREFIX ${PROJECT_NAME}
+                                DEPENDENCIES "LAZPERF ${LAZPERF_VERSION} REQUIRED"
+                                FIRST_TARGET copc-lib
+                                NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+endif()
 # Add the uninstall target
 include(AddUninstallTarget)
 

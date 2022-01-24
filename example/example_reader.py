@@ -1,9 +1,12 @@
 import copclib as copc
+import os
+
+DATADIRECTORY = os.path.join(os.path.dirname(__file__), "..", "test", "data")
 
 
 def reader_example():
     # Create a reader object
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(os.path.join(DATADIRECTORY, "autzen-classified.copc.laz"))
 
     # Get the Las Header
     las_header = reader.copc_config.las_header

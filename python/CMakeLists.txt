@@ -1,36 +1,45 @@
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
-include(BuildRequires)
+if(SKBUILD)
+  # Scikit-Build does not add your site-packages to the search path
+  # automatically, so we need to add it _or_ the pybind11 specific directory
+  # here.
+  execute_process(
+    COMMAND "${PYTHON_EXECUTABLE}" -c
+            "import pybind11; print(pybind11.get_cmake_dir())"
+    OUTPUT_VARIABLE _tmp_dir
+    OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT)
+  list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
+endif()
 
-set(COPC_PYTHON_LIB copclib)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
+#include(BuildRequires)
+
+set(COPC_PYTHON_LIB _core)
 find_package(pybind11 CONFIG REQUIRED)
 
 # add the python lib
 pybind11_add_module(${COPC_PYTHON_LIB} bindings.cpp)
-target_link_libraries(${COPC_PYTHON_LIB} PRIVATE COPCLIB::copc-lib)
+if (LAZPERF_IS_FOUND)
+    target_link_libraries(${COPC_PYTHON_LIB} PRIVATE lazperf_s copc-lib-s)
+else()
+    target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${LAZPERF_LIB_NAME} copc-lib-s)
+endif()
+
+install(TARGETS _core DESTINATION .)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/copclib DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
+                                                    # have the python lib output to the python build dir
+                                                    # not the /lib dir
+                                                    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
+                                                    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib)
 
 if(WITH_TESTS)
-    set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
-                                                        # have the python lib output to the python build dir
-                                                        # not the /lib dir
-                                                        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                                                        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-
     include(DownloadExampleFiles)
-    download_test_files("${CMAKE_CURRENT_BINARY_DIR}/autzen-classified.copc.laz")
+    download_test_files("${CMAKE_CURRENT_BINARY_DIR}/data/autzen-classified.copc.laz")
 
     # PY_SOURCE_DIR is the folder we'll copy the python scripts into
-    set(PY_SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR})
-
-    # gather all the python scripts
-    file(GLOB COPC_PYTHON_FILES
-            ${CMAKE_SOURCE_DIR}/test/*.py
-            ${CMAKE_SOURCE_DIR}/example/*.py
-    )
-
-    # copy all the python scripts into the build folder
-    foreach(filename ${COPC_PYTHON_FILES})
-        configure_file(${filename} ${PY_SOURCE_DIR} COPYONLY)
-    endforeach(filename)
+    set(PY_SOURCE_DIR ${CMAKE_SOURCE_DIR}/test)
 
     # add the tests
     add_test(NAME python-tests
@@ -38,11 +47,11 @@ if(WITH_TESTS)
              WORKING_DIRECTORY ${PY_SOURCE_DIR}
             )
     add_test(NAME example_reader_py
-             COMMAND ${PYTHON_EXECUTABLE} "${PY_SOURCE_DIR}/example-reader.py"
+             COMMAND ${PYTHON_EXECUTABLE} "${PY_SOURCE_DIR}/example_reader.py"
              WORKING_DIRECTORY ${PY_SOURCE_DIR}
             )
     add_test(NAME example_writer_py
-             COMMAND ${PYTHON_EXECUTABLE} "${PY_SOURCE_DIR}/example-writer.py"
+             COMMAND ${PYTHON_EXECUTABLE} "${PY_SOURCE_DIR}/example_writer.py"
              WORKING_DIRECTORY ${PY_SOURCE_DIR}
             )
 

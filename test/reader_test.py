@@ -2,10 +2,12 @@ import copclib as copc
 import pytest
 from sys import float_info
 
+from .utils import get_autzen_file
+
 
 def test_reader():
     # Given a valid file path
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
 
     # LasHeader Test
     header = reader.copc_config.las_header
@@ -67,7 +69,7 @@ def test_reader():
 
 def test_find_key():
     # Given a valid file path
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
 
     key = copc.VoxelKey.RootKey()
     hier_entry = reader.FindNode(key)
@@ -85,7 +87,7 @@ def test_find_key():
 
 
 def test_get_all_children():
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
 
     # Get root key
     nodes = reader.GetAllNodes()
@@ -107,19 +109,19 @@ def test_get_all_children():
 
 
 def test_get_all_page_keys():
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
     assert len(reader.GetPageList()) == 1
 
 
 # TODO[Leo]: Make this test optional
 
 # def test_get_all_points():
-#     reader = copc.FileReader("autzen-classified.copc.laz")
+#     reader = copc.FileReader(get_autzen_file())
 #     assert len(reader.GetAllPoints()) == reader.las_header.point_count
 
 
 def test_point_error_handling():
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
 
     invalid_node = copc.Node()
     with pytest.raises(RuntimeError):
@@ -144,7 +146,7 @@ def test_point_error_handling():
 
 def test_spatial_query_functions():
 
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
 
     # Make horizontal 2D box of [400,400] roughly in the middle of the point cloud.
     middle = (reader.copc_config.las_header.max + reader.copc_config.las_header.min) / 2
