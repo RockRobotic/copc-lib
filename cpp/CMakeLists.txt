@@ -45,29 +45,44 @@ set(${LIBRARY_TARGET_NAME}_SRC
         src/las/vlr.cpp
 )
 
-add_library(${LIBRARY_TARGET_NAME} ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
-add_library(${PROJECT_NAME}::${LIBRARY_TARGET_NAME} ALIAS ${LIBRARY_TARGET_NAME})
-
-set_target_properties(${LIBRARY_TARGET_NAME} PROPERTIES VERSION       ${${PROJECT_NAME}_VERSION})
-                                                        #PUBLIC_HEADER "${${LIBRARY_TARGET_NAME}_HDR}")
-
-# Specify include directories for both compilation and installation process.
-# The $<INSTALL_PREFIX> generator expression is useful to ensure to create
-# relocatable configuration files, see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#creating-relocatable-packages
-target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+# Compile static library for pip wheels
+if (WITH_PYTHON)
+    add_library(${LIBRARY_TARGET_NAME}-s STATIC ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
+    set_target_properties(${LIBRARY_TARGET_NAME}-s PROPERTIES VERSION       ${${PROJECT_NAME}_VERSION})
+    target_include_directories(${LIBRARY_TARGET_NAME}-s PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                                                          "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+    if (LAZPERF_IS_FOUND)
+        target_link_libraries(${LIBRARY_TARGET_NAME}-s PRIVATE lazperf_s)
+    else()
+        target_link_libraries(${LIBRARY_TARGET_NAME}-s PRIVATE ${LAZPERF_LIB_NAME})
+    endif()
+    message(STATUS "Created target ${LIBRARY_TARGET_NAME}-s for export ${PROJECT_NAME}.")
+endif()
 
-target_link_libraries(${LIBRARY_TARGET_NAME} PUBLIC LAZPERF::lazperf)
+if (NOT SKBUILD)
+    add_library(${LIBRARY_TARGET_NAME} ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
+    add_library(${PROJECT_NAME}::${LIBRARY_TARGET_NAME} ALIAS ${LIBRARY_TARGET_NAME})
 
-# Specify installation targets, typology and destination folders.
-install(TARGETS ${LIBRARY_TARGET_NAME}
-        EXPORT  ${PROJECT_NAME}
-        LIBRARY       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT shlib
-        ARCHIVE       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT lib
-        RUNTIME       DESTINATION "${CMAKE_INSTALL_BINDIR}"                            COMPONENT bin)
-        # PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBRARY_TARGET_NAME}" COMPONENT dev)
+    set_target_properties(${LIBRARY_TARGET_NAME} PROPERTIES VERSION       ${${PROJECT_NAME}_VERSION})
 
-# Keep header file hierarchy
-install(DIRECTORY "include/${LIBRARY_TARGET_NAME}" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+    # Specify include directories for both compilation and installation process.
+    # The $<INSTALL_PREFIX> generator expression is useful to ensure to create
+    # relocatable configuration files, see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#creating-relocatable-packages
+    target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                                                                "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
 
-message(STATUS "Created target ${LIBRARY_TARGET_NAME} for export ${PROJECT_NAME}.")
+    target_link_libraries(${LIBRARY_TARGET_NAME} PUBLIC ${LAZPERF_LIB_NAME})
+
+    # Specify installation targets, typology and destination folders.
+    install(TARGETS ${LIBRARY_TARGET_NAME} ${EXTRA_EXPORT_TARGETS}
+            EXPORT  ${PROJECT_NAME}
+            LIBRARY       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT shlib
+            ARCHIVE       DESTINATION "${CMAKE_INSTALL_LIBDIR}"                            COMPONENT lib
+            RUNTIME       DESTINATION "${CMAKE_INSTALL_BINDIR}"                            COMPONENT bin)
+            # PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBRARY_TARGET_NAME}" COMPONENT dev)
+
+    # Keep header file hierarchy
+    install(DIRECTORY "include/${LIBRARY_TARGET_NAME}" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+    message(STATUS "Created target ${LIBRARY_TARGET_NAME} for export ${PROJECT_NAME}.")
+endif()

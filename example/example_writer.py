@@ -1,20 +1,24 @@
 import random
 import copclib as copc
 import math
+import os
 
 random.seed(0)
+DATADIRECTORY = os.path.join(os.path.dirname(__file__), "..", "test", "data")
 
 # In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
 def TrimFileExample(compressor_example_flag):
 
     # We'll get our point data from this file
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(os.path.join(DATADIRECTORY, "autzen-classified.copc.laz"))
 
     # Copy the header to the new file
     cfg = reader.copc_config
 
     # Now, we can create our actual writer:
-    writer = copc.FileWriter("autzen-trimmed.copc.laz", cfg)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "autzen-trimmed.copc.laz"), cfg
+    )
 
     # GetAllNodes will load the entire hierarchy under a given key
     for node in reader.GetAllNodes():
@@ -46,7 +50,9 @@ def TrimFileExample(compressor_example_flag):
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader("autzen-trimmed.copc.laz")
+    new_reader = copc.FileReader(
+        os.path.join(DATADIRECTORY, "out", "autzen-trimmed.copc.laz")
+    )
 
     # Let's go through each node we've written and make sure it matches the original
     for node in new_reader.GetAllNodes():
@@ -68,7 +74,7 @@ def TrimFileExample(compressor_example_flag):
 # In this example, we'll filter the points in the autzen dataset based on bounds.
 def BoundsTrimFileExample():
     # We'll get our point data from this file
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(os.path.join(DATADIRECTORY, "autzen-classified.copc.laz"))
     old_header = reader.copc_config.las_header
 
     middle = (old_header.max + old_header.min) / 2
@@ -78,7 +84,11 @@ def BoundsTrimFileExample():
     cfg = reader.copc_config
 
     # Now, we can create our actual writer, here we will update the Point Format ID in the new file to be 8
-    writer = copc.FileWriter("autzen-bounds-trimmed.copc.laz", cfg, point_format_id=8)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "autzen-bounds-trimmed.copc.laz"),
+        cfg,
+        point_format_id=8,
+    )
 
     for node in reader.GetAllNodes():
         if node.key.Within(old_header, box):
@@ -101,7 +111,9 @@ def BoundsTrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader("autzen-bounds-trimmed.copc.laz")
+    new_reader = copc.FileReader(
+        os.path.join(DATADIRECTORY, "out", "autzen-bounds-trimmed.copc.laz")
+    )
 
     # Let's go through each point and make sure they fit in the within the Box
     for node in new_reader.GetAllNodes():
@@ -112,7 +124,7 @@ def BoundsTrimFileExample():
 # In this example, we'll filter the points in the autzen dataset based on resolution.
 def ResolutionTrimFileExample():
     # We'll get our point data from this file
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(os.path.join(DATADIRECTORY, "autzen-classified.copc.laz"))
     old_header = reader.copc_config.las_header
 
     resolution = 10
@@ -129,7 +141,9 @@ def ResolutionTrimFileExample():
     cfg = reader.copc_config
 
     # Now, we can create our actual writer:
-    writer = copc.FileWriter("autzen-resolution-trimmed.copc.laz", cfg)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "autzen-resolution-trimmed.copc.laz"), cfg
+    )
 
     for node in reader.GetAllNodes():
         if node.key.d <= target_depth:
@@ -144,7 +158,9 @@ def ResolutionTrimFileExample():
     writer.Close()
 
     # Now, let's test our new file
-    new_reader = copc.FileReader("autzen-resolution-trimmed.copc.laz")
+    new_reader = copc.FileReader(
+        os.path.join(DATADIRECTORY, "out", "autzen-resolution-trimmed.copc.laz")
+    )
 
     new_header = new_reader.copc_config.las_header
     new_copc_info = new_reader.copc_config.copc_info
@@ -236,7 +252,9 @@ def NewFileExample():
     cfg.copc_info.spacing = 10
 
     # Now, we can create our COPC writer:
-    writer = copc.FileWriter("new-copc.copc.laz", cfg)
+    writer = copc.FileWriter(
+        os.path.join(DATADIRECTORY, "out", "new-copc.copc.laz"), cfg
+    )
     # writer = copc.FileWriter("new-copc.copc.laz", cfg,None,None,None,None,None)
     # writer = copc.FileWriter("new-copc.copc.laz", cfg,(1,1,1),(1,1,1),"test",)
     header = writer.copc_config.las_header
@@ -281,7 +299,7 @@ def NewFileExample():
     writer.Close()
 
     # We can check that the spatial bounds of the file have been respected
-    reader = copc.FileReader("new-copc.copc.laz")
+    reader = copc.FileReader(os.path.join(DATADIRECTORY, "out", "new-copc.copc.laz"))
     assert reader.ValidateSpatialBounds()
 
     # We can get the keys of all existing pages

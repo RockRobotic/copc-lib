@@ -28,7 +28,7 @@ using namespace copc;
 
 PYBIND11_MAKE_OPAQUE(std::vector<char>);
 
-PYBIND11_MODULE(copclib, m)
+PYBIND11_MODULE(_core, m)
 {
     py::bind_vector<std::vector<char>>(m, "VectorChar", py::buffer_protocol())
         .def(py::pickle(

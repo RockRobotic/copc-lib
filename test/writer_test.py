@@ -1,11 +1,14 @@
 import copclib as copc
 import pytest
 from sys import float_info
+import os
+
+from .utils import get_autzen_file, get_data_dir
 
 
 def test_writer_config():
     # Given a valid file path
-    file_path = "writer_test.copc.laz"
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
     # Default config
     cfg = copc.CopcConfigWriter(6)
@@ -133,7 +136,7 @@ def test_writer_config():
     assert reader.copc_config.wkt == "TEST_WKT"
 
     # Copy
-    orig = copc.FileReader("autzen-classified.copc.laz")
+    orig = copc.FileReader(get_autzen_file())
 
     cfg = orig.copc_config
     writer = copc.FileWriter(file_path, cfg)
@@ -216,7 +219,7 @@ def test_writer_config():
 
 
 def test_writer_pages():
-    file_path = "writer_test.copc.laz"
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
     writer = copc.FileWriter(file_path, copc.CopcConfigWriter(6))
 
@@ -292,9 +295,9 @@ def test_writer_pages():
 
 def test_writer_copy():
     # Given a valid file path
-    file_path = "writer_test.copc.laz"
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
-    reader = copc.FileReader("autzen-classified.copc.laz")
+    reader = copc.FileReader(get_autzen_file())
 
     cfg = reader.copc_config
     writer = copc.FileWriter(file_path, cfg)
@@ -328,9 +331,9 @@ def test_writer_copy():
 
 def test_writer_copy_and_update():
 
-    file_path = "writer_test.copc.laz"
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
-    orig = copc.FileReader("autzen-classified.copc.laz")
+    orig = copc.FileReader(get_autzen_file())
 
     cfg = orig.copc_config
 
@@ -610,7 +613,7 @@ def test_writer_copy_and_update():
 
 def test_check_spatial_bounds():
 
-    file_path = "writer_test.copc.laz"
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
     cfg = copc.CopcConfigWriter(7, (0.1, 0.1, 0.1), (50, 50, 50))
     cfg.las_header.min = (-10, -10, -5)
