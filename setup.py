@@ -21,7 +21,7 @@ setup(
     maintainer="Rock Robotic Inc.",
     maintainer_email="support@rockrobotic.com",
     long_description=readme,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     url="https://github.com/RockRobotic/copc-lib",
     extras_require={"test": ["pytest"]},
     cmake_args=["-DWITH_PYTHON:BOOL=ON", "-DWITH_TESTS=OFF", "-DEMSCRIPTEN=OFF"],
