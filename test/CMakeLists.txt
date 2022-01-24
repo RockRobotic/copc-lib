@@ -17,3 +17,4 @@ catch_discover_tests(${TEST_TARGET_NAME} WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPU
 
 include(DownloadExampleFiles)
 download_test_files("${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/autzen-classified.copc.laz")
+download_test_files("${CMAKE_CURRENT_SOURCE_DIR}/data/autzen-classified.copc.laz")
