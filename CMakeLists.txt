@@ -18,7 +18,6 @@ option(WITH_TESTS "Build test and example files." OFF)
 option(WITH_PYTHON "Build python bindings." OFF)
 
 if (SKBUILD)
-    #set(EMSCRIPTEN ON)
     set(WITH_PYTHON ON)
     set(WITH_TESTS OFF)
     set(BUILD_SHARED_LIBS ON)
