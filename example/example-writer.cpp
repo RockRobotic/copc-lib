@@ -211,7 +211,10 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
     std::uniform_int_distribution<> rand_z(std::ceil(header.ApplyInverseScaleZ(std::max(header.min.z, z_min))),
                                            std::floor(header.ApplyInverseScaleZ(std::min(header.max.z, z_min + step))));
 
-    las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+    // Create a Points object based on the LAS header
+    las::Points points(header);
+
+    // Populate the points
     for (int i = 0; i < number_points; i++)
     {
         // Create a point with a given point format

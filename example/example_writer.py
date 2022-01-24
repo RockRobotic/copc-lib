@@ -202,11 +202,10 @@ def RandomPoints(key, las_header, number_points):
     miny = las_header.min.y + (step * key.y)
     minz = las_header.min.z + (step * key.z)
 
-    points = copc.Points(
-        las_header.point_format_id,
-        las_header.scale,
-        las_header.offset,
-    )
+    # Create a Points object based on the LAS header
+    points = copc.Points(las_header)
+
+    # Populate the points
     for i in range(number_points):
         # Create a point with a given point format
         point = points.CreatePoint()
