@@ -9,6 +9,10 @@ def test_reader():
     # Given a valid file path
     reader = copc.FileReader(get_autzen_file())
 
+    # Given an invalid file path
+    with pytest.raises(RuntimeError):
+        assert copc.FileReader("invalid_path/non_existant_file.copc.laz")
+
     # LasHeader Test
     header = reader.copc_config.las_header
     assert header.point_format_id == 7

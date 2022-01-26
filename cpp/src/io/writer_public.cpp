@@ -55,7 +55,12 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_c
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->config_, this->hierarchy_);
 }
 
-Writer::~Writer() { writer_->Close(); }
+Writer::~Writer()
+{
+    if (writer_ != nullptr)
+        writer_->Close();
+}
+
 void Writer::Close() { writer_->Close(); }
 
 bool Writer::PageExists(const VoxelKey &key) { return hierarchy_->PageExists(key); }
