@@ -40,6 +40,7 @@ if(WITH_TESTS)
 
     # PY_SOURCE_DIR is the folder we'll copy the python scripts into
     set(PY_SOURCE_DIR ${CMAKE_SOURCE_DIR}/test)
+    set(PY_EXAMPLE_DIR ${CMAKE_SOURCE_DIR}/example)
 
     # add the tests
     add_test(NAME python-tests
@@ -47,12 +48,12 @@ if(WITH_TESTS)
              WORKING_DIRECTORY ${PY_SOURCE_DIR}
             )
     add_test(NAME example_reader_py
-             COMMAND ${PYTHON_EXECUTABLE} "${PY_SOURCE_DIR}/example_reader.py"
-             WORKING_DIRECTORY ${PY_SOURCE_DIR}
+             COMMAND ${PYTHON_EXECUTABLE} "${PY_EXAMPLE_DIR}/example_reader.py"
+             WORKING_DIRECTORY ${PY_EXAMPLE_DIR}
             )
     add_test(NAME example_writer_py
-             COMMAND ${PYTHON_EXECUTABLE} "${PY_SOURCE_DIR}/example_writer.py"
-             WORKING_DIRECTORY ${PY_SOURCE_DIR}
+             COMMAND ${PYTHON_EXECUTABLE} "${PY_EXAMPLE_DIR}/example_writer.py"
+             WORKING_DIRECTORY ${PY_EXAMPLE_DIR}
             )
 
     set_tests_properties(python-tests example_reader_py example_writer_py
