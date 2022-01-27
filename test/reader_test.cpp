@@ -79,6 +79,8 @@ TEST_CASE("Reader tests", "[Reader]")
         }
     }
 
+    GIVEN("An invalid file path") { REQUIRE_THROWS(FileReader("invalid_path/non_existant_file.copc.laz")); }
+
     GIVEN("A valid input stream")
     {
         fstream in_stream;

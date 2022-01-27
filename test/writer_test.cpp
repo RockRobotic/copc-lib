@@ -372,6 +372,12 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             }
         }
     }
+
+    GIVEN("An invalid filepath")
+    {
+        REQUIRE_THROWS(FileWriter("invalid_path/writer_test.copc.laz", CopcConfigWriter(6)));
+    }
+
     GIVEN("A valid output stream")
     {
         SECTION("Default Config")

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **\[Python/C++\]**  Fix bug with handling of non-existant path in FileWriter.
+
 ## [2.2.1] - 2022-01-24
 
 ### Added

@@ -27,6 +27,13 @@ def test_writer_config():
 
     writer.Close()
 
+    # Given an invalid file path
+    with pytest.raises(RuntimeError):
+        assert copc.FileWriter(
+            os.path.join(get_data_dir(), "invalid_path", "non_existant_file.copc.laz"),
+            cfg,
+        )
+
     # Custom config
 
     cfg = copc.CopcConfigWriter(8, [2, 3, 4], [-0.02, -0.03, -40.8])
