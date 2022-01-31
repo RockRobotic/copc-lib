@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, macos-10.15] #, windows-latest]
+        os: [ubuntu-18.04, macos-10.15, windows-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
@@ -38,7 +38,7 @@ jobs:
       run: |
         conda install -c conda-forge "laz-perf>=3.0" Catch2 pybind11 --yes
         python -m pip install --upgrade pip
-        pip install pytest wheel
+        pip install pytest wheel ninja
       shell:
         bash -l {0}
 
@@ -51,7 +51,7 @@ jobs:
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS_AND_EXAMPLES=ON -DWITH_PYTHON=OFF
+      run: cmake -G Ninja -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS_AND_EXAMPLES=ON -DWITH_PYTHON=OFF
       shell:
         bash -l {0}
 
