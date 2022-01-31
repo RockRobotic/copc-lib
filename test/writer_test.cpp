@@ -749,12 +749,12 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
         las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
 
         auto point = points.CreatePoint();
-        point->X(10);
-        point->Y(10);
-        point->Z(5);
+        point->X(9);
+        point->Y(9);
+        point->Z(4);
 
         points.AddPoint(point);
-        writer.AddNode({1, 1, 1, 1}, points);
+        writer.AddNode({1, 1, 1, 0}, points);
         writer.Close();
 
         FileReader reader(file_path);

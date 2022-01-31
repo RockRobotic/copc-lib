@@ -636,13 +636,13 @@ def test_check_spatial_bounds():
 
     point = points.CreatePoint()
     # point has getters/setters for all attributes
-    point.x = 10
-    point.y = 10
-    point.z = 5
+    point.x = 9
+    point.y = 9
+    point.z = 4
 
     points.AddPoint(point)
 
-    writer.AddNode((1, 1, 1, 1), points)
+    writer.AddNode((1, 1, 1, 0), points)
     writer.Close()
 
     reader = copc.FileReader(file_path)
