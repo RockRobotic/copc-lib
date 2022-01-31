@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **\[Python/C++\]**  Fix bug with handling of non-existant path in FileWriter.
+- **\[Python/C++\]**  Fix test causing i686 tests to fail.
+- **\[Python\]**  Fix python ctest.
 
 ## [2.2.1] - 2022-01-24
 
