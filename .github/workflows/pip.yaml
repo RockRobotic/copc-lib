@@ -1,7 +1,9 @@
+# https://github.com/pybind/scikit_build_example
 name: Wheels
 
 on:
   workflow_dispatch:
+  pull_request:
   release:
     types:
       - published
@@ -78,7 +80,7 @@ jobs:
     name: Upload if release
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    #if: github.event_name == 'release' && github.event.action == 'published'
+    if: (github.event_name == 'release' && github.event.action == 'published') || (github.ref_name == 'main')
 
     steps:
     - uses: actions/setup-python@v2

@@ -9,6 +9,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  CMAKE_GENERATOR: Ninja
 
 jobs:
   test:
@@ -36,7 +37,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        conda install -c conda-forge "laz-perf>=3.0" Catch2 pybind11 --yes
+        conda install -c conda-forge "laz-perf>=3.0" Catch2 pybind11 ninja --yes
         python -m pip install --upgrade pip
         pip install pytest wheel
       shell:
@@ -44,14 +45,14 @@ jobs:
 
     - name: Build Copclib Python Bindings
       run: |
-        pip install .
+        pip install . -v
       shell:
         bash -l {0}
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS_AND_EXAMPLES=ON -DWITH_PYTHON=OFF
+      run: cmake -G Ninja -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS_AND_EXAMPLES=ON -DWITH_PYTHON=OFF
       shell:
         bash -l {0}
 
