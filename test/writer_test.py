@@ -365,6 +365,13 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.minimum
+        == orig.copc_config.copc_extents.intensity.minimum
+    )
 
     # Check that we can add a point of new format
     new_points = copc.Points(
@@ -433,6 +440,13 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.minimum
+        == orig.copc_config.copc_extents.intensity.minimum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -468,6 +482,13 @@ def test_writer_copy_and_update():
     assert (
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
+    )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.minimum
+        == orig.copc_config.copc_extents.intensity.minimum
     )
     writer.Close()
 
@@ -505,6 +526,13 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.minimum
+        == orig.copc_config.copc_extents.intensity.minimum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -540,6 +568,13 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.minimum
+        == orig.copc_config.copc_extents.intensity.minimum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -572,6 +607,13 @@ def test_writer_copy_and_update():
         orig.copc_config.extra_bytes_vlr.items
     )
     assert writer.copc_config.copc_extents.has_extended_stats == new_has_extended_stats
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.minimum
+        == orig.copc_config.copc_extents.intensity.minimum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -607,6 +649,13 @@ def test_writer_copy_and_update():
     assert writer.copc_config.wkt == new_wkt
     assert len(writer.copc_config.extra_bytes_vlr.items) == len(new_eb_vlr.items)
     assert writer.copc_config.copc_extents.has_extended_stats == new_has_extended_stats
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.minimum
+        == orig.copc_config.copc_extents.intensity.minimum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)

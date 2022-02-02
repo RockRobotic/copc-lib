@@ -174,8 +174,11 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                         orig.CopcConfig().ExtraBytesVlr().items.size());
                 REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
-                // Check other attributes
+                // Check that other attributes have been copied
                 REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum ==
+                        orig.CopcConfig().CopcExtents().Intensity()->minimum);
 
                 // Check that we can add a point of new format
                 auto new_points = las::Points(new_point_format_id, writer.CopcConfig()->LasHeader()->Scale(),
@@ -233,6 +236,11 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                         orig.CopcConfig().ExtraBytesVlr().items.size());
                 REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
+                // Check that other attributes have been copied
+                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum ==
+                        orig.CopcConfig().CopcExtents().Intensity()->minimum);
                 writer.Close();
 
                 FileReader reader(file_path);
@@ -259,6 +267,11 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                         orig.CopcConfig().ExtraBytesVlr().items.size());
                 REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
+                // Check that other attributes have been copied
+                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum ==
+                        orig.CopcConfig().CopcExtents().Intensity()->minimum);
                 writer.Close();
 
                 FileReader reader(file_path);
@@ -286,6 +299,11 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                         orig.CopcConfig().ExtraBytesVlr().items.size());
                 REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
+                // Check that other attributes have been copied
+                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum ==
+                        orig.CopcConfig().CopcExtents().Intensity()->minimum);
                 writer.Close();
 
                 FileReader reader(file_path);
@@ -313,6 +331,11 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
                 REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
+                // Check that other attributes have been copied
+                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum ==
+                        orig.CopcConfig().CopcExtents().Intensity()->minimum);
                 writer.Close();
 
                 FileReader reader(file_path);
@@ -338,6 +361,11 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
                         orig.CopcConfig().ExtraBytesVlr().items.size());
                 REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
+                // Check that other attributes have been copied
+                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum ==
+                        orig.CopcConfig().CopcExtents().Intensity()->minimum);
                 writer.Close();
 
                 FileReader reader(file_path);
@@ -362,6 +390,11 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 REQUIRE(writer.CopcConfig()->Wkt() == new_wkt);
                 REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
                 REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
+                // Check that other attributes have been copied
+                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->minimum ==
+                        orig.CopcConfig().CopcExtents().Intensity()->minimum);
                 writer.Close();
 
                 FileReader reader(file_path);
