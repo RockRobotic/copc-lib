@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **\[Python/C++\]** Fix bug with some values not getting copied when constructing Writer from CopcConfig
+
 ## [2.2.2] - 2022-01-31
 
 ### Fixed
