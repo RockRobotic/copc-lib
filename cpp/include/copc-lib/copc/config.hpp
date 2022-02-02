@@ -52,17 +52,24 @@ class CopcConfigWriter : public CopcConfig
                      const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
                      const las::EbVlr &extra_bytes_vlr = las::EbVlr(0), bool has_extended_stats = false);
 
-    // Copy constructor
-    CopcConfigWriter(const CopcConfigWriter &copc_config)
+    // Copy Constructor
+    CopcConfigWriter(const CopcConfigWriter &copc_config_writer)
+        : CopcConfig(copc_config_writer.LasHeader(), copc_config_writer.CopcInfo(), copc_config_writer.CopcExtents(),
+                     copc_config_writer.Wkt(), copc_config_writer.ExtraBytesVlr())
+    {
+    }
+
+    // Copy Constructor from CopcFile
+    CopcConfigWriter(const CopcConfig &copc_config)
         : CopcConfig(copc_config.LasHeader(), copc_config.CopcInfo(), copc_config.CopcExtents(), copc_config.Wkt(),
                      copc_config.ExtraBytesVlr())
     {
     }
 
-    // Allow copy from CopcFile
-    CopcConfigWriter(const CopcConfig &copc_config)
-        : CopcConfig(copc_config.LasHeader(), copc_config.CopcInfo(), copc_config.CopcExtents(), copc_config.Wkt(),
-                     copc_config.ExtraBytesVlr())
+    // Constructor from Config elements
+    CopcConfigWriter(const las::LasHeader &header, const copc::CopcInfo &copc_info,
+                     const copc::CopcExtents &copc_extents, const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
+        : CopcConfig(header, copc_info, copc_extents, wkt, extra_bytes_vlr)
     {
     }
 
