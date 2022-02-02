@@ -46,12 +46,13 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_c
                                       las::NumBytesFromExtraBytes(new_extra_bytes_vlr.items),
                                   new_scale, new_offset);
 
-        copc::CopcExtents new_extents(new_point_format_id, new_extra_bytes_vlr.items.size(), new_has_extended_stats);
+        copc::CopcExtents new_extents(copc_config_writer.CopcExtents(), new_point_format_id,
+                                      new_extra_bytes_vlr.items.size(), new_has_extended_stats);
 
-        copc::CopcConfigWriter copc_config_writer_new(new_header, copc_config_writer.CopcInfo(), new_extents, new_wkt,
+        copc::CopcConfigWriter new_copc_config_writer(new_header, copc_config_writer.CopcInfo(), new_extents, new_wkt,
                                                       new_extra_bytes_vlr);
 
-        this->config_ = std::make_shared<CopcConfigWriter>(copc_config_writer_new);
+        this->config_ = std::make_shared<CopcConfigWriter>(new_copc_config_writer);
     }
     else
     {
