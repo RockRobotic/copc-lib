@@ -41,9 +41,18 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_c
         if (has_extended_stats)
             new_has_extended_stats = *has_extended_stats;
 
-        CopcConfigWriter cfg(new_point_format_id, new_scale, new_offset, new_wkt, new_extra_bytes_vlr,
-                             new_has_extended_stats);
-        this->config_ = std::make_shared<CopcConfigWriter>(cfg);
+        las::LasHeader new_header(copc_config_writer.LasHeader(), new_point_format_id,
+                                  las::PointBaseByteSize(new_point_format_id) +
+                                      las::NumBytesFromExtraBytes(new_extra_bytes_vlr.items),
+                                  new_scale, new_offset);
+
+        copc::CopcExtents new_extents(copc_config_writer.CopcExtents(), new_point_format_id,
+                                      new_extra_bytes_vlr.items.size(), new_has_extended_stats);
+
+        copc::CopcConfigWriter new_copc_config_writer(new_header, copc_config_writer.CopcInfo(), new_extents, new_wkt,
+                                                      new_extra_bytes_vlr);
+
+        this->config_ = std::make_shared<CopcConfigWriter>(new_copc_config_writer);
     }
     else
     {

@@ -60,12 +60,46 @@ CopcExtents::CopcExtents(int8_t point_format_id, uint16_t num_eb_items, bool has
 }
 
 // Copy constructor
-CopcExtents::CopcExtents(const CopcExtents &extents)
-    : point_format_id_(extents.PointFormatId()), has_extended_stats_(extents.HasExtendedStats())
+CopcExtents::CopcExtents(const CopcExtents &other)
+    : point_format_id_(other.PointFormatId()), has_extended_stats_(other.HasExtendedStats())
 {
-    extents_.reserve(extents.NumberOfExtents());
-    for (int i{0}; i < extents.NumberOfExtents(); i++)
-        extents_.push_back(std::make_shared<CopcExtent>(extents.Extents()[i]));
+    extents_.reserve(other.NumberOfExtents());
+    for (int i{0}; i < other.NumberOfExtents(); i++)
+        extents_.push_back(std::make_shared<CopcExtent>(other.Extents()[i]));
+}
+
+CopcExtents::CopcExtents(const CopcExtents &other, int8_t point_format_id, uint16_t num_eb_items,
+                         bool has_extended_stats)
+    : CopcExtents(point_format_id, num_eb_items, has_extended_stats)
+{
+    // Copy generic extents
+    for (int i{0}; i <= 10; i++)
+        extents_[i] = other.extents_[i];
+
+    // Copy RGB
+    if (point_format_id > 6 && other.point_format_id_ > 6)
+    {
+        extents_[11] = other.extents_[11];
+        extents_[12] = other.extents_[12];
+        extents_[13] = other.extents_[13];
+    }
+
+    // Copy NIR
+    if (point_format_id == 8 && other.point_format_id_ == 8)
+        extents_[14] = other.extents_[14];
+
+    // Copy EBs
+    auto other_num_eb = other.NumberOfExtents() - PointBaseNumberExtents(other.PointFormatId());
+    if (num_eb_items != other_num_eb)
+    {
+        std::cout << "CopcExtents: Warning, number of extra byte has changed, can't copy values over" << std::endl;
+    }
+    else
+    {
+        for (int i{0}; i < num_eb_items; i++)
+            extents_[PointBaseNumberExtents(point_format_id_) + i] =
+                other.extents_[PointBaseNumberExtents(other.PointFormatId()) + i];
+    }
 }
 
 // VLR constructor
@@ -126,8 +160,7 @@ void CopcExtents::SetExtendedStats(const las::CopcExtentsVlr &vlr)
 
 int CopcExtents::NumberOfExtents(int8_t point_format_id, uint16_t num_eb_items)
 {
-    return las::PointBaseNumberDimensions(point_format_id) - 3 +
-           num_eb_items; // -3 disregards x,y,z since they are not handled in Extents
+    return PointBaseNumberExtents(point_format_id) + num_eb_items;
 }
 
 size_t CopcExtents::ByteSize(int8_t point_format_id, uint16_t num_eb_items)
@@ -159,11 +192,16 @@ std::string CopcExtents::ToString() const
     if (point_format_id_ == 8)
         ss << "\tNIR: " << extents_[14]->ToString() << std::endl;
     ss << "\tExtra Bytes:" << std::endl;
-    for (int i = las::PointBaseNumberDimensions(point_format_id_); i < extents_.size(); i++)
+    for (int i = PointBaseNumberExtents(point_format_id_); i < extents_.size(); i++)
     {
         ss << "\t\t" << extents_[i]->ToString() << std::endl;
     }
     return ss.str();
+}
+
+uint8_t PointBaseNumberExtents(const int8_t &point_format_id)
+{
+    return las::PointBaseNumberDimensions(point_format_id) - 3; // -3 is because we don't have x,y,z extents
 }
 
 } // namespace copc

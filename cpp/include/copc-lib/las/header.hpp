@@ -36,6 +36,10 @@ class LasHeader
           point_count_(point_count), vlr_count_(vlr_count), scale_(scale), offset_(offset), evlr_offset_(evlr_offset),
           evlr_count_(evlr_count){};
 
+    // Copy constructor with modification of protected attributes
+    LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale,
+              const Vector3 &offset);
+
     static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset, uint32_t evlr_count,
                                 bool eb_flag, bool extended_stats_flag) const;

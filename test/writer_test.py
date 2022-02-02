@@ -338,9 +338,35 @@ def test_writer_copy():
 
 def test_writer_copy_and_update():
 
+    # Create test file
+    orig_point_format_id = 7
+    orig_scale = copc.Vector3(0.1, 0.1, 0.1)
+    orig_offset = (10, 10, 10)
+    orig_wkt = "orig_wkt"
+    orig_has_extended_stats = False
+    orig_eb_vlr = copc.EbVlr(1)
+    orig_guid = "orig_guid"
+    orig_spacing = 10.0
+    orig_intensity = 23.5
+
+    orig_cfg = copc.CopcConfigWriter(
+        orig_point_format_id,
+        orig_scale,
+        orig_offset,
+        orig_wkt,
+        orig_eb_vlr,
+        orig_has_extended_stats,
+    )
+
+    writer = copc.FileWriter("orig_test.copc.laz", orig_cfg)
+    writer.copc_config.las_header.guid = orig_guid
+    writer.copc_config.copc_info.spacing = orig_spacing
+    writer.copc_config.copc_extents.intensity.maximum = orig_intensity
+    writer.Close()
+
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
-    orig = copc.FileReader(get_autzen_file())
+    orig = copc.FileReader("orig_test.copc.laz")
 
     cfg = orig.copc_config
 
@@ -365,13 +391,17 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
+    )
 
     # Check that we can add a point of new format
-    new_points = copc.Points(
-        new_point_format_id,
-        writer.copc_config.las_header.scale,
-        writer.copc_config.las_header.offset,
-    )
+    new_points = copc.Points(writer.copc_config.las_header)
+
     new_point = new_points.CreatePoint()
     new_point.X = 10
     new_point.Y = 15
@@ -433,6 +463,13 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -468,6 +505,13 @@ def test_writer_copy_and_update():
     assert (
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
+    )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
     writer.Close()
 
@@ -505,6 +549,13 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -540,6 +591,13 @@ def test_writer_copy_and_update():
         writer.copc_config.copc_extents.has_extended_stats
         == orig.copc_config.copc_extents.has_extended_stats
     )
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -572,6 +630,13 @@ def test_writer_copy_and_update():
         orig.copc_config.extra_bytes_vlr.items
     )
     assert writer.copc_config.copc_extents.has_extended_stats == new_has_extended_stats
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)
@@ -607,6 +672,13 @@ def test_writer_copy_and_update():
     assert writer.copc_config.wkt == new_wkt
     assert len(writer.copc_config.extra_bytes_vlr.items) == len(new_eb_vlr.items)
     assert writer.copc_config.copc_extents.has_extended_stats == new_has_extended_stats
+    # Check that other attributes have been copied
+    assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
+    assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
+    assert (
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
+    )
     writer.Close()
 
     reader = copc.FileReader(file_path)

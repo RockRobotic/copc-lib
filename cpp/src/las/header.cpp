@@ -10,6 +10,17 @@
 
 namespace copc::las
 {
+
+LasHeader::LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t point_record_length,
+                     const Vector3 &scale, const Vector3 &offset)
+    : LasHeader(header)
+{
+    point_format_id_ = point_format_id;
+    point_record_length_ = point_record_length;
+    scale_ = scale;
+    offset_ = offset;
+}
+
 Box LasHeader::Bounds() const { return Box(min, max); }
 
 uint16_t LasHeader::EbByteSize() const { return copc::las::EbByteSize(point_format_id_, point_record_length_); }

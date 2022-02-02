@@ -51,7 +51,10 @@ class CopcExtents
     CopcExtents(int8_t point_format_id, uint16_t num_eb_items = 0, bool has_extended_stats = false);
 
     // Copy constructor
-    CopcExtents(const CopcExtents &extents);
+    CopcExtents(const CopcExtents &other);
+
+    // Copy constructor with updated protected attributes
+    CopcExtents(const CopcExtents &other, int8_t point_format_id, uint16_t num_eb_items, bool has_extended_stats);
 
     // VLR constructor
     CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id, uint16_t num_eb_items = 0,
@@ -198,5 +201,8 @@ class CopcExtents
     bool has_extended_stats_{false};
     std::vector<std::shared_ptr<CopcExtent>> extents_;
 };
+
+uint8_t PointBaseNumberExtents(const int8_t &point_format_id);
+
 } // namespace copc
 #endif // COPCLIB_COPC_EXTENTS_H_
