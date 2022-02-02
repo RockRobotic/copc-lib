@@ -89,7 +89,7 @@ CopcExtents::CopcExtents(const CopcExtents &other, int8_t point_format_id, uint1
         extents_[14] = other.extents_[14];
 
     // Copy EBs
-    auto other_num_eb = other.NumberOfExtents() - las::PointBaseNumberDimensions(other.PointFormatId()) + 3;
+    auto other_num_eb = other.NumberOfExtents() - PointBaseNumberExtents(other.PointFormatId());
     if (num_eb_items != other_num_eb)
     {
         std::cout << "CopcExtents: Warning, number of extra byte has changed, can't copy values over" << std::endl;

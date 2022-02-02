@@ -338,9 +338,35 @@ def test_writer_copy():
 
 def test_writer_copy_and_update():
 
+    # Create test file
+    orig_point_format_id = 7
+    orig_scale = copc.Vector3(0.1, 0.1, 0.1)
+    orig_offset = (10, 10, 10)
+    orig_wkt = "orig_wkt"
+    orig_has_extended_stats = False
+    orig_eb_vlr = copc.EbVlr(1)
+    orig_guid = "orig_guid"
+    orig_spacing = 10.0
+    orig_intensity = 23.5
+
+    orig_cfg = copc.CopcConfigWriter(
+        orig_point_format_id,
+        orig_scale,
+        orig_offset,
+        orig_wkt,
+        orig_eb_vlr,
+        orig_has_extended_stats,
+    )
+
+    writer = copc.FileWriter("orig_test.copc.laz", orig_cfg)
+    writer.copc_config.las_header.guid = orig_guid
+    writer.copc_config.copc_info.spacing = orig_spacing
+    writer.copc_config.copc_extents.intensity.maximum = orig_intensity
+    writer.Close()
+
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
-    orig = copc.FileReader(get_autzen_file())
+    orig = copc.FileReader("orig_test.copc.laz")
 
     cfg = orig.copc_config
 
@@ -374,11 +400,8 @@ def test_writer_copy_and_update():
     )
 
     # Check that we can add a point of new format
-    new_points = copc.Points(
-        new_point_format_id,
-        writer.copc_config.las_header.scale,
-        writer.copc_config.las_header.offset,
-    )
+    new_points = copc.Points(writer.copc_config.las_header)
+
     new_point = new_points.CreatePoint()
     new_point.X = 10
     new_point.Y = 15
