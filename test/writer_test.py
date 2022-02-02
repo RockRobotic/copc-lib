@@ -395,8 +395,8 @@ def test_writer_copy_and_update():
     assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
     assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
     assert (
-        writer.copc_config.copc_extents.intensity.minimum
-        == orig.copc_config.copc_extents.intensity.minimum
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
 
     # Check that we can add a point of new format
@@ -467,8 +467,8 @@ def test_writer_copy_and_update():
     assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
     assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
     assert (
-        writer.copc_config.copc_extents.intensity.minimum
-        == orig.copc_config.copc_extents.intensity.minimum
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
     writer.Close()
 
@@ -510,8 +510,8 @@ def test_writer_copy_and_update():
     assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
     assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
     assert (
-        writer.copc_config.copc_extents.intensity.minimum
-        == orig.copc_config.copc_extents.intensity.minimum
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
     writer.Close()
 
@@ -553,8 +553,8 @@ def test_writer_copy_and_update():
     assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
     assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
     assert (
-        writer.copc_config.copc_extents.intensity.minimum
-        == orig.copc_config.copc_extents.intensity.minimum
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
     writer.Close()
 
@@ -595,8 +595,8 @@ def test_writer_copy_and_update():
     assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
     assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
     assert (
-        writer.copc_config.copc_extents.intensity.minimum
-        == orig.copc_config.copc_extents.intensity.minimum
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
     writer.Close()
 
@@ -634,8 +634,8 @@ def test_writer_copy_and_update():
     assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
     assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
     assert (
-        writer.copc_config.copc_extents.intensity.minimum
-        == orig.copc_config.copc_extents.intensity.minimum
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
     writer.Close()
 
@@ -676,8 +676,8 @@ def test_writer_copy_and_update():
     assert writer.copc_config.copc_info.spacing == orig.copc_config.copc_info.spacing
     assert writer.copc_config.las_header.guid == orig.copc_config.las_header.guid
     assert (
-        writer.copc_config.copc_extents.intensity.minimum
-        == orig.copc_config.copc_extents.intensity.minimum
+        writer.copc_config.copc_extents.intensity.maximum
+        == orig.copc_config.copc_extents.intensity.maximum
     )
     writer.Close()
 
