@@ -1,23 +1,41 @@
 # copc-lib
 
-copc-lib is a library which provides an easy-to-use reader and writer interface for [COPC](https://copc.io/) point clouds. This project provides a complete interface for handling COPC files, so that no additional LAZ or LAS libraries are required.
+copc-lib provides an easy-to-use reader and writer interface for [COPC](https://copc.io/) point clouds, with bindings for python and C++.
 
-## Build from source
+## Installation
 
-### Dependencies
+The quickest way to get started with copc-lib is with our conda and pip packages.
+
+### Conda
+Conda includes both the C++ and python bindings:
+
+```bash
+conda install -c conda-forge copc-lib
+```
+
+### Pip
+Pip provide only python bindings:
+
+```bash
+pip install copclib
+```
+
+### Building from source
+
+#### Dependencies
 
 copc-lib has the following dependencies:
 
 - laz-perf>=[3.0.0](https://github.com/hobu/laz-perf/releases/tag/3.0.0)
-- Catch2
-- Pybind11
+- Catch2 (test suite only)
+- Pybind11 (python bindings only)
 
-To install dependencies:
+To install all dependencies:
 ```bash
 conda install -c conda-forge "laz-perf>=3.0" Catch2 pybind11
 ```
 
-### C++
+#### C++
 
 ```bash
 git clone https://github.com/RockRobotic/copc-lib.git
@@ -28,11 +46,22 @@ cmake --build .
 sudo cmake --install .
 ```
 
-### Python
+#### Python
 
 ```bash
 git clone https://github.com/RockRobotic/copc-lib.git
 pip install ./copc-lib
+```
+
+#### Example Files & Unit Tests
+
+To build the copc-lib examples and unit tests along with the main library, you must enable them:
+
+```bash
+mkdir build && cd build
+cmake .. -DWITH_TESTS=ON -DWITH_PYTHON=ON
+cmake --build .
+ctest # All tests should pass
 ```
 
 ## Usage
@@ -53,29 +82,31 @@ add_executable(funlib fun-main.cpp)
 target_link_libraries(funlib COPCLIB::copc-lib LAZPERF::lazperf)
 ```
 
-#### Example Files & Unit Tests
+The primary public interface will be your [FileReader](./cpp/include/copc-lib/io/reader.hpp) and [FileWriter](./cpp/include/copc-lib/io/writer.hpp) objects. Check the headers and [example files](./example) for documentation.
 
-To build the copc-lib examples and unit tests along with the main library, you must enable them:
+```cpp
+#include <iostream>
+#include <copc-lib/io/reader.hpp>
 
-```bash
-mkdir build && cd build
-cmake .. -DWITH_TESTS=ON
-cmake --build .
+void main()
+{
+    // Create a reader object
+    FileReader reader("autzen-classified.copc.laz");
+
+    // Get the node metadata from the hierarchy
+    auto node = reader.FindNode(copc.VoxelKey(0, 0, 0, 0));
+    // Fetch the points of a node
+    auto points = reader.GetPoints(node);
+
+    // Iterate through each point
+    for (const auto &point : points)
+        std::cout << "X: " << point.X ", Y: " << point.Y << ", Z: " << point.Z  << std::endl;
+}
 ```
-
-Then, you can run the unit tests and the examples:
-
-```bash
-ctest # All tests should pass
-
-cd bin
-./example_reader
-./example_writer
-```
-
-Alternatively, you can build the test and example files from their respective CMakeLists, assuming copc-lib is already installed.
 
 ### Python
+
+[Example files](./example) are also provided for python.
 
 ```python
 import copclib as copc
@@ -89,41 +120,11 @@ node = reader.FindNode(copc.VoxelKey(0, 0, 0, 0))
 points = reader.GetPoints(node)
 
 # Iterate through each point
-for point in points.Get():
-    print(point)
+for point in points:
+    print(point.x, point.y, point.z)
 ```
 
-## Coming Soon
-
-- \[x\] Basic C++ Reader Interface
-- \[x\] Return Point structures from the reader rather than raw char\* arrays, to support a more familiar laspy-like interface.
-- \[x\] Add writer for COPC data
-- \[x\] Python bindings
-- \[x\] JavaScript bindings (not planned, see below)
-- \[x\] Spatial querying for nodes (given spatial coordinates, retrieve the appropriate Entry object)
-- \[ \] Conda and pip packages
-
-## Conformity to Spec
-
-This version of copc-lib is pinned to a draft version of COPC respective of the state at [COPC.io](https://github.com/copcio/copcio.github.io/tree/a6e8654f65db7c7d438ebea90993bd7a8d59091a).
-
-### ``extended stats`` VLR
-
-| User ID                    | Record ID        |
-| -------------------------- | ---------------- |
-| ``rock_robotic``                   | ``10001``        |
-
-We additionally add an ``extended stats extents`` VLR to store mean and (population) variance values for each dimension. This VLR can be parsed in the same way as the ``extents`` VLR defined by the COPC spec.
-
-    struct CopcExtentExtended
-    {
-        double mean; // replaces minimum
-        double var; // replaces maximum
-    }
-
-This VLR is optional to process existing COPC files. If present, mean/variance are set appropriately for each dimension in `CopcExtents`; if not, `CopcExtents` will have default values of `mean=0` and `var=1`.
-
-This VLR is only written by the `Writer` if the flag `has_extended_stats` is true in `CopcConfigWriter::CopcExtents`.
+Note that, in python, dimension names for points follow the [laspy naming scheme](https://laspy.readthedocs.io/en/latest/intro.html#point-format-6), with the exception of `scan_angle`.
 
 ## Helpful Links
 
@@ -136,68 +137,6 @@ This VLR is only written by the `Writer` if the flag `has_extended_stats` is tru
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-### Naming Convention
-
-#### C++
-
-We mostly use Google's [Style Guide](https://google.github.io/styleguide/cppguide.html).
-```c++
-
-namespace name
-{
-class ClassName
-{
-public:
-// Default constructor
-ClassName() = default;
-ClassName(int public_variable, int private_variable, bool private_read_only)
-: public_variable(public_variable), private_variable_(private_variable),
-private_read_only_(private_read_only){};
-
-int public_variable{};
-
-// Getters and Setters
-void PrivateVariable(int private_variable) { private_variable_ = private_variable; }
-int PrivateVariable() const { return private_variable_; }
-bool PrivateReadOnly() const { return private_read_only_; }
-
-// Any other function
-int PrivateVariablePlusOne() const { return private_variable_ + 1; }
-int SumPublicAndPrivate() const { return public_variable + private_variable_; }
-static std::string ReturnEmptyString() { return {}; }
-
-private:
-int private_variable_{};
-bool private_read_only_{false};
-};
-} // namespace name
-```
-
-#### Python
-```python
-test_class = ClassName(public_variable=1,private_variable=2,private_read_only=True)
-
-# using pybind .def_readwrite
-test_class.public_variable = 4
-assert test_class.public_variable == 4
-
-# using pybind .def_property
-test_class.private_variable = 5
-assert test_class.private_variable == 5
-
-# using pybind .def_property_readonly
-assert test_class.private_read_only == True
-
-# using pybind .def
-assert test_class.PrivateVariablePlusOne() == 6
-assert test_class.SumPublicAndPrivate() == 9
-
-# using pybind .def_static
-assert test_class.ReturnEmptyString == ""
-```
-
-Note that dimension names for points follow the [laspy naming scheme](https://laspy.readthedocs.io/en/latest/intro.html#point-format-6), with the exception of `scan_angle`.
 
 ## License
 
