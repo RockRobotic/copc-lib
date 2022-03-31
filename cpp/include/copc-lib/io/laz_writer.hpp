@@ -22,9 +22,7 @@ class Writer
 {
 
   public:
-    void InitWriter(std::ostream &out_stream, const LasConfig &las_config, const std::optional<int8_t> &point_format_id,
-                    const std::optional<Vector3> &scale, const std::optional<Vector3> &offset,
-                    const std::optional<std::string> &wkt, const std::optional<las::EbVlr> &extra_bytes_vlr);
+    void InitWriter(std::ostream &out_stream, const LasConfig &las_config);
 
     void WritePoints(const copc::Points &points);
     void WritePoint(const copc::Point &point);
@@ -36,10 +34,7 @@ class FileWriter : Writer
 {
 
   public:
-    void InitWriter(const std::string &file_path, const LasConfig &las_config,
-                    const std::optional<int8_t> &point_format_id, const std::optional<Vector3> &scale,
-                    const std::optional<Vector3> &offset, const std::optional<std::string> &wkt,
-                    const std::optional<las::EbVlr> &extra_bytes_vlr);
+    void InitWriter(const std::string &file_path, const LasConfig &las_config);
 
     void Close();
 };
