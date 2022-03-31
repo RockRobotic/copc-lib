@@ -1,4 +1,0 @@
-#ifndef COPCLIB_IO_LAZ_WRITER_H_
-#define COPCLIB_IO_LAZ_WRITER_H_
-
-#endif // COPCLIB_IO_LAZ_WRITER_H_

@@ -14,11 +14,14 @@ set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/io/copc_base_io.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_writer.hpp
+        include/${LIBRARY_TARGET_NAME}/io/laz_base_writer.hpp
+        include/${LIBRARY_TARGET_NAME}/io/laz_writer.hpp
         include/${LIBRARY_TARGET_NAME}/las/header.hpp
         include/${LIBRARY_TARGET_NAME}/las/point.hpp
         include/${LIBRARY_TARGET_NAME}/las/points.hpp
         include/${LIBRARY_TARGET_NAME}/las/utils.hpp
         include/${LIBRARY_TARGET_NAME}/las/vlr.hpp
+        include/${LIBRARY_TARGET_NAME}/las/config.hpp
         include/${LIBRARY_TARGET_NAME}/laz/compressor.hpp
         include/${LIBRARY_TARGET_NAME}/laz/decompressor.hpp
 )
@@ -38,11 +41,14 @@ set(${LIBRARY_TARGET_NAME}_SRC
         src/io/copc_reader.cpp
         src/io/copc_writer_internal.cpp
         src/io/copc_writer_public.cpp
+        src/io/laz_base_writer.cpp
+        src/io/laz_writer.cpp
         src/las/header.cpp
         src/las/point.cpp
         src/las/points.cpp
         src/las/utils.cpp
         src/las/vlr.cpp
+        src/las/config.cpp
 )
 
 # Compile static library for pip wheels

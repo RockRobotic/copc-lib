@@ -1,6 +1,5 @@
 #include <cassert>
 #include <cmath>
-#include <cstdint>
 #include <random>
 
 #include <copc-lib/geometry/vector3.hpp>
