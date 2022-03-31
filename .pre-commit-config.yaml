@@ -29,3 +29,4 @@ repos:
     hooks:
     -   id: black
         language_version: python
+        additional_dependencies: ['click==8.0.4']
