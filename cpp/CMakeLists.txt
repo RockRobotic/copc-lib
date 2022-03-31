@@ -11,9 +11,9 @@ set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/hierarchy/key.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/node.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/page.hpp
-        include/${LIBRARY_TARGET_NAME}/io/base_io.hpp
-        include/${LIBRARY_TARGET_NAME}/io/reader.hpp
-        include/${LIBRARY_TARGET_NAME}/io/writer.hpp
+        include/${LIBRARY_TARGET_NAME}/io/copc_base_io.hpp
+        include/${LIBRARY_TARGET_NAME}/io/copc_reader.hpp
+        include/${LIBRARY_TARGET_NAME}/io/copc_writer.hpp
         include/${LIBRARY_TARGET_NAME}/las/header.hpp
         include/${LIBRARY_TARGET_NAME}/las/point.hpp
         include/${LIBRARY_TARGET_NAME}/las/points.hpp
@@ -27,17 +27,17 @@ set(${LIBRARY_TARGET_NAME}_HDR
 set(${LIBRARY_TARGET_NAME}_SRC
         include/${LIBRARY_TARGET_NAME}/hierarchy/internal/page.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/internal/hierarchy.hpp
-        include/${LIBRARY_TARGET_NAME}/io/internal/writer_internal.hpp
+        include/${LIBRARY_TARGET_NAME}/io/internal/copc_writer_internal.hpp
         src/copc/info.cpp
         src/copc/extents.cpp
         src/copc/config.cpp
         src/geometry/box.cpp
         src/hierarchy/key.cpp
         src/hierarchy/page.cpp
-        src/io/base_io.cpp
-        src/io/reader.cpp
-        src/io/writer_internal.cpp
-        src/io/writer_public.cpp
+        src/io/copc_base_io.cpp
+        src/io/copc_reader.cpp
+        src/io/copc_writer_internal.cpp
+        src/io/copc_writer_public.cpp
         src/las/header.cpp
         src/las/point.cpp
         src/las/points.cpp

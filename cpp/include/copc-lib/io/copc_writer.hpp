@@ -1,5 +1,5 @@
-#ifndef COPCLIB_IO_WRITER_H_
-#define COPCLIB_IO_WRITER_H_
+#ifndef COPCLIB_IO_COPC_WRITER_H_
+#define COPCLIB_IO_COPC_WRITER_H_
 
 #include <array>
 #include <optional>
@@ -9,7 +9,7 @@
 
 #include "copc-lib/copc/config.hpp"
 #include "copc-lib/geometry/box.hpp"
-#include "copc-lib/io/base_io.hpp"
+#include "copc-lib/io/copc_base_io.hpp"
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/utils.hpp"
@@ -101,4 +101,4 @@ class FileWriter : public Writer
 };
 
 } // namespace copc
-#endif // COPCLIB_IO_WRITER_H_
+#endif // COPCLIB_IO_COPC_WRITER_H_

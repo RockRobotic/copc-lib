@@ -82,7 +82,7 @@ add_executable(funlib fun-main.cpp)
 target_link_libraries(funlib COPCLIB::copc-lib LAZPERF::lazperf)
 ```
 
-The primary public interface will be your [FileReader](./cpp/include/copc-lib/io/reader.hpp) and [FileWriter](./cpp/include/copc-lib/io/writer.hpp) objects. Check the headers and [example files](./example) for documentation.
+The primary public interface will be your [FileReader](./cpp/include/copc-lib/io/copc_reader.hpp) and [FileWriter](./cpp/include/copc-lib/io/copc_writer.hpp) objects. Check the headers and [example files](./example) for documentation.
 
 ```cpp
 #include <iostream>

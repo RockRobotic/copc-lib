@@ -4,8 +4,8 @@
 
 #include <catch2/catch.hpp>
 #include <copc-lib/geometry/vector3.hpp>
-#include <copc-lib/io/reader.hpp>
-#include <copc-lib/io/writer.hpp>
+#include <copc-lib/io/copc_reader.hpp>
+#include <copc-lib/io/copc_writer.hpp>
 #include <copc-lib/las/vlr.hpp>
 #include <lazperf/readers.hpp>
 

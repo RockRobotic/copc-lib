@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 #include <cmath>
-#include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/copc_reader.hpp>
 #include <fstream>
 #include <limits>
 

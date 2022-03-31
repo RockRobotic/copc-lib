@@ -1,7 +1,7 @@
 #include <vector>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/las/header.hpp>
 
 using namespace copc;

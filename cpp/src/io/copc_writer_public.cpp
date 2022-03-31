@@ -1,7 +1,7 @@
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
 #include "copc-lib/hierarchy/internal/page.hpp"
-#include "copc-lib/io/internal/writer_internal.hpp"
-#include "copc-lib/io/writer.hpp"
+#include "copc-lib/io/copc_writer.hpp"
+#include "copc-lib/io/internal/copc_writer_internal.hpp"
 #include "copc-lib/las/point.hpp"
 #include "copc-lib/laz/decompressor.hpp"
 

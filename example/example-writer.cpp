@@ -5,8 +5,8 @@
 
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/io/reader.hpp>
-#include <copc-lib/io/writer.hpp>
+#include <copc-lib/io/copc_reader.hpp>
+#include <copc-lib/io/copc_writer.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/laz/compressor.hpp>
 #include <copc-lib/laz/decompressor.hpp>

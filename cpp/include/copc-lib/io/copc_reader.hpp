@@ -1,5 +1,5 @@
-#ifndef COPCLIB_IO_READER_H_
-#define COPCLIB_IO_READER_H_
+#ifndef COPCLIB_IO_COPC_READER_H_
+#define COPCLIB_IO_COPC_READER_H_
 
 #include <istream>
 #include <limits>
@@ -8,7 +8,7 @@
 
 #include "copc-lib/copc/config.hpp"
 #include "copc-lib/hierarchy/key.hpp"
-#include "copc-lib/io/base_io.hpp"
+#include "copc-lib/io/copc_base_io.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/vlr.hpp"
 
@@ -126,4 +126,4 @@ class FileReader : public Reader
 };
 
 } // namespace copc
-#endif // COPCLIB_IO_READER_H_
+#endif // COPCLIB_IO_COPC_READER_H_

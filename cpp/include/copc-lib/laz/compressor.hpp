@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "copc-lib/io/writer.hpp"
+#include "copc-lib/io/copc_writer.hpp"
 #include "copc-lib/las/utils.hpp"
 
 #include <lazperf/filestream.hpp>

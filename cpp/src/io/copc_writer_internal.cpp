@@ -4,7 +4,7 @@
 
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
-#include "copc-lib/io/internal/writer_internal.hpp"
+#include "copc-lib/io/internal/copc_writer_internal.hpp"
 #include "copc-lib/laz/compressor.hpp"
 
 #include <lazperf/filestream.hpp>
