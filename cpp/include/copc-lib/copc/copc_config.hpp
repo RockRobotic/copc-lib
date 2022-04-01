@@ -7,6 +7,7 @@
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/copc/info.hpp"
 #include "copc-lib/las/header.hpp"
+#include "copc-lib/las/laz_config.hpp"
 #include "copc-lib/las/utils.hpp"
 #include "copc-lib/las/vlr.hpp"
 
@@ -14,35 +15,25 @@ namespace copc
 {
 const int COPC_OFFSET = 429;
 
-class CopcConfig
+class CopcConfig : public las::LazConfig
 {
   public:
     CopcConfig() = default;
     CopcConfig(const las::LasHeader &header, const CopcInfo &copc_info, const CopcExtents &copc_extents,
                const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
-        : header_(std::make_shared<las::LasHeader>(header)), copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
-          copc_extents_(std::make_shared<copc::CopcExtents>(copc_extents)), wkt_(wkt),
-          eb_vlr_(std::make_shared<las::EbVlr>(extra_bytes_vlr)){};
-
-    virtual las::LasHeader LasHeader() const { return *header_; }
+        : LazConfig(header, wkt, extra_bytes_vlr), copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
+          copc_extents_(std::make_shared<copc::CopcExtents>(copc_extents)){};
 
     virtual copc::CopcInfo CopcInfo() const { return *copc_info_; }
 
     virtual copc::CopcExtents CopcExtents() const { return *copc_extents_; }
 
-    std::string Wkt() const { return wkt_; }
-
-    las::EbVlr ExtraBytesVlr() const { return *eb_vlr_; }
-
   protected:
     CopcConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const std::string &wkt,
                const las::EbVlr &extra_bytes_vlr, bool has_extended_stats);
 
-    std::shared_ptr<las::LasHeader> header_;
     std::shared_ptr<copc::CopcInfo> copc_info_;
     std::shared_ptr<copc::CopcExtents> copc_extents_;
-    std::string wkt_;
-    std::shared_ptr<las::EbVlr> eb_vlr_;
 };
 
 class CopcConfigWriter : public CopcConfig

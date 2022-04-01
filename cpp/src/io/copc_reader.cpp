@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "copc-lib/copc/config.hpp"
+#include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
 #include "copc-lib/io/copc_reader.hpp"

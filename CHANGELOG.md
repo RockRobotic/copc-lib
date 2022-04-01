@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **\[C++\]** Add `LazConfig` and `LazConfigWriter` classes as parent class to `CopcConfig` to handle LAZ files.
+
 ## [2.2.3] - 2022-02-02
 
 ### Fixed

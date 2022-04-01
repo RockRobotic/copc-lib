@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-#include "copc-lib/copc/config.hpp"
+#include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/hierarchy/key.hpp"
 #include "copc-lib/io/copc_base_io.hpp"
 #include "copc-lib/las/points.hpp"

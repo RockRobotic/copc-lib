@@ -7,25 +7,26 @@
 #include <stdexcept>
 #include <string>
 
-#include "copc-lib/copc/config.hpp"
-#include "copc-lib/io/copc_base_io.hpp"
-#include "copc-lib/las/config.hpp"
+#include "copc-lib/copc/copc_config.hpp"
+#include "copc-lib/geometry/vector3.hpp"
+#include "copc-lib/io/laz_base_writer.hpp"
 #include "copc-lib/las/header.hpp"
+#include "copc-lib/las/laz_config.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/utils.hpp"
-#include "copc-lib/las/vector3.hpp"
 
 namespace copc::laz
 {
 
-class Writer
+class Writer : BaseWriter
 {
 
   public:
-    void InitWriter(std::ostream &out_stream, const LasConfig &las_config);
+    Writer(std::ostream &out_stream, const las::LazConfig &las_config);
+    void InitWriter(std::ostream &out_stream, const las::LazConfig &las_config);
 
-    void WritePoints(const copc::Points &points);
-    void WritePoint(const copc::Point &point);
+    void WritePoints(const las::Points &points);
+    void WritePoint(const las::Point &point);
 
     void Close();
 };
@@ -34,7 +35,8 @@ class FileWriter : Writer
 {
 
   public:
-    void InitWriter(const std::string &file_path, const LasConfig &las_config);
+    FileWriter(const std::string &file_path, const las::LazConfig &las_config);
+    void InitWriter(const std::string &file_path, const las::LazConfig &las_config);
 
     void Close();
 };

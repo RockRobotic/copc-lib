@@ -1,7 +1,7 @@
 #ifndef COPCLIB_IO_COPC_BASE_IO_H_
 #define COPCLIB_IO_COPC_BASE_IO_H_
 
-#include "copc-lib/copc/config.hpp"
+#include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/copc/info.hpp"
 #include "copc-lib/hierarchy/node.hpp"
