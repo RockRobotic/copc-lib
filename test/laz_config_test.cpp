@@ -13,8 +13,6 @@ TEST_CASE("LazConfig", "[LazConfig]")
 
     int8_t point_format_id = 7;
     int num_eb_items = 1;
-    double test_intensity_min = 5;
-    double test_intensity_max = 155;
     Vector3 test_scale(1, 1, 1);
     Vector3 test_offset(50, 50, 50);
     std::string test_wkt = "test_wkt";
@@ -44,9 +42,6 @@ TEST_CASE("LazConfigWriter", "[LazConfigWriter]")
 {
     int8_t point_format_id = 7;
     int num_eb_items = 1;
-    double test_spacing = 12;
-    double test_intensity_min = 5;
-    double test_intensity_max = 155;
     Vector3 test_scale(1, 1, 1);
     Vector3 test_offset(50, 50, 50);
     Vector3 test_min(-5, -6, -7);
