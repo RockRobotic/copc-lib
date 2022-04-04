@@ -18,7 +18,7 @@
 namespace copc::laz
 {
 
-class Writer : BaseWriter
+class Writer : public BaseWriter
 {
 
   public:
@@ -29,9 +29,10 @@ class Writer : BaseWriter
     void WritePoint(const las::Point &point);
 
     void Close();
+    std::shared_ptr<las::LazConfigWriter> LazConfig() { return config_; }
 };
 
-class FileWriter : Writer
+class FileWriter : public Writer
 {
 
   public:

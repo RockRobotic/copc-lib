@@ -5,12 +5,13 @@
 
 #include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/io/copc_base_io.hpp"
+#include "copc-lib/io/laz_base_writer.hpp"
 #include "copc-lib/las/header.hpp"
 
 namespace copc::Internal
 {
 
-class WriterInternal
+class WriterInternal : laz::BaseWriter
 {
   public:
     const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
@@ -22,7 +23,7 @@ class WriterInternal
                    std::shared_ptr<Hierarchy> hierarchy);
 
     // Writes the header and COPC vlrs
-    void Close();
+    void Close() override;
     // Call close on destructor if needed
     ~WriterInternal() { Close(); }
 
@@ -32,21 +33,13 @@ class WriterInternal
     Entry WriteNode(std::vector<char> in, int32_t point_count, bool compressed);
 
   private:
-    bool open_{};
-
-    std::ostream &out_stream_;
-    std::shared_ptr<CopcConfigWriter> copc_config_;
+    std::shared_ptr<CopcConfigWriter> config_;
     std::shared_ptr<Hierarchy> hierarchy_;
 
-    std::vector<lazperf::chunk> chunks_;
-    uint64_t point_count_{};
-    uint64_t evlr_offset_{};
-    uint32_t evlr_count_{};
+    size_t OffsetToPointData() const override;
+    void WriteHeader() override;
+    void WriteChunkTable() override;
 
-    size_t OffsetToPointData() const;
-
-    void WriteHeader();
-    void WriteChunkTable();
     void WritePage(const std::shared_ptr<PageInternal> &page);
 
     void ComputePageHierarchy();

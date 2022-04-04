@@ -16,25 +16,23 @@ namespace copc::Internal
 
 size_t WriterInternal::OffsetToPointData() const
 {
-    size_t base_offset(375 + (54 + 160) + (54 + (34 + 4 * 6))); // header + COPC vlr + LAZ vlr (max 4 items)
+    size_t laz_offset = BaseWriter::OffsetToPointData();
+
+    size_t copc_header_offset = (54 + 160); // COPC extra header size
 
     size_t extents_offset =
-        CopcExtents::ByteSize(copc_config_->LasHeader()->PointFormatId(), copc_config_->ExtraBytesVlr().items.size()) +
+        CopcExtents::ByteSize(config_->LasHeader()->PointFormatId(), config_->ExtraBytesVlr().items.size()) +
         lazperf::vlr_header::Size;
     // If we store extended stats we need two extents VLRs
-    if (copc_config_->CopcExtents()->HasExtendedStats())
+    if (config_->CopcExtents()->HasExtendedStats())
         extents_offset *= 2;
 
-    size_t eb_offset = copc_config_->ExtraBytesVlr().size();
-    if (eb_offset > 0)
-        eb_offset += lazperf::vlr_header::Size;
-
-    return base_offset + extents_offset + eb_offset;
+    return laz_offset + copc_header_offset + extents_offset;
 }
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
                                std::shared_ptr<Hierarchy> hierarchy)
-    : out_stream_(out_stream), copc_config_(copc_config), hierarchy_(hierarchy)
+    : BaseWriter(out_stream), config_(copc_config), hierarchy_(hierarchy)
 {
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
@@ -60,10 +58,10 @@ void WriterInternal::Close()
     WritePageTree(hierarchy_->seen_pages_[VoxelKey::RootKey()]);
 
     // If WKT is provided, write it as EVLR
-    if (!copc_config_->Wkt().empty())
+    if (!config_->Wkt().empty())
     {
         evlr_count_++;
-        lazperf::wkt_vlr wkt_vlr(copc_config_->Wkt());
+        lazperf::wkt_vlr wkt_vlr(config_->Wkt());
         wkt_vlr.eheader().write(out_stream_);
         wkt_vlr.write(out_stream_);
     }
@@ -76,32 +74,31 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader()
 {
-    laz_vlr lazVlr(copc_config_->LasHeader()->PointFormatId(), copc_config_->LasHeader()->EbByteSize(),
-                   VARIABLE_CHUNK_SIZE);
+    laz_vlr lazVlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(), VARIABLE_CHUNK_SIZE);
 
-    auto las_header_vlr = copc_config_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_,
-                                                               evlr_count_, copc_config_->LasHeader()->EbByteSize(),
-                                                               copc_config_->CopcExtents()->HasExtendedStats());
+    auto las_header_vlr =
+        config_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_, evlr_count_,
+                                        config_->LasHeader()->EbByteSize(), config_->CopcExtents()->HasExtendedStats());
 
     out_stream_.seekp(0);
     las_header_vlr.write(out_stream_);
 
     // Write the COPC Info VLR.
-    auto copc_info_vlr = copc_config_->CopcInfo()->ToLazPerf(*copc_config_->CopcExtents()->GpsTime());
+    auto copc_info_vlr = config_->CopcInfo()->ToLazPerf(*config_->CopcExtents()->GpsTime());
     copc_info_vlr.header().write(out_stream_);
     copc_info_vlr.write(out_stream_);
 
     // Write the COPC Extents VLR.
-    auto extents_vlr = copc_config_->CopcExtents()->ToLazPerf({las_header_vlr.minx, las_header_vlr.maxx},
-                                                              {las_header_vlr.miny, las_header_vlr.maxy},
-                                                              {las_header_vlr.minz, las_header_vlr.maxz});
+    auto extents_vlr = config_->CopcExtents()->ToLazPerf({las_header_vlr.minx, las_header_vlr.maxx},
+                                                         {las_header_vlr.miny, las_header_vlr.maxy},
+                                                         {las_header_vlr.minz, las_header_vlr.maxz});
     extents_vlr.header().write(out_stream_);
     extents_vlr.write(out_stream_);
 
     // Write the COPC Extended stats VLR.
-    if (copc_config_->CopcExtents()->HasExtendedStats())
+    if (config_->CopcExtents()->HasExtendedStats())
     {
-        auto extended_stats_vlr = copc_config_->CopcExtents()->ToLazPerfExtended();
+        auto extended_stats_vlr = config_->CopcExtents()->ToLazPerfExtended();
 
         auto header = extended_stats_vlr.header();
         header.user_id = "rock_robotic";
@@ -117,9 +114,9 @@ void WriterInternal::WriteHeader()
     lazVlr.write(out_stream_);
 
     // Write optional Extra Byte VLR
-    if (copc_config_->LasHeader()->EbByteSize() > 0)
+    if (config_->LasHeader()->EbByteSize() > 0)
     {
-        auto ebVlr = this->copc_config_->ExtraBytesVlr();
+        auto ebVlr = this->config_->ExtraBytesVlr();
         ebVlr.header().write(out_stream_);
         ebVlr.write(out_stream_);
     }
@@ -175,7 +172,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool 
     if (compressed)
         out_stream_.write(in.data(), in.size());
     else
-        point_count = laz::Compressor::CompressBytes(out_stream_, *copc_config_->LasHeader(), in);
+        point_count = laz::Compressor::CompressBytes(out_stream_, *config_->LasHeader(), in);
 
     point_count_ += point_count;
 
@@ -215,8 +212,8 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     // Set the copc header info if needed
     if (page->key == VoxelKey::RootKey())
     {
-        copc_config_->CopcInfo()->root_hier_offset = offset;
-        copc_config_->CopcInfo()->root_hier_size = page_size;
+        config_->CopcInfo()->root_hier_offset = offset;
+        config_->CopcInfo()->root_hier_size = page_size;
     }
 
     for (const auto &node : page->nodes)

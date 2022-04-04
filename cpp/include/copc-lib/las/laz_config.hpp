@@ -8,9 +8,13 @@
 #include "copc-lib/las/utils.hpp"
 #include "copc-lib/las/vlr.hpp"
 
-namespace copc::las
+namespace copc
 {
-const int LAZ_OFFSET = 375;
+class CopcConfig;
+
+namespace las
+{
+const int LAZ_HEADER_SIZE = 375;
 
 class LazConfig
 {
@@ -43,9 +47,13 @@ class LazConfigWriter : public LazConfig
                     const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
 
+    // Copy constructor from CopcConfig
+    LazConfigWriter(const CopcConfig &copc_config);
+
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }
     las::LasHeader LasHeader() const override { return *header_; }
 };
 
-} // namespace copc::las
+} // namespace las
+} // namespace copc
 #endif // COPCLIB_LAZ_CONFIG_H_

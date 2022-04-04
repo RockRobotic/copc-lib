@@ -1,5 +1,7 @@
 #include "copc-lib/las/laz_config.hpp"
 
+#include "copc-lib/copc/copc_config.hpp"
+
 #include <stdexcept>
 namespace copc::las
 {
@@ -19,6 +21,14 @@ LazConfigWriter::LazConfigWriter(const int8_t &point_format_id, const Vector3 &s
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("LasConfig: Supported point formats are 6 to 8.");
+}
+
+// Copy constructor from CopcConfig
+LazConfigWriter::LazConfigWriter(const copc::CopcConfig &copc_config)
+{
+    header_ = std::make_shared<copc::las::LasHeader>(copc_config.LasHeader());
+    wkt_ = copc_config.Wkt();
+    eb_vlr_ = std::make_shared<copc::las::EbVlr>(copc_config.ExtraBytesVlr());
 }
 
 } // namespace copc::las
