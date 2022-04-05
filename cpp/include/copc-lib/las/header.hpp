@@ -18,6 +18,7 @@ class Box;
 namespace las
 {
 
+class Point;
 class LasHeader
 {
   public:
@@ -87,6 +88,8 @@ class LasHeader
 
     // Returns a box that fits the dimensions of the point cloud based on min and max
     Box Bounds() const;
+
+    void UpdateBounds(const Point &point);
 
     // Apply Las scale factors to Vector3 or double
     Vector3 ApplyScale(const Vector3 &unscaled_value) const { return unscaled_value * scale_ + offset_; }

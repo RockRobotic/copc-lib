@@ -3,6 +3,7 @@
 #include <catch2/catch.hpp>
 #include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/las/header.hpp>
+#include <copc-lib/las/point.hpp>
 
 using namespace copc;
 
@@ -61,4 +62,39 @@ TEST_CASE("Bounds", "[LasHeader]")
         REQUIRE(box.y_max == las_header.max.y);
         REQUIRE(box.z_max == las_header.max.z);
     }
+}
+
+TEST_CASE("Bounds Update", "[LasHeader]")
+{
+    auto las_header = las::LasHeader();
+
+    REQUIRE(las_header.min.x == 0.0);
+    REQUIRE(las_header.min.y == 0.0);
+    REQUIRE(las_header.min.z == 0.0);
+    REQUIRE(las_header.max.x == 0.0);
+    REQUIRE(las_header.max.y == 0.0);
+    REQUIRE(las_header.max.z == 0.0);
+
+    las::Point point(las_header);
+    point.X(10);
+    point.Y(-5);
+    point.Z(1);
+    las_header.UpdateBounds(point);
+    REQUIRE(las_header.min.x == 0.0);
+    REQUIRE(las_header.min.y == -5.0);
+    REQUIRE(las_header.min.z == 0.0);
+    REQUIRE(las_header.max.x == 10.0);
+    REQUIRE(las_header.max.y == 0.0);
+    REQUIRE(las_header.max.z == 1.0);
+
+    point.X(-10);
+    point.Y(5);
+    point.Z(-1);
+    las_header.UpdateBounds(point);
+    REQUIRE(las_header.min.x == -10.0);
+    REQUIRE(las_header.min.y == -5.0);
+    REQUIRE(las_header.min.z == -1.0);
+    REQUIRE(las_header.max.x == 10.0);
+    REQUIRE(las_header.max.y == 5.0);
+    REQUIRE(las_header.max.z == 1.0);
 }
