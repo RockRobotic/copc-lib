@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **\[C++\]** Add `LazConfig` and `LazConfigWriter` classes as parent class to `CopcConfig` to handle LAZ files.
 - **\[C++\]** Add `LazWriter` and `LazFileWriter` classes to write LAZ files.
-- **\[Python/C++\]** Add `UpdateBounds` to `LasHeader` to check a point value and update the bounds if necessary.
+- **\[Python/C++\]** Add `UpdateBounds` to `LasHeader` to check values in a `Point` and update the bounds if necessary.
 
 ## [2.2.3] - 2022-02-02
 
