@@ -13,27 +13,27 @@
 #include "copc-lib/las/laz_config.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/utils.hpp"
+#include "copc-lib/las/vlr.hpp"
 
 namespace copc::laz
 {
 
 class BaseWriter
 {
+  public:
+    const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
+
+    // 8 bytes for the chunk table offset
+    uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
 
   protected:
     BaseWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer)
         : out_stream_(out_stream), config_(std::make_shared<copc::las::LazConfigWriter>(laz_config_writer))
     {
-        // TODO: InitWriter
-        // InitWriter(out_stream, las_config_writer);
     }
 
     // Base constructor used in WriterInternal Class
-    BaseWriter(std::ostream &out_stream) : out_stream_(out_stream), config_(nullptr)
-    {
-        // TODO: InitWriter
-        // InitWriter(out_stream, las_config_writer);
-    }
+    explicit BaseWriter(std::ostream &out_stream) : out_stream_(out_stream), config_(nullptr) {}
 
     bool open_{};
     std::ostream &out_stream_;
@@ -44,8 +44,10 @@ class BaseWriter
 
     virtual size_t OffsetToPointData() const;
     virtual void WriteHeader();
-    virtual void WriteChunkTable();
+    void WriteChunkTable();
     virtual void Close();
+    // Call close on destructor if needed
+    ~BaseWriter() { Close(); }
 
     std::shared_ptr<las::LazConfigWriter> config_;
 };

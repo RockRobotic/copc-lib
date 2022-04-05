@@ -14,11 +14,6 @@ namespace copc::Internal
 class WriterInternal : laz::BaseWriter
 {
   public:
-    const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
-
-    // 8 bytes for the chunk table offset
-    uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
-
     WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
                    std::shared_ptr<Hierarchy> hierarchy);
 
@@ -38,7 +33,6 @@ class WriterInternal : laz::BaseWriter
 
     size_t OffsetToPointData() const override;
     void WriteHeader() override;
-    void WriteChunkTable() override;
 
     void WritePage(const std::shared_ptr<PageInternal> &page);
 

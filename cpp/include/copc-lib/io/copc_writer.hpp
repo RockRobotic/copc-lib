@@ -78,7 +78,7 @@ class Writer : public BaseIO
 class FileWriter : public Writer
 {
   public:
-    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_file_writer,
+    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_config_writer,
                const std::optional<int8_t> &point_format_id = {}, const std::optional<Vector3> &scale = {},
                const std::optional<Vector3> &offset = {}, const std::optional<std::string> &wkt = {},
                const std::optional<las::EbVlr> &extra_bytes_vlr = {},
@@ -88,7 +88,7 @@ class FileWriter : public Writer
         f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
         if (!f_stream_.good())
             throw std::runtime_error("FileWriter: Error while opening file path.");
-        InitWriter(f_stream_, copc_file_writer, point_format_id, scale, offset, wkt, extra_bytes_vlr,
+        InitWriter(f_stream_, copc_config_writer, point_format_id, scale, offset, wkt, extra_bytes_vlr,
                    has_extended_stats);
     }
 

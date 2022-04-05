@@ -59,7 +59,6 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_c
         // If not we use the copc_config_writer provided
         this->config_ = std::make_shared<CopcConfigWriter>(copc_config_writer);
     }
-
     this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->config_, this->hierarchy_);
 }
