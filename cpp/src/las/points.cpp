@@ -101,13 +101,13 @@ Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_f
     return points;
 }
 
-void Points::Pack(std::ostream &out_stream)
+void Points::Pack(std::ostream &out_stream) const
 {
     for (const auto &point : points_)
         point->Pack(out_stream);
 }
 
-std::vector<char> Points::Pack()
+std::vector<char> Points::Pack() const
 {
     std::stringstream out;
     Pack(out);

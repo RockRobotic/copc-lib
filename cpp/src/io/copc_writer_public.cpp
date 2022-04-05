@@ -63,13 +63,11 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_c
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->config_, this->hierarchy_);
 }
 
-Writer::~Writer()
+void Writer::Close()
 {
     if (writer_ != nullptr)
         writer_->Close();
 }
-
-void Writer::Close() { writer_->Close(); }
 
 bool Writer::PageExists(const VoxelKey &key) { return hierarchy_->PageExists(key); }
 
@@ -101,7 +99,7 @@ Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point
     return *node;
 }
 
-Node Writer::AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key)
+Node Writer::AddNode(const VoxelKey &key, const las::Points &points, const VoxelKey &page_key)
 {
     if (points.Size() == 0)
         throw std::runtime_error("Writer::AddNode: Cannot add empty las::Points.");
@@ -174,7 +172,8 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
 
 void FileWriter::Close()
 {
-    writer_->Close();
+    if (writer_ != nullptr)
+        writer_->Close();
     f_stream_.close();
 }
 

@@ -2,6 +2,7 @@
 #define COPCLIB_IO_LAZ_WRITER_H_
 
 #include <array>
+#include <memory>
 #include <optional>
 #include <ostream>
 #include <stdexcept>
@@ -22,13 +23,13 @@ class Writer : public BaseWriter
 {
 
   public:
-    Writer(std::ostream &out_stream, const las::LazConfig &las_config);
-    void InitWriter(std::ostream &out_stream, const las::LazConfig &las_config);
+    Writer(std::ostream &out_stream, const las::LazConfigWriter &las_config);
 
+    int32_t WriteChunk(std::vector<char> in, int32_t point_count, bool compressed);
+
+    // Write a group of points as a chunk
     void WritePoints(const las::Points &points);
-    void WritePoint(const las::Point &point);
 
-    void Close();
     std::shared_ptr<las::LazConfigWriter> LazConfig() { return config_; }
 };
 
@@ -36,10 +37,12 @@ class FileWriter : public Writer
 {
 
   public:
-    FileWriter(const std::string &file_path, const las::LazConfig &las_config);
-    void InitWriter(const std::string &file_path, const las::LazConfig &las_config);
+    FileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer);
 
-    void Close();
+    void Close() override;
+
+  private:
+    std::fstream f_stream_;
 };
 
 } // namespace copc::laz

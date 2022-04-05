@@ -330,7 +330,7 @@ PYBIND11_MODULE(_core, m)
         .def("ToPointFormat", &las::Points::ToPointFormat, py::arg("point_format_id"))
         .def("Within", &las::Points::Within, py::arg("box"))
         .def("GetWithin", &las::Points::GetWithin, py::arg("box"))
-        .def("Pack", py::overload_cast<>(&las::Points::Pack))
+        .def("Pack", py::overload_cast<>(&las::Points::Pack, py::const_))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const las::LasHeader &>(&las::Points::Unpack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
                                          const Vector3 &>(&las::Points::Unpack))
@@ -427,7 +427,7 @@ PYBIND11_MODULE(_core, m)
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
         .def("Close", &FileWriter::Close)
-        .def("AddNode", py::overload_cast<const VoxelKey &, las::Points &, const VoxelKey &>(&Writer::AddNode),
+        .def("AddNode", py::overload_cast<const VoxelKey &, const las::Points &, const VoxelKey &>(&Writer::AddNode),
              py::arg("key"), py::arg("points"), py::arg("page_key") = VoxelKey::RootKey())
         .def("AddNodeCompressed", &Writer::AddNodeCompressed, py::arg("key"), py::arg("compressed_data"),
              py::arg("point_count"), py::arg("page_key") = VoxelKey::RootKey())

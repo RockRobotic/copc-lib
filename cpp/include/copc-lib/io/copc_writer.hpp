@@ -38,7 +38,7 @@ class Writer : public BaseIO
     virtual void Close();
 
     // Adds a node to a given page
-    Node AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key = VoxelKey::RootKey());
+    Node AddNode(const VoxelKey &key, const las::Points &points, const VoxelKey &page_key = VoxelKey::RootKey());
     Node AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, uint64_t point_count,
                            const VoxelKey &page_key = VoxelKey::RootKey());
     Node AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data,
@@ -48,7 +48,7 @@ class Writer : public BaseIO
 
     std::shared_ptr<CopcConfigWriter> CopcConfig() { return config_; }
 
-    virtual ~Writer();
+    ~Writer() { Close(); }
 
   protected:
     Writer() = default;
@@ -93,8 +93,6 @@ class FileWriter : public Writer
     }
 
     void Close() override;
-
-    ~FileWriter() override { f_stream_.close(); }
 
   private:
     std::fstream f_stream_;

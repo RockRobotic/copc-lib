@@ -54,8 +54,8 @@ class Points
     void ToPointFormat(const int8_t &point_format_id);
 
     // Pack/unpack
-    std::vector<char> Pack();
-    void Pack(std::ostream &out_stream);
+    std::vector<char> Pack() const;
+    void Pack(std::ostream &out_stream) const;
     static Points Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
                          const uint16_t &eb_byte_size, const Vector3 &scale, const Vector3 &offset);
     static Points Unpack(const std::vector<char> &point_data, const LasHeader &header);

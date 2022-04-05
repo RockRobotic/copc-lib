@@ -1,6 +1,7 @@
 #include <cstring>
 #include <iterator>
 #include <stdexcept>
+#include <string>
 
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"

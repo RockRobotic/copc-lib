@@ -2,6 +2,7 @@
 #define COPCLIB_IO_LAZ_BASE_WRITER_H_
 
 #include <array>
+#include <iterator>
 #include <optional>
 #include <ostream>
 #include <stdexcept>
@@ -26,12 +27,19 @@ class BaseWriter
     // 8 bytes for the chunk table offset
     uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
 
-  protected:
-    BaseWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer)
-        : out_stream_(out_stream), config_(std::make_shared<copc::las::LazConfigWriter>(laz_config_writer))
+    BaseWriter(std::ostream &out_stream, std::shared_ptr<las::LazConfigWriter> laz_config_writer)
+        : out_stream_(out_stream), config_(laz_config_writer)
     {
+        // reserve enough space for the header & VLRs in the file
+        std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
+        open_ = true;
     }
 
+    virtual void Close();
+    // Call close on destructor if needed
+    ~BaseWriter() { Close(); }
+
+  protected:
     // Base constructor used in WriterInternal Class
     explicit BaseWriter(std::ostream &out_stream) : out_stream_(out_stream), config_(nullptr) {}
 
@@ -45,9 +53,6 @@ class BaseWriter
     virtual size_t OffsetToPointData() const;
     virtual void WriteHeader();
     void WriteChunkTable();
-    virtual void Close();
-    // Call close on destructor if needed
-    ~BaseWriter() { Close(); }
 
     std::shared_ptr<las::LazConfigWriter> config_;
 };
