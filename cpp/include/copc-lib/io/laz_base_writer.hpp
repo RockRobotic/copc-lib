@@ -22,11 +22,6 @@ namespace copc::laz
 class BaseWriter
 {
   public:
-    const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
-
-    // 8 bytes for the chunk table offset
-    uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
-
     BaseWriter(std::ostream &out_stream, std::shared_ptr<las::LazConfigWriter> laz_config_writer)
         : out_stream_(out_stream), config_(laz_config_writer)
     {
@@ -40,6 +35,11 @@ class BaseWriter
     ~BaseWriter() { Close(); }
 
   protected:
+    const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
+
+    // 8 bytes for the chunk table offset
+    uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
+
     // Base constructor used in WriterInternal Class
     explicit BaseWriter(std::ostream &out_stream) : out_stream_(out_stream), config_(nullptr) {}
 

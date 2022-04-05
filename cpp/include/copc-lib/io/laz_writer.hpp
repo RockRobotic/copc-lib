@@ -19,30 +19,41 @@
 namespace copc::laz
 {
 
-class Writer : public BaseWriter
+class LazWriter : public BaseWriter
 {
 
   public:
-    Writer(std::ostream &out_stream, const las::LazConfigWriter &las_config);
-
-    int32_t WriteChunk(std::vector<char> in, int32_t point_count, bool compressed);
+    LazWriter(std::ostream &out_stream, const las::LazConfigWriter &las_config);
 
     // Write a group of points as a chunk
     void WritePoints(const las::Points &points);
 
     std::shared_ptr<las::LazConfigWriter> LazConfig() { return config_; }
+    uint64_t PointCount() { return point_count_; }
+    uint64_t ChunkCount() { return chunks_.size(); }
+
+  private:
+    int32_t WriteChunk(std::vector<char> in, int32_t point_count, bool compressed);
 };
 
-class FileWriter : public Writer
+class LazFileWriter
 {
 
   public:
-    FileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer);
+    LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer);
 
-    void Close() override;
+    void Close();
+    ~LazFileWriter();
+
+    // Write a group of points as a chunk
+    void WritePoints(const las::Points &points) { writer_->WritePoints(points); }
+    uint64_t PointCount() { return writer_->PointCount(); }
+    uint64_t ChunkCount() { return writer_->ChunkCount(); }
+    std::shared_ptr<las::LazConfigWriter> LazConfig() { return writer_->LazConfig(); }
 
   private:
     std::fstream f_stream_;
+    std::shared_ptr<LazWriter> writer_;
 };
 
 } // namespace copc::laz
