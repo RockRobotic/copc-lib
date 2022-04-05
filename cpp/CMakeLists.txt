@@ -14,7 +14,6 @@ set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/io/copc_base_io.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_writer.hpp
-        include/${LIBRARY_TARGET_NAME}/io/laz_base_writer.hpp
         include/${LIBRARY_TARGET_NAME}/io/laz_writer.hpp
         include/${LIBRARY_TARGET_NAME}/las/header.hpp
         include/${LIBRARY_TARGET_NAME}/las/point.hpp
@@ -31,6 +30,7 @@ set(${LIBRARY_TARGET_NAME}_SRC
         include/${LIBRARY_TARGET_NAME}/hierarchy/internal/page.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/internal/hierarchy.hpp
         include/${LIBRARY_TARGET_NAME}/io/internal/copc_writer_internal.hpp
+        include/${LIBRARY_TARGET_NAME}/io/laz_base_writer.hpp
         src/copc/info.cpp
         src/copc/extents.cpp
         src/copc/copc_config.cpp
