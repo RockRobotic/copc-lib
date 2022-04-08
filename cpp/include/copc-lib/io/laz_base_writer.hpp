@@ -41,7 +41,7 @@ class BaseWriter
     uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
 
     // Base constructor used in WriterInternal Class
-    explicit BaseWriter(std::ostream &out_stream) : out_stream_(out_stream), config_(nullptr) {}
+    explicit BaseWriter(std::ostream &out_stream) : out_stream_(out_stream) {}
 
     bool open_{};
     std::ostream &out_stream_;

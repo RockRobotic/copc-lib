@@ -20,10 +20,10 @@ class LazConfig
 {
   public:
     LazConfig() = default;
-    LazConfig(const las::LasHeader &header, const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
-        : header_(std::make_shared<las::LasHeader>(header)), wkt_(wkt),
-          eb_vlr_(std::make_shared<las::EbVlr>(extra_bytes_vlr))
+    LazConfig(const las::LasHeader &header, const std::string &wkt, const las::EbVlr &extra_bytes_vlr) : wkt_(wkt)
     {
+        header_ = std::make_shared<las::LasHeader>(header);
+        eb_vlr_ = std::make_shared<las::EbVlr>(extra_bytes_vlr);
     }
 
     virtual las::LasHeader LasHeader() const { return *header_; }
