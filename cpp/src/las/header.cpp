@@ -24,7 +24,7 @@ LasHeader::LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t p
 
 Box LasHeader::Bounds() const { return Box(min, max); }
 
-void LasHeader::CheckAndUpdateBounds(const las::Point &point)
+void LasHeader::UpdateBounds(const las::Point &point)
 {
     if (point.X() < min.x)
         min.x = point.X();

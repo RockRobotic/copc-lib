@@ -32,7 +32,7 @@ def test_update_bounds():
     point.x = 10
     point.y = -5
     point.z = 1
-    las_header.CheckAndUpdateBounds(point)
+    las_header.UpdateBounds(point)
     assert las_header.min.x == 0.0
     assert las_header.min.y == -5.0
     assert las_header.min.z == 0.0
@@ -43,7 +43,7 @@ def test_update_bounds():
     point.x = -10
     point.y = 5
     point.z = -1
-    las_header.CheckAndUpdateBounds(point)
+    las_header.UpdateBounds(point)
     assert las_header.min.x == -10.0
     assert las_header.min.y == -5.0
     assert las_header.min.z == -1.0

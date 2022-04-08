@@ -79,7 +79,7 @@ TEST_CASE("Bounds Update", "[LasHeader]")
     point.X(10);
     point.Y(-5);
     point.Z(1);
-    las_header.CheckAndUpdateBounds(point);
+    las_header.UpdateBounds(point);
     REQUIRE(las_header.min.x == 0.0);
     REQUIRE(las_header.min.y == -5.0);
     REQUIRE(las_header.min.z == 0.0);
@@ -90,7 +90,7 @@ TEST_CASE("Bounds Update", "[LasHeader]")
     point.X(-10);
     point.Y(5);
     point.Z(-1);
-    las_header.CheckAndUpdateBounds(point);
+    las_header.UpdateBounds(point);
     REQUIRE(las_header.min.x == -10.0);
     REQUIRE(las_header.min.y == -5.0);
     REQUIRE(las_header.min.z == -1.0);
