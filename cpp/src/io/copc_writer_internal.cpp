@@ -16,7 +16,7 @@ namespace copc::Internal
 
 size_t WriterInternal::OffsetToPointData() const
 {
-    size_t base_offset = BaseWriter::OffsetToPointData(*config_);
+    size_t base_offset = laz::BaseWriter::OffsetToPointData(*config_);
 
     // COPC VLR
     size_t copc_info_vlr_size = (lazperf::vlr_header::Size + CopcInfo::SIZE_BYTES);
