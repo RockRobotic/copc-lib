@@ -36,7 +36,7 @@ class BaseWriter
     ~BaseWriter() { Close(); }
 
   protected:
-    const uint32_t VARIABLE_CHUNK_SIZE = (std::numeric_limits<uint32_t>::max)();
+    static const uint32_t VARIABLE_CHUNK_SIZE = std::numeric_limits<uint32_t>::max();
 
     // 8 bytes for the chunk table offset
     uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
@@ -54,7 +54,8 @@ class BaseWriter
     uint64_t evlr_offset_{};
     uint32_t evlr_count_{};
 
-    virtual size_t OffsetToPointData() const;
+    static size_t OffsetToPointData(const las::LazConfig &config);
+    virtual size_t OffsetToPointData() const { return OffsetToPointData(*config_); };
     virtual void WriteHeader();
     void WriteChunkTable();
 

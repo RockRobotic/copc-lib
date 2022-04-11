@@ -16,16 +16,7 @@ namespace copc::Internal
 
 size_t WriterInternal::OffsetToPointData() const
 {
-    // LAZ VLR
-    size_t laz_vlr_size =
-        lazperf::laz_vlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(), VARIABLE_CHUNK_SIZE)
-            .size();
-    laz_vlr_size += lazperf::vlr_header::Size;
-
-    // LAS Extra Byte VLR
-    size_t las_eb_vlr_size = config_->ExtraBytesVlr().size();
-    if (las_eb_vlr_size > 0)
-        las_eb_vlr_size += lazperf::vlr_header::Size;
+    size_t base_offset = BaseWriter::OffsetToPointData(*config_);
 
     // COPC VLR
     size_t copc_info_vlr_size = (lazperf::vlr_header::Size + CopcInfo::SIZE_BYTES);
@@ -38,7 +29,7 @@ size_t WriterInternal::OffsetToPointData() const
     if (config_->CopcExtents()->HasExtendedStats())
         copc_extents_vlr_size *= 2;
 
-    return las::LasHeader::SIZE_BYTES + laz_vlr_size + copc_info_vlr_size + copc_extents_vlr_size + las_eb_vlr_size;
+    return base_offset + copc_info_vlr_size + copc_extents_vlr_size;
 }
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,

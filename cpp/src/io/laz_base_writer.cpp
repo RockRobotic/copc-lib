@@ -6,17 +6,17 @@
 namespace copc::laz
 {
 
-size_t BaseWriter::OffsetToPointData() const
+size_t BaseWriter::OffsetToPointData(const las::LazConfig &config)
 {
 
     // LAZ VLR
     size_t laz_vlr_size =
-        lazperf::laz_vlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(), VARIABLE_CHUNK_SIZE)
+        lazperf::laz_vlr(config.LasHeader().PointFormatId(), config.LasHeader().EbByteSize(), VARIABLE_CHUNK_SIZE)
             .size();
     laz_vlr_size += lazperf::vlr_header::Size;
 
     // LAS Extra Byte VLR
-    size_t las_eb_vlr_size = config_->ExtraBytesVlr().size();
+    size_t las_eb_vlr_size = config.ExtraBytesVlr().size();
     if (las_eb_vlr_size > 0)
         las_eb_vlr_size += lazperf::vlr_header::Size;
     return las::LasHeader::SIZE_BYTES + laz_vlr_size + las_eb_vlr_size;
