@@ -14,16 +14,15 @@ class CopcConfig;
 
 namespace las
 {
-const int LAZ_HEADER_SIZE = 375;
 
 class LazConfig
 {
   public:
     LazConfig() = default;
-    LazConfig(const las::LasHeader &header, const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
-        : header_(std::make_shared<las::LasHeader>(header)), wkt_(wkt),
-          eb_vlr_(std::make_shared<las::EbVlr>(extra_bytes_vlr))
+    LazConfig(const las::LasHeader &header, const std::string &wkt, const las::EbVlr &extra_bytes_vlr) : wkt_(wkt)
     {
+        header_ = std::make_shared<las::LasHeader>(header);
+        eb_vlr_ = std::make_shared<las::EbVlr>(extra_bytes_vlr);
     }
 
     virtual las::LasHeader LasHeader() const { return *header_; }
@@ -34,7 +33,7 @@ class LazConfig
 
   protected:
     LazConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const std::string &wkt,
-              const las::EbVlr &extra_bytes_vlr);
+              const las::EbVlr &extra_bytes_vlr, bool copc_flag);
     std::shared_ptr<las::LasHeader> header_;
     std::string wkt_;
     std::shared_ptr<las::EbVlr> eb_vlr_;

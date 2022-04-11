@@ -11,6 +11,8 @@ namespace copc
 class CopcInfo
 {
   public:
+    static const int SIZE_BYTES = 160; // COPC Info VLR payload is 160 bytes, https://copc.io/
+
     CopcInfo() = default;
 
     CopcInfo(const lazperf::copc_info_vlr &copc_info_vlr);

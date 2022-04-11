@@ -22,20 +22,23 @@ class Point;
 class LasHeader
 {
   public:
+    static const uint16_t SIZE_BYTES = 375;
+
     LasHeader() = default;
     uint16_t EbByteSize() const;
-    LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset)
-        : point_format_id_(point_format_id), point_record_length_{point_record_length}, scale_(scale),
-          offset_(offset){};
+    LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset,
+              bool copc_flag)
+        : point_format_id_(point_format_id), point_record_length_{point_record_length}, scale_(scale), offset_(offset),
+          copc_flag_(copc_flag){};
 
     // Constructor for python pickling
-    // TODO: Add a CMAKE flag to only compute python-specific code when python is compiled
+    // TODO: Add a CMAKE flag to only compile python-specific code when python is compiled
     LasHeader(int8_t point_format_id, uint16_t point_record_length, uint32_t point_offset, uint64_t point_count,
               uint32_t vlr_count, const Vector3 &scale, const Vector3 &offset, uint64_t evlr_offset,
               uint32_t evlr_count)
         : point_format_id_(point_format_id), point_record_length_(point_record_length), point_offset_(point_offset),
           point_count_(point_count), vlr_count_(vlr_count), scale_(scale), offset_(offset), evlr_offset_(evlr_offset),
-          evlr_count_(evlr_count){};
+          evlr_count_(evlr_count), copc_flag_(true){};
 
     // Copy constructor with modification of protected attributes
     LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale,
@@ -58,6 +61,7 @@ class LasHeader
     uint32_t VlrCount() const { return vlr_count_; }
     uint32_t EvlrCount() const { return evlr_count_; }
     uint64_t EvlrOffset() const { return evlr_offset_; }
+    uint64_t Copc() const { return copc_flag_; }
 
     void GUID(const std::string &guid)
     {
@@ -133,10 +137,10 @@ class LasHeader
     std::string system_identifier_{};
     std::string generating_software_{};
 
-    const uint8_t version_major_{1};
-    const uint8_t version_minor_{4};
+    static const uint8_t version_major_{1};
+    static const uint8_t version_minor_{4};
 
-    const uint16_t header_size_{375};
+    const bool copc_flag_{true}; // flag to set true if the header is used for a COPC file
 };
 
 } // namespace las

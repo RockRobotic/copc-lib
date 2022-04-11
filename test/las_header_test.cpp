@@ -7,7 +7,46 @@
 
 using namespace copc;
 
-TEST_CASE("Test constructor and conversions", "[LasHeader]")
+TEST_CASE("Test constructor", "[LasHeader]")
+{
+
+    int8_t point_format_id = 7;
+    int num_eb_items = 1;
+    double test_spacing = 12;
+    double test_intensity_min = 5;
+    double test_intensity_max = 155;
+    Vector3 test_scale(1, 1, 1);
+    Vector3 test_offset(50, 50, 50);
+    std::string test_wkt = "test_wkt";
+
+    las::EbVlr test_extra_bytes_vlr(num_eb_items);
+    test_extra_bytes_vlr.items[0].data_type = 0;
+    test_extra_bytes_vlr.items[0].options = 4;
+    test_extra_bytes_vlr.items[0].name = "eb1";
+
+    SECTION("copc flag")
+    {
+        // In the case of a LAZ file, the LAS header should have a false COPC flag, and a single VLR when no EBs are
+        // present
+        las::LasHeader laz_header(point_format_id,
+                                  las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(), test_scale,
+                                  test_offset, false);
+
+        REQUIRE(laz_header.Copc() == false);
+        REQUIRE(laz_header.ToLazPerf(380, 0, 390, 1, 0, false).vlr_count == 1);
+
+        // In the case of a COPC file, the LAS header should have a true COPC flag, and three VLRs when no EBs are
+        // present
+        las::LasHeader copc_header(point_format_id,
+                                   las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(), test_scale,
+                                   test_offset, true);
+
+        REQUIRE(copc_header.Copc() == true);
+        REQUIRE(copc_header.ToLazPerf(380, 0, 390, 1, 0, false).vlr_count == 3);
+    }
+}
+
+TEST_CASE("Test reader and conversions", "[LasHeader]")
 {
     GIVEN("A valid file_path")
     {

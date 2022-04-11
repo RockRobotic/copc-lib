@@ -34,7 +34,7 @@ TEST_CASE("CopcConfig", "[CopcConfig]")
     std::string wkt(test_wkt);
 
     las::LasHeader header(point_format_id, las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(),
-                          test_scale, test_offset);
+                          test_scale, test_offset, true);
 
     CopcConfig cfg(header, copc_info, copc_extents, wkt, test_extra_bytes_vlr);
 
@@ -112,7 +112,7 @@ TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
         std::string wkt(test_wkt);
 
         las::LasHeader header(point_format_id, las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(),
-                              test_scale, test_offset);
+                              test_scale, test_offset, true);
 
         header.min = test_min;
 

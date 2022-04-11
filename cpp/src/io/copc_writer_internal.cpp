@@ -16,23 +16,29 @@ namespace copc::Internal
 
 size_t WriterInternal::OffsetToPointData() const
 {
-    size_t base_offset(las::LAZ_HEADER_SIZE + (54 + (34 + 4 * 6))); // header + LAZ vlr (max 4 items)
-    size_t eb_offset = config_->ExtraBytesVlr().size();
-    if (eb_offset > 0)
-        eb_offset += lazperf::vlr_header::Size;
+    // LAZ VLR
+    size_t laz_vlr_size =
+        lazperf::laz_vlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(), VARIABLE_CHUNK_SIZE)
+            .size();
+    laz_vlr_size += lazperf::vlr_header::Size;
 
-    size_t laz_offset = base_offset + eb_offset;
+    // LAS Extra Byte VLR
+    size_t las_eb_vlr_size = config_->ExtraBytesVlr().size();
+    if (las_eb_vlr_size > 0)
+        las_eb_vlr_size += lazperf::vlr_header::Size;
 
-    size_t copc_header_offset = (54 + 160); // COPC extra header size
+    // COPC VLR
+    size_t copc_info_vlr_size = (lazperf::vlr_header::Size + CopcInfo::SIZE_BYTES);
 
-    size_t extents_offset =
-        CopcExtents::ByteSize(config_->LasHeader()->PointFormatId(), config_->ExtraBytesVlr().items.size()) +
-        lazperf::vlr_header::Size;
+    // COPC Extents VLR
+    size_t copc_extents_vlr_size =
+        CopcExtents::ByteSize(config_->LasHeader()->PointFormatId(), config_->ExtraBytesVlr().items.size());
+    copc_extents_vlr_size += lazperf::vlr_header::Size;
     // If we store extended stats we need two extents VLRs
     if (config_->CopcExtents()->HasExtendedStats())
-        extents_offset *= 2;
+        copc_extents_vlr_size *= 2;
 
-    return laz_offset + copc_header_offset + extents_offset;
+    return las::LasHeader::SIZE_BYTES + laz_vlr_size + copc_info_vlr_size + copc_extents_vlr_size + las_eb_vlr_size;
 }
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,

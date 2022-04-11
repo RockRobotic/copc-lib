@@ -8,22 +8,28 @@ namespace copc::laz
 
 size_t BaseWriter::OffsetToPointData() const
 {
-    size_t base_offset(las::LAZ_HEADER_SIZE + (54 + (34 + 4 * 6))); // header + LAZ vlr (max 4 items)
-    size_t eb_offset = config_->ExtraBytesVlr().size();
-    if (eb_offset > 0)
-        eb_offset += lazperf::vlr_header::Size;
 
-    return base_offset + eb_offset;
+    // LAZ VLR
+    size_t laz_vlr_size =
+        lazperf::laz_vlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(), VARIABLE_CHUNK_SIZE)
+            .size();
+    laz_vlr_size += lazperf::vlr_header::Size;
+
+    // LAS Extra Byte VLR
+    size_t las_eb_vlr_size = config_->ExtraBytesVlr().size();
+    if (las_eb_vlr_size > 0)
+        las_eb_vlr_size += lazperf::vlr_header::Size;
+    return las::LasHeader::SIZE_BYTES + laz_vlr_size + las_eb_vlr_size;
 }
 
 // Writes the LAS header and VLRs
 void BaseWriter::WriteHeader()
 {
     // Write LAS header
-    auto las_header_vlr = config_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_, evlr_count_,
-                                                          config_->LasHeader()->EbByteSize(), false);
+    auto las_header = config_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_, evlr_count_,
+                                                      config_->LasHeader()->EbByteSize(), false);
     out_stream_.seekp(0);
-    las_header_vlr.write(out_stream_);
+    las_header.write(out_stream_);
 
     // Write the LAZ VLR
     lazperf::laz_vlr lazVlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(),
@@ -40,7 +46,7 @@ void BaseWriter::WriteHeader()
     }
 
     // Make sure that we haven't gone over allocated size
-    if (static_cast<int64_t>(out_stream_.tellp()) > OffsetToPointData())
+    if (out_stream_.tellp() > OffsetToPointData())
         throw std::runtime_error("BaseWriter::WriteHeader: LasHeader + VLRs are bigger than offset to point data.");
 }
 
@@ -50,7 +56,7 @@ void BaseWriter::WriteChunkTable()
     out_stream_.seekp(0, std::ios::end);
 
     // take note of where we're writing the chunk table, we need this later
-    auto chunk_table_offset = static_cast<int64_t>(out_stream_.tellp());
+    auto chunk_table_offset = static_cast<uint64_t>(out_stream_.tellp());
 
     // Fixup the chunk table to be relative offsets rather than absolute ones.
     uint64_t prevOffset = FirstChunkOffset();
@@ -74,8 +80,8 @@ void BaseWriter::WriteChunkTable()
 
     compress_chunk_table(w.cb(), chunks_, true);
     // go back to where we're supposed to write chunk table offset
-    out_stream_.seekp(static_cast<long>(OffsetToPointData()));
-    out_stream_.write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(chunk_table_offset));
+    out_stream_.seekp(static_cast<int64_t>(OffsetToPointData()));
+    out_stream_.write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(uint64_t));
 }
 
 void BaseWriter::Close()
@@ -87,7 +93,7 @@ void BaseWriter::Close()
 
     // Set hierarchy evlr
     out_stream_.seekp(0, std::ios::end);
-    evlr_offset_ = static_cast<int64_t>(out_stream_.tellp());
+    evlr_offset_ = out_stream_.tellp();
 
     // If WKT is provided, write it as EVLR
     if (!config_->Wkt().empty())

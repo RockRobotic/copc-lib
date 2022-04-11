@@ -28,6 +28,7 @@ class BaseWriter
         // reserve enough space for the header & VLRs in the file
         std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
         open_ = true;
+        std::cout << "BaseWriter::BaseWriter" << std::endl;
     }
 
     virtual void Close();
@@ -41,7 +42,10 @@ class BaseWriter
     uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
 
     // Base constructor used in WriterInternal Class
-    explicit BaseWriter(std::ostream &out_stream) : out_stream_(out_stream), config_(nullptr) {}
+    BaseWriter(std::ostream &out_stream) : out_stream_(out_stream)
+    {
+        std::cout << "BaseWriter::BaseWriter (BASE)" << std::endl;
+    }
 
     bool open_{};
     std::ostream &out_stream_;

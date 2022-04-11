@@ -11,6 +11,7 @@ LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_c
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
     open_ = true;
+    std::cout << "LazWriter::LazWriter" << std::endl;
 }
 
 int32_t LazWriter::WriteChunk(std::vector<char> in, int32_t point_count, bool compressed)
@@ -55,6 +56,7 @@ void LazWriter::WritePoints(const las::Points &points)
 
 LazFileWriter::LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer)
 {
+    std::cout << "LazFileWriter::LazFileWriter(const std::string &)" << std::endl;
     f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
     if (!f_stream_.good())
         throw std::runtime_error("FileWriter: Error while opening file path.");
@@ -64,7 +66,11 @@ LazFileWriter::LazFileWriter(const std::string &file_path, const las::LazConfigW
 void LazFileWriter::Close()
 {
     writer_->Close();
-    f_stream_.close();
+    if (f_stream_.is_open())
+    {
+        std::cout << "closing filestream" << std::endl; // TODO: remove
+        f_stream_.close();
+    }
 }
 
 LazFileWriter::~LazFileWriter() { Close(); }

@@ -3,6 +3,7 @@
 
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/io/laz_writer.hpp>
+//#include <copc-lib/las/laz_config.hpp>
 
 using namespace copc;
 using namespace std;

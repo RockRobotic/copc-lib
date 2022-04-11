@@ -41,7 +41,6 @@ class LazFileWriter
 
   public:
     LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer);
-
     void Close();
     ~LazFileWriter();
 
@@ -54,6 +53,17 @@ class LazFileWriter
   private:
     std::fstream f_stream_;
     std::shared_ptr<LazWriter> writer_;
+};
+
+class Test
+{
+  public:
+    Test(const std::string &file_path);
+    void Close();
+    ~Test();
+
+  private:
+    std::fstream f_stream_;
 };
 
 } // namespace copc::laz

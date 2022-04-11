@@ -6,7 +6,7 @@ namespace copc
 {
 CopcConfig::CopcConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
                        const std::string &wkt, const las::EbVlr &extra_bytes_vlr, bool has_extended_stats)
-    : LazConfig(point_format_id, scale, offset, wkt, extra_bytes_vlr)
+    : LazConfig(point_format_id, scale, offset, wkt, extra_bytes_vlr, true)
 {
     copc_info_ = std::make_shared<copc::CopcInfo>();
     copc_extents_ =
