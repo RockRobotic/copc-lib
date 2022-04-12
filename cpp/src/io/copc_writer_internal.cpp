@@ -36,9 +36,6 @@ WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcCon
                                std::shared_ptr<Hierarchy> hierarchy)
     : BaseWriter(out_stream, std::static_pointer_cast<las::LazConfig>(copc_config_writer)), hierarchy_(hierarchy)
 {
-    // reserve enough space for the header & VLRs in the file
-    std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
-    open_ = true;
 }
 
 void WriterInternal::Close()
