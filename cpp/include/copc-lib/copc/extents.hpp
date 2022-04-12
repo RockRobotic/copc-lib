@@ -2,6 +2,7 @@
 #define COPCLIB_COPC_EXTENTS_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <lazperf/vlr.hpp>
@@ -129,35 +130,41 @@ class CopcExtents
     }
 
     // Setters for python bindings
-    void Intensity(std::shared_ptr<CopcExtent> intensity) { extents_[0] = intensity; }
-    void ReturnNumber(std::shared_ptr<CopcExtent> return_number) { extents_[1] = return_number; }
-    void NumberOfReturns(std::shared_ptr<CopcExtent> number_of_returns) { extents_[2] = number_of_returns; }
-    void ScannerChannel(std::shared_ptr<CopcExtent> scanner_channel) { extents_[3] = scanner_channel; }
-    void ScanDirectionFlag(std::shared_ptr<CopcExtent> scan_direction_flag) { extents_[4] = scan_direction_flag; }
-    void EdgeOfFlightLine(std::shared_ptr<CopcExtent> edge_of_flight_line) { extents_[5] = edge_of_flight_line; }
-    void Classification(std::shared_ptr<CopcExtent> classification) { extents_[6] = classification; }
-    void UserData(std::shared_ptr<CopcExtent> user_data) { extents_[7] = user_data; }
-    void ScanAngle(std::shared_ptr<CopcExtent> scan_angle) { extents_[8] = scan_angle; }
-    void PointSourceId(std::shared_ptr<CopcExtent> point_source_id) { extents_[9] = point_source_id; }
-    void GpsTime(std::shared_ptr<CopcExtent> gps_time) { extents_[10] = gps_time; }
+    void Intensity(std::shared_ptr<CopcExtent> intensity) { extents_[0] = std::move(intensity); }
+    void ReturnNumber(std::shared_ptr<CopcExtent> return_number) { extents_[1] = std::move(return_number); }
+    void NumberOfReturns(std::shared_ptr<CopcExtent> number_of_returns) { extents_[2] = std::move(number_of_returns); }
+    void ScannerChannel(std::shared_ptr<CopcExtent> scanner_channel) { extents_[3] = std::move(scanner_channel); }
+    void ScanDirectionFlag(std::shared_ptr<CopcExtent> scan_direction_flag)
+    {
+        extents_[4] = std::move(scan_direction_flag);
+    }
+    void EdgeOfFlightLine(std::shared_ptr<CopcExtent> edge_of_flight_line)
+    {
+        extents_[5] = std::move(edge_of_flight_line);
+    }
+    void Classification(std::shared_ptr<CopcExtent> classification) { extents_[6] = std::move(classification); }
+    void UserData(std::shared_ptr<CopcExtent> user_data) { extents_[7] = std::move(user_data); }
+    void ScanAngle(std::shared_ptr<CopcExtent> scan_angle) { extents_[8] = std::move(scan_angle); }
+    void PointSourceId(std::shared_ptr<CopcExtent> point_source_id) { extents_[9] = std::move(point_source_id); }
+    void GpsTime(std::shared_ptr<CopcExtent> gps_time) { extents_[10] = std::move(gps_time); }
     void Red(std::shared_ptr<CopcExtent> red)
     {
         if (point_format_id_ > 6)
-            extents_[1] = red;
+            extents_[1] = std::move(red);
         else
             throw std::runtime_error("CopcExtents::Red: This point format does not have Red");
     }
     void Green(std::shared_ptr<CopcExtent> green)
     {
         if (point_format_id_ > 6)
-            extents_[12] = green;
+            extents_[12] = std::move(green);
         else
             throw std::runtime_error("CopcExtents::Green: This point format does not have Green");
     }
     void Blue(std::shared_ptr<CopcExtent> blue)
     {
         if (point_format_id_ > 6)
-            extents_[13] = blue;
+            extents_[13] = std::move(blue);
         else
             throw std::runtime_error("CopcExtents::Blue: This point format does not have Blue");
     }
@@ -165,7 +172,7 @@ class CopcExtents
     void Nir(std::shared_ptr<CopcExtent> nir)
     {
         if (point_format_id_ == 8)
-            extents_[14] = nir;
+            extents_[14] = std::move(nir);
         else
             throw std::runtime_error("CopcExtents::NIR: This point format does not have NIR");
     }

@@ -39,7 +39,7 @@ class LazConfig
     // Copy constructor from LazConfigWriter
     LazConfig(const LazConfigWriter &laz_config_writer);
 
-    LazConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const std::string &wkt,
+    LazConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, std::string wkt,
               const las::EbVlr &extra_bytes_vlr, bool copc_flag);
     std::shared_ptr<las::LasHeader> header_;
     std::string wkt_;

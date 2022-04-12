@@ -1,6 +1,7 @@
 #include <cmath>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <pybind11/operators.h>
@@ -25,7 +26,7 @@
 namespace py = pybind11;
 using namespace copc;
 
-PYBIND11_MAKE_OPAQUE(std::vector<char>);
+PYBIND11_MAKE_OPAQUE(std::vector<char>)
 
 PYBIND11_MODULE(_core, m)
 {
@@ -76,7 +77,7 @@ PYBIND11_MODULE(_core, m)
                 /* Return a tuple that fully encodes the state of the object */
                 return py::make_tuple(key.d, key.x, key.y, key.z);
             },
-            [](py::tuple t) { // __setstate__
+            [](const py::tuple &t) { // __setstate__
                 if (t.size() != 4)
                     throw std::runtime_error("Invalid state!");
 
@@ -132,7 +133,7 @@ PYBIND11_MODULE(_core, m)
                 /* Return a tuple that fully encodes the state of the object */
                 return py::make_tuple(n.key, n.offset, n.byte_size, n.point_count, n.page_key);
             },
-            [](py::tuple t) { // __setstate__
+            [](const py::tuple &t) { // __setstate__
                 if (t.size() != 5)
                     throw std::runtime_error("Invalid state!");
 
@@ -342,7 +343,7 @@ PYBIND11_MODULE(_core, m)
         .def("__setitem__",
              [wrap_i](las::Points &s, DiffType i, std::shared_ptr<las::Point> v) {
                  i = wrap_i(i, s.Size());
-                 s[(SizeType)i] = v;
+                 s[(SizeType)i] = std::move(v);
              })
         .def("__len__", &las::Points::Size)
         /// Optional sequence protocol operations
@@ -497,7 +498,7 @@ PYBIND11_MODULE(_core, m)
                                       h.VlrCount(), h.PointFormatId(), h.PointRecordLength(), h.Scale(), h.Offset(),
                                       h.max, h.min, h.EvlrOffset(), h.EvlrCount(), h.PointCount(), h.points_by_return);
             },
-            [](py::tuple t) { // __setstate__
+            [](const py::tuple &t) { // __setstate__
                 if (t.size() != 19)
                     throw std::runtime_error("Invalid state!");
 
