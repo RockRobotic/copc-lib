@@ -10,6 +10,7 @@
 #include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/geometry/box.hpp"
 #include "copc-lib/io/copc_base_io.hpp"
+#include "copc-lib/io/laz_base_writer.hpp"
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/utils.hpp"
@@ -75,7 +76,7 @@ class Writer : public BaseIO
     static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
 
-class FileWriter : public Writer
+class FileWriter : public Writer, laz::BaseFileWriter
 {
   public:
     FileWriter(const std::string &file_path, const CopcConfigWriter &copc_config_writer,
@@ -83,19 +84,14 @@ class FileWriter : public Writer
                const std::optional<Vector3> &offset = {}, const std::optional<std::string> &wkt = {},
                const std::optional<las::EbVlr> &extra_bytes_vlr = {},
                const std::optional<bool> &has_extended_stats = {})
+        : BaseFileWriter(file_path)
     {
-
-        f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
-        if (!f_stream_.good())
-            throw std::runtime_error("FileWriter: Error while opening file path.");
         InitWriter(f_stream_, copc_config_writer, point_format_id, scale, offset, wkt, extra_bytes_vlr,
                    has_extended_stats);
     }
 
     void Close() override;
-
-  private:
-    std::fstream f_stream_;
+    ~FileWriter() { Close(); }
 };
 
 } // namespace copc

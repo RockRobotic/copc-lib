@@ -125,4 +125,16 @@ void BaseWriter::Close()
     open_ = false;
 }
 
+BaseFileWriter::BaseFileWriter(const std::string &file_path)
+{
+    f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
+    if (!f_stream_.good())
+        throw std::runtime_error("FileWriterBase: Error while opening file path.");
+}
+
+void BaseFileWriter::Close()
+{
+    if (f_stream_.is_open())
+        f_stream_.close();
+}
 } // namespace copc::laz

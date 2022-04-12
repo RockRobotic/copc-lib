@@ -174,7 +174,7 @@ void FileWriter::Close()
 {
     if (writer_ != nullptr)
         writer_->Close();
-    f_stream_.close();
+    laz::BaseFileWriter::Close();
 }
 
 } // namespace copc

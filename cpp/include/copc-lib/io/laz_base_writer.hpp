@@ -29,7 +29,6 @@ class BaseWriter
     }
 
     virtual void Close();
-    // Call close on destructor if needed
     ~BaseWriter() { Close(); }
 
   protected:
@@ -52,6 +51,17 @@ class BaseWriter
     uint32_t evlr_count_{};
     std::shared_ptr<las::LazConfig> config_;
 };
+
+class BaseFileWriter
+{
+  public:
+    BaseFileWriter(const std::string &file_path);
+    virtual void Close();
+
+  protected:
+    std::fstream f_stream_;
+};
+
 } // namespace copc::laz
 
 #endif // COPCLIB_IO_LAZ_BASE_WRITER_H_

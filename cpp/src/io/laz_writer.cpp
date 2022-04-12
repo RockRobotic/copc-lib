@@ -11,16 +11,18 @@ LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_c
     : BaseWriter(out_stream,
                  std::static_pointer_cast<las::LazConfig>(std::make_shared<las::LazConfigWriter>(laz_config_writer)))
 {
+    std::cout << out_stream_.tellp() << std::endl;
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
+    std::cout << out_stream_.tellp() << std::endl;
     open_ = true;
 }
 
 int32_t LazWriter::WriteChunk(std::vector<char> in, int32_t point_count, bool compressed)
 {
-    auto startpos = out_stream_.tellp();
+    uint64_t startpos = out_stream_.tellp();
     if (startpos <= 0)
-        throw std::runtime_error("Error while writing chunk!");
+        throw std::runtime_error("LazWriter::WriteChunk: Error while writing chunk!");
 
     if (compressed)
         out_stream_.write(in.data(), in.size());
@@ -31,15 +33,15 @@ int32_t LazWriter::WriteChunk(std::vector<char> in, int32_t point_count, bool co
 
     uint64_t endpos = out_stream_.tellp();
     if (endpos <= 0)
-        throw std::runtime_error("Error while writing chunk!");
+        throw std::runtime_error("LazWriter::WriteChunk: sError while writing chunk!");
 
     chunks_.push_back(lazperf::chunk{static_cast<uint64_t>(point_count), endpos});
 
     auto size = endpos - startpos;
     if (size > (std::numeric_limits<int32_t>::max)())
-        throw std::runtime_error("Chunk is too large!");
+        throw std::runtime_error("LazWriter::WriteChunk: Chunk is too large!");
     if (point_count > (std::numeric_limits<int32_t>::max)())
-        throw std::runtime_error("Chunk has too many points!");
+        throw std::runtime_error("LazWriter::WriteChunk: Chunk has too many points!");
     return point_count;
 }
 
@@ -57,24 +59,15 @@ void LazWriter::WritePoints(const las::Points &points)
 }
 
 LazFileWriter::LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer)
+    : BaseFileWriter(file_path)
 {
-    std::cout << "LazFileWriter::LazFileWriter(const std::string &)" << std::endl;
-    f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
-    if (!f_stream_.good())
-        throw std::runtime_error("FileWriter: Error while opening file path.");
     writer_ = std::make_shared<LazWriter>(f_stream_, laz_config_writer);
 }
 
 void LazFileWriter::Close()
 {
-    writer_->Close();
-    if (f_stream_.is_open())
-    {
-        std::cout << "closing filestream" << std::endl; // TODO: remove
-        f_stream_.close();
-    }
+    if (writer_ != nullptr)
+        writer_->Close();
+    BaseFileWriter::Close();
 }
-
-LazFileWriter::~LazFileWriter() { Close(); }
-
 } // namespace copc::laz

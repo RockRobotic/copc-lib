@@ -39,13 +39,13 @@ class LazWriter : public BaseWriter
     int32_t WriteChunk(std::vector<char> in, int32_t point_count, bool compressed);
 };
 
-class LazFileWriter
+class LazFileWriter : public BaseFileWriter
 {
 
   public:
     LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer);
-    void Close();
-    ~LazFileWriter();
+    void Close() override;
+    ~LazFileWriter() { Close(); };
 
     // Write a group of points as a chunk
     void WritePoints(const las::Points &points) { writer_->WritePoints(points); }
@@ -54,7 +54,6 @@ class LazFileWriter
     std::shared_ptr<las::LazConfigWriter> LazConfig() { return writer_->LazConfig(); }
 
   private:
-    std::fstream f_stream_;
     std::shared_ptr<LazWriter> writer_;
 };
 
