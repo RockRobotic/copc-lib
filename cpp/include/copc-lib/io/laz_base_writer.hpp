@@ -37,6 +37,12 @@ class BaseWriter
 
     // 8 bytes for the chunk table offset
     uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
+    void WriteLasHeader(bool extended_stats_flag);
+    void WriteLazAndEbVlrs();
+    void WriteChunkTable();
+    void WriteWKT();
+    virtual size_t OffsetToPointData() const;
+    virtual void WriteHeader();
 
     bool open_{};
     std::ostream &out_stream_;
@@ -44,15 +50,6 @@ class BaseWriter
     uint64_t point_count_{};
     uint64_t evlr_offset_{};
     uint32_t evlr_count_{};
-
-    virtual size_t OffsetToPointData() const;
-    //    virtual size_t OffsetToPointData() const { return OffsetToPointData(*config_); };
-    void WriteLasHeader(bool extended_stats_flag);
-    void WriteLazAndEbVlrs();
-    virtual void WriteHeader();
-    void WriteChunkTable();
-    void WriteWKT();
-
     std::shared_ptr<las::LazConfig> config_;
 };
 } // namespace copc::laz
