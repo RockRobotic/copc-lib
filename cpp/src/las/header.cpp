@@ -63,9 +63,8 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.generating_software_ = header.generating_software;
     h.creation_day = header.creation.day;
     h.creation_year = header.creation.year;
-    if (header.header_size != HEADER_SIZE_BYTES)
-        throw std::runtime_error("LasHeader::FromLazPerf: Header size must be " + std::to_string(HEADER_SIZE_BYTES) +
-                                 ".");
+    if (header.header_size != SIZE_BYTES)
+        throw std::runtime_error("LasHeader::FromLazPerf: Header size must be " + std::to_string(SIZE_BYTES) + ".");
     h.point_offset_ = header.point_offset;
     h.vlr_count_ = header.vlr_count;
     if (header.point_format_id < 6 || header.point_format_id > 8)
@@ -107,7 +106,7 @@ lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_cou
     std::strncpy(h.generating_software, generating_software_.c_str(), 32);
     h.creation.day = creation_day;
     h.creation.year = creation_year;
-    h.header_size = HEADER_SIZE_BYTES;
+    h.header_size = SIZE_BYTES;
     h.point_offset = point_offset;
     h.vlr_count = 1; // laz VLR
     // If there are Extra Bytes, count an extra VLR
@@ -168,7 +167,7 @@ std::string LasHeader::ToString() const
     ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
     ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
     ss << "\tCreation (Day/Year): (" << creation_day << "/" << creation_year << ")" << std::endl;
-    ss << "\tHeader Size: " << HEADER_SIZE_BYTES << std::endl;
+    ss << "\tHeader Size: " << SIZE_BYTES << std::endl;
     ss << "\tPoint Offset: " << point_offset_ << std::endl;
     ss << "\tVLR Count: " << vlr_count_ << std::endl;
     ss << "\tPoint Format ID: " << static_cast<int>(point_format_id_) << std::endl;

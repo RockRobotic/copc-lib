@@ -22,7 +22,7 @@ class Point;
 class LasHeader
 {
   public:
-    static const uint16_t HEADER_SIZE_BYTES = 375;
+    static const uint16_t SIZE_BYTES = 375;
 
     LasHeader() = default;
     uint16_t EbByteSize() const;

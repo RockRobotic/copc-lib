@@ -21,7 +21,7 @@ size_t BaseWriter::OffsetToPointData() const
             .size();
     laz_vlr_size += lazperf::vlr_header::Size;
 
-    return las::LasHeader::HEADER_SIZE_BYTES + las_eb_vlr_size + laz_vlr_size;
+    return las::LasHeader::SIZE_BYTES + las_eb_vlr_size + laz_vlr_size;
 }
 
 void BaseWriter::WriteLasHeader(bool extended_stats_flag)
