@@ -5,10 +5,10 @@
 #include <stdexcept>
 #include <vector>
 
+#include <lazperf/filestream.hpp>
+
 #include "copc-lib/io/copc_writer.hpp"
 #include "copc-lib/las/utils.hpp"
-
-#include <lazperf/filestream.hpp>
 
 using namespace lazperf;
 

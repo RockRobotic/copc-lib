@@ -7,7 +7,6 @@
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
 #include "copc-lib/io/internal/copc_writer_internal.hpp"
-#include "copc-lib/laz/compressor.hpp"
 
 #include <lazperf/lazperf.hpp>
 #include <lazperf/vlr.hpp>
@@ -121,7 +120,7 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     auto page_size = page->nodes.size() * 32;
     page_size += page->sub_pages.size() * 32;
 
-    evlr_header h{0, "copc", 1000, page_size, page->key.ToString()};
+    lazperf::evlr_header h{0, "copc", 1000, page_size, page->key.ToString()};
 
     out_stream_.seekp(0, std::ios::end);
     h.write(out_stream_);
