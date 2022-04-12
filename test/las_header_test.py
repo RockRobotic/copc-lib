@@ -1,7 +1,13 @@
-import pickle
 import copclib as copc
 
 from .utils import get_autzen_file
+
+
+def test_gps_time_type_bit():
+    las_header = copc.LasHeader()
+    assert las_header.global_encoding == 0
+    las_header.SetGpsTimeBit()
+    assert las_header.global_encoding == 1
 
 
 def test_get_bounds():
