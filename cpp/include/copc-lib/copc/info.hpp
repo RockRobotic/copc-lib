@@ -11,7 +11,8 @@ namespace copc
 class CopcInfo
 {
   public:
-    static const int SIZE_BYTES = 160; // COPC Info VLR payload is 160 bytes, https://copc.io/
+    static const int VLR_OFFSET = 375;     // COPC Info VLR must be the first VLR after the LAS header block
+    static const int VLR_SIZE_BYTES = 160; // COPC Info VLR payload is 160 bytes, https://copc.io/
 
     CopcInfo() = default;
 

@@ -6,44 +6,55 @@
 namespace copc::laz
 {
 
-size_t BaseWriter::OffsetToPointData(const las::LazConfig &config)
+size_t BaseWriter::OffsetToPointData() const
 {
+    // LAS Extra Byte VLR
+    size_t las_eb_vlr_size = config_->ExtraBytesVlr().size();
+    if (las_eb_vlr_size > 0)
+        las_eb_vlr_size += lazperf::vlr_header::Size;
 
     // LAZ VLR
     size_t laz_vlr_size =
-        lazperf::laz_vlr(config.LasHeader().PointFormatId(), config.LasHeader().EbByteSize(), VARIABLE_CHUNK_SIZE)
+        lazperf::laz_vlr(config_->LasHeader().PointFormatId(), config_->LasHeader().EbByteSize(), VARIABLE_CHUNK_SIZE)
             .size();
     laz_vlr_size += lazperf::vlr_header::Size;
 
-    // LAS Extra Byte VLR
-    size_t las_eb_vlr_size = config.ExtraBytesVlr().size();
-    if (las_eb_vlr_size > 0)
-        las_eb_vlr_size += lazperf::vlr_header::Size;
-    return las::LasHeader::SIZE_BYTES + laz_vlr_size + las_eb_vlr_size;
+    return las::LasHeader::SIZE_BYTES + las_eb_vlr_size + laz_vlr_size;
 }
 
-// Writes the LAS header and VLRs
-void BaseWriter::WriteHeader()
+void BaseWriter::WriteLasHeader(bool extended_stats_flag)
 {
     // Write LAS header
-    auto las_header = config_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_, evlr_count_,
-                                                      config_->LasHeader()->EbByteSize(), false);
+    auto las_header = config_->LasHeader().ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_, evlr_count_,
+                                                     config_->LasHeader().EbByteSize(), extended_stats_flag);
     out_stream_.seekp(0);
     las_header.write(out_stream_);
+}
 
-    // Write the LAZ VLR
-    lazperf::laz_vlr lazVlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(),
-                            VARIABLE_CHUNK_SIZE);
-    lazVlr.header().write(out_stream_);
-    lazVlr.write(out_stream_);
+void BaseWriter::WriteLazAndEbVlrs()
+{
 
-    // Write optional Extra Byte VLR
-    if (config_->LasHeader()->EbByteSize() > 0)
+    // Write optional LAS Extra Byte VLR
+    if (config_->LasHeader().EbByteSize() > 0)
     {
         auto ebVlr = this->config_->ExtraBytesVlr();
         ebVlr.header().write(out_stream_);
         ebVlr.write(out_stream_);
     }
+
+    // Write the LAZ VLR
+    lazperf::laz_vlr lazVlr(config_->LasHeader().PointFormatId(), config_->LasHeader().EbByteSize(),
+                            VARIABLE_CHUNK_SIZE);
+    lazVlr.header().write(out_stream_);
+    lazVlr.write(out_stream_);
+}
+
+// Writes the LAS header and VLRs
+void BaseWriter::WriteHeader()
+{
+    WriteLasHeader(false);
+
+    WriteLazAndEbVlrs();
 
     // Make sure that we haven't gone over allocated size
     if (out_stream_.tellp() > OffsetToPointData())
@@ -84,6 +95,18 @@ void BaseWriter::WriteChunkTable()
     out_stream_.write(reinterpret_cast<char *>(&chunk_table_offset), sizeof(uint64_t));
 }
 
+void BaseWriter::WriteWKT()
+{
+    // If WKT is provided, write it as EVLR
+    if (!config_->Wkt().empty())
+    {
+        evlr_count_++;
+        lazperf::wkt_vlr wkt_vlr(config_->Wkt());
+        wkt_vlr.eheader().write(out_stream_);
+        wkt_vlr.write(out_stream_);
+    }
+}
+
 void BaseWriter::Close()
 {
     if (!open_)
@@ -95,14 +118,7 @@ void BaseWriter::Close()
     out_stream_.seekp(0, std::ios::end);
     evlr_offset_ = out_stream_.tellp();
 
-    // If WKT is provided, write it as EVLR
-    if (!config_->Wkt().empty())
-    {
-        evlr_count_++;
-        lazperf::wkt_vlr wkt_vlr(config_->Wkt());
-        wkt_vlr.eheader().write(out_stream_);
-        wkt_vlr.write(out_stream_);
-    }
+    WriteWKT();
 
     WriteHeader();
 

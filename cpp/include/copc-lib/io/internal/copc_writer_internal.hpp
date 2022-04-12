@@ -28,8 +28,12 @@ class WriterInternal : laz::BaseWriter
     Entry WriteNode(std::vector<char> in, int32_t point_count, bool compressed);
 
   private:
-    std::shared_ptr<CopcConfigWriter> config_;
     std::shared_ptr<Hierarchy> hierarchy_;
+
+    std::shared_ptr<CopcConfigWriter> GetConfig() const
+    {
+        return std::dynamic_pointer_cast<CopcConfigWriter>(config_);
+    };
 
     size_t OffsetToPointData() const override;
     void WriteHeader() override;

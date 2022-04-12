@@ -13,7 +13,6 @@
 
 namespace copc
 {
-const int COPC_OFFSET = 429;
 
 class CopcConfig : public las::LazConfig
 {

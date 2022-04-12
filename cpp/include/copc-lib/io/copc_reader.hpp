@@ -84,7 +84,7 @@ class Reader : public BaseIO
     static uint64_t FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
                              uint16_t record_id);
     // Finds and loads the COPC vlr
-    CopcInfo ReadCopcInfoVlr();
+    CopcInfo ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
     // Finds and loads the COPC vlr
     CopcExtents ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr) const;
     // Finds and loads the WKT vlr

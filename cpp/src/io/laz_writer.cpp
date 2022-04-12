@@ -1,17 +1,19 @@
 #include "copc-lib/io/laz_writer.hpp"
 
+#include <memory>
+
 #include "copc-lib/laz/compressor.hpp"
 
 namespace copc::laz
 {
 
-LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer) : BaseWriter(out_stream)
+LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer)
+    : BaseWriter(out_stream,
+                 std::static_pointer_cast<las::LazConfig>(std::make_shared<las::LazConfigWriter>(laz_config_writer)))
 {
-    config_ = std::make_shared<copc::las::LazConfigWriter>(laz_config_writer);
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
     open_ = true;
-    std::cout << "LazWriter::LazWriter" << std::endl;
 }
 
 int32_t LazWriter::WriteChunk(std::vector<char> in, int32_t point_count, bool compressed)
@@ -23,7 +25,7 @@ int32_t LazWriter::WriteChunk(std::vector<char> in, int32_t point_count, bool co
     if (compressed)
         out_stream_.write(in.data(), in.size());
     else
-        point_count = laz::Compressor::CompressBytes(out_stream_, *(config_->LasHeader()), in);
+        point_count = laz::Compressor::CompressBytes(out_stream_, config_->LasHeader(), in);
 
     point_count_ += point_count;
 
@@ -46,8 +48,8 @@ void LazWriter::WritePoints(const las::Points &points)
 {
     if (points.Size() == 0)
         throw std::runtime_error("LazWriter::WritePoints: Cannot add empty las::Points.");
-    if (points.PointFormatId() != config_->LasHeader()->PointFormatId() ||
-        points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
+    if (points.PointFormatId() != config_->LasHeader().PointFormatId() ||
+        points.PointRecordLength() != config_->LasHeader().PointRecordLength())
         throw std::runtime_error("LazWriter::WritePoints: New points must be of same format and size.");
 
     std::vector<char> uncompressed_data = points.Pack();

@@ -185,24 +185,24 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             las::EbVlr new_eb_vlr(2);
             // Update Point Format ID
             {
-                FileWriter writer(file_path, cfg, new_point_format_id);
+                FileWriter copy_writer(file_path, cfg, new_point_format_id);
 
-                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() == new_point_format_id);
-                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
-                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
-                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->PointFormatId() == new_point_format_id);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(copy_writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(copy_writer.CopcConfig()->ExtraBytesVlr().items.size() ==
                         orig.CopcConfig().ExtraBytesVlr().items.size());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
                 // Check that other attributes have been copied
-                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
-                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
+                REQUIRE(copy_writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
                         orig.CopcConfig().CopcExtents().Intensity()->maximum);
 
                 // Check that we can add a point of new format
-                auto new_points = las::Points(*writer.CopcConfig()->LasHeader());
+                auto new_points = las::Points(*copy_writer.CopcConfig()->LasHeader());
                 auto new_point = new_points.CreatePoint();
                 new_point->UnscaledX(10);
                 new_point->UnscaledY(15);
@@ -212,15 +212,15 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 new_point->Nir(30);
 
                 new_points.AddPoint(new_point);
-                REQUIRE_NOTHROW(writer.AddNode(VoxelKey::RootKey(), new_points));
+                REQUIRE_NOTHROW(copy_writer.AddNode(VoxelKey::RootKey(), new_points));
 
                 // Check that adding a point of the old format errors out
                 auto old_points = las::Points(orig.CopcConfig().LasHeader());
                 auto old_point = old_points.CreatePoint();
                 old_points.AddPoint(old_point);
-                //                REQUIRE_THROWS(writer.AddNode(VoxelKey::RootKey(), old_points));
+                //                REQUIRE_THROWS(copy_writer.AddNode(VoxelKey::RootKey(), old_points));
 
-                writer.Close();
+                copy_writer.Close();
 
                 FileReader reader(file_path);
                 REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() == new_point_format_id);
@@ -245,23 +245,23 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update Scale
             {
-                FileWriter writer(file_path, cfg, {}, new_scale);
+                FileWriter copy_writer(file_path, cfg, {}, new_scale);
 
-                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->PointFormatId() ==
                         orig.CopcConfig().LasHeader().PointFormatId());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
-                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
-                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
-                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Scale() == new_scale);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(copy_writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(copy_writer.CopcConfig()->ExtraBytesVlr().items.size() ==
                         orig.CopcConfig().ExtraBytesVlr().items.size());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
                 // Check that other attributes have been copied
-                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
-                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
+                REQUIRE(copy_writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
                         orig.CopcConfig().CopcExtents().Intensity()->maximum);
-                writer.Close();
+                copy_writer.Close();
 
                 FileReader reader(file_path);
                 REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
@@ -276,23 +276,23 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             }
             // Update Offset
             {
-                FileWriter writer(file_path, cfg, {}, {}, new_offset);
+                FileWriter copy_writer(file_path, cfg, {}, {}, new_offset);
 
-                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->PointFormatId() ==
                         orig.CopcConfig().LasHeader().PointFormatId());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);
-                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
-                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Offset() == new_offset);
+                REQUIRE(copy_writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(copy_writer.CopcConfig()->ExtraBytesVlr().items.size() ==
                         orig.CopcConfig().ExtraBytesVlr().items.size());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
                 // Check that other attributes have been copied
-                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
-                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
+                REQUIRE(copy_writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
                         orig.CopcConfig().CopcExtents().Intensity()->maximum);
-                writer.Close();
+                copy_writer.Close();
 
                 FileReader reader(file_path);
                 REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
@@ -308,23 +308,23 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update WKT
             {
-                FileWriter writer(file_path, cfg, {}, {}, {}, new_wkt);
+                FileWriter copy_writer(file_path, cfg, {}, {}, {}, new_wkt);
 
-                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->PointFormatId() ==
                         orig.CopcConfig().LasHeader().PointFormatId());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
-                REQUIRE(writer.CopcConfig()->Wkt() == new_wkt);
-                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(copy_writer.CopcConfig()->Wkt() == new_wkt);
+                REQUIRE(copy_writer.CopcConfig()->ExtraBytesVlr().items.size() ==
                         orig.CopcConfig().ExtraBytesVlr().items.size());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
                 // Check that other attributes have been copied
-                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
-                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
+                REQUIRE(copy_writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
                         orig.CopcConfig().CopcExtents().Intensity()->maximum);
-                writer.Close();
+                copy_writer.Close();
 
                 FileReader reader(file_path);
                 REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
@@ -341,22 +341,22 @@ TEST_CASE("Writer Config Tests", "[Writer]")
             // Update Extra Byte VLR
             {
 
-                FileWriter writer(file_path, cfg, {}, {}, {}, {}, new_eb_vlr);
+                FileWriter copy_writer(file_path, cfg, {}, {}, {}, {}, new_eb_vlr);
 
-                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->PointFormatId() ==
                         orig.CopcConfig().LasHeader().PointFormatId());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
-                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
-                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(copy_writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(copy_writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->HasExtendedStats() ==
                         orig.CopcConfig().CopcExtents().HasExtendedStats());
                 // Check that other attributes have been copied
-                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
-                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
+                REQUIRE(copy_writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
                         orig.CopcConfig().CopcExtents().Intensity()->maximum);
-                writer.Close();
+                copy_writer.Close();
 
                 FileReader reader(file_path);
                 REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
@@ -371,22 +371,22 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update HasExtendedStats
             {
-                FileWriter writer(file_path, cfg, {}, {}, {}, {}, {}, new_has_extended_stats);
+                FileWriter copy_writer(file_path, cfg, {}, {}, {}, {}, {}, new_has_extended_stats);
 
-                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->PointFormatId() ==
                         orig.CopcConfig().LasHeader().PointFormatId());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
-                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
-                REQUIRE(writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
-                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() ==
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Scale() == orig.CopcConfig().LasHeader().Scale());
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Offset() == orig.CopcConfig().LasHeader().Offset());
+                REQUIRE(copy_writer.CopcConfig()->Wkt() == orig.CopcConfig().Wkt());
+                REQUIRE(copy_writer.CopcConfig()->ExtraBytesVlr().items.size() ==
                         orig.CopcConfig().ExtraBytesVlr().items.size());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
                 // Check that other attributes have been copied
-                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
-                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
+                REQUIRE(copy_writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
                         orig.CopcConfig().CopcExtents().Intensity()->maximum);
-                writer.Close();
+                copy_writer.Close();
 
                 FileReader reader(file_path);
                 REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() ==
@@ -401,21 +401,21 @@ TEST_CASE("Writer Config Tests", "[Writer]")
 
             // Update All
             {
-                FileWriter writer(file_path, cfg, new_point_format_id, new_scale, new_offset, new_wkt, new_eb_vlr,
-                                  new_has_extended_stats);
+                FileWriter copy_writer(file_path, cfg, new_point_format_id, new_scale, new_offset, new_wkt, new_eb_vlr,
+                                       new_has_extended_stats);
 
-                REQUIRE(writer.CopcConfig()->LasHeader()->PointFormatId() == new_point_format_id);
-                REQUIRE(writer.CopcConfig()->LasHeader()->Scale() == new_scale);
-                REQUIRE(writer.CopcConfig()->LasHeader()->Offset() == new_offset);
-                REQUIRE(writer.CopcConfig()->Wkt() == new_wkt);
-                REQUIRE(writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->PointFormatId() == new_point_format_id);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Scale() == new_scale);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->Offset() == new_offset);
+                REQUIRE(copy_writer.CopcConfig()->Wkt() == new_wkt);
+                REQUIRE(copy_writer.CopcConfig()->ExtraBytesVlr().items.size() == new_eb_vlr.items.size());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->HasExtendedStats() == new_has_extended_stats);
                 // Check that other attributes have been copied
-                REQUIRE(writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
-                REQUIRE(writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
-                REQUIRE(writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
+                REQUIRE(copy_writer.CopcConfig()->CopcInfo()->spacing == orig.CopcConfig().CopcInfo().spacing);
+                REQUIRE(copy_writer.CopcConfig()->LasHeader()->GUID() == orig.CopcConfig().LasHeader().GUID());
+                REQUIRE(copy_writer.CopcConfig()->CopcExtents()->Intensity()->maximum ==
                         orig.CopcConfig().CopcExtents().Intensity()->maximum);
-                writer.Close();
+                copy_writer.Close();
 
                 FileReader reader(file_path);
                 REQUIRE(reader.CopcConfig().LasHeader().PointFormatId() == new_point_format_id);

@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iterator>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -16,25 +17,25 @@ namespace copc::Internal
 
 size_t WriterInternal::OffsetToPointData() const
 {
-    size_t base_offset = laz::BaseWriter::OffsetToPointData(*config_);
+    size_t base_offset = laz::BaseWriter::OffsetToPointData();
 
     // COPC VLR
-    size_t copc_info_vlr_size = (lazperf::vlr_header::Size + CopcInfo::SIZE_BYTES);
+    size_t copc_info_vlr_size = (lazperf::vlr_header::Size + CopcInfo::VLR_SIZE_BYTES);
 
     // COPC Extents VLR
     size_t copc_extents_vlr_size =
-        CopcExtents::ByteSize(config_->LasHeader()->PointFormatId(), config_->ExtraBytesVlr().items.size());
+        CopcExtents::ByteSize(GetConfig()->LasHeader()->PointFormatId(), GetConfig()->ExtraBytesVlr().items.size());
     copc_extents_vlr_size += lazperf::vlr_header::Size;
     // If we store extended stats we need two extents VLRs
-    if (config_->CopcExtents()->HasExtendedStats())
+    if (GetConfig()->CopcExtents()->HasExtendedStats())
         copc_extents_vlr_size *= 2;
 
     return base_offset + copc_info_vlr_size + copc_extents_vlr_size;
 }
 
-WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
+WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config_writer,
                                std::shared_ptr<Hierarchy> hierarchy)
-    : BaseWriter(out_stream), config_(copc_config), hierarchy_(hierarchy)
+    : BaseWriter(out_stream, std::static_pointer_cast<las::LazConfig>(copc_config_writer)), hierarchy_(hierarchy)
 {
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
@@ -48,7 +49,7 @@ void WriterInternal::Close()
 
     WriteChunkTable();
 
-    // Set hierarchy evlr
+    // Set COPC hierarchy evlr
     out_stream_.seekp(0, std::ios::end);
     evlr_offset_ = static_cast<int64_t>(out_stream_.tellp());
     evlr_count_ += hierarchy_->seen_pages_.size();
@@ -59,14 +60,7 @@ void WriterInternal::Close()
     // has to write the offset of all of its children, which we don't know in advance
     WritePageTree(hierarchy_->seen_pages_[VoxelKey::RootKey()]);
 
-    // If WKT is provided, write it as EVLR
-    if (!config_->Wkt().empty())
-    {
-        evlr_count_++;
-        lazperf::wkt_vlr wkt_vlr(config_->Wkt());
-        wkt_vlr.eheader().write(out_stream_);
-        wkt_vlr.write(out_stream_);
-    }
+    WriteWKT();
 
     WriteHeader();
 
@@ -76,29 +70,25 @@ void WriterInternal::Close()
 // Writes the LAS header and VLRs
 void WriterInternal::WriteHeader()
 {
-    // Write LAS header
-    auto las_header_vlr =
-        config_->LasHeader()->ToLazPerf(OffsetToPointData(), point_count_, evlr_offset_, evlr_count_,
-                                        config_->LasHeader()->EbByteSize(), config_->CopcExtents()->HasExtendedStats());
-    out_stream_.seekp(0);
-    las_header_vlr.write(out_stream_);
+    WriteLasHeader(GetConfig()->CopcExtents()->HasExtendedStats());
 
     // Write the COPC Info VLR.
-    auto copc_info_vlr = config_->CopcInfo()->ToLazPerf(*config_->CopcExtents()->GpsTime());
+    lazperf::copc_info_vlr copc_info_vlr = GetConfig()->CopcInfo()->ToLazPerf(*GetConfig()->CopcExtents()->GpsTime());
     copc_info_vlr.header().write(out_stream_);
     copc_info_vlr.write(out_stream_);
 
     // Write the COPC Extents VLR.
-    auto extents_vlr = config_->CopcExtents()->ToLazPerf({las_header_vlr.minx, las_header_vlr.maxx},
-                                                         {las_header_vlr.miny, las_header_vlr.maxy},
-                                                         {las_header_vlr.minz, las_header_vlr.maxz});
+    auto extents_vlr =
+        GetConfig()->CopcExtents()->ToLazPerf({GetConfig()->LasHeader()->min.x, GetConfig()->LasHeader()->max.x},
+                                              {GetConfig()->LasHeader()->min.y, GetConfig()->LasHeader()->max.y},
+                                              {GetConfig()->LasHeader()->min.z, GetConfig()->LasHeader()->max.z});
     extents_vlr.header().write(out_stream_);
     extents_vlr.write(out_stream_);
 
     // Write the COPC Extended stats VLR.
-    if (config_->CopcExtents()->HasExtendedStats())
+    if (GetConfig()->CopcExtents()->HasExtendedStats())
     {
-        auto extended_stats_vlr = config_->CopcExtents()->ToLazPerfExtended();
+        auto extended_stats_vlr = GetConfig()->CopcExtents()->ToLazPerfExtended();
 
         auto header = extended_stats_vlr.header();
         header.user_id = "rock_robotic";
@@ -109,19 +99,7 @@ void WriterInternal::WriteHeader()
         extended_stats_vlr.write(out_stream_);
     }
 
-    // Write the LAZ VLR
-    lazperf::laz_vlr lazVlr(config_->LasHeader()->PointFormatId(), config_->LasHeader()->EbByteSize(),
-                            VARIABLE_CHUNK_SIZE);
-    lazVlr.header().write(out_stream_);
-    lazVlr.write(out_stream_);
-
-    // Write optional Extra Byte VLR
-    if (config_->LasHeader()->EbByteSize() > 0)
-    {
-        auto ebVlr = this->config_->ExtraBytesVlr();
-        ebVlr.header().write(out_stream_);
-        ebVlr.write(out_stream_);
-    }
+    WriteLazAndEbVlrs();
 
     // Make sure that we haven't gone over allocated size
     if (static_cast<int64_t>(out_stream_.tellp()) > OffsetToPointData())
@@ -140,7 +118,7 @@ Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool 
     if (compressed)
         out_stream_.write(in.data(), in.size());
     else
-        point_count = laz::Compressor::CompressBytes(out_stream_, *config_->LasHeader(), in);
+        point_count = laz::Compressor::CompressBytes(out_stream_, *GetConfig()->LasHeader(), in);
 
     point_count_ += point_count;
 
@@ -180,8 +158,8 @@ void WriterInternal::WritePage(const std::shared_ptr<PageInternal> &page)
     // Set the copc header info if needed
     if (page->key == VoxelKey::RootKey())
     {
-        config_->CopcInfo()->root_hier_offset = offset;
-        config_->CopcInfo()->root_hier_size = page_size;
+        GetConfig()->CopcInfo()->root_hier_offset = offset;
+        GetConfig()->CopcInfo()->root_hier_size = page_size;
     }
 
     for (const auto &node : page->nodes)

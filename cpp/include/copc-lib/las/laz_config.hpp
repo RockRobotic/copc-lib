@@ -14,7 +14,7 @@ class CopcConfig;
 
 namespace las
 {
-
+class LazConfigWriter;
 class LazConfig
 {
   public:
@@ -31,7 +31,13 @@ class LazConfig
 
     las::EbVlr ExtraBytesVlr() const { return *eb_vlr_; }
 
+    // Copy constructor from CopcConfig
+    LazConfig(const CopcConfig &copc_config);
+
   protected:
+    // Copy constructor from LazConfigWriter
+    LazConfig(const LazConfigWriter &laz_config_writer);
+
     LazConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const std::string &wkt,
               const las::EbVlr &extra_bytes_vlr, bool copc_flag);
     std::shared_ptr<las::LasHeader> header_;
@@ -46,7 +52,6 @@ class LazConfigWriter : public LazConfig
                     const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
 
-    // Copy constructor from CopcConfig
     LazConfigWriter(const CopcConfig &copc_config);
 
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }

@@ -7,6 +7,7 @@
 #include <ostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/geometry/vector3.hpp"
@@ -22,13 +23,9 @@ namespace copc::laz
 class BaseWriter
 {
   public:
-    BaseWriter(std::ostream &out_stream, std::shared_ptr<las::LazConfigWriter> laz_config_writer)
-        : out_stream_(out_stream), config_(laz_config_writer)
+    BaseWriter(std::ostream &out_stream, std::shared_ptr<las::LazConfig> laz_config)
+        : out_stream_(out_stream), config_(laz_config)
     {
-        // reserve enough space for the header & VLRs in the file
-        std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
-        open_ = true;
-        std::cout << "BaseWriter::BaseWriter" << std::endl;
     }
 
     virtual void Close();
@@ -41,12 +38,6 @@ class BaseWriter
     // 8 bytes for the chunk table offset
     uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
 
-    // Base constructor used in WriterInternal Class
-    BaseWriter(std::ostream &out_stream) : out_stream_(out_stream)
-    {
-        std::cout << "BaseWriter::BaseWriter (BASE)" << std::endl;
-    }
-
     bool open_{};
     std::ostream &out_stream_;
     std::vector<lazperf::chunk> chunks_;
@@ -54,12 +45,15 @@ class BaseWriter
     uint64_t evlr_offset_{};
     uint32_t evlr_count_{};
 
-    static size_t OffsetToPointData(const las::LazConfig &config);
-    virtual size_t OffsetToPointData() const { return OffsetToPointData(*config_); };
+    virtual size_t OffsetToPointData() const;
+    //    virtual size_t OffsetToPointData() const { return OffsetToPointData(*config_); };
+    void WriteLasHeader(bool extended_stats_flag);
+    void WriteLazAndEbVlrs();
     virtual void WriteHeader();
     void WriteChunkTable();
+    void WriteWKT();
 
-    std::shared_ptr<las::LazConfigWriter> config_;
+    std::shared_ptr<las::LazConfig> config_;
 };
 } // namespace copc::laz
 
