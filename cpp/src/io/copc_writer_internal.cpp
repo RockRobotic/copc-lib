@@ -16,7 +16,7 @@ namespace copc::Internal
 
 size_t WriterInternal::OffsetToPointData() const
 {
-    size_t base_offset = laz::BaseWriter::OffsetToPointData();
+    size_t base_laz_offset = laz::BaseWriter::OffsetToPointData();
 
     // COPC VLR
     size_t copc_info_vlr_size = (lazperf::vlr_header::Size + CopcInfo::VLR_SIZE_BYTES);
@@ -29,7 +29,7 @@ size_t WriterInternal::OffsetToPointData() const
     if (GetConfig()->CopcExtents()->HasExtendedStats())
         copc_extents_vlr_size *= 2;
 
-    return base_offset + copc_info_vlr_size + copc_extents_vlr_size;
+    return base_laz_offset + copc_info_vlr_size + copc_extents_vlr_size;
 }
 
 WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config_writer,
