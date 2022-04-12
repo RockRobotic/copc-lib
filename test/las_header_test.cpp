@@ -24,7 +24,7 @@ TEST_CASE("Test constructor", "[LasHeader]")
     test_extra_bytes_vlr.items[0].options = 4;
     test_extra_bytes_vlr.items[0].name = "eb1";
 
-    SECTION("COPC flag")
+    SECTION("copc flag")
     {
         // In the case of a LAZ file, the LAS header should have a false COPC flag, and a single VLR when no EBs are
         // present
@@ -32,7 +32,7 @@ TEST_CASE("Test constructor", "[LasHeader]")
                                   las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(), test_scale,
                                   test_offset, false);
 
-        REQUIRE(laz_header.IsCopc() == false);
+        REQUIRE(laz_header.Copc() == false);
         REQUIRE(laz_header.ToLazPerf(380, 0, 390, 1, 0, false).vlr_count == 1);
 
         // In the case of a COPC file, the LAS header should have a true COPC flag, and three VLRs when no EBs are
@@ -41,19 +41,8 @@ TEST_CASE("Test constructor", "[LasHeader]")
                                    las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(), test_scale,
                                    test_offset, true);
 
-        REQUIRE(copc_header.IsCopc() == true);
+        REQUIRE(copc_header.Copc() == true);
         REQUIRE(copc_header.ToLazPerf(380, 0, 390, 1, 0, false).vlr_count == 3);
-    }
-
-    SECTION("GPS Time Type Bit")
-    {
-        las::LasHeader laz_header(point_format_id,
-                                  las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(), test_scale,
-                                  test_offset, false);
-
-        REQUIRE(laz_header.global_encoding == 0);
-        laz_header.SetGpsTimeBit();
-        REQUIRE(laz_header.global_encoding == 1);
     }
 }
 
@@ -129,7 +118,7 @@ TEST_CASE("Bounds Update", "[LasHeader]")
     point.X(10);
     point.Y(-5);
     point.Z(1);
-    las_header.CheckAndUpdateBounds(point);
+    las_header.UpdateBounds(point);
     REQUIRE(las_header.min.x == 0.0);
     REQUIRE(las_header.min.y == -5.0);
     REQUIRE(las_header.min.z == 0.0);
@@ -140,7 +129,7 @@ TEST_CASE("Bounds Update", "[LasHeader]")
     point.X(-10);
     point.Y(5);
     point.Z(-1);
-    las_header.CheckAndUpdateBounds(point);
+    las_header.UpdateBounds(point);
     REQUIRE(las_header.min.x == -10.0);
     REQUIRE(las_header.min.y == -5.0);
     REQUIRE(las_header.min.z == -1.0);

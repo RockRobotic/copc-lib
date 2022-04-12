@@ -5,11 +5,10 @@
 #include <stdexcept>
 #include <string>
 
-#include <lazperf/header.hpp>
-
 #include "copc-lib/geometry/box.hpp"
 #include "copc-lib/las/point.hpp"
 #include "copc-lib/las/utils.hpp"
+#include <lazperf/header.hpp>
 
 namespace copc::las
 {
@@ -26,7 +25,7 @@ LasHeader::LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t p
 
 Box LasHeader::Bounds() const { return Box(min, max); }
 
-void LasHeader::CheckAndUpdateBounds(const las::Point &point)
+void LasHeader::UpdateBounds(const las::Point &point)
 {
     if (point.X() < min.x)
         min.x = point.X();
@@ -43,8 +42,6 @@ void LasHeader::CheckAndUpdateBounds(const las::Point &point)
     if (point.Z() > max.z)
         max.z = point.Z();
 }
-
-void LasHeader::SetGpsTimeBit() { global_encoding |= 1; }
 
 uint16_t LasHeader::EbByteSize() const { return copc::las::EbByteSize(point_format_id_, point_record_length_); }
 

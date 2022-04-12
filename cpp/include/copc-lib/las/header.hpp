@@ -61,7 +61,7 @@ class LasHeader
     uint32_t VlrCount() const { return vlr_count_; }
     uint32_t EvlrCount() const { return evlr_count_; }
     uint64_t EvlrOffset() const { return evlr_offset_; }
-    bool IsCopc() const { return copc_flag_; }
+    uint64_t Copc() const { return copc_flag_; }
 
     void GUID(const std::string &guid)
     {
@@ -93,9 +93,7 @@ class LasHeader
     // Returns a box that fits the dimensions of the point cloud based on min and max
     Box Bounds() const;
 
-    void CheckAndUpdateBounds(const Point &point);
-
-    void SetGpsTimeBit();
+    void UpdateBounds(const Point &point);
 
     // Apply Las scale factors to Vector3 or double
     Vector3 ApplyScale(const Vector3 &unscaled_value) const { return unscaled_value * scale_ + offset_; }

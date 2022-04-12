@@ -10,8 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **\[C++\]** Add `LazConfig` and `LazConfigWriter` classes as parent class to `CopcConfig` to handle LAZ files.
 - **\[C++\]** Add `LazWriter` and `LazFileWriter` classes to write LAZ files.
-- **\[Python/C++\]** Add `CheckAndUpdateBounds` to `LasHeader` to check values in a `Point` and update the bounds if necessary.
-- **\[Python/C++\]** Add `SetGpsTimeBit` to `LasHeader` to easily set the bit value to 1.
+- **\[Python/C++\]** Add `UpdateBounds` to `LasHeader` to check values in a `Point` and update the bounds if necessary.
 
 ## [2.2.3] - 2022-02-02
 
@@ -209,7 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- `IsCopc` class
+- `Copc` class
 
 [1.1.0]: https://github.com/RockRobotic/copc-lib/compare/v1.0...v1.1.0
 [1.2.0]: https://github.com/RockRobotic/copc-lib/compare/v1.1.0...v1.2.0
