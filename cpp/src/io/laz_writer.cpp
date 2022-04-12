@@ -29,11 +29,11 @@ int32_t LazWriter::WriteChunk(std::vector<char> in, int32_t point_count, bool co
 
     point_count_ += point_count;
 
-    auto endpos = out_stream_.tellp();
+    uint64_t endpos = out_stream_.tellp();
     if (endpos <= 0)
         throw std::runtime_error("Error while writing chunk!");
 
-    chunks_.push_back(lazperf::chunk{static_cast<uint64_t>(point_count), static_cast<uint64_t>(endpos)});
+    chunks_.push_back(lazperf::chunk{static_cast<uint64_t>(point_count), endpos});
 
     auto size = endpos - startpos;
     if (size > (std::numeric_limits<int32_t>::max)())
@@ -47,7 +47,7 @@ int32_t LazWriter::WriteChunk(std::vector<char> in, int32_t point_count, bool co
 void LazWriter::WritePoints(const las::Points &points)
 {
     if (points.Size() == 0)
-        throw std::runtime_error("LazWriter::WritePoints: Cannot add empty las::Points.");
+        return;
     if (points.PointFormatId() != config_->LasHeader().PointFormatId() ||
         points.PointRecordLength() != config_->LasHeader().PointRecordLength())
         throw std::runtime_error("LazWriter::WritePoints: New points must be of same format and size.");
