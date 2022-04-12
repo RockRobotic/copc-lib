@@ -47,13 +47,13 @@ TEST_CASE("Test constructor", "[LasHeader]")
 
     SECTION("GPS Time Type Bit")
     {
-        las::LasHeader las_header(point_format_id,
+        las::LasHeader laz_header(point_format_id,
                                   las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(), test_scale,
                                   test_offset, false);
 
-        REQUIRE(las_header.global_encoding == 0);
-        las_header.SetGpsTimeBit();
-        REQUIRE(las_header.global_encoding == 1);
+        REQUIRE(laz_header.global_encoding == 0);
+        laz_header.SetGpsTimeBit();
+        REQUIRE(laz_header.global_encoding == 1);
     }
 }
 
