@@ -436,9 +436,10 @@ PYBIND11_MODULE(_core, m)
              py::arg("key"), py::arg("uncompressed_data"), py::arg("page_key") = VoxelKey::RootKey())
         .def("ChangeNodePage", &Writer::ChangeNodePage, py::arg("node_key"), py::arg("new_page_key"));
 
-    m.def("CompressBytes",
-          py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
-          py::arg("in"), py::arg("point_format_id"), py::arg("eb_byte_size"));
+    m.def(
+        "CompressBytes",
+        py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
+        py::arg("in"), py::arg("point_format_id"), py::arg("eb_byte_size"));
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const las::LasHeader &>(&laz::Compressor::CompressBytes));
 

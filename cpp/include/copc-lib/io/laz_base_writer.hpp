@@ -28,11 +28,8 @@ class BaseWriter
     {
     }
 
-    virtual void Close();
-    ~BaseWriter() { Close(); }
-
-  protected:
-    static const uint32_t VARIABLE_CHUNK_SIZE = std::numeric_limits<uint32_t>::max();
+    int32_t WriteChunk(const std::vector<char> &in, int32_t point_count = 0, bool compressed = false,
+                       uint64_t *offset = nullptr, int32_t *byte_size = nullptr);
 
     // 8 bytes for the chunk table offset
     uint64_t FirstChunkOffset() const { return OffsetToPointData() + sizeof(uint64_t); };
@@ -42,6 +39,12 @@ class BaseWriter
     void WriteWKT();
     virtual size_t OffsetToPointData() const;
     virtual void WriteHeader();
+
+    virtual void Close();
+    ~BaseWriter() { Close(); }
+
+  protected:
+    static const uint32_t VARIABLE_CHUNK_SIZE = std::numeric_limits<uint32_t>::max();
 
     bool open_{};
     std::ostream &out_stream_;

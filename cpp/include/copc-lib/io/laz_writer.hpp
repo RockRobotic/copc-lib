@@ -34,9 +34,6 @@ class LazWriter : public BaseWriter
     }
     uint64_t PointCount() { return point_count_; }
     uint64_t ChunkCount() { return chunks_.size(); }
-
-  private:
-    int32_t WriteChunk(std::vector<char> in, int32_t point_count, bool compressed);
 };
 
 class LazFileWriter : public BaseFileWriter

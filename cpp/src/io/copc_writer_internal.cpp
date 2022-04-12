@@ -107,34 +107,12 @@ void WriterInternal::WriteHeader()
 }
 
 // Writes a node and returns the node's offset and size in the file
-Entry WriterInternal::WriteNode(std::vector<char> in, int32_t point_count, bool compressed)
+Entry WriterInternal::WriteNode(const std::vector<char> &in, int32_t point_count, bool compressed)
 {
     Entry entry;
-    uint64_t startpos = out_stream_.tellp();
-    if (startpos <= 0)
-        throw std::runtime_error("WriterInternal::WriteNode: Error during writing node!");
-    entry.offset = static_cast<uint64_t>(startpos);
 
-    if (compressed)
-        out_stream_.write(in.data(), in.size());
-    else
-        point_count = laz::Compressor::CompressBytes(out_stream_, *GetConfig()->LasHeader(), in);
+    entry.point_count = WriteChunk(in, point_count, compressed, &entry.offset, &entry.byte_size);
 
-    point_count_ += point_count;
-
-    uint64_t endpos = out_stream_.tellp();
-    if (endpos <= 0)
-        throw std::runtime_error("WriterInternal::WriteNode: Error during writing node!");
-
-    chunks_.push_back(lazperf::chunk{static_cast<uint64_t>(point_count), endpos});
-
-    auto size = endpos - startpos;
-    if (size > (std::numeric_limits<int32_t>::max)())
-        throw std::runtime_error("WriterInternal::WriteNode: Chunk is too large!");
-    entry.byte_size = static_cast<int32_t>(size);
-    if (point_count > (std::numeric_limits<int32_t>::max)())
-        throw std::runtime_error("WriterInternal::WriteNode: Chunk has too many points!");
-    entry.point_count = point_count;
     return entry;
 }
 

@@ -3,6 +3,8 @@
 #include <lazperf/filestream.hpp>
 #include <lazperf/vlr.hpp>
 
+#include "copc-lib/laz/compressor.hpp"
+
 namespace copc::laz
 {
 
@@ -105,6 +107,38 @@ void BaseWriter::WriteWKT()
         wkt_vlr.eheader().write(out_stream_);
         wkt_vlr.write(out_stream_);
     }
+}
+
+int32_t BaseWriter::WriteChunk(const std::vector<char> &in, int32_t point_count, bool compressed, uint64_t *offset,
+                               int32_t *byte_size)
+{
+    uint64_t startpos = out_stream_.tellp();
+    if (startpos <= 0)
+        throw std::runtime_error("BaseWriter::WriteChunk: Error while writing chunk!");
+    if (offset != nullptr)
+        *offset = static_cast<uint64_t>(startpos);
+
+    if (compressed)
+        out_stream_.write(in.data(), static_cast<long>(in.size()));
+    else
+        point_count = laz::Compressor::CompressBytes(out_stream_, config_->LasHeader(), in);
+
+    point_count_ += point_count;
+
+    uint64_t endpos = out_stream_.tellp();
+    if (endpos <= 0)
+        throw std::runtime_error("BaseWriter::WriteChunk: Error while writing chunk!");
+
+    chunks_.push_back(lazperf::chunk{static_cast<uint64_t>(point_count), endpos});
+
+    auto size = endpos - startpos;
+    if (size > (std::numeric_limits<int32_t>::max)())
+        throw std::runtime_error("BaseWriter::WriteChunk: Chunk is too large!");
+    if (byte_size != nullptr)
+        *byte_size = static_cast<int32_t>(size);
+    if (point_count > (std::numeric_limits<int32_t>::max)())
+        throw std::runtime_error("BaseWriter::WriteChunk: Chunk has too many points!");
+    return point_count;
 }
 
 void BaseWriter::Close()

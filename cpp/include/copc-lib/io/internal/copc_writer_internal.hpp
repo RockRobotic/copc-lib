@@ -25,7 +25,7 @@ class WriterInternal : laz::BaseWriter
     bool IsOpen() const { return open_; }
 
     // Writes a chunk to the laz file
-    Entry WriteNode(std::vector<char> in, int32_t point_count, bool compressed);
+    Entry WriteNode(const std::vector<char> &in, int32_t point_count, bool compressed);
 
   private:
     std::shared_ptr<Hierarchy> hierarchy_;
