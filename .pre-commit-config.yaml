@@ -2,7 +2,7 @@ exclude: version
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.1.0  # Use the ref you want to point at
+    rev: v4.2.0  # Use the ref you want to point at
     hooks:
     - id: trailing-whitespace
       name: (Common) Remove trailing whitespaces
