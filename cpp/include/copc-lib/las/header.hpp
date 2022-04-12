@@ -25,6 +25,7 @@ class LasHeader
     static const uint16_t SIZE_BYTES = 375;
 
     LasHeader() = default;
+    LasHeader(const LasHeader &las_header) = default; // default copy constructor
     uint16_t EbByteSize() const;
     LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset,
               bool copc_flag)
@@ -101,9 +102,18 @@ class LasHeader
     double ApplyScaleX(double unscaled_value) const { return unscaled_value * scale_.x + offset_.x; }
     double ApplyScaleY(double unscaled_value) const { return unscaled_value * scale_.y + offset_.y; }
     double ApplyScaleZ(double unscaled_value) const { return unscaled_value * scale_.z + offset_.z; }
-    double ApplyInverseScaleX(double scaled_value) const { return (scaled_value - offset_.x) / scale_.x; }
-    double ApplyInverseScaleY(double scaled_value) const { return (scaled_value - offset_.y) / scale_.y; }
-    double ApplyInverseScaleZ(double scaled_value) const { return (scaled_value - offset_.z) / scale_.z; }
+    int ApplyInverseScaleX(double scaled_value) const
+    {
+        return static_cast<int>((scaled_value - offset_.x) / scale_.x);
+    }
+    int ApplyInverseScaleY(double scaled_value) const
+    {
+        return static_cast<int>((scaled_value - offset_.y) / scale_.y);
+    }
+    int ApplyInverseScaleZ(double scaled_value) const
+    {
+        return static_cast<int>((scaled_value - offset_.z) / scale_.z);
+    }
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};

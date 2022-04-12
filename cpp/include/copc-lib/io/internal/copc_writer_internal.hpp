@@ -14,7 +14,7 @@ namespace copc::Internal
 class WriterInternal : laz::BaseWriter
 {
   public:
-    WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config,
+    WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcConfigWriter> &copc_config,
                    std::shared_ptr<Hierarchy> hierarchy);
 
     // Writes the header and COPC vlrs

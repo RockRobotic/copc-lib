@@ -10,6 +10,7 @@
 
 #include <lazperf/lazperf.hpp>
 #include <lazperf/vlr.hpp>
+#include <utility>
 
 namespace copc::Internal
 {
@@ -32,9 +33,10 @@ size_t WriterInternal::OffsetToPointData() const
     return base_laz_offset + copc_info_vlr_size + copc_extents_vlr_size;
 }
 
-WriterInternal::WriterInternal(std::ostream &out_stream, std::shared_ptr<CopcConfigWriter> copc_config_writer,
+WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<CopcConfigWriter> &copc_config_writer,
                                std::shared_ptr<Hierarchy> hierarchy)
-    : BaseWriter(out_stream, std::static_pointer_cast<las::LazConfig>(copc_config_writer)), hierarchy_(hierarchy)
+    : BaseWriter(out_stream, std::static_pointer_cast<las::LazConfig>(copc_config_writer)),
+      hierarchy_(std::move(hierarchy))
 {
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
