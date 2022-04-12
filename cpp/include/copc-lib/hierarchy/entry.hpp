@@ -17,7 +17,7 @@ class Entry
     static const int ENTRY_SIZE = 32;
 
     Entry() : offset(-1), byte_size(-1), key(VoxelKey::InvalidKey()), point_count(-1){};
-    Entry(VoxelKey key, int64_t offset, int32_t size, int32_t point_count)
+    Entry(VoxelKey key, uint64_t offset, int32_t size, int32_t point_count)
         : offset(offset), byte_size(size), key(key), point_count(point_count){};
 
     virtual bool IsValid() const { return offset >= 0 && byte_size >= 0 && key.IsValid(); }
