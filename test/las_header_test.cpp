@@ -32,7 +32,7 @@ TEST_CASE("Test constructor", "[LasHeader]")
                                   las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(), test_scale,
                                   test_offset, false);
 
-        REQUIRE(laz_header.IsCopc() == false);
+        REQUIRE(laz_header.IsCopc() == true);
         REQUIRE(laz_header.ToLazPerf(380, 0, 390, 1, 0, false).vlr_count == 1);
 
         // In the case of a COPC file, the LAS header should have a true COPC flag, and three VLRs when no EBs are
@@ -131,7 +131,7 @@ TEST_CASE("Bounds Update", "[LasHeader]")
     point.Z(1);
     las_header.CheckAndUpdateBounds(point);
     REQUIRE(las_header.min.x == 0.0);
-    REQUIRE(las_header.min.y == -5.0);
+    REQUIRE(las_header.min.y == -4.0);
     REQUIRE(las_header.min.z == 0.0);
     REQUIRE(las_header.max.x == 10.0);
     REQUIRE(las_header.max.y == 0.0);
