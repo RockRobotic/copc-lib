@@ -203,12 +203,12 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
     double z_min = header.min.z + (step * key.z);
 
     // Random num generators between the min and max spatial bounds of the voxel
-    std::uniform_int_distribution<> rand_x(std::ceil(header.ApplyInverseScaleX(std::max(header.min.x, x_min))),
-                                           std::floor(header.ApplyInverseScaleX(std::min(header.max.x, x_min + step))));
-    std::uniform_int_distribution<> rand_y(std::ceil(header.ApplyInverseScaleY(std::max(header.min.y, y_min))),
-                                           std::floor(header.ApplyInverseScaleY(std::min(header.max.y, y_min + step))));
-    std::uniform_int_distribution<> rand_z(std::ceil(header.ApplyInverseScaleZ(std::max(header.min.z, z_min))),
-                                           std::floor(header.ApplyInverseScaleZ(std::min(header.max.z, z_min + step))));
+    std::uniform_int_distribution<int64_t> rand_x(header.RemoveScaleX(std::max(header.min.x, x_min)),
+                                                  header.RemoveScaleX(std::min(header.max.x, x_min + step)));
+    std::uniform_int_distribution<int64_t> rand_y(header.RemoveScaleY(std::max(header.min.y, y_min)),
+                                                  header.RemoveScaleY(std::min(header.max.y, y_min + step)));
+    std::uniform_int_distribution<int64_t> rand_z(header.RemoveScaleZ(std::max(header.min.z, z_min)),
+                                                  header.RemoveScaleZ(std::min(header.max.z, z_min + step)));
 
     // Create a Points object based on the LAS header
     las::Points points(header);
@@ -220,9 +220,9 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
         // The use of las::Point constructor is strongly discouraged, instead use las::Points::CreatePoint
         auto point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point->UnscaledX(rand_x(gen));
-        point->UnscaledY(rand_y(gen));
-        point->UnscaledZ(rand_z(gen));
+        point->UnscaledX(static_cast<int>(rand_x(gen)));
+        point->UnscaledY(static_cast<int>(rand_y(gen)));
+        point->UnscaledZ(static_cast<int>(rand_z(gen)));
         // For visualization purposes
         point->PointSourceId(key.d + key.x + key.y + key.z);
 

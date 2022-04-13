@@ -104,17 +104,17 @@ class LasHeader
     double ApplyScaleX(double unscaled_value) const { return unscaled_value * scale_.x + offset_.x; }
     double ApplyScaleY(double unscaled_value) const { return unscaled_value * scale_.y + offset_.y; }
     double ApplyScaleZ(double unscaled_value) const { return unscaled_value * scale_.z + offset_.z; }
-    uint64_t ApplyInverseScaleX(double scaled_value) const
+    int64_t RemoveScaleX(double scaled_value) const
     {
-        return static_cast<uint64_t>((scaled_value - offset_.x) / scale_.x);
+        return static_cast<int64_t>(std::round((scaled_value - offset_.x) / scale_.x));
     }
-    uint64_t ApplyInverseScaleY(double scaled_value) const
+    int64_t RemoveScaleY(double scaled_value) const
     {
-        return static_cast<uint64_t>((scaled_value - offset_.y) / scale_.y);
+        return static_cast<int64_t>(std::round((scaled_value - offset_.y) / scale_.y));
     }
-    uint64_t ApplyInverseScaleZ(double scaled_value) const
+    int64_t RemoveScaleZ(double scaled_value) const
     {
-        return static_cast<uint64_t>((scaled_value - offset_.z) / scale_.z);
+        return static_cast<int64_t>(std::round((scaled_value - offset_.z) / scale_.z));
     }
 
     uint16_t file_source_id{};

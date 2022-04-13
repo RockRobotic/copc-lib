@@ -21,12 +21,9 @@ las::Points RandomPoints(const las::LasHeader &header, int number_points)
 {
 
     // Random num generators between the min and max spatial bounds of the las header
-    std::uniform_int_distribution<> rand_x(header.ApplyInverseScaleX(header.min.x),
-                                           header.ApplyInverseScaleX(header.max.x));
-    std::uniform_int_distribution<> rand_y(header.ApplyInverseScaleY(header.min.y),
-                                           header.ApplyInverseScaleY(header.max.y));
-    std::uniform_int_distribution<> rand_z(header.ApplyInverseScaleZ(header.min.z),
-                                           header.ApplyInverseScaleZ(header.max.z));
+    std::uniform_int_distribution<int64_t> rand_x(header.RemoveScaleX(header.min.x), header.RemoveScaleX(header.max.x));
+    std::uniform_int_distribution<int64_t> rand_y(header.RemoveScaleY(header.min.y), header.RemoveScaleY(header.max.y));
+    std::uniform_int_distribution<int64_t> rand_z(header.RemoveScaleZ(header.min.z), header.RemoveScaleZ(header.max.z));
 
     // Create a Points object based on the LAS header
     las::Points points(header);
@@ -38,9 +35,9 @@ las::Points RandomPoints(const las::LasHeader &header, int number_points)
         // The use of las::Point constructor is strongly discouraged, instead use las::Points::CreatePoint
         auto point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point->UnscaledX(rand_x(gen));
-        point->UnscaledY(rand_y(gen));
-        point->UnscaledZ(rand_z(gen));
+        point->UnscaledX(static_cast<int>(rand_x(gen)));
+        point->UnscaledY(static_cast<int>(rand_y(gen)));
+        point->UnscaledZ(static_cast<int>(rand_z(gen)));
 
         points.AddPoint(point);
     }
