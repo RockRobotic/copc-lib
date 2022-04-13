@@ -144,7 +144,7 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader]")
         FileReader reader("autzen-classified.copc.laz");
 
         auto eb_vlr = reader.CopcConfig().ExtraBytesVlr();
-        REQUIRE(eb_vlr.items.size() == 0);
+        REQUIRE(eb_vlr.items.empty());
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include <istream>
 #include <memory>
+#include <utility>
 
 #include "copc-lib/hierarchy/entry.hpp"
 #include "copc-lib/hierarchy/node.hpp"
@@ -13,7 +14,7 @@ class Page;
 class Page : public Entry
 {
   public:
-    Page(Entry e) : Entry(e){};
+    Page(Entry e) : Entry(std::move(e)){};
     Page(VoxelKey key, int64_t offset, int32_t byte_size) : Entry(key, offset, byte_size, -1){};
 
     // If a page is "loaded" it doesn't matter the offset/size

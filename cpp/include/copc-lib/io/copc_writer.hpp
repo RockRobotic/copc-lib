@@ -40,7 +40,7 @@ class Writer : public BaseIO
 
     // Adds a node to a given page
     Node AddNode(const VoxelKey &key, const las::Points &points, const VoxelKey &page_key = VoxelKey::RootKey());
-    Node AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, uint64_t point_count,
+    Node AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, int32_t point_count,
                            const VoxelKey &page_key = VoxelKey::RootKey());
     Node AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data,
                  const VoxelKey &page_key = VoxelKey::RootKey());
@@ -60,7 +60,7 @@ class Writer : public BaseIO
 
     bool PageExists(const VoxelKey &key);
 
-    Node DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point_count, bool compressed_data,
+    Node DoAddNode(const VoxelKey &key, const std::vector<char> &in, int32_t point_count, bool compressed_data,
                    const VoxelKey &page_key);
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override
     {
@@ -72,8 +72,6 @@ class Writer : public BaseIO
                     const std::optional<int8_t> &point_format_id, const std::optional<Vector3> &scale,
                     const std::optional<Vector3> &offset, const std::optional<std::string> &wkt,
                     const std::optional<las::EbVlr> &extra_bytes_vlr, const std::optional<bool> &has_extended_stats);
-    // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
-    static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
 
 class FileWriter : public Writer, laz::BaseFileWriter

@@ -119,7 +119,7 @@ int32_t BaseWriter::WriteChunk(const std::vector<char> &in, int32_t point_count,
         *offset = static_cast<uint64_t>(startpos);
 
     if (compressed)
-        out_stream_.write(in.data(), static_cast<long>(in.size()));
+        out_stream_.write(in.data(), in.size());
     else
         point_count = laz::Compressor::CompressBytes(out_stream_, config_->LasHeader(), in);
 
