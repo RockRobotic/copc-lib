@@ -62,7 +62,7 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
     }
 
     // Move stream to beginning of EVLRs
-    in_stream_->seekg(static_cast<long>(reader_->header().evlr_offset));
+    in_stream_->seekg(reader_->header().evlr_offset);
 
     // Iterate through all vlr's and add them to the `vlrs` list
     for (int i = 0; i < reader_->header().evlr_count; i++)
