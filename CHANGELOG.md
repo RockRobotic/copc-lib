@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Rename `LasHeader::ApplyInverseScale` to `LasHeader::RemoveScale` to be consistent with `Point` class.
 
 ### Fixed
-- **\[Python/C++\]** Change return type of `LasHeader::ApplyInverseScale` from `double` to `int64_t`.
+- **\[Python/C++\]** Change return type of `LasHeader::ApplyInverseScale` from `double` to `int32_t`.
 
 ## [2.2.3] - 2022-02-02
 
