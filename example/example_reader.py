@@ -18,14 +18,14 @@ def reader_example():
 
     # Get the Copc Info
     copc_info = reader.copc_config.copc_info
-    print("Copc Info: ")
+    print("IsCopc Info: ")
     print("\tSpacing: %d" % copc_info.spacing)
     print("\tRoot Offset: %d" % copc_info.root_hier_offset)
     print("\tRoot Size: %d" % copc_info.root_hier_size)
 
     # Get the Copc Extents
     copc_extents = reader.copc_config.copc_extents
-    print("Copc Extents (Min/Max): ")
+    print("IsCopc Extents (Min/Max): ")
     print(
         "\tIntensity: (%f,%f)"
         % (copc_extents.intensity.minimum, copc_extents.intensity.maximum)
