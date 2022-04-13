@@ -58,7 +58,7 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
         auto h = las::VlrHeader(lazperf::vlr_header::create(*in_stream_));
         out.insert({cur_pos, h});
 
-        in_stream_->seekg(static_cast<long>(h.data_length), std::ios::cur); // jump foward
+        in_stream_->seekg(h.data_length, std::ios::cur); // jump foward
     }
 
     // Move stream to beginning of EVLRs
@@ -71,7 +71,7 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
         auto h = las::VlrHeader(lazperf::evlr_header::create(*in_stream_));
         out.insert({cur_pos, h});
 
-        in_stream_->seekg(static_cast<long>(h.data_length), std::ios::cur); // jump foward
+        in_stream_->seekg(h.data_length, std::ios::cur); // jump foward
     }
 
     return out;
@@ -86,7 +86,7 @@ CopcInfo Reader::ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
         throw std::runtime_error("Reader::ReadCopcInfoVlr: COPC Info VLR was found in the wrong position, MUST be at "
                                  "offset 375 as per COPC specs.");
 
-    in_stream_->seekg(static_cast<long>(offset) + lazperf::vlr_header::Size);
+    in_stream_->seekg(offset + lazperf::vlr_header::Size);
     return lazperf::copc_info_vlr::create(*in_stream_);
 }
 
@@ -97,7 +97,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
     if (offset == 0)
         throw std::runtime_error("Reader::ReadCopcExtentsVlr: No COPC Extents VLR found in file.");
 
-    in_stream_->seekg(static_cast<long>(offset) + lazperf::vlr_header::Size);
+    in_stream_->seekg(offset + lazperf::vlr_header::Size);
     CopcExtents extents(las::CopcExtentsVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length)),
                         static_cast<int8_t>(reader_->header().point_format_id),
                         static_cast<uint16_t>(eb_vlr.items.size()), extended_offset != 0);
@@ -105,7 +105,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
     // Load mean/var if they exist
     if (extended_offset != 0)
     {
-        in_stream_->seekg(static_cast<long>(extended_offset) + lazperf::vlr_header::Size);
+        in_stream_->seekg(extended_offset + lazperf::vlr_header::Size);
         extents.SetExtendedStats(
             las::CopcExtentsVlr::create(*in_stream_, static_cast<int>(vlrs[extended_offset].data_length)));
     }
@@ -117,7 +117,7 @@ las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
     auto offset = FetchVlr(vlrs, "LASF_Projection", 2112);
     if (offset != 0)
     {
-        in_stream_->seekg(static_cast<long>(offset) + lazperf::evlr_header::Size);
+        in_stream_->seekg(offset + lazperf::evlr_header::Size);
         return las::WktVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length));
     }
     return las::WktVlr();
@@ -128,7 +128,7 @@ las::EbVlr Reader::ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
     auto offset = FetchVlr(vlrs, "LASF_Spec", 4);
     if (offset != 0)
     {
-        in_stream_->seekg(static_cast<long>(offset) + lazperf::vlr_header::Size);
+        in_stream_->seekg(offset + lazperf::vlr_header::Size);
         return las::EbVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length));
     }
     return las::EbVlr();
@@ -154,7 +154,7 @@ std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page
         throw std::runtime_error("Reader::ReadPage: Cannot load an invalid page.");
 
     // reset the stream to the page's offset
-    in_stream_->seekg(static_cast<long>(page->offset));
+    in_stream_->seekg(page->offset);
 
     // Iterate through each Entry in the page
     int num_entries = int(page->byte_size / Entry::ENTRY_SIZE);
@@ -192,7 +192,7 @@ std::vector<char> Reader::GetPointData(Node const &node)
     if (!node.IsValid())
         throw std::runtime_error("Reader::GetPointData: Cannot load an invalid node.");
 
-    in_stream_->seekg(static_cast<long>(node.offset));
+    in_stream_->seekg(node.offset);
 
     auto las_header = config_.LasHeader();
     std::vector<char> point_data = laz::Decompressor::DecompressBytes(*in_stream_, las_header, node.point_count);
@@ -217,7 +217,7 @@ std::vector<char> Reader::GetPointDataCompressed(Node const &node)
     if (!node.IsValid())
         throw std::runtime_error("Reader::GetPointDataCompressed: Cannot load an invalid node.");
 
-    in_stream_->seekg(static_cast<long>(node.offset));
+    in_stream_->seekg(node.offset);
 
     std::vector<char> out;
     out.resize(node.byte_size);

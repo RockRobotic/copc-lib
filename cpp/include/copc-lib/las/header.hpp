@@ -22,7 +22,7 @@ class Point;
 class LasHeader
 {
   public:
-    static const uint16_t SIZE_BYTES = 375;
+    static const uint16_t HEADER_SIZE_BYTES = 375;
 
     LasHeader() = default;
     LasHeader(const LasHeader &las_header) = default; // default copy constructor
@@ -62,7 +62,7 @@ class LasHeader
     uint32_t VlrCount() const { return vlr_count_; }
     uint32_t EvlrCount() const { return evlr_count_; }
     uint64_t EvlrOffset() const { return evlr_offset_; }
-    uint64_t Copc() const { return copc_flag_; }
+    bool IsCopc() const { return copc_flag_; }
 
     void GUID(const std::string &guid)
     {
@@ -94,7 +94,9 @@ class LasHeader
     // Returns a box that fits the dimensions of the point cloud based on min and max
     Box Bounds() const;
 
-    void UpdateBounds(const Point &point);
+    void CheckAndUpdateBounds(const Point &point);
+
+    void SetGpsTimeBit();
 
     // Apply Las scale factors to Vector3 or double
     Vector3 ApplyScale(const Vector3 &unscaled_value) const { return unscaled_value * scale_ + offset_; }

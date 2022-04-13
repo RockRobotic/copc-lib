@@ -171,7 +171,7 @@ size_t CopcExtents::ByteSize(int8_t point_format_id, uint16_t num_eb_items)
 std::string CopcExtents::ToString() const
 {
     std::stringstream ss;
-    ss << "Copc Extents (Min/Max/Mean/Var):" << std::endl;
+    ss << "IsCopc Extents (Min/Max/Mean/Var):" << std::endl;
     ss << "\tIntensity: " << extents_[0]->ToString() << std::endl;
     ss << "\tReturn Number: " << extents_[1]->ToString() << std::endl;
     ss << "\tNumber Of Returns: " << extents_[2]->ToString() << std::endl;

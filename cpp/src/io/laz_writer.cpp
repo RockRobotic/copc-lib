@@ -9,11 +9,6 @@ LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_c
     : BaseWriter(out_stream,
                  std::static_pointer_cast<las::LazConfig>(std::make_shared<las::LazConfigWriter>(laz_config_writer)))
 {
-    std::cout << out_stream_.tellp() << std::endl;
-    // reserve enough space for the header & VLRs in the file
-    std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
-    std::cout << out_stream_.tellp() << std::endl;
-    open_ = true;
 }
 
 // Write a group of points as a chunk

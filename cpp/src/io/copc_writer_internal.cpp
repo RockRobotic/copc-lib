@@ -40,7 +40,6 @@ WriterInternal::WriterInternal(std::ostream &out_stream, const std::shared_ptr<C
 {
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
-    open_ = true;
 }
 
 void WriterInternal::Close()
