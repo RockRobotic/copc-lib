@@ -24,11 +24,8 @@ class BaseWriter
 {
   public:
     BaseWriter(std::ostream &out_stream, std::shared_ptr<las::LazConfig> laz_config)
-        : out_stream_(out_stream), config_(std::move(laz_config))
+        : out_stream_(out_stream), config_(std::move(laz_config)), open_(true)
     {
-        // reserve enough space for the header & VLRs in the file
-        std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
-        open_ = true;
     }
 
     int32_t WriteChunk(const std::vector<char> &in, int32_t point_count = 0, bool compressed = false,
