@@ -38,8 +38,8 @@ class Points
     std::shared_ptr<Point> &operator[](size_t i) { return points_[i]; }
     const std::shared_ptr<Point> &operator[](size_t i) const { return points_[i]; }
 
-    const std::vector<std::shared_ptr<Point>>::const_iterator begin() const { return points_.begin(); }
-    const std::vector<std::shared_ptr<Point>>::const_iterator end() const { return points_.end(); }
+    std::vector<std::shared_ptr<Point>>::const_iterator begin() const { return points_.begin(); }
+    std::vector<std::shared_ptr<Point>>::const_iterator end() const { return points_.end(); }
 
     // Add points functions
     void AddPoint(const std::shared_ptr<Point> &point);
@@ -67,7 +67,8 @@ class Points
     {
         std::vector<double> out;
         out.resize(Size());
-        std::transform(points_.begin(), points_.end(), out.begin(), [](std::shared_ptr<Point> p) { return p->X(); });
+        std::transform(points_.begin(), points_.end(), out.begin(),
+                       [](const std::shared_ptr<Point> &p) { return p->X(); });
         return out;
     }
     void X(const std::vector<double> &in)
@@ -118,7 +119,7 @@ class Points
         std::vector<int32_t> out;
         out.resize(Size());
         std::transform(points_.begin(), points_.end(), out.begin(),
-                       [](std::shared_ptr<Point> p) { return p->UnscaledX(); });
+                       [](const std::shared_ptr<Point> &p) { return p->UnscaledX(); });
         return out;
     }
     void UnscaledX(const std::vector<int32_t> &in)

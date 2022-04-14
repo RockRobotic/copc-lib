@@ -17,7 +17,9 @@ Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector
 }
 
 Points::Points(const LasHeader &header)
-    : Points(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize()){};
+    : Points(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize())
+{
+}
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {

@@ -24,7 +24,7 @@ class BaseWriter
 {
   public:
     BaseWriter(std::ostream &out_stream, std::shared_ptr<las::LazConfig> laz_config)
-        : out_stream_(out_stream), config_(laz_config), open_(true)
+        : out_stream_(out_stream), config_(std::move(laz_config)), open_(true)
     {
     }
 

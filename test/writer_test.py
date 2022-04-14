@@ -358,7 +358,9 @@ def test_writer_copy_and_update():
         orig_has_extended_stats,
     )
 
-    writer = copc.FileWriter("orig_test.copc.laz", orig_cfg)
+    orig_file_path = os.path.join(get_data_dir(), "orig_test.copc.laz")
+
+    writer = copc.FileWriter(orig_file_path, orig_cfg)
     writer.copc_config.las_header.guid = orig_guid
     writer.copc_config.copc_info.spacing = orig_spacing
     writer.copc_config.copc_extents.intensity.maximum = orig_intensity
@@ -366,7 +368,7 @@ def test_writer_copy_and_update():
 
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
 
-    orig = copc.FileReader("orig_test.copc.laz")
+    orig = copc.FileReader(orig_file_path)
 
     cfg = orig.copc_config
 

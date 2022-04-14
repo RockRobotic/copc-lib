@@ -10,8 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **\[C++\]** Add `LazConfig` and `LazConfigWriter` classes as parent class to `CopcConfig` to handle LAZ files.
 - **\[C++\]** Add `LazWriter` and `LazFileWriter` classes to write LAZ files.
+- **\[C++\]** Add `example-laz-writer.cpp` to show how to use the LAZ writer.
 - **\[Python/C++\]** Add `CheckAndUpdateBounds` to `LasHeader` to check values in a `Point` and update the bounds if necessary.
 - **\[Python/C++\]** Add `SetGpsTimeBit` to `LasHeader` to easily set the bit value to 1.
+
+### Changed
+- **\[Python/C++\]** Rename `LasHeader::ApplyInverseScale` to `LasHeader::RemoveScale` to be consistent with `Point` class.
+
+### Fixed
+- **\[Python/C++\]** Change return type of `LasHeader::ApplyInverseScale` from `double` to `int32_t`.
 
 ## [2.2.3] - 2022-02-02
 

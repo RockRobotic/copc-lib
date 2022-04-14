@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/las/utils.hpp"
@@ -19,7 +20,7 @@ class LazConfig
 {
   public:
     LazConfig() = default;
-    LazConfig(const las::LasHeader &header, const std::string &wkt, const las::EbVlr &extra_bytes_vlr) : wkt_(wkt)
+    LazConfig(const las::LasHeader &header, std::string wkt, const las::EbVlr &extra_bytes_vlr) : wkt_(std::move(wkt))
     {
         header_ = std::make_shared<las::LasHeader>(header);
         eb_vlr_ = std::make_shared<las::EbVlr>(extra_bytes_vlr);
@@ -38,7 +39,7 @@ class LazConfig
     // Copy constructor from LazConfigWriter
     LazConfig(const LazConfigWriter &laz_config_writer);
 
-    LazConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const std::string &wkt,
+    LazConfig(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, std::string wkt,
               const las::EbVlr &extra_bytes_vlr, bool copc_flag);
     std::shared_ptr<las::LasHeader> header_;
     std::string wkt_;

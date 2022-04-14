@@ -58,7 +58,7 @@ lazperf::evlr_header VlrHeader::ToLazperfEvlrHeader() const
 
 // COPC Extents VLR
 
-CopcExtentsVlr::CopcExtentsVlr() {}
+CopcExtentsVlr::CopcExtentsVlr() = default;
 
 CopcExtentsVlr::CopcExtentsVlr(int numExtents) : items(numExtents) {}
 
@@ -66,7 +66,7 @@ void CopcExtentsVlr::addItem(const CopcExtent &item) { items.push_back(item); }
 
 void CopcExtentsVlr::setItem(int i, const CopcExtent &item) { items[i] = item; }
 
-CopcExtentsVlr::~CopcExtentsVlr() {}
+CopcExtentsVlr::~CopcExtentsVlr() = default;
 
 CopcExtentsVlr CopcExtentsVlr::create(std::istream &in, int byteSize)
 {
@@ -77,7 +77,7 @@ CopcExtentsVlr CopcExtentsVlr::create(std::istream &in, int byteSize)
 
 void CopcExtentsVlr::read(std::istream &in, int byteSize)
 {
-    int numItems = byteSize / (sizeof(double) * 2);
+    int numItems = static_cast<int>(byteSize / (sizeof(double) * 2));
     items.clear();
 
     double minimum;

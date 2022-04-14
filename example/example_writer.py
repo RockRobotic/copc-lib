@@ -213,22 +213,16 @@ def RandomPoints(key, las_header, number_points):
         point = points.CreatePoint()
         # point has getters/setters for all attributes
         point.X = random.randint(
-            math.ceil(las_header.ApplyInverseScaleX(max(las_header.min.x, minx))),
-            math.floor(
-                las_header.ApplyInverseScaleX(min(las_header.max.x, minx + step))
-            ),
+            las_header.RemoveScaleX(max(las_header.min.x, minx)),
+            las_header.RemoveScaleX(min(las_header.max.x, minx + step)),
         )
         point.Y = random.randint(
-            math.ceil(las_header.ApplyInverseScaleY(max(las_header.min.y, miny))),
-            math.floor(
-                las_header.ApplyInverseScaleY(min(las_header.max.y, miny + step))
-            ),
+            las_header.RemoveScaleY(max(las_header.min.y, miny)),
+            las_header.RemoveScaleY(min(las_header.max.y, miny + step)),
         )
         point.Z = random.randint(
-            math.ceil(las_header.ApplyInverseScaleZ(max(las_header.min.z, minz))),
-            math.floor(
-                las_header.ApplyInverseScaleZ(min(las_header.max.z, minz + step))
-            ),
+            las_header.RemoveScaleZ(max(las_header.min.z, minz)),
+            las_header.RemoveScaleZ(min(las_header.max.z, minz + step)),
         )
 
         # For visualization purposes
