@@ -288,7 +288,7 @@ void NewFileExample()
 
     // We can check that the spatial bounds of the file have been respected
     FileReader reader("new-copc.copc.laz");
-    assert(false);
+    assert(reader.ValidateSpatialBounds());
 
     // We can get the keys of all existing pages
     auto page_keys = reader.GetPageList();
