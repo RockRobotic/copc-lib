@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 #include <cmath>
-#include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/copc_reader.hpp>
 #include <fstream>
 #include <limits>
 
@@ -144,7 +144,7 @@ TEST_CASE("GetExtraByteVlrs Test", "[Reader]")
         FileReader reader("autzen-classified.copc.laz");
 
         auto eb_vlr = reader.CopcConfig().ExtraBytesVlr();
-        REQUIRE(eb_vlr.items.size() == 0);
+        REQUIRE(eb_vlr.items.empty());
     }
 }
 

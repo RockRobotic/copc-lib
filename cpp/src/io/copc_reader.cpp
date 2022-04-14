@@ -3,10 +3,10 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "copc-lib/copc/config.hpp"
+#include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/copc/extents.hpp"
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
-#include "copc-lib/io/reader.hpp"
+#include "copc-lib/io/copc_reader.hpp"
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/laz/decompressor.hpp"
 
@@ -34,7 +34,7 @@ void Reader::InitReader()
         throw std::runtime_error(
             "Reader::InitReader: Either Info or Hierarchy VLR missing, make sure you are loading a COPC file.");
 
-    auto copc_info = ReadCopcInfoVlr();
+    auto copc_info = ReadCopcInfoVlr(vlrs_);
     auto wkt = ReadWktVlr(vlrs_);
     auto eb = ReadExtraBytesVlr(vlrs_);
     auto copc_extents = ReadCopcExtentsVlr(vlrs_, eb);
@@ -77,10 +77,17 @@ std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
     return out;
 }
 
-CopcInfo Reader::ReadCopcInfoVlr()
+CopcInfo Reader::ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
-    in_stream_->seekg(COPC_OFFSET);
-    return {lazperf::copc_info_vlr::create(*in_stream_)};
+    auto offset = FetchVlr(vlrs, "copc", 1);
+    if (offset == 0)
+        throw std::runtime_error("Reader::ReadCopcInfoVlr: No COPC Info VLR found in file.");
+    if (offset != CopcInfo::VLR_OFFSET)
+        throw std::runtime_error("Reader::ReadCopcInfoVlr: COPC Info VLR was found in the wrong position, MUST be at "
+                                 "offset 375 as per COPC specs.");
+
+    in_stream_->seekg(offset + lazperf::vlr_header::Size);
+    return lazperf::copc_info_vlr::create(*in_stream_);
 }
 
 CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr) const
@@ -91,7 +98,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
         throw std::runtime_error("Reader::ReadCopcExtentsVlr: No COPC Extents VLR found in file.");
 
     in_stream_->seekg(offset + lazperf::vlr_header::Size);
-    CopcExtents extents(las::CopcExtentsVlr::create(*in_stream_, vlrs[offset].data_length),
+    CopcExtents extents(las::CopcExtentsVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length)),
                         static_cast<int8_t>(reader_->header().point_format_id),
                         static_cast<uint16_t>(eb_vlr.items.size()), extended_offset != 0);
 
@@ -99,7 +106,8 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
     if (extended_offset != 0)
     {
         in_stream_->seekg(extended_offset + lazperf::vlr_header::Size);
-        extents.SetExtendedStats(las::CopcExtentsVlr::create(*in_stream_, vlrs[extended_offset].data_length));
+        extents.SetExtendedStats(
+            las::CopcExtentsVlr::create(*in_stream_, static_cast<int>(vlrs[extended_offset].data_length)));
     }
     return extents;
 }
@@ -110,7 +118,7 @@ las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
     if (offset != 0)
     {
         in_stream_->seekg(offset + lazperf::evlr_header::Size);
-        return las::WktVlr::create(*in_stream_, vlrs[offset].data_length);
+        return las::WktVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length));
     }
     return las::WktVlr();
 }
@@ -121,7 +129,7 @@ las::EbVlr Reader::ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
     if (offset != 0)
     {
         in_stream_->seekg(offset + lazperf::vlr_header::Size);
-        return las::EbVlr::create(*in_stream_, vlrs[offset].data_length);
+        return las::EbVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length));
     }
     return las::EbVlr();
 }

@@ -382,7 +382,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.PointFormatId() == 6);
         REQUIRE(point.PointRecordLength() == 30);
         REQUIRE_THROWS(point.ExtraBytes(std::vector<uint8_t>{2, 3, 4}));
-        REQUIRE(point.ExtraBytes().size() == 0);
+        REQUIRE(point.ExtraBytes().empty());
         REQUIRE(point.EbByteSize() == 0);
 
         point = Point(6, {}, {}, 5);

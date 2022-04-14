@@ -1,7 +1,7 @@
 #include "data/test_data.h"
 #include <catch2/catch.hpp>
-#include <copc-lib/io/reader.hpp>
-#include <copc-lib/io/writer.hpp>
+#include <copc-lib/io/copc_reader.hpp>
+#include <copc-lib/io/copc_writer.hpp>
 #include <sstream>
 
 using namespace copc;

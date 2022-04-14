@@ -17,7 +17,9 @@ Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector
 }
 
 Points::Points(const LasHeader &header)
-    : Points(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize()){};
+    : Points(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize())
+{
+}
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {
@@ -101,13 +103,13 @@ Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_f
     return points;
 }
 
-void Points::Pack(std::ostream &out_stream)
+void Points::Pack(std::ostream &out_stream) const
 {
     for (const auto &point : points_)
         point->Pack(out_stream);
 }
 
-std::vector<char> Points::Pack()
+std::vector<char> Points::Pack() const
 {
     std::stringstream out;
     Pack(out);

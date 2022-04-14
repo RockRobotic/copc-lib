@@ -5,10 +5,10 @@
 #include <stdexcept>
 #include <vector>
 
-#include "copc-lib/io/writer.hpp"
-#include "copc-lib/las/utils.hpp"
-
 #include <lazperf/filestream.hpp>
+
+#include "copc-lib/io/copc_writer.hpp"
+#include "copc-lib/las/utils.hpp"
 
 using namespace lazperf;
 
@@ -19,8 +19,8 @@ class Compressor
 {
   public:
     // Compresses bytes and writes them to the out stream
-    static uint32_t CompressBytes(std::ostream &out_stream, const int8_t &point_format_id, const uint16_t &eb_byte_size,
-                                  std::vector<char> &in)
+    static int32_t CompressBytes(std::ostream &out_stream, const int8_t &point_format_id, const uint16_t &eb_byte_size,
+                                 const std::vector<char> &in)
     {
         OutFileStream stream(out_stream);
 
@@ -30,7 +30,7 @@ class Compressor
         if (in.size() % point_size != 0)
             throw std::runtime_error("Invalid input stream for compression!");
 
-        uint32_t point_count = in.size() / point_size;
+        int32_t point_count = static_cast<int32_t>(in.size()) / point_size;
 
         for (int i = 0; i < point_count; i++)
         {
@@ -42,12 +42,12 @@ class Compressor
         return point_count;
     }
 
-    static uint32_t CompressBytes(std::ostream &out_stream, las::LasHeader const &header, std::vector<char> &in)
+    static int32_t CompressBytes(std::ostream &out_stream, las::LasHeader const &header, const std::vector<char> &in)
     {
         return CompressBytes(out_stream, header.PointFormatId(), header.EbByteSize(), in);
     }
 
-    static std::vector<char> CompressBytes(std::vector<char> &in, const int8_t &point_format_id,
+    static std::vector<char> CompressBytes(const std::vector<char> &in, const int8_t &point_format_id,
                                            const uint16_t &eb_byte_size)
     {
         std::ostringstream out_stream;

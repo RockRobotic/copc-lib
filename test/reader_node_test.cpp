@@ -3,7 +3,7 @@
 #include <limits>
 
 #include <catch2/catch.hpp>
-#include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/copc_reader.hpp>
 
 using namespace copc;
 using namespace std;
@@ -58,7 +58,7 @@ TEST_CASE("GetPointDataCompressed Test", "[Reader] ")
         auto hier_entry = reader.FindNode(key);
 
         auto point_vec = reader.GetPointDataCompressed(hier_entry);
-        REQUIRE(point_vec.size() > 0);
+        REQUIRE(!point_vec.empty());
     }
 }
 

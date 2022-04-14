@@ -3,6 +3,7 @@
 
 #include <set>
 #include <unordered_map>
+#include <utility>
 
 #include "copc-lib/hierarchy/page.hpp"
 
@@ -13,7 +14,7 @@ class PageInternal;
 class PageInternal : public Page
 {
   public:
-    PageInternal(Entry e) : Page(e){};
+    PageInternal(Entry e) : Page(std::move(e)){};
     PageInternal(VoxelKey key, int64_t offset, int32_t byte_size) : Page(key, offset, byte_size){};
     PageInternal(VoxelKey key) : Page(key, -1, -1){};
 

@@ -1,4 +1,4 @@
-#include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/laz/decompressor.hpp>
 
 using namespace copc;

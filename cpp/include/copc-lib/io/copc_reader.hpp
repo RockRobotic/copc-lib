@@ -1,14 +1,14 @@
-#ifndef COPCLIB_IO_READER_H_
-#define COPCLIB_IO_READER_H_
+#ifndef COPCLIB_IO_COPC_READER_H_
+#define COPCLIB_IO_COPC_READER_H_
 
 #include <istream>
 #include <limits>
 #include <map>
 #include <string>
 
-#include "copc-lib/copc/config.hpp"
+#include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/hierarchy/key.hpp"
-#include "copc-lib/io/base_io.hpp"
+#include "copc-lib/io/copc_base_io.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/vlr.hpp"
 
@@ -84,7 +84,7 @@ class Reader : public BaseIO
     static uint64_t FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
                              uint16_t record_id);
     // Finds and loads the COPC vlr
-    CopcInfo ReadCopcInfoVlr();
+    CopcInfo ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
     // Finds and loads the COPC vlr
     CopcExtents ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs, const las::EbVlr &eb_vlr) const;
     // Finds and loads the WKT vlr
@@ -126,4 +126,4 @@ class FileReader : public Reader
 };
 
 } // namespace copc
-#endif // COPCLIB_IO_READER_H_
+#endif // COPCLIB_IO_COPC_READER_H_

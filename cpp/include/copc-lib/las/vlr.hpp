@@ -13,6 +13,7 @@ namespace copc::las
 using WktVlr = lazperf::wkt_vlr;
 using EbVlr = lazperf::eb_vlr;
 
+// Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
 int NumBytesFromExtraBytes(const std::vector<EbVlr::ebfield> &items);
 
 class VlrHeader : public lazperf::evlr_header
@@ -48,14 +49,14 @@ class CopcExtentsVlr : public lazperf::vlr
     CopcExtentsVlr(int numExtentItems);
     void setItem(int i, const CopcExtent &item);
     void addItem(const CopcExtent &item);
-    virtual ~CopcExtentsVlr();
+    ~CopcExtentsVlr() override;
 
     static CopcExtentsVlr create(std::istream &in, int byteSize);
     void read(std::istream &in, int byteSize);
     void write(std::ostream &out) const;
-    virtual uint64_t size() const;
-    virtual lazperf::vlr_header header() const;
-    virtual lazperf::evlr_header eheader() const;
+    uint64_t size() const override;
+    lazperf::vlr_header header() const override;
+    lazperf::evlr_header eheader() const override;
 };
 
 } // namespace copc::las

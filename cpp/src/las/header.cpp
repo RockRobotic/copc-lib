@@ -3,10 +3,13 @@
 #include <cstring>
 #include <limits>
 #include <stdexcept>
+#include <string>
+
+#include <lazperf/header.hpp>
 
 #include "copc-lib/geometry/box.hpp"
+#include "copc-lib/las/point.hpp"
 #include "copc-lib/las/utils.hpp"
-#include <lazperf/header.hpp>
 
 namespace copc::las
 {
@@ -22,6 +25,26 @@ LasHeader::LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t p
 }
 
 Box LasHeader::Bounds() const { return Box(min, max); }
+
+void LasHeader::CheckAndUpdateBounds(const las::Point &point)
+{
+    if (point.X() < min.x)
+        min.x = point.X();
+    if (point.X() > max.x)
+        max.x = point.X();
+
+    if (point.Y() < min.y)
+        min.y = point.Y();
+    if (point.Y() > max.y)
+        max.y = point.Y();
+
+    if (point.Z() < min.z)
+        min.z = point.Z();
+    if (point.Z() > max.z)
+        max.z = point.Z();
+}
+
+void LasHeader::SetGpsTimeBit() { global_encoding |= 1; }
 
 uint16_t LasHeader::EbByteSize() const { return copc::las::EbByteSize(point_format_id_, point_record_length_); }
 
@@ -40,8 +63,9 @@ LasHeader LasHeader::FromLazPerf(const lazperf::header14 &header)
     h.generating_software_ = header.generating_software;
     h.creation_day = header.creation.day;
     h.creation_year = header.creation.year;
-    if (header.header_size != 375)
-        throw std::runtime_error("LasHeader::FromLazPerf: Header size must be 375.");
+    if (header.header_size != HEADER_SIZE_BYTES)
+        throw std::runtime_error("LasHeader::FromLazPerf: Header size must be " + std::to_string(HEADER_SIZE_BYTES) +
+                                 ".");
     h.point_offset_ = header.point_offset;
     h.vlr_count_ = header.vlr_count;
     if (header.point_format_id < 6 || header.point_format_id > 8)
@@ -83,15 +107,23 @@ lazperf::header14 LasHeader::ToLazPerf(uint32_t point_offset, uint64_t point_cou
     std::strncpy(h.generating_software, generating_software_.c_str(), 32);
     h.creation.day = creation_day;
     h.creation.year = creation_year;
-    h.header_size = header_size_;
+    h.header_size = HEADER_SIZE_BYTES;
     h.point_offset = point_offset;
-    h.vlr_count = 3; // copc_info + copc_extent + laz;
+    h.vlr_count = 1; // laz VLR
     // If there are Extra Bytes, count an extra VLR
     if (eb_flag)
         h.vlr_count++;
+    // If the header is part of a COPC file, add two extra VLRs for info and extents
+    if (copc_flag_)
+        h.vlr_count += 2;
     // If there are Extended Stats, count an extra VLR
     if (extended_stats_flag)
-        h.vlr_count++;
+    {
+        if (copc_flag_)
+            h.vlr_count++;
+        else
+            throw std::runtime_error("LasHeader::ToLazPerf: A non-copc las header can't have an extended stats VLR");
+    }
     h.point_format_id = point_format_id_;
     h.point_format_id |= (1 << 7); // Do the lazperf trick
     h.point_record_length = point_record_length_;
@@ -136,7 +168,7 @@ std::string LasHeader::ToString() const
     ss << "\tSystem Identifier: " << SystemIdentifier() << std::endl;
     ss << "\tGenerating Software: " << GeneratingSoftware() << std::endl;
     ss << "\tCreation (Day/Year): (" << creation_day << "/" << creation_year << ")" << std::endl;
-    ss << "\tHeader Size: " << header_size_ << std::endl;
+    ss << "\tHeader Size: " << HEADER_SIZE_BYTES << std::endl;
     ss << "\tPoint Offset: " << point_offset_ << std::endl;
     ss << "\tVLR Count: " << vlr_count_ << std::endl;
     ss << "\tPoint Format ID: " << static_cast<int>(point_format_id_) << std::endl;

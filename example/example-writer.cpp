@@ -1,12 +1,11 @@
 #include <cassert>
 #include <cmath>
-#include <cstdint>
 #include <random>
 
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/hierarchy/key.hpp>
-#include <copc-lib/io/reader.hpp>
-#include <copc-lib/io/writer.hpp>
+#include <copc-lib/io/copc_reader.hpp>
+#include <copc-lib/io/copc_writer.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/laz/compressor.hpp>
 #include <copc-lib/laz/decompressor.hpp>
@@ -204,12 +203,12 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
     double z_min = header.min.z + (step * key.z);
 
     // Random num generators between the min and max spatial bounds of the voxel
-    std::uniform_int_distribution<> rand_x(std::ceil(header.ApplyInverseScaleX(std::max(header.min.x, x_min))),
-                                           std::floor(header.ApplyInverseScaleX(std::min(header.max.x, x_min + step))));
-    std::uniform_int_distribution<> rand_y(std::ceil(header.ApplyInverseScaleY(std::max(header.min.y, y_min))),
-                                           std::floor(header.ApplyInverseScaleY(std::min(header.max.y, y_min + step))));
-    std::uniform_int_distribution<> rand_z(std::ceil(header.ApplyInverseScaleZ(std::max(header.min.z, z_min))),
-                                           std::floor(header.ApplyInverseScaleZ(std::min(header.max.z, z_min + step))));
+    std::uniform_int_distribution<> rand_x(header.RemoveScaleX(std::max(header.min.x, x_min)),
+                                           header.RemoveScaleX(std::min(header.max.x, x_min + step)));
+    std::uniform_int_distribution<> rand_y(header.RemoveScaleY(std::max(header.min.y, y_min)),
+                                           header.RemoveScaleY(std::min(header.max.y, y_min + step)));
+    std::uniform_int_distribution<> rand_z(header.RemoveScaleZ(std::max(header.min.z, z_min)),
+                                           header.RemoveScaleZ(std::min(header.max.z, z_min + step)));
 
     // Create a Points object based on the LAS header
     las::Points points(header);

@@ -1,5 +1,5 @@
-#ifndef COPCLIB_IO_WRITER_H_
-#define COPCLIB_IO_WRITER_H_
+#ifndef COPCLIB_IO_COPC_WRITER_H_
+#define COPCLIB_IO_COPC_WRITER_H_
 
 #include <array>
 #include <optional>
@@ -7,9 +7,10 @@
 #include <stdexcept>
 #include <string>
 
-#include "copc-lib/copc/config.hpp"
+#include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/geometry/box.hpp"
-#include "copc-lib/io/base_io.hpp"
+#include "copc-lib/io/copc_base_io.hpp"
+#include "copc-lib/io/laz_base_writer.hpp"
 #include "copc-lib/las/header.hpp"
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/utils.hpp"
@@ -38,8 +39,8 @@ class Writer : public BaseIO
     virtual void Close();
 
     // Adds a node to a given page
-    Node AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key = VoxelKey::RootKey());
-    Node AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, uint64_t point_count,
+    Node AddNode(const VoxelKey &key, const las::Points &points, const VoxelKey &page_key = VoxelKey::RootKey());
+    Node AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, int32_t point_count,
                            const VoxelKey &page_key = VoxelKey::RootKey());
     Node AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_data,
                  const VoxelKey &page_key = VoxelKey::RootKey());
@@ -48,7 +49,7 @@ class Writer : public BaseIO
 
     std::shared_ptr<CopcConfigWriter> CopcConfig() { return config_; }
 
-    virtual ~Writer();
+    ~Writer() { Close(); }
 
   protected:
     Writer() = default;
@@ -59,7 +60,7 @@ class Writer : public BaseIO
 
     bool PageExists(const VoxelKey &key);
 
-    Node DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point_count, bool compressed_data,
+    Node DoAddNode(const VoxelKey &key, const std::vector<char> &in, int32_t point_count, bool compressed_data,
                    const VoxelKey &page_key);
     std::vector<Entry> ReadPage(std::shared_ptr<Internal::PageInternal> page) override
     {
@@ -71,34 +72,25 @@ class Writer : public BaseIO
                     const std::optional<int8_t> &point_format_id, const std::optional<Vector3> &scale,
                     const std::optional<Vector3> &offset, const std::optional<std::string> &wkt,
                     const std::optional<las::EbVlr> &extra_bytes_vlr, const std::optional<bool> &has_extended_stats);
-    // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
-    static int NumBytesFromExtraBytes(const std::vector<las::EbVlr::ebfield> &items);
 };
 
-class FileWriter : public Writer
+class FileWriter : public Writer, laz::BaseFileWriter
 {
   public:
-    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_file_writer,
+    FileWriter(const std::string &file_path, const CopcConfigWriter &copc_config_writer,
                const std::optional<int8_t> &point_format_id = {}, const std::optional<Vector3> &scale = {},
                const std::optional<Vector3> &offset = {}, const std::optional<std::string> &wkt = {},
                const std::optional<las::EbVlr> &extra_bytes_vlr = {},
                const std::optional<bool> &has_extended_stats = {})
+        : BaseFileWriter(file_path)
     {
-
-        f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
-        if (!f_stream_.good())
-            throw std::runtime_error("FileWriter: Error while opening file path.");
-        InitWriter(f_stream_, copc_file_writer, point_format_id, scale, offset, wkt, extra_bytes_vlr,
+        InitWriter(f_stream_, copc_config_writer, point_format_id, scale, offset, wkt, extra_bytes_vlr,
                    has_extended_stats);
     }
 
     void Close() override;
-
-    ~FileWriter() override { f_stream_.close(); }
-
-  private:
-    std::fstream f_stream_;
+    ~FileWriter() { Close(); }
 };
 
 } // namespace copc
-#endif // COPCLIB_IO_WRITER_H_
+#endif // COPCLIB_IO_COPC_WRITER_H_

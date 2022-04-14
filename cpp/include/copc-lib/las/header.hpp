@@ -18,23 +18,28 @@ class Box;
 namespace las
 {
 
+class Point;
 class LasHeader
 {
   public:
+    static const uint16_t HEADER_SIZE_BYTES = 375;
+
     LasHeader() = default;
+    LasHeader(const LasHeader &las_header) = default; // default copy constructor
     uint16_t EbByteSize() const;
-    LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset)
-        : point_format_id_(point_format_id), point_record_length_{point_record_length}, scale_(scale),
-          offset_(offset){};
+    LasHeader(int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale, const Vector3 &offset,
+              bool copc_flag)
+        : point_format_id_(point_format_id), point_record_length_{point_record_length}, scale_(scale), offset_(offset),
+          copc_flag_(copc_flag){};
 
     // Constructor for python pickling
-    // TODO: Add a CMAKE flag to only compute python-specific code when python is compiled
+    // TODO: Add a CMAKE flag to only compile python-specific code when python is compiled
     LasHeader(int8_t point_format_id, uint16_t point_record_length, uint32_t point_offset, uint64_t point_count,
               uint32_t vlr_count, const Vector3 &scale, const Vector3 &offset, uint64_t evlr_offset,
               uint32_t evlr_count)
         : point_format_id_(point_format_id), point_record_length_(point_record_length), point_offset_(point_offset),
           point_count_(point_count), vlr_count_(vlr_count), scale_(scale), offset_(offset), evlr_offset_(evlr_offset),
-          evlr_count_(evlr_count){};
+          evlr_count_(evlr_count), copc_flag_(true){};
 
     // Copy constructor with modification of protected attributes
     LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale,
@@ -57,6 +62,7 @@ class LasHeader
     uint32_t VlrCount() const { return vlr_count_; }
     uint32_t EvlrCount() const { return evlr_count_; }
     uint64_t EvlrOffset() const { return evlr_offset_; }
+    bool IsCopc() const { return copc_flag_; }
 
     void GUID(const std::string &guid)
     {
@@ -88,15 +94,28 @@ class LasHeader
     // Returns a box that fits the dimensions of the point cloud based on min and max
     Box Bounds() const;
 
+    void CheckAndUpdateBounds(const Point &point);
+
+    void SetGpsTimeBit();
+
     // Apply Las scale factors to Vector3 or double
     Vector3 ApplyScale(const Vector3 &unscaled_value) const { return unscaled_value * scale_ + offset_; }
     Vector3 ApplyInverseScale(const Vector3 &scaled_value) const { return scaled_value / scale_ - offset_; }
     double ApplyScaleX(double unscaled_value) const { return unscaled_value * scale_.x + offset_.x; }
     double ApplyScaleY(double unscaled_value) const { return unscaled_value * scale_.y + offset_.y; }
     double ApplyScaleZ(double unscaled_value) const { return unscaled_value * scale_.z + offset_.z; }
-    double ApplyInverseScaleX(double scaled_value) const { return (scaled_value - offset_.x) / scale_.x; }
-    double ApplyInverseScaleY(double scaled_value) const { return (scaled_value - offset_.y) / scale_.y; }
-    double ApplyInverseScaleZ(double scaled_value) const { return (scaled_value - offset_.z) / scale_.z; }
+    int32_t RemoveScaleX(double scaled_value) const
+    {
+        return static_cast<int32_t>(std::round((scaled_value - offset_.x) / scale_.x));
+    }
+    int32_t RemoveScaleY(double scaled_value) const
+    {
+        return static_cast<int32_t>(std::round((scaled_value - offset_.y) / scale_.y));
+    }
+    int32_t RemoveScaleZ(double scaled_value) const
+    {
+        return static_cast<int32_t>(std::round((scaled_value - offset_.z) / scale_.z));
+    }
 
     uint16_t file_source_id{};
     uint16_t global_encoding{};
@@ -130,10 +149,10 @@ class LasHeader
     std::string system_identifier_{};
     std::string generating_software_{};
 
-    const uint8_t version_major_{1};
-    const uint8_t version_minor_{4};
+    static const uint8_t version_major_{1};
+    static const uint8_t version_minor_{4};
 
-    const uint16_t header_size_{375};
+    const bool copc_flag_{true}; // flag to set true if the header is used for a COPC file
 };
 
 } // namespace las

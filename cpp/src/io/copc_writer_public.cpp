@@ -1,7 +1,7 @@
 #include "copc-lib/hierarchy/internal/hierarchy.hpp"
 #include "copc-lib/hierarchy/internal/page.hpp"
-#include "copc-lib/io/internal/writer_internal.hpp"
-#include "copc-lib/io/writer.hpp"
+#include "copc-lib/io/copc_writer.hpp"
+#include "copc-lib/io/internal/copc_writer_internal.hpp"
 #include "copc-lib/las/point.hpp"
 #include "copc-lib/laz/decompressor.hpp"
 
@@ -59,23 +59,20 @@ void Writer::InitWriter(std::ostream &out_stream, const CopcConfigWriter &copc_c
         // If not we use the copc_config_writer provided
         this->config_ = std::make_shared<CopcConfigWriter>(copc_config_writer);
     }
-
     this->hierarchy_ = std::make_shared<Internal::Hierarchy>();
     this->writer_ = std::make_unique<Internal::WriterInternal>(out_stream, this->config_, this->hierarchy_);
 }
 
-Writer::~Writer()
+void Writer::Close()
 {
     if (writer_ != nullptr)
         writer_->Close();
 }
 
-void Writer::Close() { writer_->Close(); }
-
 bool Writer::PageExists(const VoxelKey &key) { return hierarchy_->PageExists(key); }
 
 // Writes a node to the file and reference it in the hierarchy and in the parent page
-Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point_count, bool compressed_data,
+Node Writer::DoAddNode(const VoxelKey &key, const std::vector<char> &in, int32_t point_count, bool compressed_data,
                        const VoxelKey &page_key)
 {
     if (!page_key.IsValid() || !key.IsValid())
@@ -85,7 +82,7 @@ Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point
     if (!key.ChildOf(page_key))
         throw std::runtime_error("Target key " + key.ToString() + " is not a child of page node " + key.ToString());
 
-    Entry e = writer_->WriteNode(std::move(in), point_count, compressed_data);
+    Entry e = writer_->WriteNode(in, point_count, compressed_data);
     e.key = key;
 
     auto node = std::make_shared<Node>(e, page_key);
@@ -102,7 +99,7 @@ Node Writer::DoAddNode(const VoxelKey &key, std::vector<char> in, uint64_t point
     return *node;
 }
 
-Node Writer::AddNode(const VoxelKey &key, las::Points &points, const VoxelKey &page_key)
+Node Writer::AddNode(const VoxelKey &key, const las::Points &points, const VoxelKey &page_key)
 {
     if (points.Size() == 0)
         throw std::runtime_error("Writer::AddNode: Cannot add empty las::Points.");
@@ -126,7 +123,7 @@ Node Writer::AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_
     return DoAddNode(key, uncompressed_data, 0, false, page_key);
 }
 
-Node Writer::AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, uint64_t point_count,
+Node Writer::AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, int32_t point_count,
                                const VoxelKey &page_key)
 {
     if (point_count == 0)
@@ -175,8 +172,9 @@ void Writer::ChangeNodePage(const VoxelKey &node_key, const VoxelKey &new_page_k
 
 void FileWriter::Close()
 {
-    writer_->Close();
-    f_stream_.close();
+    if (writer_ != nullptr)
+        writer_->Close();
+    laz::BaseFileWriter::Close();
 }
 
 } // namespace copc

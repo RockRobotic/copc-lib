@@ -1,7 +1,7 @@
 #include <cmath>
-#include <iostream>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <pybind11/operators.h>
@@ -14,8 +14,8 @@
 #include <copc-lib/geometry/box.hpp>
 #include <copc-lib/hierarchy/key.hpp>
 #include <copc-lib/hierarchy/node.hpp>
-#include <copc-lib/io/reader.hpp>
-#include <copc-lib/io/writer.hpp>
+#include <copc-lib/io/copc_reader.hpp>
+#include <copc-lib/io/copc_writer.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
@@ -26,7 +26,7 @@
 namespace py = pybind11;
 using namespace copc;
 
-PYBIND11_MAKE_OPAQUE(std::vector<char>);
+PYBIND11_MAKE_OPAQUE(std::vector<char>)
 
 PYBIND11_MODULE(_core, m)
 {
@@ -77,7 +77,7 @@ PYBIND11_MODULE(_core, m)
                 /* Return a tuple that fully encodes the state of the object */
                 return py::make_tuple(key.d, key.x, key.y, key.z);
             },
-            [](py::tuple t) { // __setstate__
+            [](const py::tuple &t) { // __setstate__
                 if (t.size() != 4)
                     throw std::runtime_error("Invalid state!");
 
@@ -133,7 +133,7 @@ PYBIND11_MODULE(_core, m)
                 /* Return a tuple that fully encodes the state of the object */
                 return py::make_tuple(n.key, n.offset, n.byte_size, n.point_count, n.page_key);
             },
-            [](py::tuple t) { // __setstate__
+            [](const py::tuple &t) { // __setstate__
                 if (t.size() != 5)
                     throw std::runtime_error("Invalid state!");
 
@@ -330,7 +330,7 @@ PYBIND11_MODULE(_core, m)
         .def("ToPointFormat", &las::Points::ToPointFormat, py::arg("point_format_id"))
         .def("Within", &las::Points::Within, py::arg("box"))
         .def("GetWithin", &las::Points::GetWithin, py::arg("box"))
-        .def("Pack", py::overload_cast<>(&las::Points::Pack))
+        .def("Pack", py::overload_cast<>(&las::Points::Pack, py::const_))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const las::LasHeader &>(&las::Points::Unpack))
         .def("Unpack", py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &, const Vector3 &,
                                          const Vector3 &>(&las::Points::Unpack))
@@ -343,7 +343,7 @@ PYBIND11_MODULE(_core, m)
         .def("__setitem__",
              [wrap_i](las::Points &s, DiffType i, std::shared_ptr<las::Point> v) {
                  i = wrap_i(i, s.Size());
-                 s[(SizeType)i] = v;
+                 s[(SizeType)i] = std::move(v);
              })
         .def("__len__", &las::Points::Size)
         /// Optional sequence protocol operations
@@ -427,7 +427,7 @@ PYBIND11_MODULE(_core, m)
         .def_property_readonly("copc_config", &Writer::CopcConfig)
         .def("FindNode", &Writer::FindNode)
         .def("Close", &FileWriter::Close)
-        .def("AddNode", py::overload_cast<const VoxelKey &, las::Points &, const VoxelKey &>(&Writer::AddNode),
+        .def("AddNode", py::overload_cast<const VoxelKey &, const las::Points &, const VoxelKey &>(&Writer::AddNode),
              py::arg("key"), py::arg("points"), py::arg("page_key") = VoxelKey::RootKey())
         .def("AddNodeCompressed", &Writer::AddNodeCompressed, py::arg("key"), py::arg("compressed_data"),
              py::arg("point_count"), py::arg("page_key") = VoxelKey::RootKey())
@@ -436,9 +436,10 @@ PYBIND11_MODULE(_core, m)
              py::arg("key"), py::arg("uncompressed_data"), py::arg("page_key") = VoxelKey::RootKey())
         .def("ChangeNodePage", &Writer::ChangeNodePage, py::arg("node_key"), py::arg("new_page_key"));
 
-    m.def("CompressBytes",
-          py::overload_cast<std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
-          py::arg("in"), py::arg("point_format_id"), py::arg("eb_byte_size"));
+    m.def(
+        "CompressBytes",
+        py::overload_cast<const std::vector<char> &, const int8_t &, const uint16_t &>(&laz::Compressor::CompressBytes),
+        py::arg("in"), py::arg("point_format_id"), py::arg("eb_byte_size"));
     m.def("CompressBytes",
           py::overload_cast<std::vector<char> &, const las::LasHeader &>(&laz::Compressor::CompressBytes));
 
@@ -478,14 +479,16 @@ PYBIND11_MODULE(_core, m)
         .def("EbByteSize", &las::LasHeader::EbByteSize)
         .def("Span", &las::LasHeader::Span)
         .def("Bounds", &las::LasHeader::Bounds)
+        .def("CheckAndUpdateBounds", &las::LasHeader::CheckAndUpdateBounds)
+        .def("SetGpsTimeBit", &las::LasHeader::SetGpsTimeBit)
         .def("ApplyScale", &las::LasHeader::ApplyScale)
         .def("ApplyInverseScale", &las::LasHeader::ApplyInverseScale)
         .def("ApplyScaleX", &las::LasHeader::ApplyScaleX)
         .def("ApplyScaleY", &las::LasHeader::ApplyScaleY)
         .def("ApplyScaleZ", &las::LasHeader::ApplyScaleZ)
-        .def("ApplyInverseScaleX", &las::LasHeader::ApplyInverseScaleX)
-        .def("ApplyInverseScaleY", &las::LasHeader::ApplyInverseScaleY)
-        .def("ApplyInverseScaleZ", &las::LasHeader::ApplyInverseScaleZ)
+        .def("RemoveScaleX", &las::LasHeader::RemoveScaleX)
+        .def("RemoveScaleY", &las::LasHeader::RemoveScaleY)
+        .def("RemoveScaleZ", &las::LasHeader::RemoveScaleZ)
         .def("__str__", &las::LasHeader::ToString)
         .def("__repr__", &las::LasHeader::ToString)
         .def(py::pickle(
@@ -496,7 +499,7 @@ PYBIND11_MODULE(_core, m)
                                       h.VlrCount(), h.PointFormatId(), h.PointRecordLength(), h.Scale(), h.Offset(),
                                       h.max, h.min, h.EvlrOffset(), h.EvlrCount(), h.PointCount(), h.points_by_return);
             },
-            [](py::tuple t) { // __setstate__
+            [](const py::tuple &t) { // __setstate__
                 if (t.size() != 19)
                     throw std::runtime_error("Invalid state!");
 

@@ -1,9 +1,8 @@
 #include <cstring>
-#include <fstream>
 #include <sstream>
 
 #include "catch2/catch.hpp"
-#include <copc-lib/io/reader.hpp>
+#include <copc-lib/io/copc_reader.hpp>
 
 using namespace copc;
 using namespace std;
