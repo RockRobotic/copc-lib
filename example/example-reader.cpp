@@ -17,14 +17,14 @@ void ReaderExample()
 
     // Get the CopcInfo struct
     auto copc_info = reader.CopcConfig().CopcInfo();
-    cout << "IsCopc Info: " << endl;
+    cout << "Copc Info: " << endl;
     cout << "\tSpacing: " << copc_info.spacing << endl
          << "\tRoot Offset: " << copc_info.root_hier_offset << endl
          << "\tRoot Size: " << copc_info.root_hier_size << endl;
 
     // Get the CopcInfo struct
     auto copc_extents = reader.CopcConfig().CopcExtents();
-    cout << "IsCopc Extents (Min/Max): " << endl;
+    cout << "Copc Extents (Min/Max): " << endl;
     cout << "\tIntensity : (" << copc_extents.Intensity()->minimum << "/" << copc_extents.Intensity()->maximum << ")"
          << endl
          << "\tClassification : (" << copc_extents.Classification()->minimum << "/"

@@ -715,7 +715,7 @@ TEST_CASE("Writer EBs", "[Writer]")
 TEST_CASE("Writer Copy", "[Writer]")
 {
 
-    SECTION("Copy IsCopc Config")
+    SECTION("Copy Copc Config")
     {
         FileReader reader("autzen-classified.copc.laz");
 
