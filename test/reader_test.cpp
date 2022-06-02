@@ -281,6 +281,8 @@ TEST_CASE("Spatial Query Functions", "[Reader]")
         REQUIRE(reader.GetDepthAtResolution(std::numeric_limits<double>::max()) == 0);
     }
 
+    SECTION("GetMaxDepth") { REQUIRE(reader.GetMaxDepth() == 5); }
+
     SECTION("GetNodesAtResolution")
     {
         auto subset_nodes = reader.GetNodesAtResolution(3);

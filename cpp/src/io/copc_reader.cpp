@@ -375,6 +375,8 @@ int32_t Reader::GetDepthAtResolution(double resolution)
     return max_depth;
 }
 
+int32_t Reader::GetMaxDepth() { return GetDepthAtResolution(-1); }
+
 std::vector<Node> Reader::GetNodesAtResolution(double resolution)
 {
     auto target_depth = GetDepthAtResolution(resolution);

@@ -53,6 +53,7 @@ class Reader : public BaseIO
     // precise as the requested resolution will be selected. Therefore the result may be a bit more precise than
     // requested.
     int32_t GetDepthAtResolution(double resolution);
+    int32_t GetMaxDepth();
     std::vector<Node> GetNodesAtResolution(double resolution);
     std::vector<Node> GetNodesWithinResolution(double resolution);
 
