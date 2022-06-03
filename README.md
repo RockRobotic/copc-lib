@@ -27,12 +27,12 @@ pip install copclib
 copc-lib has the following dependencies:
 
 - laz-perf>=[3.0.0](https://github.com/hobu/laz-perf/releases/tag/3.0.0)
-- Catch2 (test suite only)
+- Catch2 v2.x (test suite only)
 - Pybind11 (python bindings only)
 
 To install all dependencies:
 ```bash
-conda install -c conda-forge "laz-perf>=3.0" Catch2 pybind11
+conda install -c conda-forge "laz-perf>=3.0" Catch2=2.13 pybind11
 ```
 
 #### C++
