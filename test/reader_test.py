@@ -202,6 +202,9 @@ def test_spatial_query_functions():
     assert reader.GetDepthAtResolution(float_info.min) == 5
     assert reader.GetDepthAtResolution(float_info.max) == 0
 
+    # GetMaxDepth
+    assert reader.GetMaxDepth() == 5
+
     # GetNodesAtResolution
     subset_nodes = reader.GetNodesAtResolution(3)
     assert len(subset_nodes) == 192

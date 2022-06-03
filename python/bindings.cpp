@@ -410,6 +410,7 @@ PYBIND11_MODULE(_core, m)
         .def("GetNodesIntersectBox", &Reader::GetNodesIntersectBox, py::arg("box"), py::arg("resolution") = 0)
         .def("GetPointsWithinBox", &Reader::GetPointsWithinBox, py::arg("box"), py::arg("resolution") = 0)
         .def("GetDepthAtResolution", &Reader::GetDepthAtResolution, py::arg("resolution"))
+        .def("GetMaxDepth", &Reader::GetMaxDepth)
         .def("GetNodesAtResolution", &Reader::GetNodesAtResolution, py::arg("resolution"))
         .def("GetNodesWithinResolution", &Reader::GetNodesWithinResolution, py::arg("resolution"))
         .def("ValidateSpatialBounds", &Reader::ValidateSpatialBounds, py::arg("verbose") = false);
