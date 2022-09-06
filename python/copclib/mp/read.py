@@ -17,9 +17,9 @@ def read_multithreaded(
 ):
     """Scaffolding for reading COPC files in a multithreaded way to increase performance.
     It queues all nodes from either the provided list of nodes or nodes within the given resolution to be processed.
-    Within the multiprocess, `read_function` is called with `read_function_args` keyword arguments, as well as the 
+    Within the multiprocess, `read_function` is called with `read_function_args` keyword arguments, as well as the
         keyword arguments "points", "node", and "reader".
-        This function should take those parameters and return a pickleable object that represents those points - 
+        This function should take those parameters and return a pickleable object that represents those points -
             for example, a list of XYZ points limited by classification.
         Note that whatever is returned from this function must be wrapped in a dictionary,
             because the return values get passed as keyword arguments to `callback_function`.
@@ -29,14 +29,14 @@ def read_multithreaded(
 
     Args:
         reader (copclib.CopcReader): A copc reader for the file you are reading
-        read_function (function): A function which takes each input node and its points and 
+        read_function (function): A function which takes each input node and its points and
             returns a pickleable object as output.
         read_function_args (dict, optional): A key/value pair of keyword arguments to pass to the read_function. Defaults to {}.
         nodes (list[copc.Node], optional): A list of nodes to run the reader on. Defaults to reading all the nodes.
-        resolution (float, optional): If a list of nodes is not provided, reads all nodes up to this resolution. 
+        resolution (float, optional): If a list of nodes is not provided, reads all nodes up to this resolution.
             Defaults to reading all nodes.
         progress (tqdm.tqdm, optional): A TQDM progress bar to track progress. Defaults to None.
-        completed_callback (function, optional): A function which is called after a node is processed 
+        completed_callback (function, optional): A function which is called after a node is processed
             and returned from multiprocessing. Defaults to None.
         chunk_size (int, optional): Limits the amount of nodes which are queued for multiprocessing at once. Defaults to 1024.
 
@@ -106,12 +106,12 @@ def _read_node(read_function, read_function_args, node):
 
 
 def _do_read_xyz(points, class_limits=None, **kwargs):
-    """A 'read_function' which returns a numpy array of XYZ points from the COPC file, 
+    """A 'read_function' which returns a numpy array of XYZ points from the COPC file,
     optionally limiting to certain classifications.
 
     Args:
         points (copc.Points): The decompressed and unpacked Points from the given node
-        class_limits (list[int], optional): Limits the points returned to those whose 
+        class_limits (list[int], optional): Limits the points returned to those whose
             classification. Defaults to None.
 
     Returns:
@@ -125,13 +125,15 @@ def _do_read_xyz(points, class_limits=None, **kwargs):
     return dict(xyz=np.array(xyzs).reshape(len(xyzs), 3))
 
 
-def read_concat_xyz_class_limit(reader, classification_limits=[], resolution=-1, progress=None, **kwargs):
+def read_concat_xyz_class_limit(
+    reader, classification_limits=[], resolution=-1, progress=None, **kwargs
+):
     """Reads the nodes in a COPC file and returns a concatenated list of XYZ coordinates,
     optionally limited by classifications and resolution.
 
     Args:
         reader (copclib.CopcReader): A copc reader for the file you are reading
-        classification_limits (list[int], optional): Limit the coordinates returned 
+        classification_limits (list[int], optional): Limit the coordinates returned
             to those points with a classification inside this list. Defaults to [].
         resolution (float, optional): Reads all nodes up to this resolution. Defaults to reading all nodes.
         progress (tqdm.tqdm, optional): A TQDM progress bar to track progress. Defaults to None.
@@ -165,14 +167,16 @@ def read_concat_xyz_class_limit(reader, classification_limits=[], resolution=-1,
     return np.concatenate(all_xyz)
 
 
-def read_map_xyz_class_limit(reader, classification_limits=[], resolution=-1, progress=None, **kwargs):
-    """Reads the nodes in a COPC file and returns a dictionary which maps stringified node keys to 
+def read_map_xyz_class_limit(
+    reader, classification_limits=[], resolution=-1, progress=None, **kwargs
+):
+    """Reads the nodes in a COPC file and returns a dictionary which maps stringified node keys to
     their respective XYZ coordinates, optionally limited by classifications and resolution.
     If a node has no points matching the constraints, it won't be added to this dictionary.
 
     Args:
         reader (copclib.CopcReader): A copc reader for the file you are reading
-        classification_limits (list[int], optional): Limit the coordinates returned 
+        classification_limits (list[int], optional): Limit the coordinates returned
             to those points with a classification inside this list. Defaults to [].
         resolution (float, optional): Reads all nodes up to this resolution. Defaults to reading all nodes.
         progress (tqdm.tqdm, optional): A TQDM progress bar to track progress. Defaults to None.
