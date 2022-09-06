@@ -102,6 +102,7 @@ class FileReader : public Reader
     FileReader(const std::string &file_path) : is_open_(true)
     {
         auto f_stream = new std::fstream;
+        this->file_path_ = file_path;
         f_stream->open(file_path.c_str(), std::ios::in | std::ios::binary);
         if (!f_stream->good())
             throw std::runtime_error("FileReader: Error while opening file path.");
@@ -120,10 +121,13 @@ class FileReader : public Reader
         }
     }
 
+    std::string FilePath() { return file_path_; }
+
     ~FileReader() { Close(); }
 
   private:
     bool is_open_;
+    std::string file_path_;
 };
 
 } // namespace copc
