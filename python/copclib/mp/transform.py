@@ -29,7 +29,7 @@ def transform_multithreaded(
             nodes = reader.GetNodesWithinResolution(resolution)
         else:
             nodes = reader.GetAllNodes()
-            
+
         if progress is not None:
             progress.reset(len(nodes))
 
@@ -54,19 +54,31 @@ def transform_multithreaded(
                     node,
                     writer.copc_config.las_header,
                     update_minmax,
-                    **transform_function_args
+                    **transform_function_args,
                 )
                 if progress is not None:
                     future.add_done_callback(lambda _: progress.update())
                 futures.append(future)
 
             for fut in concurrent.futures.as_completed(futures):
-                compressed_points, node, point_count, xyz_min, xyz_max, return_vals = fut.result()
+                (
+                    compressed_points,
+                    node,
+                    point_count,
+                    xyz_min,
+                    xyz_max,
+                    return_vals,
+                ) = fut.result()
                 if completed_callback:
-                    completed_callback(node=node, point_count=point_count, compressed_points=compressed_points, **return_vals)
+                    completed_callback(
+                        node=node,
+                        point_count=point_count,
+                        compressed_points=compressed_points,
+                        **return_vals,
+                    )
 
                 all_mins.append(xyz_min)
-                all_maxs.append(xyz_max)        
+                all_maxs.append(xyz_max)
 
                 writer.AddNodeCompressed(
                     node.key,
@@ -84,24 +96,32 @@ def transform_multithreaded(
         writer.copc_config.las_header.max = list(global_max)
 
 
-
 def _transform_node(transform_function, node, writer_header, update_minmax, **kwargs):
     points = _transform_node.copc_reader.GetPoints(node)
-    
+
     for argument_name in kwargs.keys():
-        assert argument_name not in ["points", "node", "writer_header", "reader"], f"Use of protected keyword argument '{argument_name}'!"
+        assert argument_name not in [
+            "points",
+            "node",
+            "writer_header",
+            "reader",
+        ], f"Use of protected keyword argument '{argument_name}'!"
     ret = transform_function(
         points=points,
         node=node,
         writer_header=writer_header,
         reader=_transform_node.copc_reader,
-        **kwargs
+        **kwargs,
     )
     if isinstance(ret, tuple):
-        assert len(ret) == 2, "The transform_function return value should be a tuple of the points and a dictionary of kwargs!"
+        assert (
+            len(ret) == 2
+        ), "The transform_function return value should be a tuple of the points and a dictionary of kwargs!"
         points = ret[0]
         return_vals = ret[1]
-        assert isinstance(return_vals, dict), "The transform_function return value should be a tuple of the points and a dictionary of kwargs!"
+        assert isinstance(
+            return_vals, dict
+        ), "The transform_function return value should be a tuple of the points and a dictionary of kwargs!"
     else:
         points = ret
         return_vals = {}

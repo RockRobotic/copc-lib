@@ -6,6 +6,7 @@ import copclib as copc
 from copclib.mp.transform import transform_multithreaded
 import numpy as np
 
+
 def test_copc_copy():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
     reader = copc.FileReader(get_autzen_file())
@@ -41,6 +42,7 @@ def _transform_fun(offset, points, **kwargs):
 
     return points
 
+
 def test_translate():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
     reader = copc.FileReader(get_autzen_file())
@@ -51,9 +53,14 @@ def test_translate():
 
     offset = [50, 30, 20]
 
-    transform_multithreaded(reader, writer, _transform_fun, transform_function_args=dict(offset=offset), update_minmax=True)
+    transform_multithreaded(
+        reader,
+        writer,
+        _transform_fun,
+        transform_function_args=dict(offset=offset),
+        update_minmax=True,
+    )
     writer.Close()
-
 
     # validate
     new_reader = copc.FileReader(file_path)
@@ -72,4 +79,3 @@ def test_translate():
         assert new_node.key == node.key
         assert new_node.point_count == node.point_count
         assert new_node.byte_size == node.byte_size
-
