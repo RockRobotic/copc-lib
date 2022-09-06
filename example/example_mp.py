@@ -64,7 +64,7 @@ def rotate_file_mp():
 
 def copy_file_mp():
     file_path = os.path.join(DATADIRECTORY, "out", "autzen-rotated.copc.laz")
-    reader = copc.FileReader(os.path.join(DATADIRECTORY, "autzen-classified.copc.laz"))
+    reader = copc.FileReader(os.path.join(DATADIRECTORY, "autzen-copied.copc.laz"))
     writer = copc.FileWriter(
         file_path,
         reader.copc_config,
