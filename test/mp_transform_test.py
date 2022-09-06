@@ -9,8 +9,7 @@ import numpy as np
 import pytest
 
 
-@pytest.mark.skipif(sys.version_info < (3,7),
-                    reason="requires python3.7")
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_copc_copy():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
     reader = copc.FileReader(get_autzen_file())
@@ -36,8 +35,7 @@ def test_copc_copy():
         ) == reader.GetPointDataCompressed(node)
 
 
-@pytest.mark.skipif(sys.version_info < (3,7),
-                    reason="requires python3.7")
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def _transform_fun(offset, points, **kwargs):
     xyz = np.stack([points.x, points.y, points.z], axis=1)
     xyz += offset

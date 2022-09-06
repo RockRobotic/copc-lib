@@ -8,8 +8,8 @@ import laspy
 import pytest
 import numpy as np
 
-@pytest.mark.skipif(sys.version_info < (3,7),
-                    reason="requires python3.7")
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_xyz_noclass_limit():
     reader = copc.FileReader(get_autzen_file())
     xyz = read_concat_xyz_class_limit(reader)
@@ -17,8 +17,8 @@ def test_xyz_noclass_limit():
     las = laspy.read(get_autzen_file())
     assert len(xyz) == len(las)
 
-@pytest.mark.skipif(sys.version_info < (3,7),
-                    reason="requires python3.7")
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_xyz_class_limit():
     classifications_to_test = [0, 1, 2]
 
@@ -33,8 +33,7 @@ def test_xyz_class_limit():
         print(len(xyz), len(las_points))
 
 
-@pytest.mark.skipif(sys.version_info < (3,7),
-                    reason="requires python3.7")
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_xyz_map_noclass_limit():
     reader = copc.FileReader(get_autzen_file())
     key_xyz_map = read_map_xyz_class_limit(reader)
@@ -46,8 +45,7 @@ def test_xyz_map_noclass_limit():
         np.testing.assert_allclose(xyz_real, xyz_test)
 
 
-@pytest.mark.skipif(sys.version_info < (3,7),
-                    reason="requires python3.7")
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_xyz_map_class_limit():
     classification_limits = [0, 1, 2]
 
