@@ -4,38 +4,34 @@ from .utils import generate_test_file
 
 import copclib as copc
 from copclib.mp.read import read_concat_xyz_class_limit, read_map_xyz_class_limit
-import laspy
 import pytest
 import numpy as np
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="windows laspy version")
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_xyz_noclass_limit():
     reader = copc.FileReader(generate_test_file())
     xyz = read_concat_xyz_class_limit(reader)
 
     las = laspy.read(generate_test_file())
-    assert len(xyz) == len(las)
+    assert len(xyz) == reader.copc_config.las_header.point_count
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="windows laspy version")
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
-def test_xyz_class_limit():
-    classifications_to_test = [0, 1, 2]
+# @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
+# def test_xyz_class_limit():
+#     classifications_to_test = [0, 1, 2]
 
-    reader = copc.FileReader(generate_test_file())
+#     reader = copc.FileReader(generate_test_file())
 
-    for classification in classifications_to_test:
-        xyz = read_concat_xyz_class_limit(reader, [classification])
+#     for classification in classifications_to_test:
+#         xyz = read_concat_xyz_class_limit(reader, [classification])
 
-        las = laspy.read(generate_test_file())
-        las_points = las.points[las.classification == classification]
-        assert len(xyz) == len(las_points)
-        print(len(xyz), len(las_points))
+#         las = laspy.read(generate_test_file())
+#         las_points = las.points[las.classification == classification]
+#         assert len(xyz) == len(las_points)
+#         print(len(xyz), len(las_points))
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="windows laspy version")
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_xyz_map_noclass_limit():
     reader = copc.FileReader(generate_test_file())
@@ -48,7 +44,6 @@ def test_xyz_map_noclass_limit():
         np.testing.assert_allclose(xyz_real, xyz_test)
 
 
-@pytest.mark.skipif(sys.platform == "win32", reason="windows laspy version")
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_xyz_map_class_limit():
     classification_limits = [0, 1, 2]
