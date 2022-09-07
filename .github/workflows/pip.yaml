@@ -64,7 +64,7 @@ jobs:
         url: "https://github.com/PDAL/data/raw/a3d2a351ca1002c7ea4daa96b5c5fcb0fafeaa6f/autzen/autzen-classified.copc.laz"
         target: test/data/
 
-    - uses: pypa/cibuildwheel@v2.3.1
+    - uses: pypa/cibuildwheel@v2.9.0
 
     - name: Verify clean directory
       run: git diff --exit-code
