@@ -3,8 +3,8 @@
 
 namespace copc::las
 {
-Point::Point(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const uint16_t &eb_byte_size)
-    : scale_(scale), offset_(offset), point_format_id_(point_format_id)
+Point::Point(const int8_t &point_format_id, const uint16_t &eb_byte_size)
+    : point_format_id_(point_format_id)
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("Point: Point format must be 6-8");
@@ -18,11 +18,11 @@ Point::Point(const int8_t &point_format_id, const Vector3 &scale, const Vector3 
 }
 
 Point::Point(const LasHeader &header)
-    : Point(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize())
+    : Point(header.PointFormatId(), header.EbByteSize())
 {
 }
 
-Point::Point(const Point &other) : Point(other.point_format_id_, other.Scale(), other.Offset(), other.EbByteSize())
+Point::Point(const Point &other) : Point(other.point_format_id_, other.EbByteSize())
 {
     x_scaled_ = other.x_scaled_;
     y_scaled_ = other.y_scaled_;
@@ -57,9 +57,9 @@ bool Point::operator==(const Point &other) const
 {
     if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
         return false;
-    if (!AreClose(X(), other.X(), std::max(scale_.x, other.scale_.x)) ||
-        !AreClose(Y(), other.Y(), std::max(scale_.y, other.scale_.y)) ||
-        !AreClose(Z(), other.Z(), std::max(scale_.z, other.scale_.z)) || intensity_ != other.Intensity())
+    if (!AreClose(X(), other.X(), 0.01) ||
+        !AreClose(Y(), other.Y(), 0.01) ||
+        !AreClose(Z(), other.Z(), 0.01) || intensity_ != other.Intensity())
         return false;
     if (returns_ != other.ReturnsBitField())
         return false;
@@ -85,11 +85,11 @@ bool Point::Within(const Box &box) const { return box.Contains(Vector3(X(), Y(),
 std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
                                      const Vector3 &offset, const uint16_t &eb_byte_size)
 {
-    std::shared_ptr<Point> p = std::make_shared<Point>(point_format_id, scale, offset, eb_byte_size);
+    std::shared_ptr<Point> p = std::make_shared<Point>(point_format_id, eb_byte_size);
 
-    p->UnscaledX(unpack<int32_t>(in_stream));
-    p->UnscaledY(unpack<int32_t>(in_stream));
-    p->UnscaledZ(unpack<int32_t>(in_stream));
+    p->x_scaled_ = ApplyScale(unpack<int32_t>(in_stream), scale.x, offset.x);
+    p->y_scaled_ = ApplyScale(unpack<int32_t>(in_stream), scale.y, offset.y);
+    p->z_scaled_ = ApplyScale(unpack<int32_t>(in_stream), scale.z, offset.z);
     p->intensity_ = unpack<uint16_t>(in_stream);
     p->returns_ = unpack<uint8_t>(in_stream);
     p->flags_ = unpack<uint8_t>(in_stream);
@@ -116,12 +116,13 @@ std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &poin
     return p;
 }
 
-void Point::Pack(std::ostream &out_stream) const
+void Point::Pack(std::ostream &out_stream,const Vector3 &scale,
+                                         const Vector3 &offset) const
 {
     // Point
-    pack(UnscaledX(), out_stream);
-    pack(UnscaledY(), out_stream);
-    pack(UnscaledZ(), out_stream);
+    pack(RemoveScale<int32_t>(x_scaled_, scale.x, offset.x), out_stream);
+    pack(RemoveScale<int32_t>(y_scaled_, scale.y, offset.y), out_stream);
+    pack(RemoveScale<int32_t>(z_scaled_, scale.z, offset.z), out_stream);
     pack(intensity_, out_stream);
     pack(returns_, out_stream);
     pack(flags_, out_stream);

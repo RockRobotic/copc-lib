@@ -107,7 +107,7 @@ Node Writer::AddNode(const VoxelKey &key, const las::Points &points, const Voxel
         points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
 
-    std::vector<char> uncompressed_data = points.Pack();
+    std::vector<char> uncompressed_data = points.Pack(config_->LasHeader()->Scale(), config_->LasHeader()->Offset());
     return AddNode(key, uncompressed_data, page_key);
 }
 

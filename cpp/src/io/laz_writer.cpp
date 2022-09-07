@@ -22,7 +22,7 @@ void LazWriter::WritePoints(const las::Points &points)
         points.PointRecordLength() != config_->LasHeader().PointRecordLength())
         throw std::runtime_error("LazWriter::WritePoints: New points must be of same format and size.");
 
-    std::vector<char> uncompressed_data = points.Pack();
+    std::vector<char> uncompressed_data = points.Pack(config_->LasHeader());
     WriteChunk(uncompressed_data);
 }
 

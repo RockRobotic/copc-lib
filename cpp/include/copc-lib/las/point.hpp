@@ -13,8 +13,7 @@ namespace copc::las
 class Point
 {
   public:
-    Point(const int8_t &point_format_id, const Vector3 &scale = Vector3::DefaultScale(),
-          const Vector3 &offset = Vector3::DefaultOffset(), const uint16_t &eb_byte_size = 0);
+    Point(const int8_t &point_format_id, const uint16_t &eb_byte_size = 0);
     Point(const LasHeader &header);
     Point(const Point &other);
 
@@ -30,16 +29,6 @@ class Point
 
     double Z() const { return z_scaled_; }
     void Z(const double &z) { z_scaled_ = z; }
-
-    // XYZ Unscaled
-    int32_t UnscaledX() const { return RemoveScale<int32_t>(x_scaled_, scale_.x, offset_.x); }
-    void UnscaledX(const int32_t &x) { x_scaled_ = ApplyScale(x, scale_.x, offset_.x); }
-
-    int32_t UnscaledY() const { return RemoveScale<int32_t>(y_scaled_, scale_.y, offset_.y); }
-    void UnscaledY(const int32_t &y) { y_scaled_ = ApplyScale(y, scale_.y, offset_.y); }
-
-    int32_t UnscaledZ() const { return RemoveScale<int32_t>(z_scaled_, scale_.z, offset_.z); }
-    void UnscaledZ(const int32_t &z) { z_scaled_ = ApplyScale(z, scale_.z, offset_.z); }
 
 #pragma endregion XYZ
 
@@ -220,9 +209,6 @@ class Point
     int8_t PointFormatId() const { return point_format_id_; }
     uint16_t EbByteSize() const;
 
-    Vector3 Scale() const { return scale_; }
-    Vector3 Offset() const { return offset_; }
-
     bool operator==(const Point &other) const;
     bool operator!=(const Point &other) const { return !(*this == other); };
 
@@ -232,7 +218,8 @@ class Point
 
     static std::shared_ptr<Point> Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
                                          const Vector3 &offset, const uint16_t &eb_byte_size);
-    void Pack(std::ostream &out_stream) const;
+    void Pack(std::ostream &out_stream,const Vector3 &scale,
+                                         const Vector3 &offset) const;
     void ToPointFormat(const int8_t &point_format_id);
 
   protected:
@@ -259,8 +246,6 @@ class Point
   private:
     uint32_t point_record_length_;
     int8_t point_format_id_;
-    Vector3 scale_;
-    Vector3 offset_;
 };
 
 } // namespace copc::las

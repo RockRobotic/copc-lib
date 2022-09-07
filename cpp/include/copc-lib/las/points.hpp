@@ -18,8 +18,7 @@ namespace copc::las
 class Points
 {
   public:
-    Points(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset,
-           const uint16_t &eb_byte_size = 0);
+    Points(const int8_t &point_format_id, const uint16_t &eb_byte_size = 0);
     Points(const LasHeader &header);
     // Will create Points object given a points vector
     Points(const std::vector<std::shared_ptr<Point>> &points);
@@ -49,13 +48,17 @@ class Points
     // Point functions
     std::shared_ptr<Point> CreatePoint()
     {
-        return std::make_shared<Point>(point_format_id_, scale_, offset_, EbByteSize());
+        return std::make_shared<Point>(point_format_id_, EbByteSize());
     }
     void ToPointFormat(const int8_t &point_format_id);
 
     // Pack/unpack
-    std::vector<char> Pack() const;
-    void Pack(std::ostream &out_stream) const;
+    std::vector<char> Pack(const LasHeader &header) const;
+    std::vector<char> Pack(const Vector3 &scale,
+                                         const Vector3 &offset) const;
+    void Pack(std::ostream &out_stream, const Vector3 &scale,
+                                         const Vector3 &offset) const;
+    void Pack(std::ostream &out_stream, const LasHeader &header) const;
     static Points Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
                          const uint16_t &eb_byte_size, const Vector3 &scale, const Vector3 &offset);
     static Points Unpack(const std::vector<char> &point_data, const LasHeader &header);
@@ -112,57 +115,6 @@ class Points
 
         for (unsigned i = 0; i < points_.size(); ++i)
             points_[i]->Z(in[i]);
-    }
-
-    std::vector<int32_t> UnscaledX() const
-    {
-        std::vector<int32_t> out;
-        out.resize(Size());
-        std::transform(points_.begin(), points_.end(), out.begin(),
-                       [](const std::shared_ptr<Point> &p) { return p->UnscaledX(); });
-        return out;
-    }
-    void UnscaledX(const std::vector<int32_t> &in)
-    {
-        if (in.size() != Size())
-            throw std::runtime_error("UnscaledX setter array must be same size as Points array!");
-
-        for (unsigned i = 0; i < points_.size(); ++i)
-            points_[i]->UnscaledX(in[i]);
-    }
-
-    std::vector<int32_t> UnscaledY() const
-    {
-        std::vector<int32_t> out;
-        out.resize(Size());
-        std::transform(points_.begin(), points_.end(), out.begin(),
-                       [](const std::shared_ptr<Point> &p) { return p->UnscaledY(); });
-        return out;
-    }
-    void UnscaledY(const std::vector<int32_t> &in)
-    {
-        if (in.size() != Size())
-            throw std::runtime_error("UnscaledY setter array must be same size as Points array!");
-
-        for (unsigned i = 0; i < points_.size(); ++i)
-            points_[i]->UnscaledY(in[i]);
-    }
-
-    std::vector<int32_t> UnscaledZ() const
-    {
-        std::vector<int32_t> out;
-        out.resize(Size());
-        std::transform(points_.begin(), points_.end(), out.begin(),
-                       [](const std::shared_ptr<Point> &p) { return p->UnscaledZ(); });
-        return out;
-    }
-    void UnscaledZ(const std::vector<int32_t> &in)
-    {
-        if (in.size() != Size())
-            throw std::runtime_error("UnscaledZ setter array must be same size as Points array!");
-
-        for (unsigned i = 0; i < points_.size(); ++i)
-            points_[i]->UnscaledZ(in[i]);
     }
 
     std::vector<uint8_t> Classification() const
@@ -279,8 +231,6 @@ class Points
     std::vector<std::shared_ptr<Point>> points_;
     int8_t point_format_id_;
     uint32_t point_record_length_;
-    Vector3 scale_;
-    Vector3 offset_;
 };
 } // namespace copc::las
 #endif // COPCLIB_LAS_POINTS_H_
