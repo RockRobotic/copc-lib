@@ -4,11 +4,14 @@ import copclib as copc
 import pytest
 
 
+def pack_and_unpack(p, scale, offset):
+    points = copc.Points(p.point_format_id, p.EbByteSize())
+    points.AddPoint(p)
+    return copc.Points.Unpack(points.Pack(scale, offset), p.point_format_id, p.EbByteSize(), scale, offset)[0]
+
 def test_constructor():
     point = copc.Points(
         point_format_id=6,
-        scale=copc.Vector3.DefaultScale(),
-        offset=copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
 
@@ -16,7 +19,7 @@ def test_constructor():
     assert point.HasNir() is False
 
     point_ext = copc.Points(
-        8, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        8
     ).CreatePoint()
 
     assert point_ext.HasRgb() is True
@@ -25,15 +28,15 @@ def test_constructor():
 
 def test_point():
     point6 = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6
     ).CreatePoint()
     # Position
-    point6.X = 2147483647
-    point6.Y = 2147483647
-    point6.Z = 2147483647
-    assert point6.X == 2147483647
-    assert point6.Y == 2147483647
-    assert point6.Z == 2147483647
+    point6.x = 2147483647
+    point6.y = 2147483647
+    point6.z = 2147483647
+    assert point6.x == 2147483647
+    assert point6.y == 2147483647
+    assert point6.z == 2147483647
 
     # intensity
     point6.intensity = 65535
@@ -155,7 +158,7 @@ def test_point():
     str(point6)
 
     point7 = copc.Points(
-        7, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        7
     ).CreatePoint()
 
     point7.rgb = [65535, 65535, 65535]
@@ -169,7 +172,7 @@ def test_point():
         assert point7.nir
 
     point8 = copc.Points(
-        8, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        8
     ).CreatePoint()
 
     point8.nir = 65535
@@ -179,7 +182,7 @@ def test_point():
 
 def test_point_conversion():
     point = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6
     ).CreatePoint()
 
     assert point.gps_time == 0
@@ -210,10 +213,10 @@ def test_point_conversion():
 def test_operators_equal():
     # Format 0
     point = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6
     ).CreatePoint()
     point_other = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6
     ).CreatePoint()
     assert point == point_other
 
@@ -231,19 +234,19 @@ def test_operators_equal():
 
     # Atributes
 
-    point.X = 4
+    point.x = 4
     assert point != point_other
-    point_other.X = 4
+    point_other.x = 4
     assert point == point_other
 
-    point.Y = 4
+    point.y = 4
     assert point != point_other
-    point_other.Y = 4
+    point_other.y = 4
     assert point == point_other
 
-    point.Z = 4
+    point.z = 4
     assert point != point_other
-    point_other.Z = 4
+    point_other.z = 4
     assert point == point_other
 
     point.intensity = 4
@@ -339,7 +342,7 @@ def test_operators_equal():
 
 def test_extra_byte():
     point = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        6
     ).CreatePoint()
     assert point.point_format_id == 6
     assert point.point_record_length == 30
@@ -350,8 +353,6 @@ def test_extra_byte():
 
     point = copc.Points(
         6,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
         eb_byte_size=5,
     ).CreatePoint()
     assert point.point_format_id == 6
@@ -367,14 +368,12 @@ def test_extra_byte():
 def test_operator_copy():
     point = copc.Points(
         8,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
         eb_byte_size=2,
     ).CreatePoint()
 
-    point.X = 4
-    point.Y = 4
-    point.Z = 4
+    point.x = 4
+    point.y = 4
+    point.z = 4
 
     point.gps_time = 4.0
     point.red = 4
@@ -392,123 +391,102 @@ def test_scaled_xyz():
     pfid = 8
 
     # No scale and offset
-    point = copc.Points(pfid, scale=[1, 1, 1], offset=[0, 0, 0]).CreatePoint()
+    point = copc.Points(pfid).CreatePoint()
 
-    point.X = 4
-    point.Y = 4
-    point.Z = 4
+    point.x = 4
+    point.y = 4.5
+    point.z = -0.1
 
-    assert point.x == 4
-    assert point.y == 4
-    assert point.z == 4
-
-    point.x = 5
-    point.y = 6
-    point.z = 7
-
-    assert point.X == 5
-    assert point.Y == 6
-    assert point.Z == 7
+    test_point = pack_and_unpack(point, [1,1,1], [0,0,0])
+    assert test_point.x == 4
+    assert test_point.y == 5
+    assert test_point.z == 0
 
     # Scale test
     point = copc.Points(
-        pfid, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset()
+        pfid
     ).CreatePoint()
 
-    point.X = 1
-    point.Y = 2
-    point.Z = 3
+    point.x = 0.01
+    point.y = 0.02
+    point.z = 0.03
 
-    assert point.x == 0.01
-    assert point.y == 0.02
-    assert point.z == 0.03
+    test_point = pack_and_unpack(point, [1,1,1], [0,0,0])
+    assert test_point.x == 0
+    assert test_point.y == 0
+    assert test_point.z == 0
 
-    point.x = 200
-    point.y = 300
-    point.z = 400
+    test_point = pack_and_unpack(point, [0.01,0.01,0.01], [0,0,0])
 
-    assert point.X == 200 * 100
-    assert point.Y == 300 * 100
-    assert point.Z == 400 * 100
+    assert test_point.x == 0.01
+    assert test_point.y == 0.02
+    assert test_point.z == 0.03
+
     # Offset test
 
     scale = [1, 1, 1]
     offset = copc.Vector3([50001.456, 4443.123, -255.001])
-    points = copc.Points(pfid, scale, offset)
-    point = points.CreatePoint()
-
-    point.X = 0
-    point.Y = -800
-    point.Z = 3
-
-    assert point.x == 0 + offset.x
-    assert point.y == -800 + offset.y
-    assert point.z == 3 + offset.z
+    point = copc.Points(pfid).CreatePoint()
 
     point.x = 50502.888
     point.y = 4002.111
     point.z = -80.5
 
-    assert point.X == 501  # 50502.888 - 50001.456 = 501.432
-    assert point.Y == -441
-    assert point.Z == 175  # -80.5 - -255.001 = 255.001 - 80.5 = 175
+    test_point = pack_and_unpack(point, scale, offset)
 
-    assert point.x == pytest.approx(50502.888, 0.000001)
-    assert point.y == pytest.approx(4002.111, 0.000001)
-    assert point.z == pytest.approx(-80.5, 0.000001)
-    points.AddPoint(point)
-
-    # scale and offset only get updated after packing
-    point = copc.Points.Unpack(points.Pack(), pfid, 0, scale, offset)[0]
-    assert point.x == pytest.approx(50502.456, 0.000001)
-    assert point.y == pytest.approx(4002.123, 0.000001)
-    assert point.z == pytest.approx(-80.001, 0.000001)
+    assert test_point.x == pytest.approx(50502.456, 0.000001)
+    assert test_point.y == pytest.approx(4002.123, 0.000001)
+    assert test_point.z == pytest.approx(-80.001, 0.000001)
 
     # Scale and Offset test
-    point = copc.Points(
-        pfid, scale=[0.001, 0.001, 0.001], offset=[50001.456, 4443.123, -255.001]
-    ).CreatePoint()
-
-    point.X = 0
-    point.Y = -800
-    point.Z = 300532
-
-    assert point.x == pytest.approx(50001.456, 0.000001)
-    assert point.y == pytest.approx(4442.323, 0.000001)
-    assert point.z == pytest.approx(45.531, 0.000001)
+    scale=[0.001, 0.001, 0.001]
+    offset=[50001.456, 4443.123, -255.001]
+    point = copc.Points(pfid).CreatePoint()
 
     point.x = 50502.888
     point.y = 4002.111
     point.z = -80.5
 
-    assert point.X == 501432
-    assert point.Y == -441012
-    assert point.Z == 174501
+    test_point = pack_and_unpack(point, scale, offset)
+    assert test_point.x == pytest.approx(50502.888, 0.000001)
+    assert test_point.y == pytest.approx(4002.111, 0.000001)
+    assert test_point.z == pytest.approx(-80.5, 0.000001)
 
-    # (value * scale) + offset
-    assert point.x == pytest.approx(50502.888, 0.000001)
-    assert point.y == pytest.approx(4002.111, 0.000001)
-    assert point.z == pytest.approx(-80.5, 0.000001)
+    # Change scale test
+    offset = [50001.456, 4443.123, -255.001]
+    scale = [0.001, 0.001, 0.001]
+    new_scale = [1,1,1]
+    point = copc.Points(pfid).CreatePoint()
+
+    point.x = 50502.888
+    point.y = 4002.111
+    point.z = -80.5
+
+    test_point = pack_and_unpack(point, new_scale, offset)
+    assert test_point.x == pytest.approx(50502.456, 0.000001)
+    assert test_point.y == pytest.approx(4002.123, 0.000001)
+    assert test_point.z == pytest.approx(-80.001, 0.000001)
+
 
     # Precision checks
-    points = copc.Points(pfid, [0.000001, 0.000001, 0.000001], [0, 0, 0])
+    points = copc.Points(pfid)
     point = points.CreatePoint()
-
+    point.x = 50501132.888123
+    points.AddPoint(point)
     with pytest.raises(RuntimeError):
-        point.x = 50501132.888123
-        points.AddPoint(point)
-        points.Pack()
+        points.Pack([0.000001, 0.000001, 0.000001], [0, 0, 0])
 
 
-    point = copc.Points(pfid, [1, 1, 1], [-8001100065, 0, 0]).CreatePoint()
+    points = copc.Points(pfid)
+    point = points.CreatePoint()
+    point.x = 0
+    points.AddPoint(point)
     with pytest.raises(RuntimeError):
-        point.x = 0
-        points.AddPoint(point)
-        points.Pack()
+        points.Pack([1, 1, 1], [-8001100065, 0, 0])
 
 
 def test_within():
-    point = copc.Points(6, (1, 1, 1), copc.Vector3.DefaultOffset()).CreatePoint()
+    point = copc.Points(6).CreatePoint()
 
     point.x = 5
     point.y = 5
