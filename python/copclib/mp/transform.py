@@ -57,30 +57,38 @@ def transform_multithreaded(
     if nodes is not None and resolution > -1:
         raise RuntimeError("You can only specify one of: 'nodes', 'resolution'")
 
+    # Sets the nodes to iterate over, if none are provided
     if nodes is None:
         if resolution > -1:
             nodes = reader.GetNodesWithinResolution(resolution)
         else:
             nodes = reader.GetAllNodes()
 
+        # Reset the progress bar to the new total number of nodes
         if progress is not None:
             progress.reset(len(nodes))
 
+    # Copy the points as a default
     if transform_function is None:
         transform_function = _copy_points_transform
 
+    # Initialize each multiprocessing thread with a copy of the copc reader
     def init_mp(copc_path):
         _transform_node.copc_reader = copc.FileReader(copc_path)
 
+    # keep track of all the mins and maxs
     all_mins = []
     all_maxs = []
+    # Initialize the multiprocessing
     with concurrent.futures.ProcessPoolExecutor(
         initializer=init_mp,
         initargs=(reader.path,),
     ) as executor:
+        # Chunk the nodes so we're not flooding executor.submit
         for chunk in chunks(nodes, chunk_size):
             futures = []
             for node in chunk:
+                # Call _transform_node, which calls the transform_function
                 future = executor.submit(
                     _transform_node,
                     transform_function,
@@ -89,10 +97,12 @@ def transform_multithreaded(
                     writer.copc_config.las_header,
                     update_minmax,
                 )
+                # Update the progress bar, if necessary
                 if progress is not None:
                     future.add_done_callback(lambda _: progress.update())
                 futures.append(future)
 
+            # As each node completes
             for fut in concurrent.futures.as_completed(futures):
                 (
                     compressed_points,
@@ -102,6 +112,7 @@ def transform_multithreaded(
                     xyz_max,
                     return_vals,
                 ) = fut.result()
+                # Call competed_callback if provided
                 if completed_callback:
                     completed_callback(
                         node=node,
@@ -110,9 +121,11 @@ def transform_multithreaded(
                         **return_vals,
                     )
 
+                # Add the min/max of each node to the list
                 all_mins.append(xyz_min)
                 all_maxs.append(xyz_max)
 
+                # Write the node out
                 writer.AddNodeCompressed(
                     node.key,
                     compressed_points,
@@ -120,6 +133,7 @@ def transform_multithreaded(
                     node.page_key,
                 )
 
+    # Compute the global min/max of all the nodes and update the LAS header, if necessary
     if update_minmax:
         import numpy as np
 
@@ -135,8 +149,11 @@ def _transform_node(
     """Helper function that gets called by executor.submit in the multiprocess.
     Calls transform_function and keeps track of the min/max XYZ in case they need to be updated.
     """
-    points = _transform_node.copc_reader.GetPoints(node)
+    reader = _transform_node.copc_reader
+    # Decompress and unpack the points within each thread
+    points = reader.GetPoints(node)
 
+    # If any of these arguments are provided, they'll throw an error since we use those argument names
     for argument_name in transform_function_args.keys():
         assert argument_name not in [
             "points",
@@ -144,19 +161,20 @@ def _transform_node(
             "writer_header",
             "reader",
         ], f"Use of protected keyword argument '{argument_name}'!"
+    # Actually call the transform_function
     ret = transform_function(
         points=points,
         node=node,
         writer_header=writer_header,
-        reader=_transform_node.copc_reader,
+        reader=reader,
         **transform_function_args,
     )
+    # The transform_function can either return just the points, or the points plus other return values encoded in a dictionary
     if isinstance(ret, tuple):
         assert (
             len(ret) == 2
         ), "The transform_function return value should be a tuple of the points and a dictionary of kwargs!"
-        points = ret[0]
-        return_vals = ret[1]
+        points, return_vals = ret
         assert isinstance(
             return_vals, dict
         ), "The transform_function return value should be a tuple of the points and a dictionary of kwargs!"
@@ -164,6 +182,7 @@ def _transform_node(
         points = ret
         return_vals = {}
 
+    # compute the minimum and maximum of the node's points, if necessary
     xyz_min = None
     xyz_max = None
     if update_minmax:
@@ -171,5 +190,6 @@ def _transform_node(
         xyz_max = [max(points.x), max(points.y), max(points.z)]
 
     point_count = len(points)
+    # Repack and compress the points using the new writer header
     compressed_points = copc.CompressBytes(points.Pack(), writer_header)
     return compressed_points, node, point_count, xyz_min, xyz_max, return_vals

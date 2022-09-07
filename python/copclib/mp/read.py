@@ -46,24 +46,30 @@ def read_multithreaded(
     if nodes is not None and resolution > -1:
         raise RuntimeError("You can only specify one of: 'nodes', 'resolution'")
 
+    # Sets the nodes to iterate over, if none are provided
     if nodes is None:
         if resolution > -1:
             nodes = reader.GetNodesWithinResolution(resolution)
         else:
             nodes = reader.GetAllNodes()
 
+        # Reset the progress bar to the new total number of nodes
         if progress is not None:
             progress.reset(len(nodes))
 
+    # Initialize each multiprocessing thread with a copy of the copc reader
     def init_mp(copc_path):
         _read_node.copc_reader = copc.FileReader(copc_path)
 
+    # Initialize the multiprocessing
     with concurrent.futures.ProcessPoolExecutor(
         initializer=init_mp,
         initargs=(reader.path,),
     ) as executor:
+        # Chunk the nodes so we're not flooding executor.submit
         for chunk in chunks(nodes, chunk_size):
             futures = []
+            # Call _read_node, which calls the read_function
             for node in chunk:
                 future = executor.submit(
                     _read_node,
@@ -71,12 +77,15 @@ def read_multithreaded(
                     read_function_args,
                     node,
                 )
+                # Update the progress bar, if necessary
                 if progress is not None:
                     future.add_done_callback(lambda _: progress.update())
                 futures.append(future)
 
+            # As each node completes
             for fut in concurrent.futures.as_completed(futures):
                 node, return_vals = fut.result()
+                # Call competed_callback if provided
                 if completed_callback:
                     completed_callback(
                         node=node,
@@ -89,14 +98,17 @@ def _read_node(read_function, read_function_args, node):
     Calls read_function and returns the results.
     """
     reader = _read_node.copc_reader
+    # Decompress and unpack the points within each thread
     points = reader.GetPoints(node)
 
+    # If any of these arguments are provided, they'll throw an error since we use those argument names
     for argument_name in read_function_args.keys():
         assert argument_name not in [
             "points",
             "node",
             "reader",
         ], f"Use of protected keyword argument '{argument_name}'!"
+    # Actually call the read_function
     ret = read_function(points=points, node=node, reader=reader, **read_function_args)
     assert isinstance(
         ret, dict
@@ -118,10 +130,13 @@ def _do_read_xyz(points, class_limits=None, **kwargs):
         dict(xyz=np.array): The numpy array of points, with "xyz" as their kwarg key
     """
     xyzs = []
+    # Iterate over each point in the node and check if it's 
+    # within the provided classificaiton limits
     for point in points:
         if not class_limits or point.classification in class_limits:
             xyzs.append([point.x, point.y, point.z])
 
+    # Reshape to always be (Nx3), in case there's no points
     return dict(xyz=np.array(xyzs).reshape(len(xyzs), 3))
 
 
@@ -144,18 +159,22 @@ def read_concat_xyz_class_limit(
     Returns:
         np.array: An (nx3) array of XYZ coordinates.
     """
+    # We provide these arguments within this function, so the user isn't able to provide them.
     invalid_args = ["filter_function", "filter_function_args", "completed_callback"]
     for invalid_arg in invalid_args:
         if invalid_arg in kwargs:
             raise RuntimeError(f"Invalid kwarg '{invalid_arg}'!")
 
+    # Container of all XYZ points
     all_xyz = []
 
+    # After each node is done, add the array of that node's XYZ coordinates
+    # to our container
     def callback(xyz, **kwargs):
         all_xyz.append(xyz)
 
     read_multithreaded(
-        reader,
+        reader=reader,
         read_function=_do_read_xyz,
         read_function_args=dict(class_limits=classification_limits),
         completed_callback=callback,
@@ -164,6 +183,8 @@ def read_concat_xyz_class_limit(
         **kwargs,
     )
 
+    # Concatenate all the points in the end, and return one large array of 
+    # all the points in the file
     return np.concatenate(all_xyz)
 
 
@@ -187,13 +208,17 @@ def read_map_xyz_class_limit(
     Returns:
         dict[str: np.array]: A mapping of stringified COPC keys to an (nx3) array of XYZ coordinates.
     """
+    # We provide these arguments within this function, so the user isn't able to provide them.
     invalid_args = ["filter_function", "filter_function_args", "completed_callback"]
     for invalid_arg in invalid_args:
         if invalid_arg in kwargs:
             raise RuntimeError(f"Invalid kwarg '{invalid_arg}'!")
 
+    # Map of stringified VoxelKeys to numpy arrays of coordinates
     key_xyz_map = {}
 
+    # After each node is done processing, add the returned coordinates
+    # to the map
     def callback(xyz, node, **kwargs):
         if len(xyz) > 0:
             key_xyz_map[str(node.key)] = xyz
