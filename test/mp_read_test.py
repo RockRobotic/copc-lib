@@ -56,13 +56,13 @@ def test_xyz_map_class_limit():
     )
 
     for node in reader.GetAllNodes():
-        xyz_test = key_xyz_map[str(node.key)]
 
         points = reader.GetPoints(node)
         point_limit = [p for p in points if p.classification in classification_limits]
         if len(point_limit) == 0:
-            assert len(xyz_test) == 0
+            assert str(node.key) not in key_xyz_map
         else:
+            xyz_test = key_xyz_map[str(node.key)]
             points = copc.Points(point_limit)
             xyz_real = np.stack([points.x, points.y, points.z], axis=1)
             print(xyz_real.shape, xyz_test.shape)
