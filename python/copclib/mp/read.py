@@ -14,6 +14,7 @@ def read_multithreaded(
     progress=None,
     completed_callback=None,
     chunk_size=1024,
+    max_workers=None,
 ):
     """Scaffolding for reading COPC files in a multithreaded way to increase performance.
     It queues all nodes from either the provided list of nodes or nodes within the given resolution to be processed.
@@ -39,6 +40,7 @@ def read_multithreaded(
         completed_callback (function, optional): A function which is called after a node is processed
             and returned from multiprocessing. Defaults to None.
         chunk_size (int, optional): Limits the amount of nodes which are queued for multiprocessing at once. Defaults to 1024.
+        max_workers (int, optional): Manually set the number of processors to use when multiprocessing. Defaults to all processors.
 
     Raises:
         RuntimeError
@@ -63,6 +65,7 @@ def read_multithreaded(
 
     # Initialize the multiprocessing
     with concurrent.futures.ProcessPoolExecutor(
+        max_workers=max_workers,
         initializer=init_mp,
         initargs=(reader.path,),
     ) as executor:

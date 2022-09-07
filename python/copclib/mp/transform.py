@@ -18,6 +18,7 @@ def transform_multithreaded(
     progress=None,
     completed_callback=None,
     chunk_size=1024,
+    max_workers=None,
     update_minmax=False,
     resolution=-1,
 ):
@@ -81,6 +82,7 @@ def transform_multithreaded(
     all_maxs = []
     # Initialize the multiprocessing
     with concurrent.futures.ProcessPoolExecutor(
+        max_workers=max_workers,
         initializer=init_mp,
         initargs=(reader.path,),
     ) as executor:
