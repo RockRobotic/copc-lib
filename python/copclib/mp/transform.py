@@ -9,6 +9,11 @@ def _copy_points_transform(points, **kwargs):
     return points
 
 
+# Initialize each multiprocessing thread with a copy of the copc reader
+def init_mp(copc_path):
+    _transform_node.copc_reader = copc.FileReader(copc_path)
+
+
 def transform_multithreaded(
     reader,
     writer,
@@ -73,10 +78,6 @@ def transform_multithreaded(
     # Copy the points as a default
     if transform_function is None:
         transform_function = _copy_points_transform
-
-    # Initialize each multiprocessing thread with a copy of the copc reader
-    def init_mp(copc_path):
-        _transform_node.copc_reader = copc.FileReader(copc_path)
 
     # keep track of all the mins and maxs
     all_mins = []

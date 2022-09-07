@@ -4,6 +4,9 @@ import numpy as np
 
 import concurrent.futures
 
+# Initialize each multiprocessing thread with a copy of the copc reader
+def init_mp(copc_path):
+    _read_node.copc_reader = copc.FileReader(copc_path)
 
 def read_multithreaded(
     reader,
@@ -58,10 +61,6 @@ def read_multithreaded(
         # Reset the progress bar to the new total number of nodes
         if progress is not None:
             progress.reset(len(nodes))
-
-    # Initialize each multiprocessing thread with a copy of the copc reader
-    def init_mp(copc_path):
-        _read_node.copc_reader = copc.FileReader(copc_path)
 
     # Initialize the multiprocessing
     with concurrent.futures.ProcessPoolExecutor(
