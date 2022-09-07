@@ -23,7 +23,7 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/RockRobotic/copc-lib",
-    extras_require={"test": ["pytest", "numpy", "laspy[laszip]"]},
+    extras_require={"test": ["pytest", "numpy", "laspy[laszip]>=2.1.0"]},
     cmake_args=["-DWITH_PYTHON:BOOL=ON", "-DWITH_TESTS=OFF", "-DEMSCRIPTEN=OFF"],
     cmake_install_dir="python/copclib",
     packages=find_packages(where="python"),
