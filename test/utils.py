@@ -109,7 +109,7 @@ def generate_test_file():
     points = RandomPoints(sub_page_key, header, NUM_POINTS)
     writer.AddNode(sub_page_key, points, sub_page_key)
 
-    # Reduce the header min/max to the actual point boundaries, 
+    # Reduce the header min/max to the actual point boundaries,
     # since we might not actually produce a point at the header min/max
     writer.copc_config.las_header.min = np.min(mins, axis=0).tolist()
     writer.copc_config.las_header.max = np.max(maxs, axis=0).tolist()
