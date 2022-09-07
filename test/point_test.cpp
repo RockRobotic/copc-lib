@@ -11,6 +11,13 @@ using namespace copc::las;
 using namespace std;
 using Catch::Matchers::WithinAbs;
 
+Point PackAndUnpack(Point p, copc::Vector3 scale, copc::Vector3 offset)
+{
+    std::stringstream out;
+    p.Pack(out, scale, offset);
+    return *Point::Unpack(out, p.PointFormatId(), scale, offset, p.EbByteSize());
+}
+
 TEST_CASE("Point tests", "[Point]")
 {
     SECTION("Point Format Initialization")
@@ -31,12 +38,12 @@ TEST_CASE("Point tests", "[Point]")
     {
         auto point6 = Point(6);
         // Position
-        point6.UnscaledX(std::numeric_limits<int32_t>::max());
-        point6.UnscaledY(std::numeric_limits<int32_t>::max());
-        point6.UnscaledZ(std::numeric_limits<int32_t>::max());
-        REQUIRE(point6.UnscaledX() == std::numeric_limits<int32_t>::max());
-        REQUIRE(point6.UnscaledY() == std::numeric_limits<int32_t>::max());
-        REQUIRE(point6.UnscaledZ() == std::numeric_limits<int32_t>::max());
+        point6.X(0.05);
+        point6.Y(1.11);
+        point6.Z(-9.99);
+        REQUIRE_THAT(point6.X(), WithinAbs(0.05, 0.000001));
+        REQUIRE_THAT(point6.Y(), WithinAbs(1.11, 0.000001));
+        REQUIRE_THAT(point6.Z(), WithinAbs(-9.99, 0.000001));
 
         // Intensity
         point6.Intensity(std::numeric_limits<uint16_t>::max());
@@ -271,19 +278,19 @@ TEST_CASE("Point tests", "[Point]")
 
         // Atributes
 
-        point.UnscaledX(4);
+        point.X(4);
         REQUIRE(point != point_other);
-        point_other.UnscaledX(4);
+        point_other.X(4);
         REQUIRE(point == point_other);
 
-        point.UnscaledY(4);
+        point.Y(4);
         REQUIRE(point != point_other);
-        point_other.UnscaledY(4);
+        point_other.Y(4);
         REQUIRE(point == point_other);
 
-        point.UnscaledZ(4);
+        point.Z(4);
         REQUIRE(point != point_other);
-        point_other.UnscaledZ(4);
+        point_other.Z(4);
         REQUIRE(point == point_other);
 
         point.Intensity(4);
@@ -386,7 +393,7 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.ExtraBytes().empty());
         REQUIRE(point.EbByteSize() == 0);
 
-        point = Point(6, {}, {}, 5);
+        point = Point(6, 5);
         REQUIRE(point.PointFormatId() == 6);
         REQUIRE(point.PointRecordLength() == 30 + 5);
         REQUIRE(point.EbByteSize() == 5);
@@ -398,11 +405,11 @@ TEST_CASE("Point tests", "[Point]")
 
     SECTION("Operator =")
     {
-        auto point = Point(8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2);
+        auto point = Point(8, 2);
 
-        point.UnscaledX(4);
-        point.UnscaledY(4);
-        point.UnscaledZ(4);
+        point.X(4);
+        point.Y(4);
+        point.Z(4);
 
         point.GPSTime(4.0);
         point.Red(4.0);
@@ -420,30 +427,31 @@ TEST_CASE("Point tests", "[Point]")
     {
 
         std::stringstream ss;
-        auto orig_point =
-            Point(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 2); // use two extra bytes
-        orig_point.UnscaledX(20);
-        orig_point.UnscaledY(-20);
-        orig_point.UnscaledZ(100000);
+        auto scale = copc::Vector3::DefaultScale();
+        auto offset = copc::Vector3::DefaultOffset();
+        auto orig_point = Point(6, 2); // use two extra bytes
+        orig_point.X(20);
+        orig_point.Y(-20);
+        orig_point.Z(100000);
         orig_point.ScanAngle(2000);
 
         // Format 6
         auto point = orig_point;
-        point.Pack(ss);
+        point.Pack(ss, scale, offset);
         auto point_other =
             *Point::Unpack(ss, 6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 7
         point.ToPointFormat(7);
-        point.Pack(ss);
+        point.Pack(ss, scale, offset);
         point_other =
             *Point::Unpack(ss, 7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
 
         // Format 8
         point.ToPointFormat(8);
-        point.Pack(ss);
+        point.Pack(ss, scale, offset);
         point_other =
             *Point::Unpack(ss, 8, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), point.EbByteSize());
         REQUIRE(point == point_other);
@@ -455,126 +463,122 @@ TEST_CASE("Point tests", "[Point]")
 
         SECTION("No scale and offset")
         {
-            auto point = Point(pfid, {1, 1, 1}, {0, 0, 0});
+            auto point = Point(pfid);
 
-            point.UnscaledX(4);
-            point.UnscaledY(4);
-            point.UnscaledZ(4);
+            point.X(4);
+            point.Y(4.5);
+            point.Z(-0.1);
 
-            REQUIRE(point.X() == 4);
-            REQUIRE(point.Y() == 4);
-            REQUIRE(point.Z() == 4);
+            auto test_point = PackAndUnpack(point, copc::Vector3(1, 1, 1), copc::Vector3(0, 0, 0));
 
-            point.X(5);
-            point.Y(6);
-            point.Z(7);
-
-            REQUIRE(point.UnscaledX() == 5);
-            REQUIRE(point.UnscaledY() == 6);
-            REQUIRE(point.UnscaledZ() == 7);
+            REQUIRE(test_point.X() == 4);
+            REQUIRE(test_point.Y() == 5);
+            REQUIRE(test_point.Z() == 0);
         }
         SECTION("Scale test")
         {
-            auto point = Point(pfid, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset());
+            auto point = Point(pfid);
 
-            point.UnscaledX(1);
-            point.UnscaledY(2);
-            point.UnscaledZ(3);
+            point.X(0.01);
+            point.Y(0.02);
+            point.Z(0.03);
 
-            REQUIRE(point.X() == 0.01);
-            REQUIRE(point.Y() == 0.02);
-            REQUIRE(point.Z() == 0.03);
+            auto test_point = PackAndUnpack(point, copc::Vector3(1, 1, 1), copc::Vector3(0, 0, 0));
 
-            point.X(200);
-            point.Y(300);
-            point.Z(400);
+            REQUIRE(test_point.X() == 0);
+            REQUIRE(test_point.Y() == 0);
+            REQUIRE(test_point.Z() == 0);
 
-            REQUIRE(point.UnscaledX() == 200 * 100);
-            REQUIRE(point.UnscaledY() == 300 * 100);
-            REQUIRE(point.UnscaledZ() == 400 * 100);
+            test_point = PackAndUnpack(point, copc::Vector3(0.01, 0.01, 0.01), copc::Vector3(0, 0, 0));
+
+            REQUIRE(test_point.X() == 0.01);
+            REQUIRE(test_point.Y() == 0.02);
+            REQUIRE(test_point.Z() == 0.03);
         }
         SECTION("Offset test")
         {
             copc::Vector3 scale = {1, 1, 1};
             copc::Vector3 offset = {50001.456, 4443.123, -255.001};
-            auto points = Points(pfid, scale, offset);
-            auto point = points.CreatePoint();
-
-            point->UnscaledX(0);
-            point->UnscaledY(-800);
-            point->UnscaledZ(3);
-
-            REQUIRE(point->X() == 0 + offset.x);
-            REQUIRE(point->Y() == -800 + offset.y);
-            REQUIRE(point->Z() == 3 + offset.z);
-
-            point->X(50502.888);
-            point->Y(4002.111);
-            point->Z(-80.5);
-
-            // static_cast<T>(std::round((value - offset) / scale));
-            REQUIRE(point->UnscaledX() == 501); // 50502.888 - 50001.456 = 501.432
-            REQUIRE(point->UnscaledY() == -441);
-            REQUIRE(point->UnscaledZ() == 175); // -80.5 - -255.001 = 255.001 - 80.5 = 175
-
-            REQUIRE_THAT(point->X(), WithinAbs(50502.888, 0.000001));
-            REQUIRE_THAT(point->Y(), WithinAbs(4002.111, 0.000001));
-            REQUIRE_THAT(point->Z(), WithinAbs(-80.5, 0.000001));
-            points.AddPoint(point);
-
-            // scale and offset only get updated after packing
-            point = Points::Unpack(points.Pack(), pfid, 0, scale, offset)[0];
-            REQUIRE_THAT(point->X(), WithinAbs(50502.456, 0.000001));
-            REQUIRE_THAT(point->Y(), WithinAbs(4002.123, 0.000001));
-            REQUIRE_THAT(point->Z(), WithinAbs(-80.001, 0.000001));
-        }
-        SECTION("Scale and Offset test")
-        {
-            auto point = Point(pfid, {0.001, 0.001, 0.001}, {50001.456, 4443.123, -255.001});
-
-            point.UnscaledX(0);
-            point.UnscaledY(-800);
-            point.UnscaledZ(300532);
-
-            REQUIRE_THAT(point.X(), WithinAbs(50001.456, 0.000001));
-            REQUIRE_THAT(point.Y(), WithinAbs(4442.323, 0.000001));
-            REQUIRE_THAT(point.Z(), WithinAbs(45.531, 0.000001));
+            auto point = Point(pfid);
 
             point.X(50502.888);
             point.Y(4002.111);
             point.Z(-80.5);
 
-            // static_cast<T>(std::round((value - offset) / scale));
-            REQUIRE(point.UnscaledX() == 501432);
-            REQUIRE(point.UnscaledY() == -441012);
-            REQUIRE(point.UnscaledZ() == 174501);
+            auto test_point = PackAndUnpack(point, scale, offset);
+            REQUIRE_THAT(test_point.X(), WithinAbs(50502.456, 0.000001));
+            REQUIRE_THAT(test_point.Y(), WithinAbs(4002.123, 0.000001));
+            REQUIRE_THAT(test_point.Z(), WithinAbs(-80.001, 0.000001));
+        }
+        SECTION("Scale and Offset test")
+        {
+            copc::Vector3 scale = {0.001, 0.001, 0.001};
+            copc::Vector3 offset = {50001.456, 4443.123, -255.001};
+            auto point = Point(pfid);
+
+            point.X(50502.888);
+            point.Y(4002.111);
+            point.Z(-80.5);
+
+            auto test_point = PackAndUnpack(point, scale, offset);
+            REQUIRE_THAT(test_point.X(), WithinAbs(50502.888, 0.000001));
+            REQUIRE_THAT(test_point.Y(), WithinAbs(4002.111, 0.000001));
+            REQUIRE_THAT(test_point.Z(), WithinAbs(-80.5, 0.000001));
+        }
+        SECTION("Change Scale test")
+        {
+            copc::Vector3 offset = {50001.456, 4443.123, -255.001};
+            copc::Vector3 scale = {0.001, 0.001, 0.001};
+            copc::Vector3 new_scale = {1, 1, 1};
+            // This tests the case that we want to change the point's scale when we pack it
+            auto point = Point(pfid);
+
+            point.X(50502.888);
+            point.Y(4002.111);
+            point.Z(-80.5);
 
             // (value * scale) + offset
             REQUIRE_THAT(point.X(), WithinAbs(50502.888, 0.000001));
             REQUIRE_THAT(point.Y(), WithinAbs(4002.111, 0.000001));
             REQUIRE_THAT(point.Z(), WithinAbs(-80.5, 0.000001));
+
+            // When we pack the points, that's when we unscale the internally stored double.
+            // so we end up with:
+            // UnscaledX = static_cast<T>(std::round((50502.888 - 50001.456) / 1)) = 501
+            // UnscaledY = static_cast<T>(std::round((4002.111 - 4443.123) / 1)) = -441
+            // UnscaledZ = static_cast<T>(std::round((-80.5 - -255.001) / 1)) = 175
+
+            // Then when we unpack the points, we do the inverse:
+            // (value * scale) + offset
+            // X = 501 * 1 + 50001.456 = 50502.456
+            // Y = -441 * 1 + 4443.123 = 4002.123
+            // Z = 175 * 1 + -255.001 = -80.001
+            auto test_point = PackAndUnpack(point, new_scale, offset);
+
+            REQUIRE_THAT(test_point.X(), WithinAbs(50502.456, 0.0001));
+            REQUIRE_THAT(test_point.Y(), WithinAbs(4002.123, 0.0001));
+            REQUIRE_THAT(test_point.Z(), WithinAbs(-80.001, 0.0001));
         }
+        // todo: add change offset and change offset/scale tests
         SECTION("Precision checks")
         {
             {
-                auto points = Points(pfid, {0.000001, 0.000001, 0.000001}, {0, 0, 0});
-                auto point = points.CreatePoint();
-                point->X(50501132.888123);
-                points.AddPoint(point);
-                REQUIRE_THROWS(points.Pack());
+                auto point = Point(pfid);
+                point.X(50501132.888123);
+                std::stringstream out;
+                REQUIRE_THROWS(point.Pack(out, {0.000001, 0.000001, 0.000001}, {0, 0, 0}));
             }
             {
-                auto points = Points(pfid, {1, 1, 1}, {-8001100065, 0, 0});
-                auto point = points.CreatePoint();
-                point->X(0);
-                points.AddPoint(point);
-                REQUIRE_THROWS(points.Pack());
+                auto point = Point(pfid);
+                point.X(0);
+                std::stringstream out;
+                REQUIRE_THROWS(point.Pack(out, {1, 1, 1}, {-8001100065, 0, 0}));
             }
         }
     }
     SECTION("Within")
     {
-        auto point = Point(6, {1, 1, 1}, copc::Vector3::DefaultOffset());
+        auto point = Point(6);
 
         point.X(5);
         point.Y(5);
