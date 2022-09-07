@@ -1,7 +1,7 @@
 import os
 import sys
 
-from .utils import get_autzen_file, get_data_dir
+from .utils import generate_test_file, get_data_dir
 
 import copclib as copc
 from copclib.mp.transform import transform_multithreaded
@@ -12,7 +12,7 @@ import pytest
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_copc_copy():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
-    reader = copc.FileReader(get_autzen_file())
+    reader = copc.FileReader(generate_test_file())
     writer = copc.FileWriter(
         file_path,
         reader.copc_config,
@@ -49,7 +49,7 @@ def _transform_fun(offset, points, **kwargs):
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_translate():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
-    reader = copc.FileReader(get_autzen_file())
+    reader = copc.FileReader(generate_test_file())
     writer = copc.FileWriter(
         file_path,
         reader.copc_config,

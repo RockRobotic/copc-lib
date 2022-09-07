@@ -15,12 +15,12 @@ def transform_multithreaded(
     transform_function=None,
     transform_function_args={},
     nodes=None,
+    resolution=-1,
     progress=None,
     completed_callback=None,
     chunk_size=1024,
     max_workers=None,
     update_minmax=False,
-    resolution=-1,
 ):
     """Scaffolding for reading COPC files and writing them back out in a multithreaded way.
     It queues all nodes from either the provided list of nodes or nodes within the given resolution to be processed.
@@ -49,6 +49,7 @@ def transform_multithreaded(
         completed_callback (function, optional): A function which is called after a node is processed
             and returned from multiprocessing. Defaults to None.
         chunk_size (int, optional): Limits the amount of nodes which are queued for multiprocessing at once. Defaults to 1024.
+        max_workers (int, optional): Manually set the number of processors to use when multiprocessing. Defaults to all processors.
         update_minmax (bool, optional): If true, updates the header of the new COPC file with the correct XYZ min/max.
             Defaults to False.
 
