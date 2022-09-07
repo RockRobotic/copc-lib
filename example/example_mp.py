@@ -13,7 +13,7 @@ if not os.path.exists(os.path.join(os.path.join(DATADIRECTORY, "out"))):
 
 
 def _rotate_transform(rotation_center, points, **kwargs):
-    """Transformation function that gets called in multiprocessing to rotate a 
+    """Transformation function that gets called in multiprocessing to rotate a
     set of copclib.Points
     """
 
@@ -76,7 +76,7 @@ def rotate_file_mp():
 
 
 def copy_file_mp():
-    """An example of the default behavior of transform_multithreaded, 
+    """An example of the default behavior of transform_multithreaded,
     which copies the points directly over to a new file.
     """
     # Open the reader and writer
