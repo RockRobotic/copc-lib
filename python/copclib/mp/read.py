@@ -8,6 +8,7 @@ import concurrent.futures
 def init_mp(copc_path):
     _read_node.copc_reader = copc.FileReader(copc_path)
 
+
 def read_multithreaded(
     reader,
     read_function,
