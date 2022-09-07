@@ -499,7 +499,6 @@ def test_scaled_xyz():
         points.AddPoint(point)
         points.Pack()
 
-
     point = copc.Points(pfid, [1, 1, 1], [-8001100065, 0, 0]).CreatePoint()
     with pytest.raises(RuntimeError):
         point.x = 0
