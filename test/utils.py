@@ -15,6 +15,11 @@ def get_data_dir():
 
 
 def generate_test_file():
+    """Generates a test file of random points. Taken from example_writer.py.
+
+    Returns:
+        str: Path to the generated test file
+    """
     file_path = os.path.join(DATADIRECTORY, "new-copc.copc.laz")
     if os.path.exists(file_path):
         return file_path
@@ -104,6 +109,8 @@ def generate_test_file():
     points = RandomPoints(sub_page_key, header, NUM_POINTS)
     writer.AddNode(sub_page_key, points, sub_page_key)
 
+    # Reduce the header min/max to the actual point boundaries, 
+    # since we might not actually produce a point at the header min/max
     writer.copc_config.las_header.min = np.min(mins, axis=0).tolist()
     writer.copc_config.las_header.max = np.max(maxs, axis=0).tolist()
 
