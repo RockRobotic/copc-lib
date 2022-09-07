@@ -13,7 +13,6 @@ def test_xyz_noclass_limit():
     reader = copc.FileReader(generate_test_file())
     xyz = read_concat_xyz_class_limit(reader)
 
-    las = laspy.read(generate_test_file())
     assert len(xyz) == reader.copc_config.las_header.point_count
 
 
