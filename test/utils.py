@@ -15,7 +15,7 @@ def get_data_dir():
 
 
 def generate_test_file():
-    file_path = os.path.join(DATADIRECTORY, "out", "new-copc.copc.laz")
+    file_path = os.path.join(DATADIRECTORY, "new-copc.copc.laz")
     if os.path.exists(file_path):
         return file_path
 
