@@ -130,7 +130,7 @@ def _do_read_xyz(points, class_limits=None, **kwargs):
         dict(xyz=np.array): The numpy array of points, with "xyz" as their kwarg key
     """
     xyzs = []
-    # Iterate over each point in the node and check if it's 
+    # Iterate over each point in the node and check if it's
     # within the provided classificaiton limits
     for point in points:
         if not class_limits or point.classification in class_limits:
@@ -183,7 +183,7 @@ def read_concat_xyz_class_limit(
         **kwargs,
     )
 
-    # Concatenate all the points in the end, and return one large array of 
+    # Concatenate all the points in the end, and return one large array of
     # all the points in the file
     return np.concatenate(all_xyz)
 
