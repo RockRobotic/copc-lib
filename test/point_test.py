@@ -434,7 +434,8 @@ def test_scaled_xyz():
 
     scale = [1, 1, 1]
     offset = copc.Vector3([50001.456, 4443.123, -255.001])
-    point = copc.Points(pfid, scale, offset).CreatePoint()
+    points = copc.Points(pfid, scale, offset)
+    point = points.CreatePoint()
 
     point.X = 0
     point.Y = -800
@@ -452,7 +453,13 @@ def test_scaled_xyz():
     assert point.Y == -441
     assert point.Z == 175  # -80.5 - -255.001 = 255.001 - 80.5 = 175
 
-    # (value * scale) + offset
+    assert point.x == pytest.approx(50502.888, 0.000001)
+    assert point.y == pytest.approx(4002.111, 0.000001)
+    assert point.z == pytest.approx(-80.5, 0.000001)
+    points.AddPoint(point)
+
+    # scale and offset only get updated after packing
+    point = copc.Points.Unpack(points.Pack(), pfid, 0, scale, offset)[0]
     assert point.x == pytest.approx(50502.456, 0.000001)
     assert point.y == pytest.approx(4002.123, 0.000001)
     assert point.z == pytest.approx(-80.001, 0.000001)
@@ -484,14 +491,20 @@ def test_scaled_xyz():
     assert point.z == pytest.approx(-80.5, 0.000001)
 
     # Precision checks
-    point = copc.Points(pfid, [0.000001, 0.000001, 0.000001], [0, 0, 0]).CreatePoint()
+    points = copc.Points(pfid, [0.000001, 0.000001, 0.000001], [0, 0, 0])
+    point = points.CreatePoint()
 
     with pytest.raises(RuntimeError):
         point.x = 50501132.888123
+        points.AddPoint(point)
+        points.Pack()
+
 
     point = copc.Points(pfid, [1, 1, 1], [-8001100065, 0, 0]).CreatePoint()
     with pytest.raises(RuntimeError):
         point.x = 0
+        points.AddPoint(point)
+        points.Pack()
 
 
 def test_within():

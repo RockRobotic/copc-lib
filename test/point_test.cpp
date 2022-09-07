@@ -5,6 +5,7 @@
 #include <copc-lib/geometry/box.hpp>
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/las/point.hpp>
+#include <copc-lib/las/points.hpp>
 
 using namespace copc::las;
 using namespace std;
@@ -496,29 +497,36 @@ TEST_CASE("Point tests", "[Point]")
         {
             copc::Vector3 scale = {1, 1, 1};
             copc::Vector3 offset = {50001.456, 4443.123, -255.001};
-            auto point = Point(pfid, scale, offset);
+            auto points = Points(pfid, scale, offset);
+            auto point = points.CreatePoint();
 
-            point.UnscaledX(0);
-            point.UnscaledY(-800);
-            point.UnscaledZ(3);
+            point->UnscaledX(0);
+            point->UnscaledY(-800);
+            point->UnscaledZ(3);
 
-            REQUIRE(point.X() == 0 + offset.x);
-            REQUIRE(point.Y() == -800 + offset.y);
-            REQUIRE(point.Z() == 3 + offset.z);
+            REQUIRE(point->X() == 0 + offset.x);
+            REQUIRE(point->Y() == -800 + offset.y);
+            REQUIRE(point->Z() == 3 + offset.z);
 
-            point.X(50502.888);
-            point.Y(4002.111);
-            point.Z(-80.5);
+            point->X(50502.888);
+            point->Y(4002.111);
+            point->Z(-80.5);
 
             // static_cast<T>(std::round((value - offset) / scale));
-            REQUIRE(point.UnscaledX() == 501); // 50502.888 - 50001.456 = 501.432
-            REQUIRE(point.UnscaledY() == -441);
-            REQUIRE(point.UnscaledZ() == 175); // -80.5 - -255.001 = 255.001 - 80.5 = 175
+            REQUIRE(point->UnscaledX() == 501); // 50502.888 - 50001.456 = 501.432
+            REQUIRE(point->UnscaledY() == -441);
+            REQUIRE(point->UnscaledZ() == 175); // -80.5 - -255.001 = 255.001 - 80.5 = 175
 
-            // (value * scale) + offset
-            REQUIRE_THAT(point.X(), WithinAbs(50502.456, 0.000001));
-            REQUIRE_THAT(point.Y(), WithinAbs(4002.123, 0.000001));
-            REQUIRE_THAT(point.Z(), WithinAbs(-80.001, 0.000001));
+            REQUIRE_THAT(point->X(), WithinAbs(50502.888, 0.000001));
+            REQUIRE_THAT(point->Y(), WithinAbs(4002.111, 0.000001));
+            REQUIRE_THAT(point->Z(), WithinAbs(-80.5, 0.000001));
+            points.AddPoint(point);
+
+            // scale and offset only get updated after packing
+            point = Points::Unpack(points.Pack(), pfid, 0, scale, offset)[0];
+            REQUIRE_THAT(point->X(), WithinAbs(50502.456, 0.000001));
+            REQUIRE_THAT(point->Y(), WithinAbs(4002.123, 0.000001));
+            REQUIRE_THAT(point->Z(), WithinAbs(-80.001, 0.000001));
         }
         SECTION("Scale and Offset test")
         {
@@ -549,13 +557,18 @@ TEST_CASE("Point tests", "[Point]")
         SECTION("Precision checks")
         {
             {
-                auto point = Point(pfid, {0.000001, 0.000001, 0.000001}, {0, 0, 0});
-
-                REQUIRE_THROWS(point.X(50501132.888123));
+                auto points = Points(pfid, {0.000001, 0.000001, 0.000001}, {0, 0, 0});
+                auto point = points.CreatePoint();
+                point->X(50501132.888123);
+                points.AddPoint(point);
+                REQUIRE_THROWS(points.Pack());
             }
             {
-                auto point = Point(pfid, {1, 1, 1}, {-8001100065, 0, 0});
-                REQUIRE_THROWS(point.X(0));
+                auto points = Points(pfid, {1, 1, 1}, {-8001100065, 0, 0});
+                auto point = points.CreatePoint();
+                point->X(0);
+                points.AddPoint(point);
+                REQUIRE_THROWS(points.Pack());
             }
         }
     }
