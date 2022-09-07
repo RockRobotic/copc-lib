@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 
+@pytest.mark.skipif(sys.platform == 'win32', reason="windows laspy version")
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_copc_copy():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
@@ -46,6 +47,7 @@ def _transform_fun(offset, points, **kwargs):
     return points
 
 
+@pytest.mark.skipif(sys.platform == 'win32', reason="windows laspy version")
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_translate():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
