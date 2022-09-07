@@ -40,7 +40,7 @@ class Point
 
     int32_t UnscaledZ() const { return RemoveScale<int32_t>(z_scaled_, scale_.z, offset_.z); }
     void UnscaledZ(const int32_t &z) { z_scaled_ = ApplyScale(z, scale_.z, offset_.z); }
-    
+
 #pragma endregion XYZ
 
     uint16_t Intensity() const { return intensity_; }
