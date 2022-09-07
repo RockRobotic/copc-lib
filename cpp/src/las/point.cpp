@@ -57,9 +57,9 @@ bool Point::operator==(const Point &other) const
 {
     if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
         return false;
-    if (AreClose(X(), other.X(), std::max(scale_.x, other.scale_.x)) ||
-        AreClose(Y(), other.Y(), std::max(scale_.y, other.scale_.y)) ||
-        AreClose(Z(), other.Z(), std::max(scale_.z, other.scale_.z)) || intensity_ != other.Intensity())
+    if (!AreClose(X(), other.X(), std::max(scale_.x, other.scale_.x)) ||
+        !AreClose(Y(), other.Y(), std::max(scale_.y, other.scale_.y)) ||
+        !AreClose(Z(), other.Z(), std::max(scale_.z, other.scale_.z)) || intensity_ != other.Intensity())
         return false;
     if (returns_ != other.ReturnsBitField())
         return false;
