@@ -70,7 +70,7 @@ def generate_test_file():
             point.point_source_id = key.d + key.x + key.y + key.z
 
             points.AddPoint(point)
-        
+
         mins.append([min(points.x), min(points.y), min(points.z)])
         maxs.append([max(points.x), max(points.y), max(points.z)])
         return points
@@ -84,9 +84,7 @@ def generate_test_file():
     cfg.copc_info.spacing = 10
 
     # Now, we can create our COPC writer:
-    writer = copc.FileWriter(
-        file_path, cfg
-    )
+    writer = copc.FileWriter(file_path, cfg)
     header = writer.copc_config.las_header
 
     key = copc.VoxelKey(0, 0, 0, 0)
