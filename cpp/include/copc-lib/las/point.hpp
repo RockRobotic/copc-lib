@@ -22,24 +22,25 @@ class Point
 
 #pragma region XYZ
     // XYZ Scaled
-    double X() const { return ApplyScale(x_, scale_.x, offset_.x); }
-    void X(const double &x) { x_ = RemoveScale<int32_t>(x, scale_.x, offset_.x); }
+    double X() const { return x_scaled_; }
+    void X(const double &x) { x_scaled_ = x; }
 
-    double Y() const { return ApplyScale(y_, scale_.y, offset_.y); }
-    void Y(const double &y) { y_ = RemoveScale<int32_t>(y, scale_.y, offset_.y); }
+    double Y() const { return y_scaled_; }
+    void Y(const double &y) { y_scaled_ = y; }
 
-    double Z() const { return ApplyScale(z_, scale_.z, offset_.z); }
-    void Z(const double &z) { z_ = RemoveScale<int32_t>(z, scale_.z, offset_.z); }
+    double Z() const { return z_scaled_; }
+    void Z(const double &z) { z_scaled_ = z; }
 
     // XYZ Unscaled
-    int32_t UnscaledX() const { return x_; }
-    void UnscaledX(const int32_t &x) { x_ = x; }
+    int32_t UnscaledX() const { return RemoveScale<int32_t>(x_scaled_, scale_.x, offset_.x); }
+    void UnscaledX(const int32_t &x) { x_scaled_ = ApplyScale(x, scale_.x, offset_.x); }
 
-    int32_t UnscaledY() const { return y_; }
-    void UnscaledY(const int32_t &y) { y_ = y; }
+    int32_t UnscaledY() const { return RemoveScale<int32_t>(y_scaled_, scale_.y, offset_.y); }
+    void UnscaledY(const int32_t &y) { y_scaled_ = ApplyScale(y, scale_.y, offset_.y); }
 
-    int32_t UnscaledZ() const { return z_; }
-    void UnscaledZ(const int32_t &z) { z_ = z; }
+    int32_t UnscaledZ() const { return RemoveScale<int32_t>(z_scaled_, scale_.z, offset_.z); }
+    void UnscaledZ(const int32_t &z) { z_scaled_ = ApplyScale(z, scale_.z, offset_.z); }
+    
 #pragma endregion XYZ
 
     uint16_t Intensity() const { return intensity_; }
@@ -235,9 +236,9 @@ class Point
     void ToPointFormat(const int8_t &point_format_id);
 
   protected:
-    int32_t x_{};
-    int32_t y_{};
-    int32_t z_{};
+    double x_scaled_{};
+    double y_scaled_{};
+    double z_scaled_{};
     uint16_t intensity_{};
     uint8_t returns_{};
     uint8_t flags_{};

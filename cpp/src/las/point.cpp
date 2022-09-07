@@ -1,4 +1,5 @@
 #include "copc-lib/las/point.hpp"
+#include "copc-lib/utils.hpp"
 
 namespace copc::las
 {
@@ -23,9 +24,9 @@ Point::Point(const LasHeader &header)
 
 Point::Point(const Point &other) : Point(other.point_format_id_, other.Scale(), other.Offset(), other.EbByteSize())
 {
-    x_ = other.x_;
-    y_ = other.y_;
-    z_ = other.z_;
+    x_scaled_ = other.x_scaled_;
+    y_scaled_ = other.y_scaled_;
+    z_scaled_ = other.z_scaled_;
     intensity_ = other.intensity_;
     returns_ = other.returns_;
     flags_ = other.flags_;
@@ -56,7 +57,9 @@ bool Point::operator==(const Point &other) const
 {
     if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
         return false;
-    if (x_ != other.UnscaledX() || y_ != other.UnscaledY() || z_ != other.UnscaledZ() ||
+    if (AreClose(X(), other.X(), std::max(scale_.x, other.scale_.x)) 
+    || AreClose(Y(), other.Y(), std::max(scale_.y, other.scale_.y)) 
+    || AreClose(Z(), other.Z(), std::max(scale_.z, other.scale_.z)) ||
         intensity_ != other.Intensity())
         return false;
     if (returns_ != other.ReturnsBitField())
@@ -85,9 +88,9 @@ std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &poin
 {
     std::shared_ptr<Point> p = std::make_shared<Point>(point_format_id, scale, offset, eb_byte_size);
 
-    p->x_ = unpack<int32_t>(in_stream);
-    p->y_ = unpack<int32_t>(in_stream);
-    p->z_ = unpack<int32_t>(in_stream);
+    p->UnscaledX(unpack<int32_t>(in_stream));
+    p->UnscaledY(unpack<int32_t>(in_stream));
+    p->UnscaledZ(unpack<int32_t>(in_stream));
     p->intensity_ = unpack<uint16_t>(in_stream);
     p->returns_ = unpack<uint8_t>(in_stream);
     p->flags_ = unpack<uint8_t>(in_stream);
@@ -117,9 +120,9 @@ std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &poin
 void Point::Pack(std::ostream &out_stream) const
 {
     // Point
-    pack(x_, out_stream);
-    pack(y_, out_stream);
-    pack(z_, out_stream);
+    pack(UnscaledX(), out_stream);
+    pack(UnscaledY(), out_stream);
+    pack(UnscaledZ(), out_stream);
     pack(intensity_, out_stream);
     pack(returns_, out_stream);
     pack(flags_, out_stream);
@@ -157,7 +160,7 @@ std::string Point::ToString() const
 {
     std::stringstream ss;
     ss << "Point: " << std::endl;
-    ss << "\tX: " << x_ << ", Y: " << y_ << ", Z: " << z_ << std::endl;
+    ss << "\tX: " << x_scaled_ << ", Y: " << y_scaled_ << ", Z: " << z_scaled_ << std::endl;
     ss << "\tIntensity: " << intensity_ << std::endl;
     ss << "\tReturn Number: " << static_cast<short>(ReturnNumber())
        << ", Number of Returns: " << static_cast<short>(NumberOfReturns()) << std::endl;
