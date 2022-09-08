@@ -212,24 +212,18 @@ def RandomPoints(key, las_header, number_points):
         # Create a point with a given point format
         point = points.CreatePoint()
         # point has getters/setters for all attributes
-        point.x = las_header.ApplyScaleX(
-            random.randint(
-                las_header.RemoveScaleX(max(las_header.min.x, minx)),
-                las_header.RemoveScaleX(min(las_header.max.x, minx + step)),
+        point.x = random.uniform(
+                max(las_header.min.x, minx),
+                min(las_header.max.x, minx + step),
             )
-        )
-        point.y = las_header.ApplyScaleY(
-            random.randint(
-                las_header.RemoveScaleY(max(las_header.min.y, miny)),
-                las_header.RemoveScaleY(min(las_header.max.y, miny + step)),
+        point.y = random.uniform(
+                max(las_header.min.y, miny),
+                min(las_header.max.y, miny + step),
             )
-        )
-        point.z = las_header.ApplyScaleZ(
-            random.randint(
-                las_header.RemoveScaleZ(max(las_header.min.z, minz)),
-                las_header.RemoveScaleZ(min(las_header.max.z, minz + step)),
+        point.z = random.uniform(
+                max(las_header.min.z, minz),
+                min(las_header.max.z, minz + step),
             )
-        )
 
         # For visualization purposes
         point.point_source_id = key.d + key.x + key.y + key.z
