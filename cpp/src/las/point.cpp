@@ -53,8 +53,8 @@ bool Point::operator==(const Point &other) const
 {
     if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
         return false;
-    if (!AreClose(X(), other.X(), 0.000001) || !AreClose(Y(), other.Y(), 0.000001) || !AreClose(Z(), other.Z(), 0.000001) ||
-        intensity_ != other.Intensity())
+    if (!AreClose(X(), other.X(), 0.000001) || !AreClose(Y(), other.Y(), 0.000001) ||
+        !AreClose(Z(), other.Z(), 0.000001) || intensity_ != other.Intensity())
         return false;
     if (returns_ != other.ReturnsBitField())
         return false;
