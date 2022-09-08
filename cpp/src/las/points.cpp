@@ -7,8 +7,7 @@
 namespace copc::las
 {
 
-Points::Points(const int8_t &point_format_id, const uint16_t &eb_byte_size)
-    : point_format_id_(point_format_id)
+Points::Points(const int8_t &point_format_id, const uint16_t &eb_byte_size) : point_format_id_(point_format_id)
 {
     if (point_format_id < 0 || point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10.");
@@ -16,10 +15,7 @@ Points::Points(const int8_t &point_format_id, const uint16_t &eb_byte_size)
     point_record_length_ = PointByteSize(point_format_id, eb_byte_size);
 }
 
-Points::Points(const LasHeader &header)
-    : Points(header.PointFormatId(), header.EbByteSize())
-{
-}
+Points::Points(const LasHeader &header) : Points(header.PointFormatId(), header.EbByteSize()) {}
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {
@@ -101,23 +97,20 @@ Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_f
     return points;
 }
 
-void Points::Pack(std::ostream &out_stream, const LasHeader &header) const 
-{ Pack(out_stream, header.Scale(), header.Offset()); }
+void Points::Pack(std::ostream &out_stream, const LasHeader &header) const
+{
+    Pack(out_stream, header.Scale(), header.Offset());
+}
 
-void Points::Pack(std::ostream &out_stream, const Vector3 &scale,
-                                         const Vector3 &offset) const
+void Points::Pack(std::ostream &out_stream, const Vector3 &scale, const Vector3 &offset) const
 {
     for (const auto &point : points_)
         point->Pack(out_stream, scale, offset);
 }
 
-std::vector<char> Points::Pack(const LasHeader &header) const
-{
-    return Pack(header.Scale(), header.Offset());
-}
+std::vector<char> Points::Pack(const LasHeader &header) const { return Pack(header.Scale(), header.Offset()); }
 
-std::vector<char> Points::Pack(const Vector3 &scale,
-                                         const Vector3 &offset) const
+std::vector<char> Points::Pack(const Vector3 &scale, const Vector3 &offset) const
 {
     std::stringstream out;
     Pack(out, scale, offset);

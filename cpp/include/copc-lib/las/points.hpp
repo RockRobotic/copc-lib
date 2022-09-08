@@ -46,18 +46,13 @@ class Points
     void AddPoints(std::vector<std::shared_ptr<Point>> points);
 
     // Point functions
-    std::shared_ptr<Point> CreatePoint()
-    {
-        return std::make_shared<Point>(point_format_id_, EbByteSize());
-    }
+    std::shared_ptr<Point> CreatePoint() { return std::make_shared<Point>(point_format_id_, EbByteSize()); }
     void ToPointFormat(const int8_t &point_format_id);
 
     // Pack/unpack
     std::vector<char> Pack(const LasHeader &header) const;
-    std::vector<char> Pack(const Vector3 &scale,
-                                         const Vector3 &offset) const;
-    void Pack(std::ostream &out_stream, const Vector3 &scale,
-                                         const Vector3 &offset) const;
+    std::vector<char> Pack(const Vector3 &scale, const Vector3 &offset) const;
+    void Pack(std::ostream &out_stream, const Vector3 &scale, const Vector3 &offset) const;
     void Pack(std::ostream &out_stream, const LasHeader &header) const;
     static Points Unpack(const std::vector<char> &point_data, const int8_t &point_format_id,
                          const uint16_t &eb_byte_size, const Vector3 &scale, const Vector3 &offset);

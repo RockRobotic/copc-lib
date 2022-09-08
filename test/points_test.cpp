@@ -81,30 +81,25 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Adding Points to Points")
     {
-        auto points = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, 4)));
-        auto points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, 4)));
+        auto points = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 4)));
+        auto points_other = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 4)));
 
         points.AddPoints(points_other);
 
         REQUIRE(points.Get().size() == 20);
 
         // Test check on point format
-        points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(7, 4)));
+        points_other = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(7, 4)));
         REQUIRE_THROWS(points.AddPoints(points_other));
 
         // Test check on extra bytes
-        points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, 1)));
+        points_other = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 1)));
         REQUIRE_THROWS(points.AddPoints(points_other));
     }
 
     SECTION("Points format conversion")
     {
-        auto points = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, 4)));
+        auto points = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 4)));
         points.ToPointFormat(7);
 
         REQUIRE(points.PointFormatId() == 7);

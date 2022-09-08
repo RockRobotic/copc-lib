@@ -7,7 +7,10 @@ import pytest
 def pack_and_unpack(p, scale, offset):
     points = copc.Points(p.point_format_id, p.EbByteSize())
     points.AddPoint(p)
-    return copc.Points.Unpack(points.Pack(scale, offset), p.point_format_id, p.EbByteSize(), scale, offset)[0]
+    return copc.Points.Unpack(
+        points.Pack(scale, offset), p.point_format_id, p.EbByteSize(), scale, offset
+    )[0]
+
 
 def test_constructor():
     point = copc.Points(
@@ -18,18 +21,14 @@ def test_constructor():
     assert point.HasRgb() is False
     assert point.HasNir() is False
 
-    point_ext = copc.Points(
-        8
-    ).CreatePoint()
+    point_ext = copc.Points(8).CreatePoint()
 
     assert point_ext.HasRgb() is True
     assert point_ext.HasNir() is True
 
 
 def test_point():
-    point6 = copc.Points(
-        6
-    ).CreatePoint()
+    point6 = copc.Points(6).CreatePoint()
     # Position
     point6.x = 2147483647
     point6.y = 2147483647
@@ -157,9 +156,7 @@ def test_point():
     # ToString
     str(point6)
 
-    point7 = copc.Points(
-        7
-    ).CreatePoint()
+    point7 = copc.Points(7).CreatePoint()
 
     point7.rgb = [65535, 65535, 65535]
     assert point7.red == 65535
@@ -171,9 +168,7 @@ def test_point():
         point7.nir = 65535
         assert point7.nir
 
-    point8 = copc.Points(
-        8
-    ).CreatePoint()
+    point8 = copc.Points(8).CreatePoint()
 
     point8.nir = 65535
     assert point8.nir == 65535
@@ -181,9 +176,7 @@ def test_point():
 
 
 def test_point_conversion():
-    point = copc.Points(
-        6
-    ).CreatePoint()
+    point = copc.Points(6).CreatePoint()
 
     assert point.gps_time == 0
     assert point.scanner_channel == 0
@@ -212,12 +205,8 @@ def test_point_conversion():
 
 def test_operators_equal():
     # Format 0
-    point = copc.Points(
-        6
-    ).CreatePoint()
-    point_other = copc.Points(
-        6
-    ).CreatePoint()
+    point = copc.Points(6).CreatePoint()
+    point_other = copc.Points(6).CreatePoint()
     assert point == point_other
 
     # Format 7
@@ -341,9 +330,7 @@ def test_operators_equal():
 
 
 def test_extra_byte():
-    point = copc.Points(
-        6
-    ).CreatePoint()
+    point = copc.Points(6).CreatePoint()
     assert point.point_format_id == 6
     assert point.point_record_length == 30
     with pytest.raises(RuntimeError):
@@ -397,26 +384,24 @@ def test_scaled_xyz():
     point.y = 4.5
     point.z = -0.1
 
-    test_point = pack_and_unpack(point, [1,1,1], [0,0,0])
+    test_point = pack_and_unpack(point, [1, 1, 1], [0, 0, 0])
     assert test_point.x == 4
     assert test_point.y == 5
     assert test_point.z == 0
 
     # Scale test
-    point = copc.Points(
-        pfid
-    ).CreatePoint()
+    point = copc.Points(pfid).CreatePoint()
 
     point.x = 0.01
     point.y = 0.02
     point.z = 0.03
 
-    test_point = pack_and_unpack(point, [1,1,1], [0,0,0])
+    test_point = pack_and_unpack(point, [1, 1, 1], [0, 0, 0])
     assert test_point.x == 0
     assert test_point.y == 0
     assert test_point.z == 0
 
-    test_point = pack_and_unpack(point, [0.01,0.01,0.01], [0,0,0])
+    test_point = pack_and_unpack(point, [0.01, 0.01, 0.01], [0, 0, 0])
 
     assert test_point.x == 0.01
     assert test_point.y == 0.02
@@ -439,8 +424,8 @@ def test_scaled_xyz():
     assert test_point.z == pytest.approx(-80.001, 0.000001)
 
     # Scale and Offset test
-    scale=[0.001, 0.001, 0.001]
-    offset=[50001.456, 4443.123, -255.001]
+    scale = [0.001, 0.001, 0.001]
+    offset = [50001.456, 4443.123, -255.001]
     point = copc.Points(pfid).CreatePoint()
 
     point.x = 50502.888
@@ -455,7 +440,7 @@ def test_scaled_xyz():
     # Change scale test
     offset = [50001.456, 4443.123, -255.001]
     scale = [0.001, 0.001, 0.001]
-    new_scale = [1,1,1]
+    new_scale = [1, 1, 1]
     point = copc.Points(pfid).CreatePoint()
 
     point.x = 50502.888
@@ -467,7 +452,6 @@ def test_scaled_xyz():
     assert test_point.y == pytest.approx(4002.123, 0.000001)
     assert test_point.z == pytest.approx(-80.001, 0.000001)
 
-
     # Precision checks
     points = copc.Points(pfid)
     point = points.CreatePoint()
@@ -475,7 +459,6 @@ def test_scaled_xyz():
     points.AddPoint(point)
     with pytest.raises(RuntimeError):
         points.Pack([0.000001, 0.000001, 0.000001], [0, 0, 0])
-
 
     points = copc.Points(pfid)
     point = points.CreatePoint()

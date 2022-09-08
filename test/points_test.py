@@ -4,9 +4,7 @@ import random
 
 
 def test_points_constructor():
-    points = copc.Points(
-        6, 4
-    )
+    points = copc.Points(6, 4)
     assert points.point_format_id == 6
     assert points.point_record_length == 34
     assert len(points) == 0
@@ -44,9 +42,7 @@ def test_points_constructor():
 
 
 def test_adding_point_to_points():
-    points = copc.Points(
-        6, 0
-    )
+    points = copc.Points(6, 0)
     point = copc.Points(
         6,
         eb_byte_size=0,
@@ -168,9 +164,7 @@ def test_points_format_conversion():
 
 
 def test_points_iterator():
-    points = copc.Points(
-        6, 4
-    )
+    points = copc.Points(6, 4)
 
     # generate points
     num_points = 2000
@@ -189,9 +183,7 @@ def test_points_iterator():
 
 
 def test_points_group_accessors():
-    points = copc.Points(
-        7, 4
-    )
+    points = copc.Points(7, 4)
 
     # generate points
     num_points = 2000
@@ -303,9 +295,7 @@ def test_get_within():
 
 
 def test_points_accessors():
-    points = copc.Points(
-        7, 4
-    )
+    points = copc.Points(7, 4)
 
     # generate points
     num_points = 2000
@@ -361,9 +351,7 @@ def test_points_accessors():
 
 
 def test_points_indexer_setter():
-    points = copc.Points(
-        6, 4
-    )
+    points = copc.Points(6, 4)
 
     # generate points
     num_points = 2000

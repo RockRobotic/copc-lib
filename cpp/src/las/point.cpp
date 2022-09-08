@@ -3,8 +3,7 @@
 
 namespace copc::las
 {
-Point::Point(const int8_t &point_format_id, const uint16_t &eb_byte_size)
-    : point_format_id_(point_format_id)
+Point::Point(const int8_t &point_format_id, const uint16_t &eb_byte_size) : point_format_id_(point_format_id)
 {
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("Point: Point format must be 6-8");
@@ -17,10 +16,7 @@ Point::Point(const int8_t &point_format_id, const uint16_t &eb_byte_size)
     extra_bytes_.resize(eb_byte_size, 0);
 }
 
-Point::Point(const LasHeader &header)
-    : Point(header.PointFormatId(), header.EbByteSize())
-{
-}
+Point::Point(const LasHeader &header) : Point(header.PointFormatId(), header.EbByteSize()) {}
 
 Point::Point(const Point &other) : Point(other.point_format_id_, other.EbByteSize())
 {
@@ -57,9 +53,8 @@ bool Point::operator==(const Point &other) const
 {
     if (point_format_id_ != other.point_format_id_ || point_record_length_ != other.point_record_length_)
         return false;
-    if (!AreClose(X(), other.X(), 0.01) ||
-        !AreClose(Y(), other.Y(), 0.01) ||
-        !AreClose(Z(), other.Z(), 0.01) || intensity_ != other.Intensity())
+    if (!AreClose(X(), other.X(), 0.01) || !AreClose(Y(), other.Y(), 0.01) || !AreClose(Z(), other.Z(), 0.01) ||
+        intensity_ != other.Intensity())
         return false;
     if (returns_ != other.ReturnsBitField())
         return false;
@@ -116,8 +111,7 @@ std::shared_ptr<Point> Point::Unpack(std::istream &in_stream, const int8_t &poin
     return p;
 }
 
-void Point::Pack(std::ostream &out_stream,const Vector3 &scale,
-                                         const Vector3 &offset) const
+void Point::Pack(std::ostream &out_stream, const Vector3 &scale, const Vector3 &offset) const
 {
     // Point
     pack(RemoveScale<int32_t>(x_scaled_, scale.x, offset.x), out_stream);
