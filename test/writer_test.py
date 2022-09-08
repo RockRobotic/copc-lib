@@ -237,7 +237,7 @@ def test_writer_pages():
     # Root Page
 
     header = writer.copc_config.las_header
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points = copc.Points(header.point_format_id)
     points.AddPoint(points.CreatePoint())
     # Add a node with root key as page
     writer.AddNode((1, 1, 1, 1), points, copc.VoxelKey.RootKey())
@@ -253,7 +253,7 @@ def test_writer_pages():
     writer = copc.FileWriter(file_path, copc.CopcConfigWriter(6))
 
     header = writer.copc_config.las_header
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points = copc.Points(header.point_format_id)
     points.AddPoint(points.CreatePoint())
 
     writer.AddNode((1, 1, 1, 1), points, page_key=(1, 1, 1, 1))
@@ -279,7 +279,7 @@ def test_writer_pages():
     writer = copc.FileWriter(file_path, copc.CopcConfigWriter(6))
 
     header = writer.copc_config.las_header
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points = copc.Points(header.point_format_id)
     points.AddPoint(points.CreatePoint())
 
     writer.AddNode((3, 4, 4, 4), points, page_key=(2, 2, 2, 2))
@@ -405,9 +405,9 @@ def test_writer_copy_and_update():
     new_points = copc.Points(writer.copc_config.las_header)
 
     new_point = new_points.CreatePoint()
-    new_point.X = 10
-    new_point.Y = 15
-    new_point.Z = 20
+    new_point.x = 10
+    new_point.y = 15
+    new_point.z = 20
     new_point.gps_time = 1.5
     new_point.red = 25
     new_point.nir = 30
@@ -441,9 +441,9 @@ def test_writer_copy_and_update():
     # Check that the written point is read correctly
     points = reader.GetPoints(copc.VoxelKey.RootKey())
     assert len(points) == 1
-    assert points[0].X == 10
-    assert points[0].Y == 15
-    assert points[0].Z == 20
+    assert points[0].x == 10
+    assert points[0].y == 15
+    assert points[0].z == 20
     assert points[0].gps_time == 1.5
     assert points[0].red == 25
     assert points[0].nir == 30
@@ -706,7 +706,7 @@ def test_check_spatial_bounds():
 
     ## Checks on las header bounds
 
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points = copc.Points(header.point_format_id)
 
     point = points.CreatePoint()
     # point has getters/setters for all attributes
@@ -728,7 +728,7 @@ def test_check_spatial_bounds():
 
     header = writer.copc_config.las_header
 
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points = copc.Points(header.point_format_id)
 
     point = points.CreatePoint()
     point.x = 10
@@ -748,7 +748,7 @@ def test_check_spatial_bounds():
 
     header = writer.copc_config.las_header
 
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points = copc.Points(header.point_format_id)
 
     point = points.CreatePoint()
     point.x = 10
@@ -767,7 +767,7 @@ def test_check_spatial_bounds():
     writer = copc.FileWriter(file_path, cfg)
 
     header = writer.copc_config.las_header
-    points = copc.Points(header.point_format_id, header.scale, header.offset)
+    points = copc.Points(header.point_format_id)
 
     point = points.CreatePoint()
     point.x = 0.1

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **\[Python/C++\]** Point and Points objects no longer depend on an internal scale or offset. XYZ coordinates are stored as doubles internally, and converted into integers using scale and offset only when packing or unpacking.
+
 ## [2.3.1] - 2022-04-14
 
 ### Fixed

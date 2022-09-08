@@ -7,8 +7,7 @@
 namespace copc::las
 {
 
-Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector3 &offset, const uint16_t &eb_byte_size)
-    : point_format_id_(point_format_id), scale_(scale), offset_(offset)
+Points::Points(const int8_t &point_format_id, const uint16_t &eb_byte_size) : point_format_id_(point_format_id)
 {
     if (point_format_id < 0 || point_format_id > 10)
         throw std::runtime_error("Point format must be 0-10.");
@@ -16,10 +15,7 @@ Points::Points(const int8_t &point_format_id, const Vector3 &scale, const Vector
     point_record_length_ = PointByteSize(point_format_id, eb_byte_size);
 }
 
-Points::Points(const LasHeader &header)
-    : Points(header.PointFormatId(), header.Scale(), header.Offset(), header.EbByteSize())
-{
-}
+Points::Points(const LasHeader &header) : Points(header.PointFormatId(), header.EbByteSize()) {}
 
 Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 {
@@ -28,8 +24,6 @@ Points::Points(const std::vector<std::shared_ptr<Point>> &points)
 
     point_record_length_ = points[0]->PointRecordLength();
     point_format_id_ = points[0]->PointFormatId();
-    scale_ = points[0]->Scale();
-    offset_ = points[0]->Offset();
 
     AddPoints(points);
 }
@@ -91,7 +85,7 @@ Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_f
     auto ss = std::istringstream(std::string(point_data.begin(), point_data.end()));
 
     // Go through each Point to unpack the data from the stream
-    Points points(point_format_id, scale, offset, eb_byte_size);
+    Points points(point_format_id, eb_byte_size);
     points.Reserve(point_count);
 
     // Unpack points
@@ -103,16 +97,23 @@ Points Points::Unpack(const std::vector<char> &point_data, const int8_t &point_f
     return points;
 }
 
-void Points::Pack(std::ostream &out_stream) const
+void Points::Pack(std::ostream &out_stream, const LasHeader &header) const
 {
-    for (const auto &point : points_)
-        point->Pack(out_stream);
+    Pack(out_stream, header.Scale(), header.Offset());
 }
 
-std::vector<char> Points::Pack() const
+void Points::Pack(std::ostream &out_stream, const Vector3 &scale, const Vector3 &offset) const
+{
+    for (const auto &point : points_)
+        point->Pack(out_stream, scale, offset);
+}
+
+std::vector<char> Points::Pack(const LasHeader &header) const { return Pack(header.Scale(), header.Offset()); }
+
+std::vector<char> Points::Pack(const Vector3 &scale, const Vector3 &offset) const
 {
     std::stringstream out;
-    Pack(out);
+    Pack(out, scale, offset);
     auto ostr = out.str();
     return std::vector<char>(ostr.begin(), ostr.end());
 }

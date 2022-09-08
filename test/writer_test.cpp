@@ -204,9 +204,9 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 // Check that we can add a point of new format
                 auto new_points = las::Points(*copy_writer.CopcConfig()->LasHeader());
                 auto new_point = new_points.CreatePoint();
-                new_point->UnscaledX(10);
-                new_point->UnscaledY(15);
-                new_point->UnscaledZ(20);
+                new_point->X(10);
+                new_point->Y(15);
+                new_point->Z(20);
                 new_point->GPSTime(1.5);
                 new_point->Red(25);
                 new_point->Nir(30);
@@ -235,9 +235,9 @@ TEST_CASE("Writer Config Tests", "[Writer]")
                 // Check that the written point is read correctly
                 auto points = reader.GetPoints(VoxelKey::RootKey());
                 REQUIRE(points.Size() == 1);
-                REQUIRE(points[0]->UnscaledX() == 10);
-                REQUIRE(points[0]->UnscaledY() == 15);
-                REQUIRE(points[0]->UnscaledZ() == 20);
+                REQUIRE(points[0]->X() == 10);
+                REQUIRE(points[0]->Y() == 15);
+                REQUIRE(points[0]->Z() == 20);
                 REQUIRE(points[0]->GPSTime() == 1.5);
                 REQUIRE(points[0]->Red() == 25);
                 REQUIRE(points[0]->Nir() == 30);
@@ -596,7 +596,7 @@ TEST_CASE("Writer Pages", "[Writer]")
         REQUIRE(!writer.FindNode(VoxelKey::InvalidKey()).IsValid());
         REQUIRE(!writer.FindNode(VoxelKey(5, 4, 3, 2)).IsValid());
         auto header = *writer.CopcConfig()->LasHeader();
-        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId());
         points.AddPoint(points.CreatePoint());
         // Add a node with root key as page
         writer.AddNode(VoxelKey(1, 1, 1, 1), points, VoxelKey::RootKey());
@@ -616,7 +616,7 @@ TEST_CASE("Writer Pages", "[Writer]")
         Writer writer(out_stream, {6});
 
         auto header = *writer.CopcConfig()->LasHeader();
-        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId());
         points.AddPoint(points.CreatePoint());
 
         writer.AddNode(VoxelKey(1, 1, 1, 1), points, VoxelKey(1, 1, 1, 1));
@@ -644,7 +644,7 @@ TEST_CASE("Writer Pages", "[Writer]")
         Writer writer(out_stream, {6});
 
         auto header = *writer.CopcConfig()->LasHeader();
-        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId());
         points.AddPoint(points.CreatePoint());
 
         writer.AddNode(VoxelKey(3, 4, 4, 4), points, VoxelKey(2, 2, 2, 2));
@@ -801,7 +801,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
 
         auto header = *writer.CopcConfig()->LasHeader();
 
-        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId());
 
         auto point = points.CreatePoint();
         point->X(9);
@@ -823,7 +823,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
 
         auto header = *writer.CopcConfig()->LasHeader();
 
-        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId());
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -845,7 +845,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
 
         auto header = *writer.CopcConfig()->LasHeader();
 
-        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId());
 
         auto point = points.CreatePoint();
         point->X(10);
@@ -867,7 +867,7 @@ TEST_CASE("Check Spatial Bounds", "[Writer]")
 
         auto header = *writer.CopcConfig()->LasHeader();
 
-        las::Points points(header.PointFormatId(), header.Scale(), header.Offset());
+        las::Points points(header.PointFormatId());
 
         auto point = points.CreatePoint();
         point->X(0.1);

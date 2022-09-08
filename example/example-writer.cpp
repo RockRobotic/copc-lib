@@ -220,9 +220,9 @@ las::Points RandomPoints(const VoxelKey &key, const las::LasHeader &header, int 
         // The use of las::Point constructor is strongly discouraged, instead use las::Points::CreatePoint
         auto point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point->UnscaledX(rand_x(gen));
-        point->UnscaledY(rand_y(gen));
-        point->UnscaledZ(rand_z(gen));
+        point->X(header.ApplyScaleX(rand_x(gen)));
+        point->Y(header.ApplyScaleY(rand_y(gen)));
+        point->Z(header.ApplyScaleZ(rand_z(gen)));
         // For visualization purposes
         point->PointSourceId(key.d + key.x + key.y + key.z);
 
