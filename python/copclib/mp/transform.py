@@ -195,5 +195,5 @@ def _transform_node(
 
     point_count = len(points)
     # Repack and compress the points using the new writer header
-    compressed_points = copc.CompressBytes(points.Pack(), writer_header)
+    compressed_points = copc.CompressBytes(points.Pack(writer_header), writer_header)
     return compressed_points, node, point_count, xyz_min, xyz_max, return_vals
