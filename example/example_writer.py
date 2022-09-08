@@ -237,7 +237,11 @@ def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
     cfg = copc.CopcConfigWriter(
-        8, [0.1, 0.1, 0.1], [50, 50, 50], "TEST_WKT", has_extended_stats=True
+        point_format_id=8,
+        scale=(0.1, 0.1, 0.1),
+        offset=(50, 50, 50),
+        wkt="TEST_WKT",
+        has_extended_stats=True,
     )
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves
