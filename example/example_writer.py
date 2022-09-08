@@ -212,17 +212,17 @@ def RandomPoints(key, las_header, number_points):
         # Create a point with a given point format
         point = points.CreatePoint()
         # point has getters/setters for all attributes
-        point.X = random.randint(
-            las_header.RemoveScaleX(max(las_header.min.x, minx)),
-            las_header.RemoveScaleX(min(las_header.max.x, minx + step)),
+        point.x = random.uniform(
+            max(las_header.min.x, minx),
+            min(las_header.max.x, minx + step),
         )
-        point.Y = random.randint(
-            las_header.RemoveScaleY(max(las_header.min.y, miny)),
-            las_header.RemoveScaleY(min(las_header.max.y, miny + step)),
+        point.y = random.uniform(
+            max(las_header.min.y, miny),
+            min(las_header.max.y, miny + step),
         )
-        point.Z = random.randint(
-            las_header.RemoveScaleZ(max(las_header.min.z, minz)),
-            las_header.RemoveScaleZ(min(las_header.max.z, minz + step)),
+        point.z = random.uniform(
+            max(las_header.min.z, minz),
+            min(las_header.max.z, minz + step),
         )
 
         # For visualization purposes
@@ -237,7 +237,11 @@ def NewFileExample():
 
     # Create our new file with the specified format, scale, and offset
     cfg = copc.CopcConfigWriter(
-        8, [0.1, 0.1, 0.1], [50, 50, 50], "TEST_WKT", has_extended_stats=True
+        point_format_id=8,
+        scale=(0.1, 0.1, 0.1),
+        offset=(50, 50, 50),
+        wkt="TEST_WKT",
+        has_extended_stats=True,
     )
     # As of now, the library will not automatically compute the min/max of added points
     # so we will have to calculate it ourselves

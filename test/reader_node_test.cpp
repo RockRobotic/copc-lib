@@ -76,9 +76,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE(points.size() == hier_entry.point_count);
 
         // Getters
-        REQUIRE(points[0]->UnscaledX() == -113822);
-        REQUIRE(points[0]->UnscaledY() == -118589);
-        REQUIRE(points[0]->UnscaledZ() == -221965);
+        REQUIRE_THAT(points[0]->X(), Catch::Matchers::WithinAbs(636767.32, 0.01));
+        REQUIRE_THAT(points[0]->Y(), Catch::Matchers::WithinAbs(850024.01, 0.01));
+        REQUIRE_THAT(points[0]->Z(), Catch::Matchers::WithinAbs(514.24, 0.01));
         REQUIRE(points[0]->Intensity() == 11);
         REQUIRE(points[0]->NumberOfReturns() == 3);
         REQUIRE(points[0]->ReturnNumber() == 1);
@@ -99,9 +99,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         REQUIRE_THROWS(points[0]->Nir());
 
         // Setters
-        points[0]->UnscaledX(std::numeric_limits<int32_t>::max());
-        points[0]->UnscaledY(std::numeric_limits<int32_t>::max());
-        points[0]->UnscaledZ(std::numeric_limits<int32_t>::max());
+        points[0]->X(11.1);
+        points[0]->Y(11.2);
+        points[0]->Z(11.3);
         points[0]->Intensity(std::numeric_limits<uint16_t>::max());
         points[0]->NumberOfReturns(7);
         points[0]->ReturnNumber(7);
@@ -117,9 +117,9 @@ TEST_CASE("GetPoints Test", "[Reader] ")
         points[0]->Blue(std::numeric_limits<uint16_t>::max());
         REQUIRE_THROWS(points[0]->Nir(std::numeric_limits<uint16_t>::max()));
 
-        REQUIRE(points[0]->UnscaledX() == std::numeric_limits<int32_t>::max());
-        REQUIRE(points[0]->UnscaledY() == std::numeric_limits<int32_t>::max());
-        REQUIRE(points[0]->UnscaledZ() == std::numeric_limits<int32_t>::max());
+        REQUIRE(points[0]->X() == 11.1);
+        REQUIRE(points[0]->Y() == 11.2);
+        REQUIRE(points[0]->Z() == 11.3);
         REQUIRE(points[0]->Intensity() == std::numeric_limits<uint16_t>::max());
         REQUIRE(points[0]->NumberOfReturns() == 7);
         REQUIRE(points[0]->ReturnNumber() == 7);

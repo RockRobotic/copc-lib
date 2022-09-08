@@ -35,9 +35,9 @@ las::Points RandomPoints(const las::LasHeader &header, int number_points)
         // The use of las::Point constructor is strongly discouraged, instead use las::Points::CreatePoint
         auto point = points.CreatePoint();
         // point has getters/setters for all attributes
-        point->UnscaledX(rand_x(gen));
-        point->UnscaledY(rand_y(gen));
-        point->UnscaledZ(rand_z(gen));
+        point->X(header.ApplyScaleX(rand_x(gen)));
+        point->Y(header.ApplyScaleY(rand_y(gen)));
+        point->Z(header.ApplyScaleZ(rand_z(gen)));
 
         points.AddPoint(point);
     }

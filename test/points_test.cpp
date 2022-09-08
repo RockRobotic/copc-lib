@@ -14,16 +14,16 @@ TEST_CASE("Points tests", "[Point]")
 {
     SECTION("Points constructors")
     {
-        auto points = Points(6, {1, 1, 1}, {0, 0, 0}, 4);
+        auto points = Points(6, 4);
         REQUIRE(points.PointFormatId() == 6);
         REQUIRE(points.PointRecordLength() == 34);
         REQUIRE(points.Get().empty());
 
         auto point_vec = std::vector<std::shared_ptr<Point>>();
         auto point1 = points.CreatePoint();
-        point1->UnscaledX(11);
-        point1->UnscaledY(11);
-        point1->UnscaledZ(11);
+        point1->X(11.1);
+        point1->Y(11.2);
+        point1->Z(11.3);
         point_vec.push_back(point1);
 
         auto point2 = points.CreatePoint();
@@ -37,74 +37,69 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.PointRecordLength() == 34);
         for (const auto &point : points.Get())
             REQUIRE(point->PointFormatId() == 6);
-        REQUIRE(points.Get(0)->UnscaledX() == 11);
-        REQUIRE(points.Get(0)->UnscaledY() == 11);
-        REQUIRE(points.Get(0)->UnscaledZ() == 11);
+        REQUIRE(points.Get(0)->X() == 11.1);
+        REQUIRE(points.Get(0)->Y() == 11.2);
+        REQUIRE(points.Get(0)->Z() == 11.3);
 
         points.ToString();
     }
 
     SECTION("Adding Point to Points")
     {
-        auto points = Points(6, {1, 1, 1}, {0, 0, 0}, 0);
+        auto points = Points(6, 0);
         auto point = points.CreatePoint();
-        point->UnscaledX(11);
-        point->UnscaledY(11);
-        point->UnscaledZ(11);
+        point->X(11.1);
+        point->Y(11.2);
+        point->Z(11.3);
 
         points.AddPoint(point);
 
         REQUIRE(points.Get().size() == 1);
-        REQUIRE(points.Get(0)->UnscaledX() == 11);
-        REQUIRE(points.Get(0)->UnscaledY() == 11);
-        REQUIRE(points.Get(0)->UnscaledZ() == 11);
+        REQUIRE(points.Get(0)->X() == 11.1);
+        REQUIRE(points.Get(0)->Y() == 11.2);
+        REQUIRE(points.Get(0)->Z() == 11.3);
 
         point = points.CreatePoint();
-        point->UnscaledX(22);
-        point->UnscaledY(22);
-        point->UnscaledZ(22);
+        point->X(22.5);
+        point->Y(22.6);
+        point->Z(22.7);
 
         points.AddPoint(point);
         REQUIRE(points.Get().size() == 2);
-        REQUIRE(points.Get(1)->UnscaledX() == 22);
-        REQUIRE(points.Get(1)->UnscaledY() == 22);
-        REQUIRE(points.Get(1)->UnscaledZ() == 22);
+        REQUIRE(points.Get(1)->X() == 22.5);
+        REQUIRE(points.Get(1)->Y() == 22.6);
+        REQUIRE(points.Get(1)->Z() == 22.7);
 
         // Test check on point format
-        point = std::make_shared<Point>(7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 0);
+        point = std::make_shared<Point>(7, 0);
         REQUIRE_THROWS(points.AddPoint(point));
 
         // Test check on extra bytes
-        point = std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1);
+        point = std::make_shared<Point>(6, 1);
         REQUIRE_THROWS(points.AddPoint(point));
     }
 
     SECTION("Adding Points to Points")
     {
-        auto points = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
-        auto points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+        auto points = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 4)));
+        auto points_other = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 4)));
 
         points.AddPoints(points_other);
 
         REQUIRE(points.Get().size() == 20);
 
         // Test check on point format
-        points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+        points_other = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(7, 4)));
         REQUIRE_THROWS(points.AddPoints(points_other));
 
         // Test check on extra bytes
-        points_other = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 1)));
+        points_other = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 1)));
         REQUIRE_THROWS(points.AddPoints(points_other));
     }
 
     SECTION("Points format conversion")
     {
-        auto points = Points(std::vector<std::shared_ptr<Point>>(
-            10, std::make_shared<Point>(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4)));
+        auto points = Points(std::vector<std::shared_ptr<Point>>(10, std::make_shared<Point>(6, 4)));
         points.ToPointFormat(7);
 
         REQUIRE(points.PointFormatId() == 7);
@@ -118,7 +113,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Points Group Accessors")
     {
-        auto points = Points(7, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
+        auto points = Points(7, 4);
 
         // generate points
         int num_points = 2000;
@@ -142,9 +137,6 @@ TEST_CASE("Points tests", "[Point]")
         auto X = points.X();
         auto Y = points.Y();
         auto Z = points.Z();
-        auto UnscaledX = points.UnscaledX();
-        auto UnscaledY = points.UnscaledY();
-        auto UnscaledZ = points.UnscaledZ();
         auto classification = points.Classification();
         auto point_source_id = points.PointSourceId();
         auto red = points.Red();
@@ -155,11 +147,6 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(X[i] == i);
             REQUIRE(Y[i] == i * 3);
             REQUIRE(Z[i] == i - 80);
-            REQUIRE(UnscaledX[i] == int32_t((i - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
-            REQUIRE(UnscaledY[i] ==
-                    int32_t(((i * 3) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
-            REQUIRE(UnscaledZ[i] ==
-                    int32_t(((i - 80) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
             REQUIRE(classification[i] == i * 255 / num_points);
             REQUIRE(point_source_id[i] == i * 255 / num_points);
             REQUIRE(red[i] == i * 4);
@@ -183,9 +170,6 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE_THROWS(points.X(Xn));
         REQUIRE_THROWS(points.Y(Yn));
         REQUIRE_THROWS(points.Z(Zn));
-        REQUIRE_THROWS(points.UnscaledX(UnscaledXn));
-        REQUIRE_THROWS(points.UnscaledY(UnscaledYn));
-        REQUIRE_THROWS(points.UnscaledZ(UnscaledZn));
         REQUIRE_THROWS(points.Classification(classification_n));
         REQUIRE_THROWS(points.PointSourceId(point_source_id_n));
         REQUIRE_THROWS(points.Red(red_n));
@@ -239,12 +223,6 @@ TEST_CASE("Points tests", "[Point]")
             REQUIRE(p->X() == i * 50 + 8);
             REQUIRE(p->Y() == i + 800);
             REQUIRE(p->Z() == i * 4);
-            REQUIRE(p->UnscaledX() ==
-                    int32_t(((i * 50 + 8) - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
-            REQUIRE(p->UnscaledY() ==
-                    int32_t(((i + 800) - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
-            REQUIRE(p->UnscaledZ() ==
-                    int32_t(((i * 4) - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
             REQUIRE(p->Classification() == i * 255 / 2000);
             REQUIRE(p->PointSourceId() == i * 255 / 2000);
             REQUIRE(p->Red() == i * 4);
@@ -257,12 +235,6 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(last_point->X() == 1);
         REQUIRE(last_point->Y() == 2);
         REQUIRE(last_point->Z() == 3);
-        REQUIRE(last_point->UnscaledX() ==
-                int32_t((1 - copc::Vector3::DefaultOffset().x) / copc::Vector3::DefaultScale().x));
-        REQUIRE(last_point->UnscaledY() ==
-                int32_t((2 - copc::Vector3::DefaultOffset().y) / copc::Vector3::DefaultScale().y));
-        REQUIRE(last_point->UnscaledZ() ==
-                int32_t((3 - copc::Vector3::DefaultOffset().z) / copc::Vector3::DefaultScale().z));
         REQUIRE(last_point->Classification() == 255);
         REQUIRE(last_point->PointSourceId() == 255);
         REQUIRE(last_point->Red() == num_points * 4);
@@ -272,7 +244,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Points Indexers")
     {
-        auto points = Points(6, copc::Vector3::DefaultScale(), copc::Vector3::DefaultOffset(), 4);
+        auto points = Points(6, 4);
 
         // generate points
         int num_points = 2000;
@@ -367,7 +339,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("Within")
     {
-        auto points = Points(6, {1, 1, 1}, copc::Vector3::DefaultOffset());
+        auto points = Points(6);
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -397,7 +369,7 @@ TEST_CASE("Points tests", "[Point]")
 
     SECTION("GetWithin")
     {
-        auto points = Points(6, {1, 1, 1}, copc::Vector3::DefaultOffset());
+        auto points = Points(6);
 
         std::random_device rd;
         std::mt19937 gen(rd());

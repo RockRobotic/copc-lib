@@ -23,7 +23,7 @@ TEST_CASE("Packing Test", "[Hierarchy] ")
 
         // Pack loaded points into stream
         ostringstream oss;
-        points.Pack(oss);
+        points.Pack(oss, reader.CopcConfig().LasHeader());
 
         // Write stream into vector<char> to compare with point_data
         vector<char> point_data_write;

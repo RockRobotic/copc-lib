@@ -4,35 +4,27 @@ import random
 
 
 def test_points_constructor():
-    points = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
-    )
+    points = copc.Points(6, 4)
     assert points.point_format_id == 6
     assert points.point_record_length == 34
     assert len(points) == 0
 
     point1 = copc.Points(
         6,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
         eb_byte_size=4,
     ).CreatePoint()
-    point1.X = 11
-    point1.Y = 11
-    point1.Z = 11
+    point1.x = 11.1
+    point1.y = 11.2
+    point1.z = 11.3
 
     point_list = [
         point1,
         copc.Points(
             6,
-            copc.Vector3.DefaultScale(),
-            copc.Vector3.DefaultOffset(),
             eb_byte_size=4,
         ).CreatePoint(),
         copc.Points(
             6,
-            copc.Vector3.DefaultScale(),
-            copc.Vector3.DefaultOffset(),
             eb_byte_size=4,
         ).CreatePoint(),
     ]
@@ -42,54 +34,47 @@ def test_points_constructor():
     assert points.point_record_length == 34
     for point in points:
         assert point.point_format_id == 6
-    assert points[0].Y == 11
-    assert points[0].Z == 11
+    assert points[0].x == 11.1
+    assert points[0].y == 11.2
+    assert points[0].z == 11.3
 
     str(points)
 
 
 def test_adding_point_to_points():
-    points = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 0
-    )
+    points = copc.Points(6, 0)
     point = copc.Points(
         6,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
-    point.X = 11
-    point.Y = 11
-    point.Z = 11
+    point.x = 11.1
+    point.y = 11.2
+    point.z = 11.3
 
     points.AddPoint(point)
 
     assert len(points) == 1
-    assert points[0].X == 11
-    assert points[0].Y == 11
-    assert points[0].Z == 11
+    assert points[0].x == 11.1
+    assert points[0].y == 11.2
+    assert points[0].z == 11.3
 
     point = copc.Points(
         6,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
-    point.X = 22
-    point.Y = 22
-    point.Z = 22
+    point.x = 22.5
+    point.y = 22.6
+    point.z = 22.7
 
     points.AddPoint(point)
     assert len(points) == 2
-    assert points[1].X == 22
-    assert points[1].Y == 22
-    assert points[1].Z == 22
+    assert points[1].x == 22.5
+    assert points[1].y == 22.6
+    assert points[1].z == 22.7
 
     # Test check on point format
     point = copc.Points(
         7,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
         eb_byte_size=0,
     ).CreatePoint()
     with pytest.raises(RuntimeError):
@@ -98,8 +83,6 @@ def test_adding_point_to_points():
     # Test check on extra bytes
     point = copc.Points(
         6,
-        copc.Vector3.DefaultScale(),
-        copc.Vector3.DefaultOffset(),
         eb_byte_size=1,
     ).CreatePoint()
     with pytest.raises(RuntimeError):
@@ -111,8 +94,6 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 6,
-                copc.Vector3.DefaultScale(),
-                copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
             ).CreatePoint()
             for _ in range(10)
@@ -122,8 +103,6 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 6,
-                copc.Vector3.DefaultScale(),
-                copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
             ).CreatePoint()
             for _ in range(10)
@@ -139,8 +118,6 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 7,
-                copc.Vector3.DefaultScale(),
-                copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
             ).CreatePoint()
             for _ in range(10)
@@ -154,8 +131,6 @@ def test_adding_points_to_points():
         [
             copc.Points(
                 6,
-                copc.Vector3.DefaultScale(),
-                copc.Vector3.DefaultOffset(),
                 eb_byte_size=1,
             ).CreatePoint()
             for _ in range(10)
@@ -170,8 +145,6 @@ def test_points_format_conversion():
         [
             copc.Points(
                 6,
-                copc.Vector3.DefaultScale(),
-                copc.Vector3.DefaultOffset(),
                 eb_byte_size=4,
             ).CreatePoint()
             for _ in range(10)
@@ -191,9 +164,7 @@ def test_points_format_conversion():
 
 
 def test_points_iterator():
-    points = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
-    )
+    points = copc.Points(6, 4)
 
     # generate points
     num_points = 2000
@@ -212,9 +183,7 @@ def test_points_iterator():
 
 
 def test_points_group_accessors():
-    points = copc.Points(
-        7, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
-    )
+    points = copc.Points(7, 4)
 
     # generate points
     num_points = 2000
@@ -237,18 +206,6 @@ def test_points_group_accessors():
         assert points.x[i] == i
         assert points.y[i] == i * 3
         assert points.z[i] == i - 80
-        assert (
-            points.X[i]
-            == (i - copc.Vector3.DefaultOffset().x) / copc.Vector3.DefaultScale().x
-        )
-        assert (
-            points.Y[i]
-            == (i * 3 - copc.Vector3.DefaultOffset().y) / copc.Vector3.DefaultScale().y
-        )
-        assert (
-            points.Z[i]
-            == (i - 80 - copc.Vector3.DefaultOffset().z) / copc.Vector3.DefaultScale().z
-        )
         assert points.classification[i] == i * 255 // num_points
         assert points.point_source_id[i] == i * 255 // num_points
         assert points.red[i] == i * 4
@@ -290,21 +247,6 @@ def test_points_group_accessors():
         assert p.y == i + 800
         assert p.z == i * 4
 
-        assert (
-            p.X
-            == (i * 50 + 8 - copc.Vector3.DefaultOffset().x)
-            / copc.Vector3.DefaultScale().x
-        )
-        assert (
-            p.Y
-            == (i + 800 - copc.Vector3.DefaultOffset().y)
-            / copc.Vector3.DefaultScale().y
-        )
-        assert (
-            p.Z
-            == (i * 4 - copc.Vector3.DefaultOffset().z) / copc.Vector3.DefaultScale().z
-        )
-
     # test negative indices
     last_point = points[-1]
     assert last_point.x == 1
@@ -314,7 +256,7 @@ def test_points_group_accessors():
 
 def test_within():
 
-    points = copc.Points(6, (1, 1, 1), copc.Vector3.DefaultOffset())
+    points = copc.Points(6)
 
     # generate points
     for i in range(2000):
@@ -337,7 +279,7 @@ def test_within():
 
 def test_get_within():
 
-    points = copc.Points(6, (1, 1, 1), copc.Vector3.DefaultOffset())
+    points = copc.Points(6)
 
     # generate points
     for i in range(2000):
@@ -353,9 +295,7 @@ def test_get_within():
 
 
 def test_points_accessors():
-    points = copc.Points(
-        7, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
-    )
+    points = copc.Points(7, 4)
 
     # generate points
     num_points = 2000
@@ -411,9 +351,7 @@ def test_points_accessors():
 
 
 def test_points_indexer_setter():
-    points = copc.Points(
-        6, copc.Vector3.DefaultScale(), copc.Vector3.DefaultOffset(), 4
-    )
+    points = copc.Points(6, 4)
 
     # generate points
     num_points = 2000
