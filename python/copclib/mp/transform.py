@@ -90,7 +90,7 @@ def transform_multithreaded(
     with concurrent.futures.ProcessPoolExecutor(
         max_workers=max_workers,
         initializer=init_mp,
-        initargs=(reader.path,mp_init_function,mp_init_function_args),
+        initargs=(reader.path, mp_init_function, mp_init_function_args),
     ) as executor:
         # Chunk the nodes so we're not flooding executor.submit
         for chunk in chunks(nodes, chunk_size):
