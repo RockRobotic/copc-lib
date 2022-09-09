@@ -12,7 +12,8 @@ def _copy_points_transform(points, **kwargs):
 # Initialize each multiprocessing thread with a copy of the copc reader
 def init_mp(copc_path, mp_init_function, mp_init_function_args):
     _transform_node.copc_reader = copc.FileReader(copc_path)
-    mp_init_function(**mp_init_function_args)
+    if mp_init_function:
+        mp_init_function(**mp_init_function_args)
 
 
 def transform_multithreaded(
