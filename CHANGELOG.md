@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **\[Python\]** Generate stubs (.pyi) for the C++ bindings to provide typechecking in the IDE
+- **\[Python\]** Add helper functions for multithreading COPC reads and transformations
+- **\[Python/C++\]** Add `GetMaxDepth()` function to CopcReader
 
 ### Changed
 - **\[Python/C++\]** Point and Points objects no longer depend on an internal scale or offset. XYZ coordinates are stored as doubles internally, and converted into integers using scale and offset only when packing or unpacking.
