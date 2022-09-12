@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[Python/C++\]** Add `GetMaxDepth()` function to CopcReader
 
 ### Changed
-- **\[Python/C++\]** Point and Points objects no longer depend on an internal scale or offset. XYZ coordinates are stored as doubles internally, and converted into integers using scale and offset only when packing or unpacking.
+- **\[Python/C++\]** Point and Points objects no longer depend on an internal scale or offset. XYZ coordinates are stored as doubles internally, and converted into integers using scale and offset only when packing or unpacking. The `Points::Pack()` function now requires either a `LasHeader` or a scale/offset vector as arguments. The `Point::Pack()` function now requires a scale/offset vector as arguments. The `Point` and `Points` constructors no longer take a scale and offset vector as arguemnts.
 
 ## [2.3.1] - 2022-04-14
 
