@@ -61,6 +61,9 @@ def transform_multithreaded(
         max_workers (int, optional): Manually set the number of processors to use when multiprocessing. Defaults to all processors.
         update_minmax (bool, optional): If true, updates the header of the new COPC file with the correct XYZ min/max.
             Defaults to False.
+        mp_init_function: (function, optional): A function that gets called in the ProcessPoolExeuctor initializer
+        mp_init_function_args: (dict, optional): A key/value pair of keyword arguments that get passed to `mp_init_function`.
+            Defaults to {}.
 
     Raises:
         RuntimeError
