@@ -1,13 +1,13 @@
 if(SKBUILD)
-  # Scikit-Build does not add your site-packages to the search path
-  # automatically, so we need to add it _or_ the pybind11 specific directory
-  # here.
-  execute_process(
-    COMMAND "${PYTHON_EXECUTABLE}" -c
-            "import pybind11; print(pybind11.get_cmake_dir())"
-    OUTPUT_VARIABLE _tmp_dir
-    OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT)
-  list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
+    # Scikit-Build does not add your site-packages to the search path
+    # automatically, so we need to add it _or_ the pybind11 specific directory
+    # here.
+    execute_process(
+        COMMAND "${PYTHON_EXECUTABLE}" -c
+                "import pybind11; print(pybind11.get_cmake_dir())"
+        OUTPUT_VARIABLE _tmp_dir
+        OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT)
+    list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
@@ -24,15 +24,22 @@ else()
     target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${LAZPERF_LIB_NAME} copc-lib-s)
 endif()
 
-install(TARGETS _core DESTINATION .)
+install(TARGETS ${COPC_PYTHON_LIB} DESTINATION .)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/copclib DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
-                                                    # have the python lib output to the python build dir
-                                                    # not the /lib dir
-                                                    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
-                                                    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib)
+                        # have the python lib output to the python build dir
+                        # not the /lib dir
+                        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
+                        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib)
+
+add_custom_command(TARGET ${COPC_PYTHON_LIB} POST_BUILD
+    COMMAND stubgen -m _core -o .
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
+    COMMENT "Generating stubs for pybind"
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/copclib/_core.pyi DESTINATION .)
 
 if(WITH_TESTS)
     include(DownloadExampleFiles)
