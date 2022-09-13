@@ -9,7 +9,7 @@ on:
       - published
 
 env:
-  CIBW_TEST_COMMAND: pytest {project}/test
+  CIBW_TEST_COMMAND: pytest {project}/test --durations 50
   CIBW_TEST_EXTRAS: test
   CIBW_SKIP: "cp310-win* cp311* pp*" # just exclude platforms that error :))
 
