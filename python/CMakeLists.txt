@@ -34,12 +34,14 @@ set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
                         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
                         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib)
 
-add_custom_command(TARGET ${COPC_PYTHON_LIB} POST_BUILD
-    COMMAND stubgen -m _core -o .
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
-    COMMENT "Generating stubs for pybind"
-)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/copclib/_core.pyi DESTINATION .)
+if(UNIX AND NOT APPLE)
+    add_custom_command(TARGET ${COPC_PYTHON_LIB} POST_BUILD
+        COMMAND stubgen -m _core -o .
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
+        COMMENT "Generating stubs for pybind"
+    )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/copclib/_core.pyi DESTINATION .)
+endif()
 
 if(WITH_TESTS)
     include(DownloadExampleFiles)
