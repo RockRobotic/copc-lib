@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **\[Python\]** Removed stub generation for platforms other than Linux
+
 ## [2.4.0] - 2022-09-12
 
 ### Added
