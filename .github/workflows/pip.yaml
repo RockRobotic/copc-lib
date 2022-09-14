@@ -8,11 +8,6 @@ on:
     types:
       - published
 
-env:
-  CIBW_TEST_COMMAND: pytest {project}/test
-  CIBW_TEST_EXTRAS: test
-  CIBW_SKIP: "cp310-win* cp311* pp*" # just exclude platforms that error :))
-
 jobs:
   build_sdist:
     name: Build SDist
@@ -46,6 +41,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
+        pyver: [cp36, cp37, cp38, cp39, cp310]
+        exclude:
+          - os: windows-latest
+            pyver: cp310
 
     steps:
     - uses: actions/checkout@v2
@@ -65,6 +64,10 @@ jobs:
         target: test/data/
 
     - uses: pypa/cibuildwheel@v2.9.0
+      env:
+        CIBW_TEST_COMMAND: pytest {project}/test
+        CIBW_BUILD: ${{matrix.pyver}}-*
+        CIBW_TEST_EXTRAS: test
 
     - name: Verify clean directory
       run: git diff --exit-code
