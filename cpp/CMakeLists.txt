@@ -15,6 +15,7 @@ set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/io/copc_reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_writer.hpp
         include/${LIBRARY_TARGET_NAME}/io/laz_writer.hpp
+        include/${LIBRARY_TARGET_NAME}/io/laz_reader.hpp
         include/${LIBRARY_TARGET_NAME}/las/header.hpp
         include/${LIBRARY_TARGET_NAME}/io/laz_base_writer.hpp
         include/${LIBRARY_TARGET_NAME}/las/point.hpp
@@ -43,6 +44,7 @@ set(${LIBRARY_TARGET_NAME}_SRC
         src/io/copc_writer_public.cpp
         src/io/laz_base_writer.cpp
         src/io/laz_writer.cpp
+        src/io/laz_reader.cpp
         src/las/header.cpp
         src/las/point.cpp
         src/las/points.cpp
