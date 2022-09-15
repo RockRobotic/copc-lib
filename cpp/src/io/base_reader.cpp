@@ -23,12 +23,14 @@ namespace copc
 
     reader_ = std::make_unique<lazperf::reader::generic_file>(*in_stream_);
 
-    header_ = std::make_shared<las::LasHeader>(las::LasHeader::FromLazPerf(reader_->header()));
+    auto header = las::LasHeader::FromLazPerf(reader_->header());
 
     // Load vlrs and evlrs
     vlrs_ = ReadVlrHeaders();
-    wkt_ = ReadWktVlr(vlrs_);
-    eb_ = ReadExtraBytesVlr(vlrs_);
+    auto wkt = ReadWktVlr(vlrs_);
+    auto eb = ReadExtraBytesVlr(vlrs_);
+
+    las_config_ = las::LazConfig(header, wkt.wkt, eb);
 }
 
 std::map<uint64_t, las::VlrHeader> BaseReader::ReadVlrHeaders()

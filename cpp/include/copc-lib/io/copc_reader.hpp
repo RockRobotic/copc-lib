@@ -71,6 +71,7 @@ class Reader : public BaseIO, public BaseReader
   protected:
     Reader() = default;
     void InitCopcReader();
+    copc::CopcConfig config_;
 
     // Finds and loads the COPC vlr
     CopcInfo ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs);

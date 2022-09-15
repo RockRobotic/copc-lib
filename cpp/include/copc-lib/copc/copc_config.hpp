@@ -18,9 +18,14 @@ class CopcConfig : public las::LazConfig
 {
   public:
     CopcConfig() = default;
+
     CopcConfig(const las::LasHeader &header, const CopcInfo &copc_info, const CopcExtents &copc_extents,
                const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
         : LazConfig(header, wkt, extra_bytes_vlr), copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
+          copc_extents_(std::make_shared<copc::CopcExtents>(copc_extents)){};
+
+    CopcConfig(const LazConfig &laz_config, const CopcInfo &copc_info, const CopcExtents &copc_extents)
+        : LazConfig(laz_config), copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
           copc_extents_(std::make_shared<copc::CopcExtents>(copc_extents)){};
 
     virtual copc::CopcInfo CopcInfo() const { return *copc_info_; }

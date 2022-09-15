@@ -24,10 +24,9 @@ void Reader::InitCopcReader()
             "Reader::InitReader: Either Info or Hierarchy VLR missing, make sure you are loading a COPC file.");
 
     auto copc_info = ReadCopcInfoVlr(vlrs_);
-    auto copc_extents = ReadCopcExtentsVlr(vlrs_, eb_);
+    auto copc_extents = ReadCopcExtentsVlr(vlrs_, las_config_.ExtraBytesVlr());
 
-    config_ = copc::CopcConfig(*header_, copc_info, copc_extents, wkt_.wkt, eb_);
-
+    config_ = copc::CopcConfig(las_config_, copc_info, copc_extents);
     hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
 }
 
