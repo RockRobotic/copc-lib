@@ -10,13 +10,14 @@
 #include "copc-lib/las/points.hpp"
 #include "copc-lib/las/vlr.hpp"
 
-namespace copc{
+namespace copc
+{
 class BaseReader
 {
-    public:
+  public:
     BaseReader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
 
-protected:
+  protected:
     BaseReader() = default;
 
     copc::CopcConfig config_;

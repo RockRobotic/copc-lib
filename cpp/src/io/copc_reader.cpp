@@ -31,7 +31,6 @@ void Reader::InitCopcReader()
     hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
 }
 
-
 CopcInfo Reader::ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
     auto offset = FetchVlr(vlrs, "copc", 1);
@@ -70,7 +69,6 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
         return CopcExtents(reader_->header().point_format_id);
     }
 }
-
 
 std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page)
 {

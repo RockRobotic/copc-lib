@@ -16,7 +16,7 @@
 
 namespace copc
 {
-    void BaseReader::InitReader()
+void BaseReader::InitReader()
 {
     if (!in_stream_->good())
         throw std::runtime_error("Invalid input stream!");
@@ -86,7 +86,7 @@ las::EbVlr BaseReader::ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlr
 }
 
 uint64_t BaseReader::FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
-                          uint16_t record_id)
+                              uint16_t record_id)
 {
     for (auto &[offset, vlr_header] : vlrs)
     {
@@ -98,4 +98,4 @@ uint64_t BaseReader::FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, co
     return 0;
 }
 
-}
+} // namespace copc
