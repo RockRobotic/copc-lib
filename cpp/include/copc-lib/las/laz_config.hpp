@@ -54,6 +54,7 @@ class LazConfigWriter : public LazConfig
                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
 
     LazConfigWriter(const CopcConfig &copc_config);
+    LazConfigWriter(const LazConfig &laz_config) : LazConfig(laz_config) {};
 
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }
     las::LasHeader LasHeader() const override { return *header_; }

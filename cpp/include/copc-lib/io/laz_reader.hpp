@@ -1,38 +1,57 @@
 #ifndef COPCLIB_IO_LAZ_READER_H_
 #define COPCLIB_IO_LAZ_READER_H_
 
-#include "copc-lib/las/laz_config.hpp"
+#include "copc-lib/io/base_reader.hpp"
 
 namespace copc::laz
 {
 
-class LazReader
+class LazReader : public BaseReader
 {
   public:
-    Reader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
+    LazReader(std::istream *in_stream) : BaseReader(in_stream) { }
 
-    // Write a group of points as a chunk
-    void WritePoints(const las::Points &points);
+    std::vector<char> GetPointData();
+    las::Points GetPoints();
 
-    las::LazConfig LazConfig() { return *config_; }
+    las::LazConfig LazConfig() { return las_config_; }
+
+  protected:
+    LazReader() = default;
 };
 
-class LazFileWriter : public BaseFileWriter
+class LazFileReader : public LazReader
 {
-
   public:
-    LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer);
-    void Close() override;
-    ~LazFileWriter() { Close(); };
+    LazFileReader(const std::string &file_path) : is_open_(true)
+    {
+        auto f_stream = new std::fstream;
+        this->file_path_ = file_path;
+        f_stream->open(file_path.c_str(), std::ios::in | std::ios::binary);
+        if (!f_stream->good())
+            throw std::runtime_error("LazFileReader: Error while opening file path.");
+        in_stream_ = f_stream;
 
-    // Write a group of points as a chunk
-    void WritePoints(const las::Points &points) { writer_->WritePoints(points); }
-    uint64_t PointCount() { return writer_->PointCount(); }
-    uint64_t ChunkCount() { return writer_->ChunkCount(); }
-    std::shared_ptr<las::LazConfigWriter> LazConfig() { return writer_->LazConfig(); }
+        InitReader();
+    }
+
+    void Close()
+    {
+        if (is_open_)
+        {
+            dynamic_cast<std::fstream *>(in_stream_)->close();
+            delete in_stream_;
+            is_open_ = false;
+        }
+    }
+
+    std::string FilePath() { return file_path_; }
+
+    ~LazFileReader() { Close(); }
 
   private:
-    std::shared_ptr<LazReader> reader_;
+    bool is_open_;
+    std::string file_path_;
 };
 
 } // namespace copc::laz
