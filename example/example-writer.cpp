@@ -39,11 +39,13 @@ using namespace std;
 //                 // It's much faster to write and read compressed data, to avoid compression and decompression
 //                 writer.AddNodeCompressed(
 //                     node.key, reader.GetPointDataCompressed(node), node.point_count,
-//                     node.page_key); // We can provide the optional page key to preserve the page hierarchy (here root)
+//                     node.page_key); // We can provide the optional page key to preserve the page hierarchy (here
+//                     root)
 //             }
 //             else
 //             {
-//                 // Alternatively, if we have uncompressed data and want to compress it without writing it to the file,
+//                 // Alternatively, if we have uncompressed data and want to compress it without writing it to the
+//                 file,
 //                 // (for example, compress multiple nodes in parallel and have one thread writing the data),
 //                 // we can use the Compressor class:
 
@@ -108,7 +110,8 @@ using namespace std;
 //             }
 //             else if (node.key.Intersects(old_header, box))
 //             {
-//                 // If node only crosses the box then decompress points data and get subset of points that are within the
+//                 // If node only crosses the box then decompress points data and get subset of points that are within
+//                 the
 //                 // box
 //                 auto point_vector = reader.GetPoints(node).GetWithin(box);
 //                 auto points = las::Points(point_vector);

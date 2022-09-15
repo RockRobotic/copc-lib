@@ -24,7 +24,7 @@ class BaseReader
     std::map<uint64_t, las::VlrHeader> vlrs_; // maps from absolute offsets to VLR entries
 
     std::istream *in_stream_;
-    
+
     std::unique_ptr<lazperf::reader::generic_file> reader_;
 
     // Constructor helper function, initializes the file and hierarchy

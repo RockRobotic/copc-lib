@@ -9,7 +9,7 @@ namespace copc::laz
 class LazReader : public BaseReader
 {
   public:
-    LazReader(std::istream *in_stream) : BaseReader(in_stream) { }
+    LazReader(std::istream *in_stream) : BaseReader(in_stream) {}
 
     std::vector<char> GetPointData();
     las::Points GetPoints();

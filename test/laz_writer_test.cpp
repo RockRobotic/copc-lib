@@ -3,8 +3,8 @@
 
 #include <catch2/catch.hpp>
 #include <copc-lib/geometry/vector3.hpp>
-#include <copc-lib/io/laz_writer.hpp>
 #include <copc-lib/io/laz_reader.hpp>
+#include <copc-lib/io/laz_writer.hpp>
 
 using namespace copc;
 using namespace std;
@@ -75,7 +75,7 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
             laz::LazFileReader reader(file_path);
             REQUIRE(reader.LazConfig().Wkt() == "TEST_WKT");
         }
-   }
+    }
 
     GIVEN("An invalid filepath")
     {
@@ -135,7 +135,6 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
             REQUIRE(f.header().offset.y == -0.03);
             REQUIRE(f.header().scale.z == 4);
             REQUIRE(f.header().offset.z == -40.8);
-
         }
 
         SECTION("WKT")
@@ -151,7 +150,6 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
 
             laz::LazReader reader(&out_stream);
             REQUIRE(reader.LazConfig().Wkt() == "TEST_WKT");
-
         }
     }
 }
@@ -182,7 +180,6 @@ TEST_CASE("LAZ Writer EBs", "[LAZ Writer]")
         REQUIRE(reader.LazConfig().ExtraBytesVlr().items[0].offset[2] == 0);
         REQUIRE(reader.LazConfig().ExtraBytesVlr().items[0].scale[2] == 0);
         REQUIRE(reader.LazConfig().LasHeader().PointRecordLength() == 40);
-
     }
 
     SECTION("Data type 29")
@@ -197,10 +194,9 @@ TEST_CASE("LAZ Writer EBs", "[LAZ Writer]")
 
         writer.Close();
 
-                laz::LazReader reader(&out_stream);
+        laz::LazReader reader(&out_stream);
         REQUIRE(reader.LazConfig().ExtraBytesVlr().items.size() == 1);
         REQUIRE(reader.LazConfig().LasHeader().PointRecordLength() == 48);
-
     }
 }
 

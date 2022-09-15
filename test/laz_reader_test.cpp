@@ -65,4 +65,3 @@ TEST_CASE("LazReader GetExtraByteVlrs Test", "[LazReader]")
         REQUIRE(eb_vlr.items.empty());
     }
 }
-
