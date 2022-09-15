@@ -162,6 +162,9 @@ def read_concat_xyz_class_limit(
     Returns:
         np.array: An (nx3) array of XYZ coordinates.
     """
+    assert (
+        isinstance(classification_limits, list) or classification_limits is None
+    ), f"Argument 'classification_limits' is of invalid type! {classification_limits}"
     # We provide these arguments within this function, so the user isn't able to provide them.
     invalid_args = ["filter_function", "filter_function_args", "completed_callback"]
     for invalid_arg in invalid_args:
@@ -211,6 +214,9 @@ def read_map_xyz_class_limit(
     Returns:
         dict[str: np.array]: A mapping of stringified COPC keys to an (nx3) array of XYZ coordinates.
     """
+    assert (
+        isinstance(classification_limits, list) or classification_limits is None
+    ), f"Argument 'classification_limits' is of invalid type! {classification_limits}"
     # We provide these arguments within this function, so the user isn't able to provide them.
     invalid_args = ["filter_function", "filter_function_args", "completed_callback"]
     for invalid_arg in invalid_args:
