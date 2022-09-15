@@ -16,66 +16,21 @@
 namespace copc
 {
 
-void Reader::InitReader()
+void Reader::InitCopcReader()
 {
-
-    if (!in_stream_->good())
-        throw std::runtime_error("Invalid input stream!");
-
-    reader_ = std::make_unique<lazperf::reader::generic_file>(*in_stream_);
-
-    auto header = las::LasHeader::FromLazPerf(reader_->header());
-
-    // Load vlrs and evlrs
-    vlrs_ = ReadVlrHeaders();
-
     // Check that required info and hierarchy VLRs are present
     if (FetchVlr(vlrs_, "copc", 1) == 0 || FetchVlr(vlrs_, "copc", 1000) == 0)
         throw std::runtime_error(
             "Reader::InitReader: Either Info or Hierarchy VLR missing, make sure you are loading a COPC file.");
 
     auto copc_info = ReadCopcInfoVlr(vlrs_);
-    auto wkt = ReadWktVlr(vlrs_);
-    auto eb = ReadExtraBytesVlr(vlrs_);
-    auto copc_extents = ReadCopcExtentsVlr(vlrs_, eb);
+    auto copc_extents = ReadCopcExtentsVlr(vlrs_, eb_);
 
-    config_ = copc::CopcConfig(header, copc_info, copc_extents, wkt.wkt, eb);
+    config_ = copc::CopcConfig(*header_, copc_info, copc_extents, wkt_.wkt, eb_);
 
     hierarchy_ = std::make_shared<Internal::Hierarchy>(copc_info.root_hier_offset, copc_info.root_hier_size);
 }
 
-std::map<uint64_t, las::VlrHeader> Reader::ReadVlrHeaders()
-{
-    std::map<uint64_t, las::VlrHeader> out;
-
-    // Move stream to beginning of VLRs
-    in_stream_->seekg(reader_->header().header_size);
-
-    // Iterate through all vlr's and add them to the `vlrs` list
-    for (int i = 0; i < reader_->header().vlr_count; i++)
-    {
-        uint64_t cur_pos = in_stream_->tellg();
-        auto h = las::VlrHeader(lazperf::vlr_header::create(*in_stream_));
-        out.insert({cur_pos, h});
-
-        in_stream_->seekg(h.data_length, std::ios::cur); // jump foward
-    }
-
-    // Move stream to beginning of EVLRs
-    in_stream_->seekg(reader_->header().evlr_offset);
-
-    // Iterate through all vlr's and add them to the `vlrs` list
-    for (int i = 0; i < reader_->header().evlr_count; i++)
-    {
-        uint64_t cur_pos = in_stream_->tellg();
-        auto h = las::VlrHeader(lazperf::evlr_header::create(*in_stream_));
-        out.insert({cur_pos, h});
-
-        in_stream_->seekg(h.data_length, std::ios::cur); // jump foward
-    }
-
-    return out;
-}
 
 CopcInfo Reader::ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
 {
@@ -116,40 +71,6 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
     }
 }
 
-las::WktVlr Reader::ReadWktVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
-{
-    auto offset = FetchVlr(vlrs, "LASF_Projection", 2112);
-    if (offset != 0)
-    {
-        in_stream_->seekg(offset + lazperf::evlr_header::Size);
-        return las::WktVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length));
-    }
-    return las::WktVlr();
-}
-
-las::EbVlr Reader::ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
-{
-    auto offset = FetchVlr(vlrs, "LASF_Spec", 4);
-    if (offset != 0)
-    {
-        in_stream_->seekg(offset + lazperf::vlr_header::Size);
-        return las::EbVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length));
-    }
-    return las::EbVlr();
-}
-
-uint64_t Reader::FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, const std::string &user_id,
-                          uint16_t record_id)
-{
-    for (auto &[offset, vlr_header] : vlrs)
-    {
-        if (vlr_header.user_id == user_id && vlr_header.record_id == record_id)
-        {
-            return offset;
-        }
-    }
-    return 0;
-}
 
 std::vector<Entry> Reader::ReadPage(std::shared_ptr<Internal::PageInternal> page)
 {

@@ -1,23 +1,15 @@
 #ifndef COPCLIB_IO_LAZ_READER_H_
 #define COPCLIB_IO_LAZ_READER_H_
 
-#include <array>
-#include <memory>
-#include <optional>
-#include <ostream>
-#include <stdexcept>
-#include <string>
-
-#include "copc-lib/io/laz_base_writer.hpp"
 #include "copc-lib/las/laz_config.hpp"
 
 namespace copc::laz
 {
 
-class LazWriter : public BaseWriter
+class LazReader
 {
   public:
-    LazWriter(std::ostream &out_stream, const las::LazConfig &las_config_writer);
+    Reader(std::istream *in_stream) : in_stream_(in_stream) { InitReader(); }
 
     // Write a group of points as a chunk
     void WritePoints(const las::Points &points);

@@ -11,6 +11,7 @@ set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/hierarchy/key.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/node.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/page.hpp
+        include/${LIBRARY_TARGET_NAME}/io/base_reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_base_io.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_writer.hpp
@@ -38,6 +39,7 @@ set(${LIBRARY_TARGET_NAME}_SRC
         src/geometry/box.cpp
         src/hierarchy/key.cpp
         src/hierarchy/page.cpp
+        src/io/base_reader.cpp
         src/io/copc_base_io.cpp
         src/io/copc_reader.cpp
         src/io/copc_writer_internal.cpp
