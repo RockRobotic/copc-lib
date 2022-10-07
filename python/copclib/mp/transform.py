@@ -132,18 +132,19 @@ def transform_multithreaded(
                         **return_vals,
                     )
 
-                # Add the min/max of each node to the list
-                if xyz_min and xyz_max:
-                    all_mins.append(xyz_min)
-                    all_maxs.append(xyz_max)
+                if point_count > 0:
+                    # Add the min/max of each node to the list
+                    if xyz_min and xyz_max:
+                        all_mins.append(xyz_min)
+                        all_maxs.append(xyz_max)
 
-                # Write the node out
-                writer.AddNodeCompressed(
-                    node.key,
-                    compressed_points,
-                    point_count,
-                    node.page_key,
-                )
+                    # Write the node out
+                    writer.AddNodeCompressed(
+                        node.key,
+                        compressed_points,
+                        point_count,
+                        node.page_key,
+                    )
 
     # Compute the global min/max of all the nodes and update the LAS header, if necessary
     if update_minmax and len(all_mins) > 0 and len(all_maxs) > 0:
