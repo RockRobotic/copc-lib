@@ -34,7 +34,7 @@ def transform_multithreaded(
     """Scaffolding for reading COPC files and writing them back out in a multithreaded way.
     It queues all nodes from either the provided list of nodes or nodes within the given resolution to be processed.
     Within the multiprocess, `transform_function` is called with `transform_function_args` keyword arguments, as well as the
-        keyword arguments "points", "node", and "reader".
+        keyword arguments "points", "node", "writer_header", and "reader".
         This function should take those parameters and return a copclib.Points object, and optionally a dictionary of
             return values which will be passed to the callback function.
     The points returned by the transform_function are passed back to the main thread, where those points
@@ -132,20 +132,22 @@ def transform_multithreaded(
                         **return_vals,
                     )
 
-                # Add the min/max of each node to the list
-                all_mins.append(xyz_min)
-                all_maxs.append(xyz_max)
+                if point_count > 0:
+                    # Add the min/max of each node to the list
+                    if xyz_min and xyz_max:
+                        all_mins.append(xyz_min)
+                        all_maxs.append(xyz_max)
 
-                # Write the node out
-                writer.AddNodeCompressed(
-                    node.key,
-                    compressed_points,
-                    point_count,
-                    node.page_key,
-                )
+                    # Write the node out
+                    writer.AddNodeCompressed(
+                        node.key,
+                        compressed_points,
+                        point_count,
+                        node.page_key,
+                    )
 
     # Compute the global min/max of all the nodes and update the LAS header, if necessary
-    if update_minmax:
+    if update_minmax and len(all_mins) > 0 and len(all_maxs) > 0:
         import numpy as np
 
         global_min = np.min(all_mins, axis=0)
@@ -196,7 +198,7 @@ def _transform_node(
     # compute the minimum and maximum of the node's points, if necessary
     xyz_min = None
     xyz_max = None
-    if update_minmax:
+    if update_minmax and len(points) > 0:
         xyz_min = [min(points.x), min(points.y), min(points.z)]
         xyz_max = [max(points.x), max(points.y), max(points.z)]
 
