@@ -233,20 +233,16 @@ TEST_CASE("LAZ Write Points", "[LAZ Writer]")
     REQUIRE(writer.ChunkCount() == 2);
     writer.Close();
 
-    std::cout << "here1" << std::endl;
     // Validate
     laz::LazFileReader reader(file_path);
     auto read_points = reader.GetPoints();
     REQUIRE(read_points.Size() == 4);
-    std::cout << "here2" << std::endl;
     REQUIRE(read_points.Get(0)->X() == 0);
     REQUIRE(read_points.Get(0)->Y() == 0);
     REQUIRE(read_points.Get(0)->Z() == 0);
-    std::cout << "here3" << std::endl;
     REQUIRE(read_points.Get(1)->X() == 10);
     REQUIRE(read_points.Get(1)->Y() == 10);
     REQUIRE(read_points.Get(1)->Z() == 10);
-    std::cout << "here4" << std::endl;
     REQUIRE(read_points.Get(2)->X() == 0);
     REQUIRE(read_points.Get(2)->Y() == 0);
     REQUIRE(read_points.Get(2)->Z() == 0);
