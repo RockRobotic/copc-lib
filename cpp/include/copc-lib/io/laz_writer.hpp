@@ -32,26 +32,19 @@ class LazWriter : public BaseWriter
     {
         return std::dynamic_pointer_cast<las::LazConfigWriter>(config_);
     }
-    uint64_t PointCount() { return point_count_; }
-    uint64_t ChunkCount() { return chunks_.size(); }
 };
 
-class LazFileWriter : public BaseFileWriter
+class LazFileWriter : BaseFileWriter, public LazWriter
 {
 
   public:
-    LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer);
-    void Close() override;
+    LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer)
+    : BaseFileWriter(file_path), LazWriter(f_stream_, laz_config_writer)
+    {
+
+    }
+    void Close() {LazWriter::Close(); BaseFileWriter::Close();};
     ~LazFileWriter() { Close(); };
-
-    // Write a group of points as a chunk
-    void WritePoints(const las::Points &points) { writer_->WritePoints(points); }
-    uint64_t PointCount() { return writer_->PointCount(); }
-    uint64_t ChunkCount() { return writer_->ChunkCount(); }
-    std::shared_ptr<las::LazConfigWriter> LazConfig() { return writer_->LazConfig(); }
-
-  private:
-    std::shared_ptr<LazWriter> writer_;
 };
 
 } // namespace copc::laz

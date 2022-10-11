@@ -26,16 +26,4 @@ void LazWriter::WritePoints(const las::Points &points)
     WriteChunk(uncompressed_data);
 }
 
-LazFileWriter::LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer)
-    : BaseFileWriter(file_path)
-{
-    writer_ = std::make_shared<LazWriter>(f_stream_, laz_config_writer);
-}
-
-void LazFileWriter::Close()
-{
-    if (writer_ != nullptr)
-        writer_->Close();
-    BaseFileWriter::Close();
-}
 } // namespace copc::laz
