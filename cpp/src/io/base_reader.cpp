@@ -7,9 +7,7 @@
 
 #include "copc-lib/copc/copc_config.hpp"
 #include "copc-lib/copc/extents.hpp"
-#include "copc-lib/hierarchy/internal/hierarchy.hpp"
 #include "copc-lib/las/header.hpp"
-#include "copc-lib/laz/decompressor.hpp"
 
 #include <lazperf/readers.hpp>
 #include <lazperf/vlr.hpp>
@@ -93,9 +91,7 @@ uint64_t BaseReader::FetchVlr(const std::map<uint64_t, las::VlrHeader> &vlrs, co
     for (auto &[offset, vlr_header] : vlrs)
     {
         if (vlr_header.user_id == user_id && vlr_header.record_id == record_id)
-        {
             return offset;
-        }
     }
     return 0;
 }
