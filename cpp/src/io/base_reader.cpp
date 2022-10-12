@@ -1,6 +1,5 @@
 #include "copc-lib/io/base_reader.hpp"
 
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
