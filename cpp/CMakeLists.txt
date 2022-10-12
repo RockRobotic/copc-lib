@@ -11,10 +11,12 @@ set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/hierarchy/key.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/node.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/page.hpp
+        include/${LIBRARY_TARGET_NAME}/io/base_reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_base_io.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_reader.hpp
         include/${LIBRARY_TARGET_NAME}/io/copc_writer.hpp
         include/${LIBRARY_TARGET_NAME}/io/laz_writer.hpp
+        include/${LIBRARY_TARGET_NAME}/io/laz_reader.hpp
         include/${LIBRARY_TARGET_NAME}/las/header.hpp
         include/${LIBRARY_TARGET_NAME}/io/laz_base_writer.hpp
         include/${LIBRARY_TARGET_NAME}/las/point.hpp
@@ -37,12 +39,14 @@ set(${LIBRARY_TARGET_NAME}_SRC
         src/geometry/box.cpp
         src/hierarchy/key.cpp
         src/hierarchy/page.cpp
+        src/io/base_reader.cpp
         src/io/copc_base_io.cpp
         src/io/copc_reader.cpp
         src/io/copc_writer_internal.cpp
         src/io/copc_writer_public.cpp
         src/io/laz_base_writer.cpp
         src/io/laz_writer.cpp
+        src/io/laz_reader.cpp
         src/las/header.cpp
         src/las/point.cpp
         src/las/points.cpp
