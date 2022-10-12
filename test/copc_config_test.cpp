@@ -1,9 +1,9 @@
 #include <catch2/catch.hpp>
 #include <copc-lib/copc/copc_config.hpp>
-#include <copc-lib/las/laz_config.hpp>
 #include <copc-lib/copc/extents.hpp>
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/las/header.hpp>
+#include <copc-lib/las/laz_config.hpp>
 #include <copc-lib/las/utils.hpp>
 #include <copc-lib/las/vlr.hpp>
 #include <string>
@@ -37,7 +37,6 @@ TEST_CASE("CopcConfig", "[CopcConfig]")
     las::LasHeader header(point_format_id, las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(),
                           test_scale, test_offset, true);
 
-
     SECTION("LasHeader constructor")
     {
         CopcConfig cfg(header, copc_info, copc_extents, wkt, test_extra_bytes_vlr);
@@ -54,7 +53,6 @@ TEST_CASE("CopcConfig", "[CopcConfig]")
 
         REQUIRE(cfg.ExtraBytesVlr().items[0].name == test_extra_bytes_vlr.items[0].name);
     }
-
 
     SECTION("LasHeader constructor")
     {
