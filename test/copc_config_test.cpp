@@ -3,6 +3,7 @@
 #include <copc-lib/copc/extents.hpp>
 #include <copc-lib/geometry/vector3.hpp>
 #include <copc-lib/las/header.hpp>
+#include <copc-lib/las/laz_config.hpp>
 #include <copc-lib/las/utils.hpp>
 #include <copc-lib/las/vlr.hpp>
 #include <string>
@@ -36,19 +37,40 @@ TEST_CASE("CopcConfig", "[CopcConfig]")
     las::LasHeader header(point_format_id, las::PointBaseByteSize(point_format_id) + test_extra_bytes_vlr.size(),
                           test_scale, test_offset, true);
 
-    CopcConfig cfg(header, copc_info, copc_extents, wkt, test_extra_bytes_vlr);
+    SECTION("LasHeader constructor")
+    {
+        CopcConfig cfg(header, copc_info, copc_extents, wkt, test_extra_bytes_vlr);
 
-    REQUIRE(cfg.LasHeader().PointFormatId() == point_format_id);
-    REQUIRE(cfg.LasHeader().Scale() == test_scale);
-    REQUIRE(cfg.LasHeader().Offset() == test_offset);
+        REQUIRE(cfg.LasHeader().PointFormatId() == point_format_id);
+        REQUIRE(cfg.LasHeader().Scale() == test_scale);
+        REQUIRE(cfg.LasHeader().Offset() == test_offset);
 
-    REQUIRE(cfg.CopcInfo().spacing == test_spacing);
+        REQUIRE(cfg.CopcInfo().spacing == test_spacing);
 
-    REQUIRE(*cfg.CopcExtents().Intensity() == CopcExtent(test_intensity_min, test_intensity_max));
+        REQUIRE(*cfg.CopcExtents().Intensity() == CopcExtent(test_intensity_min, test_intensity_max));
 
-    REQUIRE(cfg.Wkt() == test_wkt);
+        REQUIRE(cfg.Wkt() == test_wkt);
 
-    REQUIRE(cfg.ExtraBytesVlr().items[0].name == test_extra_bytes_vlr.items[0].name);
+        REQUIRE(cfg.ExtraBytesVlr().items[0].name == test_extra_bytes_vlr.items[0].name);
+    }
+
+    SECTION("LasHeader constructor")
+    {
+        las::LazConfig laz_cfg(header, wkt, test_extra_bytes_vlr);
+        CopcConfig cfg(laz_cfg, copc_info, copc_extents);
+
+        REQUIRE(cfg.LasHeader().PointFormatId() == point_format_id);
+        REQUIRE(cfg.LasHeader().Scale() == test_scale);
+        REQUIRE(cfg.LasHeader().Offset() == test_offset);
+
+        REQUIRE(cfg.CopcInfo().spacing == test_spacing);
+
+        REQUIRE(*cfg.CopcExtents().Intensity() == CopcExtent(test_intensity_min, test_intensity_max));
+
+        REQUIRE(cfg.Wkt() == test_wkt);
+
+        REQUIRE(cfg.ExtraBytesVlr().items[0].name == test_extra_bytes_vlr.items[0].name);
+    }
 }
 
 TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
