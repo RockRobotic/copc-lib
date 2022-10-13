@@ -64,7 +64,11 @@ if(WITH_TESTS)
              COMMAND ${PYTHON_EXECUTABLE} "${PY_EXAMPLE_DIR}/example_writer.py"
              WORKING_DIRECTORY ${PY_EXAMPLE_DIR}
             )
+    add_test(NAME example_laz_writer_py
+                COMMAND ${PYTHON_EXECUTABLE} "${PY_EXAMPLE_DIR}/example_laz_writer.py"
+                WORKING_DIRECTORY ${PY_EXAMPLE_DIR}
+            )
 
-    set_tests_properties(python-tests example_reader_py example_writer_py
+    set_tests_properties(python-tests example_reader_py example_writer_py example_laz_writer_py
         PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}:$ENV{PYTHONPATH}")
 endif()
