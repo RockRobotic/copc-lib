@@ -16,6 +16,7 @@
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/io/copc_writer.hpp>
+#include <copc-lib/io/laz_writer.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
@@ -427,6 +428,12 @@ PYBIND11_MODULE(_core, m)
              py::overload_cast<const VoxelKey &, std::vector<char> const &, const VoxelKey &>(&Writer::AddNode),
              py::arg("key"), py::arg("uncompressed_data"), py::arg("page_key") = VoxelKey::RootKey())
         .def("ChangeNodePage", &Writer::ChangeNodePage, py::arg("node_key"), py::arg("new_page_key"));
+
+    py::class_<LazFileWriter>(m, "LazWriter")
+        .def(py::init<const std::string &, const LazConfigWriter &>(), py::arg("file_path"), py::arg("config"))
+        .def_property_readonly("laz_config", &LazWriter::LazConfig)
+        .def("Close", &LazFileWriter::Close)
+        .def("WritePoints", py::overload_cast<const las::Points &>(&LazWriter::WritePoints), py::arg("points"));
 
     m.def(
         "CompressBytes",
