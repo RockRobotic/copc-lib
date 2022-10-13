@@ -24,17 +24,21 @@ def RandomPoints(las_header, number_points):
         point = points.CreatePoint()
         # point has getters/setters for all attributes
         point.x = random.uniform(
-            las_header.min.x, las_header.max.x,
+            las_header.min.x,
+            las_header.max.x,
         )
         point.y = random.uniform(
-            las_header.min.y, las_header.max.y,
+            las_header.min.y,
+            las_header.max.y,
         )
         point.z = random.uniform(
-            las_header.min.z, las_header.max.z,
+            las_header.min.z,
+            las_header.max.z,
         )
 
         points.AddPoint(point)
     return points
+
 
 def writer_example():
     # In this example, we'll create our own file from scratch
@@ -52,17 +56,15 @@ def writer_example():
     cfg.las_header.max = MAX_BOUNDS
 
     # Now, we can create our COPC writer:
-    writer = copc.LazWriter(
-        os.path.join(DATADIRECTORY, "out", "test-laz.laz"), cfg
-    )
+    writer = copc.LazWriter(os.path.join(DATADIRECTORY, "out", "test-laz.laz"), cfg)
 
     header = writer.laz_config.las_header
 
-    points = RandomPoints( header, NUM_POINTS)
-    writer.WritePoints(points);
+    points = RandomPoints(header, NUM_POINTS)
+    writer.WritePoints(points)
 
-    points = RandomPoints( header, NUM_POINTS)
-    writer.WritePoints(points);
+    points = RandomPoints(header, NUM_POINTS)
+    writer.WritePoints(points)
 
     writer.Close()
 
