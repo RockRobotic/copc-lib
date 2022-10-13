@@ -63,9 +63,7 @@ class LasHeader
     uint32_t EvlrCount() const { return evlr_count_; }
     uint64_t EvlrOffset() const { return evlr_offset_; }
     bool IsCopc() const { return copc_flag_; }
-    void IsCopc(const bool is_copc) {
-        copc_flag_ = is_copc;
-    }
+    void IsCopc(const bool is_copc) { copc_flag_ = is_copc; }
 
     void GUID(const std::string &guid)
     {

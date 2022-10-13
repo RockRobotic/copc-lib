@@ -33,6 +33,7 @@ class LazWriter : public BaseWriter
     {
         return std::dynamic_pointer_cast<las::LazConfigWriter>(config_);
     }
+
   protected:
     std::shared_ptr<las::LazConfig> GenerateConfig(const las::LazConfigWriter &las_config_writer);
 };
