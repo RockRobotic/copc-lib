@@ -440,7 +440,9 @@ PYBIND11_MODULE(_core, m)
         .def(py::init<const std::string &, const las::LazConfigWriter &>(), py::arg("file_path"), py::arg("config"))
         .def_property_readonly("laz_config", &laz::LazWriter::LazConfig)
         .def("Close", &laz::LazFileWriter::Close)
-        .def("WritePoints", py::overload_cast<const las::Points &>(&laz::LazWriter::WritePoints), py::arg("points"));
+        .def("WritePoints", py::overload_cast<const las::Points &>(&laz::LazWriter::WritePoints), py::arg("points"))
+        .def("WritePointsCompressed", &laz::LazWriter::WritePointsCompressed,py::arg("compressed_data"),
+             py::arg("point_count"));
 
     m.def(
         "CompressBytes",
@@ -537,7 +539,7 @@ PYBIND11_MODULE(_core, m)
         .def_property_readonly("copc_info", &CopcConfig::CopcInfo)
         .def_property_readonly("copc_extents", &CopcConfig::CopcExtents);
 
-    py::implicitly_convertible<las::LazConfig, CopcConfig>();
+    py::implicitly_convertible<CopcConfig, las::LazConfig>();
 
     py::class_<CopcConfigWriter, std::shared_ptr<CopcConfigWriter>>(m, "CopcConfigWriter")
         .def(
@@ -561,11 +563,13 @@ PYBIND11_MODULE(_core, m)
             py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
             py::arg("extra_bytes_vlr") = las::EbVlr(0))
         .def(py::init<const las::LazConfig &>())
+        .def(py::init<const CopcConfig &>())
         .def_property_readonly("las_header", py::overload_cast<>(&las::LazConfigWriter::LasHeader))
         .def_property_readonly("extra_bytes_vlr", &las::LazConfig::ExtraBytesVlr)
         .def_property_readonly("wkt", &las::LazConfig::Wkt);
 
     py::implicitly_convertible<las::LazConfig, las::LazConfigWriter>();
+    py::implicitly_convertible<CopcConfig, las::LazConfigWriter>();
 
     py::class_<CopcInfo, std::shared_ptr<CopcInfo>>(m, "CopcInfo")
         .def(py::init<>())

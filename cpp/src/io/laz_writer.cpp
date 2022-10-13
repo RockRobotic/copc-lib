@@ -26,4 +26,13 @@ void LazWriter::WritePoints(const las::Points &points)
     WriteChunk(uncompressed_data);
 }
 
+// Write a group of points as a chunk
+void LazWriter::WritePointsCompressed(std::vector<char> const &compressed_data, int32_t point_count)
+{
+    if (point_count == 0)
+        throw std::runtime_error("Point count must be >0!");
+
+    WriteChunk(compressed_data, point_count, true);
+}
+
 } // namespace copc::laz

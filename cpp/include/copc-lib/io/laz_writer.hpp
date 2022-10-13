@@ -27,6 +27,7 @@ class LazWriter : public BaseWriter
 
     // Write a group of points as a chunk
     void WritePoints(const las::Points &points);
+    void WritePointsCompressed(std::vector<char> const &compressed_data, int32_t point_count);
 
     std::shared_ptr<las::LazConfigWriter> LazConfig()
     {
