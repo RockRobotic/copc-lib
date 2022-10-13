@@ -509,7 +509,7 @@ PYBIND11_MODULE(_core, m)
                                       h.IsCopc());
             },
             [](const py::tuple &t) { // __setstate__
-                if (t.size() != 19)
+                if (t.size() != 20)
                     throw std::runtime_error("Invalid state!");
 
                 /* Create a new C++ instance */
