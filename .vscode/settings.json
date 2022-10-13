@@ -70,5 +70,5 @@
         "valarray": "cpp"
     },
     "cmake.generator": "Ninja",
-    "cmake.configureSettings": { "CMAKE_BUILD_TYPE": "Debug", "WITH_TESTS": "ON" }
+    "cmake.configureSettings": { "CMAKE_BUILD_TYPE": "Debug", "WITH_TESTS": "ON", "WITH_PYTHON":"ON" }
 }
