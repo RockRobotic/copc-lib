@@ -39,7 +39,7 @@ class LasHeader
               uint32_t evlr_count)
         : point_format_id_(point_format_id), point_record_length_(point_record_length), point_offset_(point_offset),
           point_count_(point_count), vlr_count_(vlr_count), scale_(scale), offset_(offset), evlr_offset_(evlr_offset),
-          evlr_count_(evlr_count), copc_flag_(true){};
+          evlr_count_(evlr_count){};
 
     // Copy constructor with modification of protected attributes
     LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale,
@@ -63,6 +63,9 @@ class LasHeader
     uint32_t EvlrCount() const { return evlr_count_; }
     uint64_t EvlrOffset() const { return evlr_offset_; }
     bool IsCopc() const { return copc_flag_; }
+    void IsCopc(const bool is_copc) {
+        copc_flag_ = is_copc;
+    }
 
     void GUID(const std::string &guid)
     {
@@ -152,7 +155,7 @@ class LasHeader
     static const uint8_t version_major_{1};
     static const uint8_t version_minor_{4};
 
-    const bool copc_flag_{true}; // flag to set true if the header is used for a COPC file
+    bool copc_flag_{true}; // flag to set true if the header is used for a COPC file
 };
 
 } // namespace las

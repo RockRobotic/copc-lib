@@ -81,6 +81,13 @@ def test_writer_config():
     reader = copc.LazReader(file_path)
     assert reader.laz_config.wkt == "TEST_WKT"
 
+    # copy wkt
+    writer = copc.LazWriter(file_path, reader.laz_config)
+    writer.Close()
+
+    reader = copc.LazReader(file_path)
+    assert reader.laz_config.wkt == "TEST_WKT"
+
     # Copy
     orig = copc.LazReader(get_autzen_file())
 
@@ -138,7 +145,6 @@ def test_writer_config():
     cfg = copc.LazConfigWriter(6, wkt="TEST_WKT")
     cfg.las_header.min = min1
     cfg.las_header.max = max1
-    cfg.copc_info.spacing = 10
     writer = copc.LazWriter(file_path, cfg)
 
     assert writer.laz_config.las_header.min == min1

@@ -505,7 +505,8 @@ PYBIND11_MODULE(_core, m)
                 return py::make_tuple(h.file_source_id, h.global_encoding, h.GUID(), h.SystemIdentifier(),
                                       h.GeneratingSoftware(), h.creation_day, h.creation_year, h.PointOffset(),
                                       h.VlrCount(), h.PointFormatId(), h.PointRecordLength(), h.Scale(), h.Offset(),
-                                      h.max, h.min, h.EvlrOffset(), h.EvlrCount(), h.PointCount(), h.points_by_return);
+                                      h.max, h.min, h.EvlrOffset(), h.EvlrCount(), h.PointCount(), h.points_by_return,
+                                      h.IsCopc());
             },
             [](const py::tuple &t) { // __setstate__
                 if (t.size() != 19)
@@ -525,19 +526,23 @@ PYBIND11_MODULE(_core, m)
                 h.max = t[13].cast<Vector3>();
                 h.min = t[14].cast<Vector3>();
                 h.points_by_return = t[18].cast<std::array<uint64_t, 15>>();
+                h.IsCopc(t[19].cast<bool>());
                 return h;
             }));
 
     py::class_<las::EbVlr::ebfield>(m, "EbField").def(py::init<>());
 
     py::class_<las::LazConfig, std::shared_ptr<las::LazConfig>>(m, "LazConfig")
-        .def_property_readonly("las_header", &CopcConfig::LasHeader)
-        .def_property_readonly("extra_bytes_vlr", &CopcConfig::ExtraBytesVlr)
-        .def_property_readonly("wkt", &CopcConfig::Wkt);
+        .def_property_readonly("las_header", &las::LazConfig::LasHeader)
+        .def_property_readonly("extra_bytes_vlr", &las::LazConfig::ExtraBytesVlr)
+        .def_property_readonly("wkt", &las::LazConfig::Wkt);
 
     py::class_<CopcConfig, std::shared_ptr<CopcConfig>>(m, "CopcConfig")
         .def_property_readonly("copc_info", &CopcConfig::CopcInfo)
-        .def_property_readonly("copc_extents", &CopcConfig::CopcExtents);
+        .def_property_readonly("copc_extents", &CopcConfig::CopcExtents)
+        .def_property_readonly("las_header", &CopcConfig::LasHeader)
+        .def_property_readonly("extra_bytes_vlr", &CopcConfig::ExtraBytesVlr)
+        .def_property_readonly("wkt", &CopcConfig::Wkt);
 
     py::implicitly_convertible<CopcConfig, las::LazConfig>();
 
