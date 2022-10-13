@@ -16,8 +16,8 @@
 #include <copc-lib/hierarchy/node.hpp>
 #include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/io/copc_writer.hpp>
-#include <copc-lib/io/laz_writer.hpp>
 #include <copc-lib/io/laz_reader.hpp>
+#include <copc-lib/io/laz_writer.hpp>
 #include <copc-lib/las/header.hpp>
 #include <copc-lib/las/point.hpp>
 #include <copc-lib/las/points.hpp>
@@ -441,7 +441,7 @@ PYBIND11_MODULE(_core, m)
         .def_property_readonly("laz_config", &laz::LazWriter::LazConfig)
         .def("Close", &laz::LazFileWriter::Close)
         .def("WritePoints", py::overload_cast<const las::Points &>(&laz::LazWriter::WritePoints), py::arg("points"))
-        .def("WritePointsCompressed", &laz::LazWriter::WritePointsCompressed,py::arg("compressed_data"),
+        .def("WritePointsCompressed", &laz::LazWriter::WritePointsCompressed, py::arg("compressed_data"),
              py::arg("point_count"));
 
     m.def(
@@ -557,11 +557,10 @@ PYBIND11_MODULE(_core, m)
     py::implicitly_convertible<CopcConfig, CopcConfigWriter>();
 
     py::class_<las::LazConfigWriter, std::shared_ptr<las::LazConfigWriter>>(m, "LazConfigWriter")
-        .def(
-            py::init<const int8_t &, const Vector3 &, const Vector3 &, const std::string &, const las::EbVlr &>(),
-            py::arg("point_format_id"), py::arg("scale") = Vector3::DefaultScale(),
-            py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
-            py::arg("extra_bytes_vlr") = las::EbVlr(0))
+        .def(py::init<const int8_t &, const Vector3 &, const Vector3 &, const std::string &, const las::EbVlr &>(),
+             py::arg("point_format_id"), py::arg("scale") = Vector3::DefaultScale(),
+             py::arg("offset") = Vector3::DefaultOffset(), py::arg("wkt") = "",
+             py::arg("extra_bytes_vlr") = las::EbVlr(0))
         .def(py::init<const las::LazConfig &>())
         .def(py::init<const CopcConfig &>())
         .def_property_readonly("las_header", py::overload_cast<>(&las::LazConfigWriter::LasHeader))

@@ -188,6 +188,7 @@ def test_writer_copy():
     points = new_reader.GetPoints()
     assert len(points) == num_pts
 
+
 def test_write():
     file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
     cfg = copc.LazConfigWriter(6)

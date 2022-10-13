@@ -40,11 +40,14 @@ class LazFileWriter : BaseFileWriter, public LazWriter
 
   public:
     LazFileWriter(const std::string &file_path, const las::LazConfigWriter &laz_config_writer)
-    : BaseFileWriter(file_path), LazWriter(f_stream_, laz_config_writer)
+        : BaseFileWriter(file_path), LazWriter(f_stream_, laz_config_writer)
     {
-
     }
-    void Close() {LazWriter::Close(); BaseFileWriter::Close();};
+    void Close()
+    {
+        LazWriter::Close();
+        BaseFileWriter::Close();
+    };
     ~LazFileWriter() { Close(); };
 };
 
