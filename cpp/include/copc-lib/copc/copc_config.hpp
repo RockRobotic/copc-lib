@@ -66,6 +66,7 @@ class CopcConfigWriter : public CopcConfig
                      const copc::CopcExtents &copc_extents, const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
         : CopcConfig(header, copc_info, copc_extents, wkt, extra_bytes_vlr)
     {
+      LasHeader()->IsCopc(true);
     }
 
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }
