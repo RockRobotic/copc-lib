@@ -5,8 +5,7 @@
 namespace copc::laz
 {
 
-LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer)
-    : BaseWriter(out_stream)
+LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer) : BaseWriter(out_stream)
 {
     writer_config_ = std::make_shared<las::LazConfigWriter>(laz_config_writer);
     writer_config_->LasHeader()->IsCopc(false);
