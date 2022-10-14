@@ -157,9 +157,10 @@ def transform_multithreaded(
 
     # Compute the global min/max of all the nodes and update the LAS header, if necessary
     if update_minmax:
-        global_min = global_max = [0,0,0]
+        global_min = global_max = [0, 0, 0]
         if len(all_mins) > 0 and len(all_maxs) > 0:
             import numpy as np
+
             global_min = np.min(all_mins, axis=0)
             global_max = np.max(all_maxs, axis=0)
 

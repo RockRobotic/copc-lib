@@ -112,11 +112,11 @@ def test_translate_empty():
 
     new_header_min = new_reader.copc_config.las_header.min
     new_header_min = np.array([new_header_min.x, new_header_min.y, new_header_min.z])
-    np.testing.assert_allclose(new_header_min, [0,0,0], atol=0.01)
+    np.testing.assert_allclose(new_header_min, [0, 0, 0], atol=0.01)
 
     new_header_max = new_reader.copc_config.las_header.max
     new_header_max = np.array([new_header_max.x, new_header_max.y, new_header_max.z])
-    np.testing.assert_allclose(new_header_max, [0,0,0], atol=0.01)
+    np.testing.assert_allclose(new_header_max, [0, 0, 0], atol=0.01)
 
     assert new_reader.copc_config.las_header.point_count == 0
     assert len(new_reader.GetAllPoints()) == 0
@@ -178,11 +178,11 @@ def test_translate_laz_empty():
 
     new_header_min = new_reader.laz_config.las_header.min
     new_header_min = np.array([new_header_min.x, new_header_min.y, new_header_min.z])
-    np.testing.assert_allclose(new_header_min, [0,0,0], atol=0.01)
+    np.testing.assert_allclose(new_header_min, [0, 0, 0], atol=0.01)
 
     new_header_max = new_reader.laz_config.las_header.max
     new_header_max = np.array([new_header_max.x, new_header_max.y, new_header_max.z])
-    np.testing.assert_allclose(new_header_max, [0,0,0], atol=0.01)
+    np.testing.assert_allclose(new_header_max, [0, 0, 0], atol=0.01)
 
     assert new_reader.laz_config.las_header.point_count == 0
     assert len(new_reader.GetPoints()) == 0
