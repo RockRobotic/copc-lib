@@ -85,6 +85,43 @@ def test_translate():
         assert new_node.byte_size == node.byte_size
 
 
+def _transform_fun_empty(writer_header, **kwargs):
+    new_points = copc.Points(writer_header)
+    return new_points
+
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
+def test_translate_empty():
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
+    reader = copc.FileReader(generate_test_file())
+    writer = copc.FileWriter(
+        file_path,
+        reader.copc_config,
+    )
+
+    transform_multithreaded(
+        reader,
+        writer,
+        _transform_fun_empty,
+        update_minmax=True,
+    )
+    writer.Close()
+
+    # validate
+    new_reader = copc.FileReader(file_path)
+
+    new_header_min = new_reader.copc_config.las_header.min
+    new_header_min = np.array([new_header_min.x, new_header_min.y, new_header_min.z])
+    np.testing.assert_allclose(new_header_min, [0,0,0], atol=0.01)
+
+    new_header_max = new_reader.copc_config.las_header.max
+    new_header_max = np.array([new_header_max.x, new_header_max.y, new_header_max.z])
+    np.testing.assert_allclose(new_header_max, [0,0,0], atol=0.01)
+
+    assert new_reader.copc_config.las_header.point_count == 0
+    assert len(new_reader.GetAllPoints()) == 0
+
+
 @pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
 def test_translate_laz():
     file_path = os.path.join(get_data_dir(), "writer_test.laz")
@@ -117,3 +154,35 @@ def test_translate_laz():
 
     points = new_reader.GetPoints()
     assert len(points) == reader.copc_config.las_header.point_count
+
+
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="requires python3.7")
+def test_translate_laz_empty():
+    file_path = os.path.join(get_data_dir(), "writer_test.copc.laz")
+    reader = copc.FileReader(generate_test_file())
+    writer = copc.LazWriter(
+        file_path,
+        reader.copc_config,
+    )
+
+    transform_multithreaded(
+        reader,
+        writer,
+        _transform_fun_empty,
+        update_minmax=True,
+    )
+    writer.Close()
+
+    # validate
+    new_reader = copc.LazReader(file_path)
+
+    new_header_min = new_reader.laz_config.las_header.min
+    new_header_min = np.array([new_header_min.x, new_header_min.y, new_header_min.z])
+    np.testing.assert_allclose(new_header_min, [0,0,0], atol=0.01)
+
+    new_header_max = new_reader.laz_config.las_header.max
+    new_header_max = np.array([new_header_max.x, new_header_max.y, new_header_max.z])
+    np.testing.assert_allclose(new_header_max, [0,0,0], atol=0.01)
+
+    assert new_reader.laz_config.las_header.point_count == 0
+    assert len(new_reader.GetPoints()) == 0

@@ -156,11 +156,13 @@ def transform_multithreaded(
                         writer.WritePointsCompressed(compressed_points, point_count)
 
     # Compute the global min/max of all the nodes and update the LAS header, if necessary
-    if update_minmax and len(all_mins) > 0 and len(all_maxs) > 0:
-        import numpy as np
+    if update_minmax:
+        global_min = global_max = [0,0,0]
+        if len(all_mins) > 0 and len(all_maxs) > 0:
+            import numpy as np
+            global_min = np.min(all_mins, axis=0)
+            global_max = np.max(all_maxs, axis=0)
 
-        global_min = np.min(all_mins, axis=0)
-        global_max = np.max(all_maxs, axis=0)
         writer_header.min = list(global_min)
         writer_header.max = list(global_max)
 
