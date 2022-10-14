@@ -20,17 +20,17 @@ def init_mp(copc_path, mp_init_function, mp_init_function_args):
 def transform_multithreaded(
     reader: copc.FileReader,
     writer: Union[copc.FileWriter, copc.LazWriter],
-    transform_function: Optional[Callable]=None,
-    transform_function_args: Dict[str, Any]={},
-    nodes: List[copc.Node]=None,
-    resolution: float=-1,
+    transform_function: Optional[Callable] = None,
+    transform_function_args: Dict[str, Any] = {},
+    nodes: List[copc.Node] = None,
+    resolution: float = -1,
     progress=None,
-    completed_callback: Callable=None,
-    chunk_size: int=1024,
-    max_workers: int=None,
-    update_minmax: bool=False,
-    mp_init_function: Optional[Callable]=None,
-    mp_init_function_args: Dict[str, Any]={},
+    completed_callback: Callable = None,
+    chunk_size: int = 1024,
+    max_workers: int = None,
+    update_minmax: bool = False,
+    mp_init_function: Optional[Callable] = None,
+    mp_init_function_args: Dict[str, Any] = {},
 ):
     """Scaffolding for reading COPC files and writing them back out in a multithreaded way.
     It queues all nodes from either the provided list of nodes or nodes within the given resolution to be processed.
