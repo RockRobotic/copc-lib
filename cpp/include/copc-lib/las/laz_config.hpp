@@ -58,11 +58,14 @@ class LazConfigWriter : public LazConfig
     {
     }
 
-    LazConfigWriter(const LazConfigWriter &laz_config, const std::optional<bool> &is_copc = {})
+    LazConfigWriter(const LazConfigWriter &laz_config)
         : LazConfig(laz_config.LasHeader(), laz_config.Wkt(), laz_config.ExtraBytesVlr())
     {
-        if (is_copc)
-            header_->IsCopc(*is_copc);
+    }
+
+    LazConfigWriter(const LazConfigWriter &laz_config, bool is_copc)
+        : LazConfig(las::LasHeader(laz_config.LasHeader(), is_copc), laz_config.Wkt(), laz_config.ExtraBytesVlr())
+    {
     }
 
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }

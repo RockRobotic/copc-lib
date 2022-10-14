@@ -100,6 +100,7 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
             REQUIRE(las_header->Scale().z == 0.01);
             REQUIRE(las_header->Offset().z == 0);
             REQUIRE(las_header->PointFormatId() == 6);
+            REQUIRE(las_header->IsCopc() == false);
 
             writer.Close();
 
