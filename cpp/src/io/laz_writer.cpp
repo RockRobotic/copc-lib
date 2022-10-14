@@ -6,17 +6,14 @@ namespace copc::laz
 {
 
 LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer)
-    : BaseWriter(out_stream, GenerateConfig(laz_config_writer))
+    : BaseWriter(out_stream)
 {
+    writer_config_ = std::make_shared<las::LazConfigWriter>(laz_config_writer);
+    writer_config_->LasHeader()->IsCopc(false);
+    config_ = std::move(std::static_pointer_cast<las::LazConfig>(writer_config_));
+
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
-}
-
-std::shared_ptr<las::LazConfig> LazWriter::GenerateConfig(const las::LazConfigWriter &laz_config_writer)
-{
-    auto config = std::make_shared<las::LazConfigWriter>(laz_config_writer);
-    config->LasHeader()->IsCopc(false);
-    return std::static_pointer_cast<las::LazConfig>(config);
 }
 
 // Write a group of points as a chunk
