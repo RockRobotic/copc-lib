@@ -354,8 +354,8 @@ bool Reader::ValidateSpatialBounds(bool verbose)
             is_valid = false;
             if (!verbose)
                 return false;
-            std::cout << "Node " << node.key << " is outside of las header bounds ("
-                      << header.Bounds() << ")." << std::endl;
+            std::cout << "Node " << node.key << " is outside of las header bounds (" << header.Bounds() << ")."
+                      << std::endl;
             total_points_outside_header_bounds += node.point_count;
         }
         else
@@ -372,8 +372,8 @@ bool Reader::ValidateSpatialBounds(bool verbose)
                         if (!verbose)
                             return false;
                         std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z() << ") from node "
-                                  << node.key << " is outside of las header bounds ("
-                                  << header.Bounds() << ")." << std::endl;
+                                  << node.key << " is outside of las header bounds (" << header.Bounds() << ")."
+                                  << std::endl;
                         total_points_outside_header_bounds++;
                     }
                 }
@@ -388,8 +388,7 @@ bool Reader::ValidateSpatialBounds(bool verbose)
                     if (!verbose)
                         return false;
                     std::cout << "Point (" << point->X() << "," << point->Y() << "," << point->Z()
-                              << ") is outside of node " << node.key << " bounds (" << box << ")."
-                              << std::endl;
+                              << ") is outside of node " << node.key << " bounds (" << box << ")." << std::endl;
                     total_points_outside_node_bounds++;
                 }
             }
