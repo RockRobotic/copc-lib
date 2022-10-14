@@ -5,12 +5,10 @@
 namespace copc::laz
 {
 
-LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer) : BaseWriter(out_stream)
+LazWriter::LazWriter(std::ostream &out_stream, const las::LazConfigWriter &laz_config_writer)
+    : BaseWriter(out_stream, std::static_pointer_cast<las::LazConfig>(
+                                 std::make_shared<las::LazConfigWriter>(laz_config_writer, false)))
 {
-    writer_config_ = std::make_shared<las::LazConfigWriter>(laz_config_writer);
-    writer_config_->LasHeader()->IsCopc(false);
-    config_ = std::move(std::static_pointer_cast<las::LazConfig>(writer_config_));
-
     // reserve enough space for the header & VLRs in the file
     std::fill_n(std::ostream_iterator<char>(out_stream_), FirstChunkOffset(), 0);
 }
