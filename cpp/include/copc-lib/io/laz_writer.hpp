@@ -35,7 +35,7 @@ class LazWriter : public BaseWriter
     }
 
   protected:
-    std::shared_ptr<las::LazConfig> GenerateConfig(const las::LazConfigWriter &las_config_writer);
+    std::shared_ptr<las::LazConfigWriter> writer_config_;
 };
 
 class LazFileWriter : BaseFileWriter, public LazWriter

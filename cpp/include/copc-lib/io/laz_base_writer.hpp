@@ -28,6 +28,12 @@ class BaseWriter
     {
     }
 
+    // Constructor for LazWriter, which needs to set the config manually
+    BaseWriter(std::ostream &out_stream)
+        : out_stream_(out_stream), open_(true)
+    {
+    }
+
     int32_t WriteChunk(const std::vector<char> &in, int32_t point_count = 0, bool compressed = false,
                        uint64_t *offset = nullptr, int32_t *byte_size = nullptr);
 
