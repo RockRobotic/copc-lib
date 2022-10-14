@@ -54,17 +54,13 @@ class LazConfigWriter : public LazConfig
                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
 
     LazConfigWriter(const LazConfig &laz_config)
-        : LazConfig(laz_config.LasHeader(), laz_config.Wkt(), laz_config.ExtraBytesVlr())
+        : LazConfig(las::LasHeader(laz_config.LasHeader(), false), laz_config.Wkt(), laz_config.ExtraBytesVlr())
     {
     }
 
-    LazConfigWriter(const LazConfigWriter &laz_config)
-        : LazConfig(laz_config.LasHeader(), laz_config.Wkt(), laz_config.ExtraBytesVlr())
-    {
-    }
-
-    LazConfigWriter(const LazConfigWriter &laz_config, bool is_copc)
-        : LazConfig(las::LasHeader(laz_config.LasHeader(), is_copc), laz_config.Wkt(), laz_config.ExtraBytesVlr())
+    LazConfigWriter(const LazConfigWriter &laz_config_writer)
+        : LazConfig(las::LasHeader(laz_config_writer.LasHeader(), false), laz_config_writer.Wkt(),
+                    laz_config_writer.ExtraBytesVlr())
     {
     }
 
