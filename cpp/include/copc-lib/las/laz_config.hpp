@@ -56,7 +56,6 @@ class LazConfigWriter : public LazConfig
     LazConfigWriter(const LazConfig &laz_config)
         : LazConfig(laz_config.LasHeader(), laz_config.Wkt(), laz_config.ExtraBytesVlr())
     {
-        std::cout << "here";
     }
 
     LazConfigWriter(const LazConfigWriter &laz_config)
