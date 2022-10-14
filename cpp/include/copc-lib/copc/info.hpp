@@ -21,6 +21,11 @@ class CopcInfo
     lazperf::copc_info_vlr ToLazPerf(const CopcExtent &gps_time) const;
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, CopcInfo const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     double center_x{0};
     double center_y{0};

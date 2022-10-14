@@ -36,6 +36,11 @@ class CopcExtent
     CopcExtent(const CopcExtent &other);
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, CopcExtent const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     // Operators
     bool operator==(const CopcExtent &other) const
@@ -202,6 +207,11 @@ class CopcExtents
     static size_t ByteSize(int8_t point_format_id, uint16_t num_eb_items);
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, CopcExtents const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
   private:
     int8_t point_format_id_;

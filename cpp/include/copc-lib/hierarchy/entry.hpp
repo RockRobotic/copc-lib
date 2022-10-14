@@ -30,6 +30,11 @@ class Entry
            << ", is_valid=" << IsValid();
         return ss.str();
     }
+    friend std::ostream &operator<<(std::ostream &os, Entry const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     void Pack(std::ostream &out_stream)
     {

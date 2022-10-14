@@ -215,6 +215,11 @@ class Point
     bool Within(const Box &box) const;
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, Point const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     static std::shared_ptr<Point> Unpack(std::istream &in_stream, const int8_t &point_format_id, const Vector3 &scale,
                                          const Vector3 &offset, const uint16_t &eb_byte_size);
