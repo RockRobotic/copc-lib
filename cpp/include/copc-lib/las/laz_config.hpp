@@ -58,12 +58,6 @@ class LazConfigWriter : public LazConfig
     {
     }
 
-    LazConfigWriter(const LazConfigWriter &laz_config_writer)
-        : LazConfig(las::LasHeader(laz_config_writer.LasHeader(), false), laz_config_writer.Wkt(),
-                    laz_config_writer.ExtraBytesVlr())
-    {
-    }
-
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }
     las::LasHeader LasHeader() const override { return *header_; }
 };
