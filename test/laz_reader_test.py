@@ -1,6 +1,5 @@
 import copclib as copc
 import pytest
-from sys import float_info
 
 from .utils import get_autzen_file
 
