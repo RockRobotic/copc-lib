@@ -42,7 +42,8 @@ struct Vector3
         ss << "(" << x << ", " << y << ", " << z << ")";
         return ss.str();
     }
-    friend std::ostream& operator <<( std::ostream& os, Vector3 const& value ) {
+    friend std::ostream &operator<<(std::ostream &os, Vector3 const &value)
+    {
         os << value.ToString();
         return os;
     }
