@@ -21,11 +21,13 @@ class CopcConfig : public las::LazConfig
 
     CopcConfig(const las::LasHeader &header, const CopcInfo &copc_info, const CopcExtents &copc_extents,
                const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
-        : LazConfig(header, wkt, extra_bytes_vlr), copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
+        : LazConfig(las::LasHeader(header, true), wkt, extra_bytes_vlr),
+          copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
           copc_extents_(std::make_shared<copc::CopcExtents>(copc_extents)){};
 
     CopcConfig(const LazConfig &laz_config, const CopcInfo &copc_info, const CopcExtents &copc_extents)
-        : LazConfig(laz_config), copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
+        : LazConfig(las::LasHeader(laz_config.LasHeader(), true), laz_config.Wkt(), laz_config.ExtraBytesVlr()),
+          copc_info_(std::make_shared<copc::CopcInfo>(copc_info)),
           copc_extents_(std::make_shared<copc::CopcExtents>(copc_extents)){};
 
     virtual copc::CopcInfo CopcInfo() const { return *copc_info_; }
@@ -66,7 +68,6 @@ class CopcConfigWriter : public CopcConfig
                      const copc::CopcExtents &copc_extents, const std::string &wkt, const las::EbVlr &extra_bytes_vlr)
         : CopcConfig(header, copc_info, copc_extents, wkt, extra_bytes_vlr)
     {
-      LasHeader()->IsCopc(true);
     }
 
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }

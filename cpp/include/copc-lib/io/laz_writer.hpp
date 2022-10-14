@@ -33,9 +33,6 @@ class LazWriter : public BaseWriter
     {
         return std::dynamic_pointer_cast<las::LazConfigWriter>(config_);
     }
-
-  protected:
-    std::shared_ptr<las::LazConfigWriter> writer_config_;
 };
 
 class LazFileWriter : BaseFileWriter, public LazWriter

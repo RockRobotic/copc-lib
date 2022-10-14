@@ -20,10 +20,15 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
             las::LazConfigWriter cfg(6);
             laz::LazFileWriter writer(file_path, cfg);
 
+            // Test updating the values from the LasHeader getter
+            writer.LazConfig()->LasHeader()->max = Vector3(10, 11, 12);
+
             auto las_header = writer.LazConfig()->LasHeader();
             REQUIRE(las_header->Scale().z == 0.01);
             REQUIRE(las_header->Offset().z == 0);
             REQUIRE(las_header->PointFormatId() == 6);
+            REQUIRE(las_header->max == Vector3(10, 11, 12));
+            REQUIRE(las_header->min == Vector3(0, 0, 0));
 
             writer.Close();
 
@@ -95,6 +100,7 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
             REQUIRE(las_header->Scale().z == 0.01);
             REQUIRE(las_header->Offset().z == 0);
             REQUIRE(las_header->PointFormatId() == 6);
+            REQUIRE(las_header->IsCopc() == false);
 
             writer.Close();
 

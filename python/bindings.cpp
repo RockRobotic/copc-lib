@@ -515,7 +515,8 @@ PYBIND11_MODULE(_core, m)
                 /* Create a new C++ instance */
                 las::LasHeader h(t[9].cast<int8_t>(), t[10].cast<uint16_t>(), t[7].cast<uint32_t>(),
                                  t[17].cast<uint64_t>(), t[8].cast<uint32_t>(), t[11].cast<Vector3>(),
-                                 t[12].cast<Vector3>(), t[15].cast<uint64_t>(), t[16].cast<uint32_t>());
+                                 t[12].cast<Vector3>(), t[15].cast<uint64_t>(), t[16].cast<uint32_t>(),
+                                 t[19].cast<bool>());
                 h.file_source_id = t[0].cast<uint16_t>();
                 h.global_encoding = t[1].cast<uint16_t>();
                 h.GUID(t[2].cast<std::string>());
@@ -526,7 +527,6 @@ PYBIND11_MODULE(_core, m)
                 h.max = t[13].cast<Vector3>();
                 h.min = t[14].cast<Vector3>();
                 h.points_by_return = t[18].cast<std::array<uint64_t, 15>>();
-                h.IsCopc(t[19].cast<bool>());
                 return h;
             }));
 
