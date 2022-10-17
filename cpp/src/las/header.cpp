@@ -24,6 +24,8 @@ LasHeader::LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t p
     offset_ = offset;
 }
 
+LasHeader::LasHeader(const LasHeader &header, bool is_copc) : LasHeader(header) { copc_flag_ = is_copc; }
+
 Box LasHeader::Bounds() const { return Box(min, max); }
 
 void LasHeader::CheckAndUpdateBounds(const las::Point &point)

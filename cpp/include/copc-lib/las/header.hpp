@@ -36,14 +36,17 @@ class LasHeader
     // TODO: Add a CMAKE flag to only compile python-specific code when python is compiled
     LasHeader(int8_t point_format_id, uint16_t point_record_length, uint32_t point_offset, uint64_t point_count,
               uint32_t vlr_count, const Vector3 &scale, const Vector3 &offset, uint64_t evlr_offset,
-              uint32_t evlr_count)
+              uint32_t evlr_count, bool copc_flag)
         : point_format_id_(point_format_id), point_record_length_(point_record_length), point_offset_(point_offset),
           point_count_(point_count), vlr_count_(vlr_count), scale_(scale), offset_(offset), evlr_offset_(evlr_offset),
-          evlr_count_(evlr_count), copc_flag_(true){};
+          evlr_count_(evlr_count), copc_flag_(copc_flag){};
 
     // Copy constructor with modification of protected attributes
     LasHeader(const LasHeader &header, int8_t point_format_id, uint16_t point_record_length, const Vector3 &scale,
               const Vector3 &offset);
+
+    // Copy constructor with modification of copc flag
+    LasHeader(const LasHeader &header, bool is_copc);
 
     static LasHeader FromLazPerf(const lazperf::header14 &header);
     lazperf::header14 ToLazPerf(uint32_t point_offset, uint64_t point_count, uint64_t evlr_offset, uint32_t evlr_count,
@@ -157,7 +160,7 @@ class LasHeader
     static const uint8_t version_major_{1};
     static const uint8_t version_minor_{4};
 
-    const bool copc_flag_{true}; // flag to set true if the header is used for a COPC file
+    bool copc_flag_{true}; // flag to set true if the header is used for a COPC file
 };
 
 } // namespace las

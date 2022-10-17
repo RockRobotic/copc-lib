@@ -1,3 +1,4 @@
+from typing import Any, Callable, Dict, List, Optional, Union
 from .utils import chunks
 import copclib as copc
 
@@ -17,19 +18,19 @@ def init_mp(copc_path, mp_init_function, mp_init_function_args):
 
 
 def transform_multithreaded(
-    reader,
-    writer,
-    transform_function=None,
-    transform_function_args={},
-    nodes=None,
-    resolution=-1,
+    reader: copc.FileReader,
+    writer: Union[copc.FileWriter, copc.LazWriter],
+    transform_function: Optional[Callable] = None,
+    transform_function_args: Dict[str, Any] = {},
+    nodes: List[copc.Node] = None,
+    resolution: float = -1,
     progress=None,
-    completed_callback=None,
-    chunk_size=1024,
-    max_workers=None,
-    update_minmax=False,
-    mp_init_function=None,
-    mp_init_function_args={},
+    completed_callback: Callable = None,
+    chunk_size: int = 1024,
+    max_workers: int = None,
+    update_minmax: bool = False,
+    mp_init_function: Optional[Callable] = None,
+    mp_init_function_args: Dict[str, Any] = {},
 ):
     """Scaffolding for reading COPC files and writing them back out in a multithreaded way.
     It queues all nodes from either the provided list of nodes or nodes within the given resolution to be processed.
@@ -46,7 +47,7 @@ def transform_multithreaded(
 
     Args:
         reader (copclib.CopcReader): A copc reader for the file you are reading
-        writer (copclib.CopcWriter): A copc writer for the output file.
+        writer (copclib.CopcWriter or copclib.LazWriter): A writer for the output file.
         transform_function (function, optional): A function which modifies the input points in some way before getting written.
             Defaults to None.
         transform_function_args (dict, optional): A key/value pair of keyword arguments that get passed to `transform_function`.
@@ -59,7 +60,7 @@ def transform_multithreaded(
             and returned from multiprocessing. Defaults to None.
         chunk_size (int, optional): Limits the amount of nodes which are queued for multiprocessing at once. Defaults to 1024.
         max_workers (int, optional): Manually set the number of processors to use when multiprocessing. Defaults to all processors.
-        update_minmax (bool, optional): If true, updates the header of the new COPC file with the correct XYZ min/max.
+        update_minmax (bool, optional): If true, updates the header of the output file with the correct XYZ min/max.
             Defaults to False.
         mp_init_function: (function, optional): A function that gets called in the ProcessPoolExeuctor initializer
         mp_init_function_args: (dict, optional): A key/value pair of keyword arguments that get passed to `mp_init_function`.
@@ -86,6 +87,13 @@ def transform_multithreaded(
     if transform_function is None:
         transform_function = _copy_points_transform
 
+    if isinstance(writer, copc.FileWriter):
+        writer_header = writer.copc_config.las_header
+    elif isinstance(writer, copc.LazWriter):
+        writer_header = writer.laz_config.las_header
+    else:
+        raise RuntimeError(f"Unknown writer type: {writer}")
+
     # keep track of all the mins and maxs
     all_mins = []
     all_maxs = []
@@ -105,7 +113,7 @@ def transform_multithreaded(
                     transform_function,
                     transform_function_args,
                     node,
-                    writer.copc_config.las_header,
+                    writer_header,
                     update_minmax,
                 )
                 # Update the progress bar, if necessary
@@ -139,21 +147,27 @@ def transform_multithreaded(
                         all_maxs.append(xyz_max)
 
                     # Write the node out
-                    writer.AddNodeCompressed(
-                        node.key,
-                        compressed_points,
-                        point_count,
-                        node.page_key,
-                    )
+                    if isinstance(writer, copc.FileWriter):
+                        writer.AddNodeCompressed(
+                            node.key,
+                            compressed_points,
+                            point_count,
+                            node.page_key,
+                        )
+                    elif isinstance(writer, copc.LazWriter):
+                        writer.WritePointsCompressed(compressed_points, point_count)
 
     # Compute the global min/max of all the nodes and update the LAS header, if necessary
-    if update_minmax and len(all_mins) > 0 and len(all_maxs) > 0:
-        import numpy as np
+    if update_minmax:
+        global_min = global_max = [0, 0, 0]
+        if len(all_mins) > 0 and len(all_maxs) > 0:
+            import numpy as np
 
-        global_min = np.min(all_mins, axis=0)
-        global_max = np.max(all_maxs, axis=0)
-        writer.copc_config.las_header.min = list(global_min)
-        writer.copc_config.las_header.max = list(global_max)
+            global_min = np.min(all_mins, axis=0)
+            global_max = np.max(all_maxs, axis=0)
+
+        writer_header.min = list(global_min)
+        writer_header.max = list(global_max)
 
 
 def _transform_node(

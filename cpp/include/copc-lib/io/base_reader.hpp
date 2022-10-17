@@ -1,3 +1,6 @@
+#ifndef COPCLIB_IO_BASE_READER_H_
+#define COPCLIB_IO_BASE_READER_H_
+
 #include "copc-lib/las/vlr.hpp"
 
 #include <istream>
@@ -41,3 +44,4 @@ class BaseReader
     las::EbVlr ReadExtraBytesVlr(std::map<uint64_t, las::VlrHeader> &vlrs);
 };
 } // namespace copc
+#endif // COPCLIB_IO_BASE_READER_H_

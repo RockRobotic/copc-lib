@@ -53,8 +53,10 @@ class LazConfigWriter : public LazConfig
                     const Vector3 &offset = Vector3::DefaultOffset(), const std::string &wkt = "",
                     const las::EbVlr &extra_bytes_vlr = las::EbVlr(0));
 
-    LazConfigWriter(const CopcConfig &copc_config);
-    LazConfigWriter(const LazConfig &laz_config) : LazConfig(laz_config){};
+    LazConfigWriter(const LazConfig &laz_config)
+        : LazConfig(las::LasHeader(laz_config.LasHeader(), false), laz_config.Wkt(), laz_config.ExtraBytesVlr())
+    {
+    }
 
     std::shared_ptr<las::LasHeader> LasHeader() { return header_; }
     las::LasHeader LasHeader() const override { return *header_; }

@@ -97,6 +97,7 @@ TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
 
         REQUIRE(cfg.LasHeader()->PointFormatId() == point_format_id);
         REQUIRE(cfg.LasHeader()->Scale() == Vector3::DefaultScale());
+        REQUIRE(cfg.LasHeader()->IsCopc() == true);
 
         REQUIRE(cfg.CopcInfo()->spacing == 0);
 
@@ -114,6 +115,7 @@ TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
         REQUIRE(cfg.LasHeader()->PointFormatId() == point_format_id);
         REQUIRE(cfg.LasHeader()->Scale() == test_scale);
         REQUIRE(cfg.LasHeader()->Offset() == test_offset);
+        REQUIRE(cfg.LasHeader()->IsCopc() == true);
 
         REQUIRE(cfg.CopcInfo()->spacing == 0);
 

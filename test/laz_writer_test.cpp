@@ -20,10 +20,15 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
             las::LazConfigWriter cfg(6);
             laz::LazFileWriter writer(file_path, cfg);
 
+            // Test updating the values from the LasHeader getter
+            writer.LazConfig()->LasHeader()->max = Vector3(10, 11, 12);
+
             auto las_header = writer.LazConfig()->LasHeader();
             REQUIRE(las_header->Scale().z == 0.01);
             REQUIRE(las_header->Offset().z == 0);
             REQUIRE(las_header->PointFormatId() == 6);
+            REQUIRE(las_header->max == Vector3(10, 11, 12));
+            REQUIRE(las_header->min == Vector3(0, 0, 0));
 
             writer.Close();
 
@@ -95,6 +100,7 @@ TEST_CASE("Laz Writer Config Tests", "[LAZ Writer]")
             REQUIRE(las_header->Scale().z == 0.01);
             REQUIRE(las_header->Offset().z == 0);
             REQUIRE(las_header->PointFormatId() == 6);
+            REQUIRE(las_header->IsCopc() == false);
 
             writer.Close();
 
@@ -220,17 +226,13 @@ TEST_CASE("LAZ Write Points", "[LAZ Writer]")
     points.AddPoint(point);
     point = points.CreatePoint();
     // point has getters/setters for all attributes
-    point->X(10);
-    point->Y(10);
-    point->Z(10);
+    point->X(11);
+    point->Y(12);
+    point->Z(13);
     points.AddPoint(point);
 
     writer.WritePoints(points);
-    REQUIRE(writer.PointCount() == 2);
-    REQUIRE(writer.ChunkCount() == 1);
     writer.WritePoints(points);
-    REQUIRE(writer.PointCount() == 4);
-    REQUIRE(writer.ChunkCount() == 2);
     writer.Close();
 
     // Validate
@@ -240,13 +242,13 @@ TEST_CASE("LAZ Write Points", "[LAZ Writer]")
     REQUIRE(read_points.Get(0)->X() == 0);
     REQUIRE(read_points.Get(0)->Y() == 0);
     REQUIRE(read_points.Get(0)->Z() == 0);
-    REQUIRE(read_points.Get(1)->X() == 10);
-    REQUIRE(read_points.Get(1)->Y() == 10);
-    REQUIRE(read_points.Get(1)->Z() == 10);
+    REQUIRE(read_points.Get(1)->X() == 11);
+    REQUIRE(read_points.Get(1)->Y() == 12);
+    REQUIRE(read_points.Get(1)->Z() == 13);
     REQUIRE(read_points.Get(2)->X() == 0);
     REQUIRE(read_points.Get(2)->Y() == 0);
     REQUIRE(read_points.Get(2)->Z() == 0);
-    REQUIRE(read_points.Get(3)->X() == 10);
-    REQUIRE(read_points.Get(3)->Y() == 10);
-    REQUIRE(read_points.Get(3)->Z() == 10);
+    REQUIRE(read_points.Get(3)->X() == 11);
+    REQUIRE(read_points.Get(3)->Y() == 12);
+    REQUIRE(read_points.Get(3)->Z() == 13);
 }

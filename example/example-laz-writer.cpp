@@ -64,15 +64,9 @@ void NewFileExample()
     // The points will be written to the file when we call WritePoints
     writer.WritePoints(points);
 
-    assert(writer.PointCount() == NUM_POINTS);
-    assert(writer.ChunkCount() == 1);
-
     // We can write a second batch of points in a different chunk
     points = RandomPoints(header, NUM_POINTS);
     writer.WritePoints(points);
-
-    assert(writer.PointCount() == 2 * NUM_POINTS);
-    assert(writer.ChunkCount() == 2);
 
     // Make sure we call close to finish writing the file!
     writer.Close();
