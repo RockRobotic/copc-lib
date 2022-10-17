@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **\[Python/C++\]** Fixed bug when copying CopcConfig into a LazWriterConfig where the header would still try to write Copc headers
+- **\[Python/C++\]** Fixed bug when updating header in a LazConifgWriter not saving changes
+
+### Added
+- **\[Python/C++\]** Added `WritePointsCompressed` function to LazWriter
+- **\[C++\]** Add `LasHeader` copy constructor with the ability to change the `is_copc` parameter
+- **\[Python\]** Add `LazReader` and `LazWriter` support to python
+- **\[Python\]** Add `LazWriter` support to python multiprocessing transform functions
+
+### Removed
+- **\[Python/C++\]** Removed `PointCount` and `ChunkCount` from LazWriter
+
+### Changed
+- **\[Python/C++\]** Make `LazFileWriter` inherit from `LazWriter`
+
+
+
 ## [2.4.1] - 2022-09-13
 
 ### Changed
