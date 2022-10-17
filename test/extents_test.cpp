@@ -27,6 +27,13 @@ TEST_CASE("COPC Extent", "[CopcExtent]")
     REQUIRE(extent != other);
 
     REQUIRE_THROWS(CopcExtent(1, 0));
+
+    SECTION("ToString") 
+    { 
+        extent.ToString();
+        std::stringstream ss;
+        ss << extent;
+    }
 }
 
 TEST_CASE("COPC Extents", "[CopcExtents]")

@@ -94,7 +94,12 @@ TEST_CASE("Test reader and conversions", "[LasHeader]")
         REQUIRE(las_header_origin.EvlrOffset() == las_header.EvlrOffset());
         REQUIRE(las_header_origin.EvlrCount() == las_header.EvlrCount());
 
-        las_header_origin.ToString();
+        SECTION("LasHeader ToString") 
+        { 
+            las_header_origin.ToString();
+            std::stringstream ss;
+            ss << las_header_origin;
+        }
     }
 }
 
