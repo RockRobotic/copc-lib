@@ -91,6 +91,8 @@ def transform_multithreaded(
         writer_header = writer.copc_config.las_header
     elif isinstance(writer, copc.LazWriter):
         writer_header = writer.laz_config.las_header
+    else:
+        raise RuntimeError(f"Unknown writer type: {writer}")
 
     # keep track of all the mins and maxs
     all_mins = []
