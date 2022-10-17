@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.5.0] - 2022-10-17
+
 ### Fixed
 - **\[Python/C++\]** Fixed bug when copying CopcConfig into a LazWriterConfig where the header would still try to write Copc headers
 - **\[Python/C++\]** Fixed bug when updating header in a LazConifgWriter not saving changes
@@ -261,6 +263,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [1.1.0]: https://github.com/RockRobotic/copc-lib/compare/v1.0...v1.1.0
 [1.2.0]: https://github.com/RockRobotic/copc-lib/compare/v1.1.0...v1.2.0
+[2.5.0]: https://github.com/RockRobotic/copc-lib/compare/v2.4.1...v2.5.0
 [2.4.1]: https://github.com/RockRobotic/copc-lib/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/RockRobotic/copc-lib/compare/v2.3.1...v2.4.0
 [2.3.1]: https://github.com/RockRobotic/copc-lib/compare/v2.3.0...v2.3.1
@@ -276,4 +279,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2.0.0]: https://github.com/RockRobotic/copc-lib/compare/v1.3.1...v2.0.0
 [1.3.1]: https://github.com/RockRobotic/copc-lib/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/RockRobotic/copc-lib/compare/v1.2.0...v1.3.0
-[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.4.1...HEAD
+[Unreleased]: https://github.com/RockRobotic/copc-lib/compare/v2.5.0...HEAD
