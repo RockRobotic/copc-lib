@@ -176,10 +176,10 @@ std::string LasHeader::ToString() const
     ss << "\tPoint Format ID: " << static_cast<int>(point_format_id_) << std::endl;
     ss << "\tPoint Record Length: " << point_record_length_ << std::endl;
     ss << "\tPoint Count: " << point_count_ << std::endl;
-    ss << "\tScale: " << scale_.ToString() << std::endl;
-    ss << "\tOffset: " << offset_.ToString() << std::endl;
-    ss << "\tMax: " << max.ToString() << std::endl;
-    ss << "\tMin: " << min.ToString() << std::endl;
+    ss << "\tScale: " << scale_ << std::endl;
+    ss << "\tOffset: " << offset_ << std::endl;
+    ss << "\tMax: " << max << std::endl;
+    ss << "\tMin: " << min << std::endl;
     ss << "\tEVLR Offset: " << evlr_offset_ << std::endl;
     ss << "\tEVLR count: " << evlr_count_ << std::endl;
     ss << "\tPoints By Return:" << std::endl;

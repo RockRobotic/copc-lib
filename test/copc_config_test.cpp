@@ -130,6 +130,14 @@ TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
     {
         CopcInfo copc_info;
         copc_info.spacing = test_spacing;
+
+        SECTION("CopcInfo ToString")
+        {
+            copc_info.ToString();
+            std::stringstream ss;
+            ss << copc_info;
+        }
+
         CopcExtents copc_extents(point_format_id, num_eb_items);
         copc_extents.Intensity()->minimum = test_intensity_min;
         copc_extents.Intensity()->maximum = test_intensity_max;

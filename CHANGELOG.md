@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **\[C++\]** Add `LasHeader` copy constructor with the ability to change the `is_copc` parameter
 - **\[Python\]** Add `LazReader` and `LazWriter` support to python
 - **\[Python\]** Add `LazWriter` support to python multiprocessing transform functions
+- **\[C++\]** Add output operator (<<) overrides for classes with ToString methods
 
 ### Removed
 - **\[Python/C++\]** Removed `PointCount` and `ChunkCount` from LazWriter

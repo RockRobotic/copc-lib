@@ -43,6 +43,11 @@ class VoxelKey
     bool IsValid() const { return d >= 0 && x >= 0 && y >= 0 && z >= 0; }
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, VoxelKey const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     // Returns the corresponding key depending on direction [0,7]
     VoxelKey Bisect(const uint64_t &direction) const;

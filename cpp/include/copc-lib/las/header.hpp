@@ -53,6 +53,11 @@ class LasHeader
                                 bool eb_flag, bool extended_stats_flag) const;
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, LasHeader const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     // Getters/Setters for protected attributes
 

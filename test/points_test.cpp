@@ -41,7 +41,12 @@ TEST_CASE("Points tests", "[Point]")
         REQUIRE(points.Get(0)->Y() == 11.2);
         REQUIRE(points.Get(0)->Z() == 11.3);
 
-        points.ToString();
+        SECTION("Points ToString")
+        {
+            points.ToString();
+            std::stringstream ss;
+            ss << points;
+        }
     }
 
     SECTION("Adding Point to Points")

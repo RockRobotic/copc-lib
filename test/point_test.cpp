@@ -199,6 +199,13 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Green() == 0);
         REQUIRE(point.Blue() == 0);
         REQUIRE(point.Nir() == 0);
+
+        SECTION("Point ToString")
+        {
+            point.ToString();
+            std::stringstream ss;
+            ss << point;
+        }
     }
 
     SECTION("Point conversion")
