@@ -129,8 +129,8 @@ TEST_CASE("CopcConfigWriter", "[CopcConfigWriter]")
         CopcInfo copc_info;
         copc_info.spacing = test_spacing;
 
-        SECTION("CopcInfo ToString") 
-        { 
+        SECTION("CopcInfo ToString")
+        {
             copc_info.ToString();
             std::stringstream ss;
             ss << copc_info;

@@ -22,9 +22,9 @@ TEST_CASE("Voxel Key checks key validity", "[Key]")
 
 TEST_CASE("VoxelKey ToString", "[Key]")
 {
-    VoxelKey(1,1,1,1).ToString();
+    VoxelKey(1, 1, 1, 1).ToString();
     std::stringstream ss;
-    ss << VoxelKey(1,1,1,1);
+    ss << VoxelKey(1, 1, 1, 1);
 }
 
 TEST_CASE("GetParent Checks", "[Key]")

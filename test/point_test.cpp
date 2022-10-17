@@ -200,8 +200,8 @@ TEST_CASE("Point tests", "[Point]")
         REQUIRE(point.Blue() == 0);
         REQUIRE(point.Nir() == 0);
 
-        SECTION("Point ToString") 
-        { 
+        SECTION("Point ToString")
+        {
             point.ToString();
             std::stringstream ss;
             ss << point;

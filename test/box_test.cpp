@@ -38,8 +38,8 @@ TEST_CASE("Box constructor", "[Box]")
         REQUIRE_THROWS(Box(0, 2, 0, 1, 1, 1));
         REQUIRE_THROWS(Box(0, 0, 2, 1, 1, 1));
 
-        SECTION("Box ToString") 
-        { 
+        SECTION("Box ToString")
+        {
             box.ToString();
             std::stringstream ss;
             ss << box;
