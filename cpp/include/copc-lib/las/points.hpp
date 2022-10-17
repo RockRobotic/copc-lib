@@ -59,6 +59,11 @@ class Points
     static Points Unpack(const std::vector<char> &point_data, const LasHeader &header);
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, Points const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     // Getters and setters
     std::vector<double> X() const

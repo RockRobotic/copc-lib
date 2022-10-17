@@ -31,6 +31,13 @@ TEST_CASE("Vector3", "[Vector3]")
         REQUIRE(vec.x == 0.0);
         REQUIRE(vec.y == 0.0);
         REQUIRE(vec.z == 0.0);
+
+        SECTION("Vector3 ToString")
+        {
+            vec.ToString();
+            std::stringstream ss;
+            ss << vec;
+        }
     }
     SECTION("Vector3 Operators")
     {

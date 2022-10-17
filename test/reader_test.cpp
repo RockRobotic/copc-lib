@@ -134,6 +134,13 @@ TEST_CASE("FindKey Check", "[Reader]")
         REQUIRE(hier_entry.IsValid() == true);
         REQUIRE(hier_entry.key == key);
         REQUIRE(hier_entry.point_count == 12021);
+
+        SECTION("Node ToString")
+        {
+            hier_entry.ToString();
+            std::stringstream ss;
+            ss << hier_entry;
+        }
     }
 }
 

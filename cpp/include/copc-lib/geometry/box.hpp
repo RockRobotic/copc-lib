@@ -42,6 +42,11 @@ class Box
     bool Within(const Box &box) const;
 
     std::string ToString() const;
+    friend std::ostream &operator<<(std::ostream &os, Box const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     double x_min{};
     double y_min{};

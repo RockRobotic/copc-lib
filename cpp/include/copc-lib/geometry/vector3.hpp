@@ -42,6 +42,11 @@ struct Vector3
         ss << "(" << x << ", " << y << ", " << z << ")";
         return ss.str();
     }
+    friend std::ostream &operator<<(std::ostream &os, Vector3 const &value)
+    {
+        os << value.ToString();
+        return os;
+    }
 
     bool operator==(Vector3 other) const { return x == other.x && y == other.y && z == other.z; }
     bool operator!=(Vector3 other) const { return !(*this == other); }
