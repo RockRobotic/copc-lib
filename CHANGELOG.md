@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **\[Python/C++\]** Added `PointCount` and `ChunkCount` to LazWriter
+
 ## [2.5.0] - 2022-10-17
 
 ### Fixed

@@ -213,7 +213,11 @@ def test_write():
     points.AddPoint(p)
 
     writer.WritePoints(points)
+    assert writer.point_count == 2
+    assert writer.chunk_count == 1
     writer.WritePoints(points)
+    assert writer.point_count == 4
+    assert writer.chunk_count == 2
     writer.Close()
 
     reader = copc.LazReader(file_path)

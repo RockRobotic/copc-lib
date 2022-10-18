@@ -439,6 +439,8 @@ PYBIND11_MODULE(_core, m)
     py::class_<laz::LazFileWriter>(m, "LazWriter")
         .def(py::init<const std::string &, const las::LazConfigWriter &>(), py::arg("file_path"), py::arg("config"))
         .def_property_readonly("laz_config", &laz::LazWriter::LazConfig)
+        .def_property_readonly("point_count", &laz::LazWriter::PointCount)
+        .def_property_readonly("chunk_count", &laz::LazWriter::ChunkCount)
         .def("Close", &laz::LazFileWriter::Close)
         .def("WritePoints", py::overload_cast<const las::Points &>(&laz::LazWriter::WritePoints), py::arg("points"))
         .def("WritePointsCompressed", &laz::LazWriter::WritePointsCompressed, py::arg("compressed_data"),
