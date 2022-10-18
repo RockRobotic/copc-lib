@@ -231,7 +231,7 @@ TEST_CASE("LAZ Write Points", "[LAZ Writer]")
     point->Z(13);
     points.AddPoint(point);
 
-    writer.WritePoints(points);    
+    writer.WritePoints(points);
     REQUIRE(writer.PointCount() == 2);
     REQUIRE(writer.ChunkCount() == 1);
     writer.WritePoints(points);
