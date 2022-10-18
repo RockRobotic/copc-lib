@@ -90,7 +90,7 @@ class FileWriter : public Writer, laz::BaseFileWriter
 
     void Close() override;
     ~FileWriter() { Close(); }
-    
+
     std::string FilePath() { return file_path_; }
 };
 
