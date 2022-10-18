@@ -52,6 +52,8 @@ class LazFileWriter : BaseFileWriter, public LazWriter
         BaseFileWriter::Close();
     };
     ~LazFileWriter() { Close(); };
+
+    std::string FilePath() { return file_path_; }
 };
 
 } // namespace copc::laz

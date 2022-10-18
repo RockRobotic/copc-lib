@@ -419,6 +419,7 @@ PYBIND11_MODULE(_core, m)
             py::arg("scale") = py::none(), py::arg("offset") = py::none(), py::arg("wkt") = py::none(),
             py::arg("extra_bytes_vlr") = py::none(), py::arg("has_extended_stats") = py::none())
         .def_property_readonly("copc_config", &Writer::CopcConfig)
+        .def_property_readonly("path", &FileWriter::FilePath)
         .def("FindNode", &Writer::FindNode)
         .def("Close", &FileWriter::Close)
         .def("AddNode", py::overload_cast<const VoxelKey &, const las::Points &, const VoxelKey &>(&Writer::AddNode),
@@ -441,6 +442,7 @@ PYBIND11_MODULE(_core, m)
         .def_property_readonly("laz_config", &laz::LazWriter::LazConfig)
         .def_property_readonly("point_count", &laz::LazWriter::PointCount)
         .def_property_readonly("chunk_count", &laz::LazWriter::ChunkCount)
+        .def_property_readonly("path", &laz::LazFileWriter::FilePath)
         .def("Close", &laz::LazFileWriter::Close)
         .def("WritePoints", py::overload_cast<const las::Points &>(&laz::LazWriter::WritePoints), py::arg("points"))
         .def("WritePointsCompressed", &laz::LazWriter::WritePointsCompressed, py::arg("compressed_data"),

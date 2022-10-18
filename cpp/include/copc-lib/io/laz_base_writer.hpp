@@ -63,6 +63,7 @@ class BaseFileWriter
 
   protected:
     std::fstream f_stream_;
+    std::string file_path_;
 };
 
 } // namespace copc::laz
