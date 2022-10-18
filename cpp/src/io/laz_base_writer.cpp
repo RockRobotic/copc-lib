@@ -161,6 +161,7 @@ void BaseWriter::Close()
 
 BaseFileWriter::BaseFileWriter(const std::string &file_path)
 {
+    file_path_ = file_path;
     f_stream_.open(file_path.c_str(), std::ios::out | std::ios::binary);
     if (!f_stream_.good())
         throw std::runtime_error("FileWriterBase: Error while opening file path.");

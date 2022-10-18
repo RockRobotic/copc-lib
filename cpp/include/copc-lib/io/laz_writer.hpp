@@ -33,6 +33,9 @@ class LazWriter : public BaseWriter
     {
         return std::dynamic_pointer_cast<las::LazConfigWriter>(config_);
     }
+
+    uint64_t PointCount() { return point_count_; }
+    uint64_t ChunkCount() { return chunks_.size(); }
 };
 
 class LazFileWriter : BaseFileWriter, public LazWriter
@@ -49,6 +52,8 @@ class LazFileWriter : BaseFileWriter, public LazWriter
         BaseFileWriter::Close();
     };
     ~LazFileWriter() { Close(); };
+
+    std::string FilePath() { return file_path_; }
 };
 
 } // namespace copc::laz
