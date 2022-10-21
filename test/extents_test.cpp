@@ -53,7 +53,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         // Vlr Constructor
         {
             auto vlr = las::CopcExtentsVlr();
-            vlr.items.resize(CopcExtents::NumberOfExtents(point_format_id, num_eb_items) + 3, {0, 0});
+            vlr.items.resize(CopcExtents::NumberOfExtents(point_format_id, num_eb_items), {0, 0});
             CopcExtents extents{vlr, point_format_id, num_eb_items};
             REQUIRE(extents.PointFormatId() == point_format_id);
             REQUIRE(extents.ExtraBytes().size() == num_eb_items);
@@ -119,6 +119,19 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
             REQUIRE(extents->HasExtendedStats() == true);
 
+            extents->X()->minimum = -20;
+            extents->X()->maximum = -10;
+            extents->X()->mean = 20;
+            extents->X()->var = 10;
+            extents->Y()->minimum = -30;
+            extents->Y()->maximum = -20;
+            extents->Y()->mean = 10;
+            extents->Y()->var = 50;
+            extents->Z()->minimum = -10;
+            extents->Z()->maximum = -6;
+            extents->Z()->mean = 4;
+            extents->Z()->var = 12;
+
             extents->Intensity()->minimum = -numeric_limits<double>::max();
             extents->Intensity()->maximum = numeric_limits<double>::max();
             extents->Intensity()->mean = 15;
@@ -133,11 +146,11 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             extents->ExtraBytes()[0]->var = 158;
 
             // Vector accessor
-            extents->Extents()[7]->minimum = 78;
-            extents->Extents()[7]->maximum = 79;
+            extents->Extents()[10]->minimum = 78;
+            extents->Extents()[10]->maximum = 79;
 
-            extents->Extents()[8]->minimum = 80;
-            extents->Extents()[8]->maximum = 81;
+            extents->Extents()[11]->minimum = 80;
+            extents->Extents()[11]->maximum = 81;
 
             writer.Close();
         }
@@ -145,6 +158,19 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             FileReader reader(file_path);
 
             auto extents = reader.CopcConfig().CopcExtents();
+
+            REQUIRE(extents.X()->minimum == -20);
+            REQUIRE(extents.X()->maximum == -10);
+            REQUIRE(extents.X()->mean == 20);
+            REQUIRE(extents.X()->var == 10);
+            REQUIRE(extents.Y()->minimum == -30);
+            REQUIRE(extents.Y()->maximum == -20);
+            REQUIRE(extents.Y()->mean == 10);
+            REQUIRE(extents.Y()->var == 50);
+            REQUIRE(extents.Z()->minimum == -10);
+            REQUIRE(extents.Z()->maximum == -6);
+            REQUIRE(extents.Z()->mean == 4);
+            REQUIRE(extents.Z()->var == 12);
 
             REQUIRE(extents.Intensity()->minimum == -numeric_limits<double>::max());
             REQUIRE(extents.Intensity()->maximum == numeric_limits<double>::max());
@@ -160,10 +186,13 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             REQUIRE(extents.ExtraBytes()[0]->var == 158);
 
             // Vector accessor
+            REQUIRE(extents.Extents()[10]->minimum == 78);
+            REQUIRE(extents.Extents()[10]->maximum == 79);
             REQUIRE(*extents.UserData() == CopcExtent(78, 79));
 
-            REQUIRE(extents.Extents()[8]->minimum == 80);
-            REQUIRE(extents.Extents()[8]->maximum == 81);
+            REQUIRE(extents.Extents()[11]->minimum == 80);
+            REQUIRE(extents.Extents()[11]->maximum == 81);
+            REQUIRE(*extents.ScanAngle() == CopcExtent(80, 81));
         }
     }
 
@@ -173,7 +202,7 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
         CopcExtents extents{point_format_id, num_eb_items};
 
         auto vlr = extents.ToLazPerf({}, {}, {});
-        REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, num_eb_items) + 3);
+        REQUIRE(vlr.items.size() == CopcExtents::NumberOfExtents(point_format_id, num_eb_items));
     }
 
     SECTION("Get/Set Extents")

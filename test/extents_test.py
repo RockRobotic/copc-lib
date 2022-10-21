@@ -62,6 +62,19 @@ def test_copc_extents():
 
     assert extents.has_extended_stats == True
 
+    extents.x.minimum = 1
+    extents.x.maximum = 2
+    extents.x.mean = 3
+    extents.x.var = 4
+    extents.y.minimum = 5
+    extents.y.maximum = 6
+    extents.y.mean = 7
+    extents.y.var = 8
+    extents.z.minimum = 9
+    extents.z.maximum = 10
+    extents.z.mean = 11
+    extents.z.var = 12
+
     extents.classification.minimum = -float_info.max
     extents.classification.maximum = float_info.max
     extents.classification.mean = 15
@@ -79,6 +92,19 @@ def test_copc_extents():
     reader = copc.FileReader(file_path)
 
     extents = reader.copc_config.copc_extents
+
+    assert extents.x.minimum == 1
+    assert extents.x.maximum == 2
+    assert extents.x.mean == 3
+    assert extents.x.var == 4
+    assert extents.y.minimum == 5
+    assert extents.y.maximum == 6
+    assert extents.y.mean == 7
+    assert extents.y.var == 8
+    assert extents.z.minimum == 9
+    assert extents.z.maximum == 10
+    assert extents.z.mean == 11
+    assert extents.z.var == 12
 
     assert extents.classification.minimum == -float_info.max
     assert extents.classification.maximum == float_info.max
