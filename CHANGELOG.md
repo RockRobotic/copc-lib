@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **\[Python/C++\]** Expose `X` `Y` `Z` extents
+
+
 ## [2.5.1] - 2022-10-18
 
 ### Added
