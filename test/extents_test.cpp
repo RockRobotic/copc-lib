@@ -119,6 +119,19 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
 
             REQUIRE(extents->HasExtendedStats() == true);
 
+            extents->X()->minimum = -20;
+            extents->X()->maximum = -10;
+            extents->X()->mean = 20;
+            extents->X()->var = 10;
+            extents->Y()->minimum = -30;
+            extents->Y()->maximum = -20;
+            extents->Y()->mean = 10;
+            extents->Y()->var = 50;
+            extents->Z()->minimum = -10;
+            extents->Z()->maximum = -6;
+            extents->Z()->mean = 4;
+            extents->Z()->var = 12;
+
             extents->Intensity()->minimum = -numeric_limits<double>::max();
             extents->Intensity()->maximum = numeric_limits<double>::max();
             extents->Intensity()->mean = 15;
@@ -145,6 +158,19 @@ TEST_CASE("COPC Extents", "[CopcExtents]")
             FileReader reader(file_path);
 
             auto extents = reader.CopcConfig().CopcExtents();
+
+            REQUIRE(extents.X()->minimum == -20);
+            REQUIRE(extents.X()->maximum == -10);
+            REQUIRE(extents.X()->mean == 20);
+            REQUIRE(extents.X()->var == 10);
+            REQUIRE(extents.Y()->minimum == -30);
+            REQUIRE(extents.Y()->maximum == -20);
+            REQUIRE(extents.Y()->mean == 10);
+            REQUIRE(extents.Y()->var == 50);
+            REQUIRE(extents.Z()->minimum == -10);
+            REQUIRE(extents.Z()->maximum == -6);
+            REQUIRE(extents.Z()->mean == 4);
+            REQUIRE(extents.Z()->var == 12);
 
             REQUIRE(extents.Intensity()->minimum == -numeric_limits<double>::max());
             REQUIRE(extents.Intensity()->maximum == numeric_limits<double>::max());
