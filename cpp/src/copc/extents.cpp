@@ -73,20 +73,20 @@ CopcExtents::CopcExtents(const CopcExtents &other, int8_t point_format_id, uint1
     : CopcExtents(point_format_id, num_eb_items, has_extended_stats)
 {
     // Copy generic extents
-    for (int i{0}; i <= 10; i++)
+    for (int i{0}; i <= 13; i++)
         extents_[i] = other.extents_[i];
 
     // Copy RGB
     if (point_format_id > 6 && other.point_format_id_ > 6)
     {
-        extents_[11] = other.extents_[11];
-        extents_[12] = other.extents_[12];
-        extents_[13] = other.extents_[13];
+        extents_[14] = other.extents_[14];
+        extents_[15] = other.extents_[15];
+        extents_[16] = other.extents_[16];
     }
 
     // Copy NIR
     if (point_format_id == 8 && other.point_format_id_ == 8)
-        extents_[14] = other.extents_[14];
+        extents_[17] = other.extents_[17];
 
     // Copy EBs
     auto other_num_eb = other.NumberOfExtents() - PointBaseNumberExtents(other.PointFormatId());
@@ -110,11 +110,10 @@ CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id,
     if (point_format_id < 6 || point_format_id > 8)
         throw std::runtime_error("CopcExtents: Supported point formats are 6 to 8.");
 
-    if (vlr.items.size() - 3 !=
-        NumberOfExtents(point_format_id, num_eb_items)) // -3 takes into account extra extents for x,y,z from LAS header
+    if (vlr.items.size() != NumberOfExtents(point_format_id, num_eb_items))
         throw std::runtime_error("CopcExtents: Number of extents incorrect.");
     extents_.reserve(NumberOfExtents(point_format_id, num_eb_items));
-    for (int i = 3; i < vlr.items.size(); i++)
+    for (int i = 0; i < vlr.items.size(); i++)
     {
         extents_.push_back(std::make_shared<CopcExtent>(vlr.items[i].minimum, vlr.items[i].maximum));
     }
@@ -123,10 +122,7 @@ CopcExtents::CopcExtents(const las::CopcExtentsVlr &vlr, int8_t point_format_id,
 las::CopcExtentsVlr CopcExtents::ToLazPerf(const CopcExtent &x, const CopcExtent &y, const CopcExtent &z) const
 {
     las::CopcExtentsVlr vlr;
-    vlr.items.reserve(extents_.size() + 3); // +3 takes into account extra extents for x,y,z from LAS header
-    vlr.items.emplace_back(x.minimum, x.maximum);
-    vlr.items.emplace_back(y.minimum, y.maximum);
-    vlr.items.emplace_back(z.minimum, z.maximum);
+    vlr.items.reserve(extents_.size());
     for (const auto &extent : extents_)
         vlr.items.emplace_back(extent->minimum, extent->maximum);
 
@@ -136,10 +132,7 @@ las::CopcExtentsVlr CopcExtents::ToLazPerf(const CopcExtent &x, const CopcExtent
 las::CopcExtentsVlr CopcExtents::ToLazPerfExtended() const
 {
     las::CopcExtentsVlr vlr;
-    vlr.items.reserve(extents_.size() + 3); // +3 takes into account extra extents for x,y,z from LAS header
-    vlr.items.emplace_back();               // TODO: Handle x,y,z later
-    vlr.items.emplace_back();
-    vlr.items.emplace_back();
+    vlr.items.reserve(extents_.size());
     for (const auto &extent : extents_)
         vlr.items.emplace_back(extent->mean, extent->var); // Add mean/var instead of min/max
     return vlr;
@@ -149,12 +142,12 @@ void CopcExtents::SetExtendedStats(const las::CopcExtentsVlr &vlr)
 {
     if (!has_extended_stats_)
         throw std::runtime_error("CopcExtents::SetExtendedStats: This instance does not have extended stats.");
-    if (vlr.items.size() - 3 != extents_.size()) // -3 takes into account extra extents for x,y,z from LAS header
+    if (vlr.items.size() != extents_.size())
         throw std::runtime_error("CopcExtents::SetExtendedStats: Number of extended extents incorrect.");
-    for (int i = 3; i < vlr.items.size(); i++)
+    for (int i = 0; i < vlr.items.size(); i++)
     {
-        extents_[i - 3]->mean = vlr.items[i].minimum;
-        extents_[i - 3]->var = vlr.items[i].maximum;
+        extents_[i]->mean = vlr.items[i].minimum;
+        extents_[i]->var = vlr.items[i].maximum;
     }
 }
 
@@ -172,36 +165,39 @@ std::string CopcExtents::ToString() const
 {
     std::stringstream ss;
     ss << "Copc Extents (Min/Max/Mean/Var):" << std::endl;
-    ss << "\tIntensity: " << extents_[0]->ToString() << std::endl;
-    ss << "\tReturn Number: " << extents_[1]->ToString() << std::endl;
-    ss << "\tNumber Of Returns: " << extents_[2]->ToString() << std::endl;
-    ss << "\tScanner Channel: " << extents_[3]->ToString() << std::endl;
-    ss << "\tScan Direction Flag: " << extents_[4]->ToString() << std::endl;
-    ss << "\tEdge Of Flight Line: " << extents_[5]->ToString() << std::endl;
-    ss << "\tClassification: " << extents_[6]->ToString() << std::endl;
-    ss << "\tUser Data: " << extents_[7]->ToString() << std::endl;
-    ss << "\tScan Angle: " << extents_[8]->ToString() << std::endl;
-    ss << "\tPoint Source ID: " << extents_[9]->ToString() << std::endl;
-    ss << "\tGPS Time: " << extents_[10]->ToString() << std::endl;
+    ss << "\tX: " << extents_[0] << std::endl;
+    ss << "\tY: " << extents_[1] << std::endl;
+    ss << "\tZ: " << extents_[2] << std::endl;
+    ss << "\tIntensity: " << extents_[3] << std::endl;
+    ss << "\tReturn Number: " << extents_[4] << std::endl;
+    ss << "\tNumber Of Returns: " << extents_[5] << std::endl;
+    ss << "\tScanner Channel: " << extents_[6] << std::endl;
+    ss << "\tScan Direction Flag: " << extents_[7] << std::endl;
+    ss << "\tEdge Of Flight Line: " << extents_[8] << std::endl;
+    ss << "\tClassification: " << extents_[9] << std::endl;
+    ss << "\tUser Data: " << extents_[10] << std::endl;
+    ss << "\tScan Angle: " << extents_[11] << std::endl;
+    ss << "\tPoint Source ID: " << extents_[12] << std::endl;
+    ss << "\tGPS Time: " << extents_[13] << std::endl;
     if (point_format_id_ > 6)
     {
-        ss << "\tRed: " << extents_[11]->ToString() << std::endl;
-        ss << "\tGreen: " << extents_[12]->ToString() << std::endl;
-        ss << "\tBlue: " << extents_[13]->ToString() << std::endl;
+        ss << "\tRed: " << extents_[14] << std::endl;
+        ss << "\tGreen: " << extents_[15] << std::endl;
+        ss << "\tBlue: " << extents_[16] << std::endl;
     }
     if (point_format_id_ == 8)
-        ss << "\tNIR: " << extents_[14]->ToString() << std::endl;
+        ss << "\tNIR: " << extents_[17] << std::endl;
     ss << "\tExtra Bytes:" << std::endl;
     for (int i = PointBaseNumberExtents(point_format_id_); i < extents_.size(); i++)
     {
-        ss << "\t\t" << extents_[i]->ToString() << std::endl;
+        ss << "\t\t" << extents_[i] << std::endl;
     }
     return ss.str();
 }
 
 uint8_t PointBaseNumberExtents(const int8_t &point_format_id)
 {
-    return las::PointBaseNumberDimensions(point_format_id) - 3; // -3 is because we don't have x,y,z extents
+    return las::PointBaseNumberDimensions(point_format_id);
 }
 
 } // namespace copc
