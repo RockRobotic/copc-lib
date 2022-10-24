@@ -165,32 +165,32 @@ std::string CopcExtents::ToString() const
 {
     std::stringstream ss;
     ss << "Copc Extents (Min/Max/Mean/Var):" << std::endl;
-    ss << "\tX: " << extents_[0] << std::endl;
-    ss << "\tY: " << extents_[1] << std::endl;
-    ss << "\tZ: " << extents_[2] << std::endl;
-    ss << "\tIntensity: " << extents_[3] << std::endl;
-    ss << "\tReturn Number: " << extents_[4] << std::endl;
-    ss << "\tNumber Of Returns: " << extents_[5] << std::endl;
-    ss << "\tScanner Channel: " << extents_[6] << std::endl;
-    ss << "\tScan Direction Flag: " << extents_[7] << std::endl;
-    ss << "\tEdge Of Flight Line: " << extents_[8] << std::endl;
-    ss << "\tClassification: " << extents_[9] << std::endl;
-    ss << "\tUser Data: " << extents_[10] << std::endl;
-    ss << "\tScan Angle: " << extents_[11] << std::endl;
-    ss << "\tPoint Source ID: " << extents_[12] << std::endl;
-    ss << "\tGPS Time: " << extents_[13] << std::endl;
+    ss << "\tX: " << *extents_[0] << std::endl;
+    ss << "\tY: " << *extents_[1] << std::endl;
+    ss << "\tZ: " << *extents_[2] << std::endl;
+    ss << "\tIntensity: " << *extents_[3] << std::endl;
+    ss << "\tReturn Number: " << *extents_[4] << std::endl;
+    ss << "\tNumber Of Returns: " << *extents_[5] << std::endl;
+    ss << "\tScanner Channel: " << *extents_[6] << std::endl;
+    ss << "\tScan Direction Flag: " << *extents_[7] << std::endl;
+    ss << "\tEdge Of Flight Line: " << *extents_[8] << std::endl;
+    ss << "\tClassification: " << *extents_[9] << std::endl;
+    ss << "\tUser Data: " << *extents_[10] << std::endl;
+    ss << "\tScan Angle: " << *extents_[11] << std::endl;
+    ss << "\tPoint Source ID: " << *extents_[12] << std::endl;
+    ss << "\tGPS Time: " << *extents_[13] << std::endl;
     if (point_format_id_ > 6)
     {
-        ss << "\tRed: " << extents_[14] << std::endl;
-        ss << "\tGreen: " << extents_[15] << std::endl;
-        ss << "\tBlue: " << extents_[16] << std::endl;
+        ss << "\tRed: " << *extents_[14] << std::endl;
+        ss << "\tGreen: " << *extents_[15] << std::endl;
+        ss << "\tBlue: " << *extents_[16] << std::endl;
     }
     if (point_format_id_ == 8)
-        ss << "\tNIR: " << extents_[17] << std::endl;
+        ss << "\tNIR: " << *extents_[17] << std::endl;
     ss << "\tExtra Bytes:" << std::endl;
     for (int i = PointBaseNumberExtents(point_format_id_); i < extents_.size(); i++)
     {
-        ss << "\t\t" << extents_[i] << std::endl;
+        ss << "\t\t" << *extents_[i] << std::endl;
     }
     return ss.str();
 }
