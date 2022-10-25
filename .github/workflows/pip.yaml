@@ -8,6 +8,11 @@ on:
     types:
       - published
 
+# https://stackoverflow.com/questions/66335225
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_sdist:
     name: Build SDist

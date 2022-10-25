@@ -6,6 +6,11 @@ on:
   pull_request:
   workflow_dispatch:
 
+# https://stackoverflow.com/questions/66335225
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
