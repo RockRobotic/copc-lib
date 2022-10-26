@@ -29,6 +29,8 @@ class Compressor
         int point_size = copc::las::PointByteSize(point_format_id, eb_byte_size);
         if (in.size() % point_size != 0)
             throw std::runtime_error("Invalid input stream for compression!");
+        if (in.size() > std::numeric_limits<int32_t>::max())
+            throw std::runtime_error("Input byte stream is too large - split into multiple chunks!");
 
         int32_t point_count = static_cast<int32_t>(in.size()) / point_size;
 
