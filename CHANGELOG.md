@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **\[Python/C++\]** Fix `CopcExtents::ToString`
+
+### Added
+- **\[Python/C++\]** Add warning when compressing too many points with `CompressBytes`
+
 ## [2.5.2] - 2022-10-21
 
 ### Added
