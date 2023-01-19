@@ -99,9 +99,15 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/libs/laz-perf")
     set(EXTRA_EXPORT_TARGETS "lazperf")
 else()
     # if not, assume lazperf is installed on the system
-    find_package(LAZPERF ${LAZPERF_VERSION} REQUIRED)
-    set(LAZPERF_LIB_NAME "LAZPERF::lazperf")
-    set(EXTRA_EXPORT_TARGETS "")
+    find_package(LAZPERF ${LAZPERF_VERSION})
+    if (LAZPERF_FOUND)
+        # lazperf installed system-wide
+        set(LAZPERF_LIB_NAME "LAZPERF::lazperf")
+    else ()
+        # assume lazperf is compiled in tandem
+        set(LAZPERF_LIB_NAME "lazperf")
+    endif ()
+        set(EXTRA_EXPORT_TARGETS "")
 endif()
 
 # Enable RPATH support for installed binaries and libraries
