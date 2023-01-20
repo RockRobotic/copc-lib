@@ -37,7 +37,7 @@ CopcInfo Reader::ReadCopcInfoVlr(std::map<uint64_t, las::VlrHeader> &vlrs)
         throw std::runtime_error("Reader::ReadCopcInfoVlr: COPC Info VLR was found in the wrong position, MUST be at "
                                  "offset 375 as per COPC specs.");
 
-    in_stream_->seekg(offset + lazperf::vlr_header::Size);
+    in_stream_->seekg(offset + las::VLR_HEADER_SIZE);
     return lazperf::copc_info_vlr::create(*in_stream_);
 }
 
@@ -47,7 +47,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
     auto extended_offset = FetchVlr(vlrs, "rock_robotic", 10001);
     if (offset != 0)
     {
-        in_stream_->seekg(offset + lazperf::vlr_header::Size);
+        in_stream_->seekg(offset + las::VLR_HEADER_SIZE);
         CopcExtents extents(las::CopcExtentsVlr::create(*in_stream_, static_cast<int>(vlrs[offset].data_length)),
                             static_cast<int8_t>(reader_->header().point_format_id),
                             static_cast<uint16_t>(eb_vlr.items.size()), extended_offset != 0);
@@ -55,7 +55,7 @@ CopcExtents Reader::ReadCopcExtentsVlr(std::map<uint64_t, las::VlrHeader> &vlrs,
         // Load mean/var if they exist
         if (extended_offset != 0)
         {
-            in_stream_->seekg(extended_offset + lazperf::vlr_header::Size);
+            in_stream_->seekg(extended_offset + las::VLR_HEADER_SIZE);
             extents.SetExtendedStats(
                 las::CopcExtentsVlr::create(*in_stream_, static_cast<int>(vlrs[extended_offset].data_length)));
         }

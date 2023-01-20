@@ -20,12 +20,12 @@ size_t WriterInternal::OffsetToPointData() const
     size_t base_laz_offset = laz::BaseWriter::OffsetToPointData();
 
     // COPC VLR
-    size_t copc_info_vlr_size = (lazperf::vlr_header::Size + CopcInfo::VLR_SIZE_BYTES);
+    size_t copc_info_vlr_size = (las::VLR_HEADER_SIZE + CopcInfo::VLR_SIZE_BYTES);
 
     // COPC Extents VLR
     size_t copc_extents_vlr_size =
         CopcExtents::ByteSize(GetConfig()->LasHeader()->PointFormatId(), GetConfig()->ExtraBytesVlr().items.size());
-    copc_extents_vlr_size += lazperf::vlr_header::Size;
+    copc_extents_vlr_size += las::VLR_HEADER_SIZE;
     // If we store extended stats we need two extents VLRs
     if (GetConfig()->CopcExtents()->HasExtendedStats())
         copc_extents_vlr_size *= 2;
