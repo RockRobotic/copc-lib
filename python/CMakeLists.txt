@@ -18,7 +18,7 @@ find_package(pybind11 CONFIG REQUIRED)
 
 # add the python lib
 pybind11_add_module(${COPC_PYTHON_LIB} bindings.cpp)
-target_link_libraries(${COPC_PYTHON_LIB} PRIVATE lazperf_s copc-lib-s)
+target_link_libraries(${COPC_PYTHON_LIB} PRIVATE ${LAZPERF_LIB_NAME} copc-lib-s)
 
 install(TARGETS ${COPC_PYTHON_LIB} DESTINATION .)
 
