@@ -13,6 +13,9 @@ namespace copc::las
 using WktVlr = lazperf::wkt_vlr;
 using EbVlr = lazperf::eb_vlr;
 
+static const int VLR_HEADER_SIZE = 54;
+static const int EVLR_HEADER_SIZE = 60;
+
 // Gets the sum of the byte size the extra bytes will take up, for calculating point_record_len
 int NumBytesFromExtraBytes(const std::vector<EbVlr::ebfield> &items);
 

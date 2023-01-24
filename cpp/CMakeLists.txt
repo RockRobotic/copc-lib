@@ -56,16 +56,16 @@ set(${LIBRARY_TARGET_NAME}_SRC
 )
 
 # Compile static library for pip wheels
-if (WITH_PYTHON)
+if (WITH_PYTHON OR NOT BUILD_SHARED_LIBS)
     add_library(${LIBRARY_TARGET_NAME}-s STATIC ${${LIBRARY_TARGET_NAME}_SRC} ${${LIBRARY_TARGET_NAME}_HDR})
     set_target_properties(${LIBRARY_TARGET_NAME}-s PROPERTIES VERSION       ${${PROJECT_NAME}_VERSION})
     target_include_directories(${LIBRARY_TARGET_NAME}-s PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
                                                          "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
-    if (LAZPERF_IS_FOUND)
-        target_link_libraries(${LIBRARY_TARGET_NAME}-s PRIVATE lazperf_s)
-    else()
+    if (LAZPERF_FOUND)
         target_link_libraries(${LIBRARY_TARGET_NAME}-s PRIVATE ${LAZPERF_LIB_NAME})
-    endif()
+    else ()
+        target_link_libraries(${LIBRARY_TARGET_NAME}-s PRIVATE lazperf_s)
+    endif ()
     message(STATUS "Created target ${LIBRARY_TARGET_NAME}-s for export ${PROJECT_NAME}.")
 endif()
 

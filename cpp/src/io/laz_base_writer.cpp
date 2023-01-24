@@ -13,13 +13,13 @@ size_t BaseWriter::OffsetToPointData() const
     // LAS Extra Byte VLR
     size_t las_eb_vlr_size = config_->ExtraBytesVlr().size();
     if (las_eb_vlr_size > 0)
-        las_eb_vlr_size += lazperf::vlr_header::Size;
+        las_eb_vlr_size += las::VLR_HEADER_SIZE;
 
     // LAZ VLR
     size_t laz_vlr_size =
         lazperf::laz_vlr(config_->LasHeader().PointFormatId(), config_->LasHeader().EbByteSize(), VARIABLE_CHUNK_SIZE)
             .size();
-    laz_vlr_size += lazperf::vlr_header::Size;
+    laz_vlr_size += las::VLR_HEADER_SIZE;
 
     return las::LasHeader::HEADER_SIZE_BYTES + las_eb_vlr_size + laz_vlr_size;
 }
