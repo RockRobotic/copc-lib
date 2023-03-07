@@ -103,6 +103,11 @@ double VoxelKey::Span(const las::LasHeader &header) const
     return header.Span() * std::pow(2, -d);
 }
 
+double VoxelKey::GetSpanAtDepth(int32_t d, const las::LasHeader &header)
+{
+    return VoxelKey(d, 0, 0, 0).Span(header);
+}
+
 bool VoxelKey::Intersects(const las::LasHeader &header, const Box &box) const
 {
     return Box(*this, header).Intersects(box);
