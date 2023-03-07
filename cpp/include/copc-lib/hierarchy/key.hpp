@@ -76,6 +76,7 @@ class VoxelKey
 
     double Resolution(const las::LasHeader &header, const CopcInfo &copc_info) const;
     static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const CopcInfo &copc_info);
+    double Span(const las::LasHeader &header) const;
 
     int32_t d;
     int32_t x;
