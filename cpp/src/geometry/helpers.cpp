@@ -7,7 +7,7 @@
 namespace copc
 {
 
-static const double GetNearestDepth(double tile_size, const las::LasHeader &header, RoundStrategy rounding)
+const double GetNearestDepth(double tile_size, const las::LasHeader &header, RoundStrategy rounding)
 {
     double depth = std::log2(header.Span() / tile_size);
     int nearest_depth;
@@ -25,7 +25,7 @@ static const double GetNearestDepth(double tile_size, const las::LasHeader &head
 // due to rounding
 // Additionally, some boxes may contain no points at all, since
 // we cannot know for certain whether a tile has points without actually loading it
-std::vector<copc::Box> GetPossibleTilesAtDepth(int32_t target_depth, const las::LasHeader &header) 
+const std::vector<copc::Box> GetPossibleTilesAtDepth(int32_t target_depth, const las::LasHeader &header)
 { 
     std::vector<copc::Box> possible_tiles;
 
@@ -61,7 +61,7 @@ std::vector<copc::Box> GetPossibleTilesAtDepth(int32_t target_depth, const las::
     return possible_tiles;
 }
 
-std::vector<copc::Box> GetPossibleTilesWithSize(double target_tile_size, const las::LasHeader &header) 
+const std::vector<copc::Box> GetPossibleTilesWithSize(double target_tile_size, const las::LasHeader &header) 
 { 
     std::vector<copc::Box> possible_tiles;
     
