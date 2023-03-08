@@ -22,7 +22,7 @@ enum RoundStrategy
 
 // Returns the nearest depth to the requested tile size
 const double GetNearestDepth(double tile_size, const las::LasHeader &header,
-                                    RoundStrategy rounding = RoundStrategy::NEAREST);
+                             RoundStrategy rounding = RoundStrategy::NEAREST);
 
 const std::vector<copc::Box> GetPossibleTilesAtDepth(int32_t target_depth, const las::LasHeader &header);
 const std::vector<copc::Box> GetPossibleTilesWithSize(double target_tile_size, const las::LasHeader &header);
