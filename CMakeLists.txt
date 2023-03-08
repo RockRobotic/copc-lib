@@ -88,7 +88,7 @@ endif()
 set(LAZPERF_VERSION "3.0.0")
 # First, see if the repo is cloned locally, and if so, compile it
 # this is required for CI build of sdist
-if(EXISTS "${CMAKE_SOURCE_DIR}/libs/laz-perf")
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libs/laz-perf")
     set(WITH_TEST_TEMP ${WITH_TESTS})
     set(WITH_TESTS OFF) # never build lazperf tests
     add_subdirectory(libs/laz-perf)
@@ -106,7 +106,7 @@ else()
         set(EXTRA_EXPORT_TARGETS "")
     else ()
         # assume lazperf is compiled in tandem
-        message("Lazperf package not found, including ${LAZPERF_DIR}/cpp")
+        message("Lazperf package not found, assuming compiled in tandem...")
         set(LAZPERF_LIB_NAME "lazperf")
         set(EXTRA_EXPORT_TARGETS "lazperf")
     endif ()
