@@ -2,8 +2,8 @@
 #define CPP_INCLUDE_COPC_LIB_GEOMETRY_HELPERS
 
 #include <cmath>
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 namespace copc
 {
