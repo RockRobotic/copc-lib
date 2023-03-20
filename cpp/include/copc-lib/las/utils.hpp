@@ -17,7 +17,15 @@ bool FormatHasNir(const uint8_t &point_format_id);
 template <typename T> double ApplyScale(T value, double scale, double offset) { return (value * scale) + offset; }
 template <typename T> T RemoveScale(double value, double scale, double offset)
 {
+    if (!std::isfinite(value))
+        throw std::runtime_error("The input value " + std::to_string(value) +
+                                 " is not finite.");
+
     double val = std::round((value - offset) / scale);
+
+    if (!std::isfinite(val))
+        throw std::runtime_error("The output value " + std::to_string(val) +
+                                 " is not finite.");
 
     if (val < std::numeric_limits<T>::min() || val > std::numeric_limits<T>::max())
         throw std::runtime_error("The value " + std::to_string(value) +
