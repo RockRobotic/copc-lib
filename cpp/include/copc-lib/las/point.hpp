@@ -22,13 +22,21 @@ class Point
 #pragma region XYZ
     // XYZ Scaled
     double X() const { return x_scaled_; }
-    void X(const double &x) { x_scaled_ = x; }
+    void X(const double &x) { 
+        if (!std::isfinite(x))
+            throw std::runtime_error("Tried to set non-finite X value!");
+        x_scaled_ = x;
+    }
 
     double Y() const { return y_scaled_; }
-    void Y(const double &y) { y_scaled_ = y; }
+    void Y(const double &y) { 
+        if (!std::isfinite(y))
+            throw std::runtime_error("Tried to set non-finite Y value!");y_scaled_ = y; }
 
     double Z() const { return z_scaled_; }
-    void Z(const double &z) { z_scaled_ = z; }
+    void Z(const double &z) { 
+        if (!std::isfinite(z))
+            throw std::runtime_error("Tried to set non-finite Z value!");z_scaled_ = z; }
 
 #pragma endregion XYZ
 
