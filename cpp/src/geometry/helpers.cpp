@@ -7,7 +7,7 @@
 namespace copc
 {
 
-const double GetNearestDepth(double tile_size, const las::LasHeader &header, RoundStrategy rounding)
+const int GetNearestDepth(double tile_size, const las::LasHeader &header, RoundStrategy rounding)
 {
     double depth = std::log2(header.Span() / tile_size);
     int nearest_depth;
@@ -17,7 +17,7 @@ const double GetNearestDepth(double tile_size, const las::LasHeader &header, Rou
         nearest_depth = (int)std::floor(depth);
     else if (rounding == RoundStrategy::PREFER_SMALLER_TILE)
         nearest_depth = (int)std::ceil(depth);
-    return std::max(0, nearest_depth);
+    return (int)std::max(0, nearest_depth);
 }
 
 // Generates a vector of Boxes that tile the dataset in its entirety
