@@ -4,6 +4,7 @@ import numpy as np
 
 import concurrent.futures
 
+
 # Initialize each multiprocessing thread with a copy of the copc reader
 def init_mp(copc_path):
     _read_node.copc_reader = copc.FileReader(copc_path)
