@@ -18,11 +18,11 @@ jobs:
     name: Build SDist
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: hobu/laz-perf
         ref: 3.0.0
@@ -52,11 +52,11 @@ jobs:
             pyver: cp310
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: hobu/laz-perf
         ref: 3.0.0

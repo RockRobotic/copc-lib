@@ -28,7 +28,7 @@ jobs:
 
     steps:
     - name: Checkout Copclib
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Conda for Python ${{ matrix.python-version }}
       uses: conda-incubator/setup-miniconda@v2
