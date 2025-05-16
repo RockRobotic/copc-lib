@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <cstdint>
 
 namespace copc::las
 {
