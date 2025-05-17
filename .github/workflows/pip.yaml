@@ -75,6 +75,7 @@ jobs:
       env:
         CIBW_TEST_COMMAND: pytest {project}/test
         CIBW_TEST_EXTRAS: test
+        CIBW_BUILD_VERBOSITY: 1
 
     - name: Verify clean directory
       run: git diff --exit-code
