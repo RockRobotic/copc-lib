@@ -45,11 +45,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        pyver: [cp36, cp37, cp38, cp39, cp310]
-        exclude:
-          - os: windows-latest
-            pyver: cp310
+        # macos-13 is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-13, macos-14]
+        # pyver: [cp36, cp37, cp38, cp39, cp310]
+        # exclude:
+        #   - os: windows-latest
+        #     pyver: cp310
 
     steps:
     - uses: actions/checkout@v4
@@ -68,10 +69,9 @@ jobs:
         url: "https://github.com/PDAL/data/raw/a3d2a351ca1002c7ea4daa96b5c5fcb0fafeaa6f/autzen/autzen-classified.copc.laz"
         target: test/data/
 
-    - uses: pypa/cibuildwheel@v2.9.0
+    - uses: pypa/cibuildwheel@v2.23.3
       env:
         CIBW_TEST_COMMAND: pytest {project}/test
-        CIBW_BUILD: ${{matrix.pyver}}-*
         CIBW_TEST_EXTRAS: test
 
     - name: Verify clean directory
