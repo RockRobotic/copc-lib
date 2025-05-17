@@ -69,11 +69,12 @@ jobs:
         url: "https://github.com/PDAL/data/raw/a3d2a351ca1002c7ea4daa96b5c5fcb0fafeaa6f/autzen/autzen-classified.copc.laz"
         target: test/data/
 
+    - uses: ilammy/msvc-dev-cmd@v1
+
     - uses: pypa/cibuildwheel@v2.23.3
       env:
         CIBW_TEST_COMMAND: pytest {project}/test
         CIBW_TEST_EXTRAS: test
-        CMAKE_GENERATOR: Ninja
 
     - name: Verify clean directory
       run: git diff --exit-code
