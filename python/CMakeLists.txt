@@ -38,7 +38,7 @@ set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
 find_program(STUBGEN_EXECUTABLE stubgen)
 
 # Check if stubgen was found
-if(STUBGEN_EXECUTABLE)
+if(STUBGEN_EXECUTABLE and NOT WIN32)
     add_custom_command(TARGET ${COPC_PYTHON_LIB} POST_BUILD
         COMMAND ${STUBGEN_EXECUTABLE} -m _core -o .  # Use the found executable path
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
