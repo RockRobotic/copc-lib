@@ -73,6 +73,7 @@ jobs:
       env:
         CIBW_TEST_COMMAND: pytest {project}/test
         CIBW_TEST_EXTRAS: test
+        CMAKE_GENERATOR: Ninja
 
     - name: Verify clean directory
       run: git diff --exit-code

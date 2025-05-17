@@ -39,7 +39,7 @@ jobs:
       name: Checkout laz-perf
       with:
         repository: hobu/laz-perf
-        ref: 3.0.0
+        ref: 3.4.0
         path: libs/laz-perf
 
     - name: Build Catch2
