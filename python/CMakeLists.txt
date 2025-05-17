@@ -44,7 +44,8 @@ if(STUBGEN_EXECUTABLE)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
         COMMENT "Generating stubs for pybind (using ${STUBGEN_EXECUTABLE})"
     )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/copclib/_core.pyi DESTINATION .)
+    # mark as optional, since stubgen may not work on all systems
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/copclib/_core.pyi DESTINATION . OPTIONAL) 
 else()
     message(WARNING "stubgen not found. Pybind stubs will not be generated.")
 endif()
