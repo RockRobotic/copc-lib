@@ -45,13 +45,13 @@ jobs:
     - name: Build Catch2
       run: |
         git clone https://github.com/catchorg/Catch2.git libs/Catch2 --depth 1 --branch v2.13.10
-        cmake -B build_catch2 -S libs/Catch2 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_TESTING=OFF
-        sudo cmake --build build_catch2 --config ${{env.BUILD_TYPE}} --target install
+        cmake -B build_catch2 -S libs/Catch2 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX=install
+        cmake --build build_catch2 --config ${{env.BUILD_TYPE}} --target install
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -G Ninja -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS=ON -DWITH_PYTHON=OFF
+      run: cmake -G Ninja -B "${{github.workspace}}/build" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DWITH_TESTS=ON -DWITH_PYTHON=OFF -DCMAKE_PREFIX_PATH=install
       shell:
         bash -l {0}
 
