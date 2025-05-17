@@ -5,7 +5,6 @@ requires = [
     "pybind11>=2.8.0",
     "cmake>=3.21",
     "scikit-build>=0.12",
-    "mypy",
     "ninja",
 ]
 
