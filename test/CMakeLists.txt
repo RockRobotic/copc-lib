@@ -1,3 +1,8 @@
+cmake_minimum_required(VERSION 3.15) # conda uses this cmakelist as the top-level for testing
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        project(COPCLIB-TEST LANGUAGES CXX C)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
 include(BuildRequires)
 
