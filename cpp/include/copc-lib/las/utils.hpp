@@ -2,6 +2,7 @@
 #define COPCLIB_LAS_UTILS_H_
 
 #include <cmath>
+#include <cstdint>
 #include <iostream>
 
 namespace copc::las

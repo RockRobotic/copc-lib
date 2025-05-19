@@ -18,11 +18,11 @@ jobs:
     name: Build SDist
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: hobu/laz-perf
         ref: 3.0.0
@@ -34,7 +34,7 @@ jobs:
     - name: Check metadata
       run: pipx run twine check dist/*
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       with:
         path: dist/*.tar.gz
 
@@ -45,18 +45,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        pyver: [cp36, cp37, cp38, cp39, cp310]
-        exclude:
-          - os: windows-latest
-            pyver: cp310
+        # macos-13 is an intel runner, macos-14 is apple silicon
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-13, macos-14]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         repository: hobu/laz-perf
         ref: 3.0.0
@@ -68,19 +65,23 @@ jobs:
         url: "https://github.com/PDAL/data/raw/a3d2a351ca1002c7ea4daa96b5c5fcb0fafeaa6f/autzen/autzen-classified.copc.laz"
         target: test/data/
 
-    - uses: pypa/cibuildwheel@v2.9.0
+    - uses: ilammy/msvc-dev-cmd@v1
+
+    - uses: pypa/cibuildwheel@v2.23.3
       env:
         CIBW_TEST_COMMAND: pytest {project}/test
-        CIBW_BUILD: ${{matrix.pyver}}-*
         CIBW_TEST_EXTRAS: test
+        CIBW_BUILD_VERBOSITY: 1
+        CIBW_SKIP: pp* *-musllinux* *-win32 *-manylinux_i686
 
     - name: Verify clean directory
       run: git diff --exit-code
       shell: bash
 
     - name: Upload wheels
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
+        name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
         path: wheelhouse/*.whl
 
 

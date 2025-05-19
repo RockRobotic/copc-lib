@@ -34,13 +34,20 @@ set_target_properties(${COPC_PYTHON_LIB} PROPERTIES
                         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
                         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib)
 
-if(UNIX AND NOT APPLE)
+# Try to find the stubgen executable
+find_program(STUBGEN_EXECUTABLE stubgen)
+
+# Check if stubgen was found
+if(STUBGEN_EXECUTABLE AND NOT WIN32)
     add_custom_command(TARGET ${COPC_PYTHON_LIB} POST_BUILD
-        COMMAND stubgen -m _core -o .
+        COMMAND ${STUBGEN_EXECUTABLE} -m _core -o .  # Use the found executable path
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/copclib
-        COMMENT "Generating stubs for pybind"
+        COMMENT "Generating stubs for pybind (using ${STUBGEN_EXECUTABLE})"
     )
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/copclib/_core.pyi DESTINATION .)
+    # mark as optional, since stubgen may not work on all systems
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/copclib/_core.pyi DESTINATION . OPTIONAL)
+else()
+    message(WARNING "stubgen not found. Pybind stubs will not be generated.")
 endif()
 
 if(WITH_TESTS)
