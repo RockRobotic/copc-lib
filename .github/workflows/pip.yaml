@@ -47,10 +47,6 @@ jobs:
       matrix:
         # macos-13 is an intel runner, macos-14 is apple silicon
         os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-13, macos-14]
-        # pyver: [cp36, cp37, cp38, cp39, cp310]
-        # exclude:
-        #   - os: windows-latest
-        #     pyver: cp310
 
     steps:
     - uses: actions/checkout@v4
