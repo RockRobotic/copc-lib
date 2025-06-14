@@ -7,6 +7,7 @@ set(${LIBRARY_TARGET_NAME}_HDR
         include/${LIBRARY_TARGET_NAME}/copc/copc_config.hpp
         include/${LIBRARY_TARGET_NAME}/geometry/box.hpp
         include/${LIBRARY_TARGET_NAME}/geometry/vector3.hpp
+        include/${LIBRARY_TARGET_NAME}/geometry/helpers.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/entry.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/key.hpp
         include/${LIBRARY_TARGET_NAME}/hierarchy/node.hpp
@@ -37,6 +38,7 @@ set(${LIBRARY_TARGET_NAME}_SRC
         src/copc/extents.cpp
         src/copc/copc_config.cpp
         src/geometry/box.cpp
+        src/geometry/helpers.cpp
         src/hierarchy/key.cpp
         src/hierarchy/page.cpp
         src/io/base_reader.cpp
