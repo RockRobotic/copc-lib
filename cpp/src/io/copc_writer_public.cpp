@@ -102,7 +102,7 @@ Node Writer::DoAddNode(const VoxelKey &key, const std::vector<char> &in, int32_t
 Node Writer::AddNode(const VoxelKey &key, const las::Points &points, const VoxelKey &page_key)
 {
     if (points.Size() == 0)
-        throw std::runtime_error("Writer::AddNode: Cannot add empty las::Points.");
+        return DoAddNode(key, {}, 0, true, page_key);
     if (points.PointFormatId() != config_->LasHeader()->PointFormatId() ||
         points.PointRecordLength() != config_->LasHeader()->PointRecordLength())
         throw std::runtime_error("Writer::AddNode: New points must be of same format and size.");
@@ -126,9 +126,6 @@ Node Writer::AddNode(const VoxelKey &key, std::vector<char> const &uncompressed_
 Node Writer::AddNodeCompressed(const VoxelKey &key, std::vector<char> const &compressed_data, int32_t point_count,
                                const VoxelKey &page_key)
 {
-    if (point_count == 0)
-        throw std::runtime_error("Point count must be >0!");
-
     return DoAddNode(key, compressed_data, point_count, true, page_key);
 }
 

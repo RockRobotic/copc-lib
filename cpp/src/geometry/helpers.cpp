@@ -43,7 +43,10 @@ const std::vector<copc::Box> GetPossibleTilesAtDepth(int32_t target_depth, const
         for (int y = 0; y < max_y_coord; y++)
             for (int z = 0; z < max_z_coord; z++)
             {
-                auto box = copc::Box(copc::VoxelKey(target_depth, x, y, z), header);
+                const double x_min = header.min.x + tile_size * x;
+                const double y_min = header.min.y + tile_size * y;
+                const double z_min = header.min.z + tile_size * z;
+                auto box = copc::Box(x_min, y_min, z_min, x_min + tile_size, y_min + tile_size, z_min + tile_size);
                 // To avoid the same point falling into two boxes when the point's coordinates
                 // are the exact same as the box's limit,
                 // we offset the minimum coordinate in each dimension by the smallest possible

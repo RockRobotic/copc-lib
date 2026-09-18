@@ -8,10 +8,7 @@
 
 namespace copc
 {
-namespace las
-{
-class LasHeader;
-}
+class CopcInfo;
 class VoxelKey;
 class Box
 {
@@ -31,7 +28,7 @@ class Box
     Box(const std::vector<double> &vec);
 
     // Constructor from Node
-    Box(const VoxelKey &key, const las::LasHeader &header);
+    Box(const VoxelKey &key, const CopcInfo &copc_info);
 
     static Box EmptyBox() { return Box(); }
     static Box MaxBox();

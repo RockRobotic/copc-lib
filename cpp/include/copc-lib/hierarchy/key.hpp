@@ -68,11 +68,11 @@ class VoxelKey
 
     // Spatial query functions
     // Definitions taken from https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
-    bool Intersects(const las::LasHeader &header, const Box &box) const;
-    bool Contains(const las::LasHeader &header, const Box &vec) const;
-    bool Contains(const las::LasHeader &header, const Vector3 &point) const;
-    bool Within(const las::LasHeader &header, const Box &box) const;
-    bool Crosses(const las::LasHeader &header, const Box &box) const;
+    bool Intersects(const CopcInfo &copc_info, const Box &box) const;
+    bool Contains(const CopcInfo &copc_info, const Box &box) const;
+    bool Contains(const CopcInfo &copc_info, const Vector3 &point) const;
+    bool Within(const CopcInfo &copc_info, const Box &box) const;
+    bool Crosses(const CopcInfo &copc_info, const Box &box) const;
 
     double Resolution(const las::LasHeader &header, const CopcInfo &copc_info) const;
     static double GetResolutionAtDepth(int32_t d, const las::LasHeader &header, const CopcInfo &copc_info);

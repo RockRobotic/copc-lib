@@ -1,6 +1,6 @@
 #include "copc-lib/geometry/box.hpp"
+#include "copc-lib/copc/info.hpp"
 #include "copc-lib/hierarchy/key.hpp"
-#include "copc-lib/las/header.hpp"
 
 namespace copc
 {
@@ -51,19 +51,17 @@ Box::Box(const std::vector<double> &vec)
         throw std::runtime_error("One or more of min values is greater than a value");
 }
 
-// Constructor from Node
-Box::Box(const VoxelKey &key, const las::LasHeader &header)
+Box::Box(const VoxelKey &key, const CopcInfo &info)
 {
+    const double side = 2.0 * info.halfsize / std::pow(2, key.d);
 
-    // Step size accounts for depth level
-    double step = header.Span() / std::pow(2, key.d);
+    x_min = info.center_x - info.halfsize + side * key.x;
+    y_min = info.center_y - info.halfsize + side * key.y;
+    z_min = info.center_z - info.halfsize + side * key.z;
 
-    x_min = step * key.x + header.min.x;
-    y_min = step * key.y + header.min.y;
-    z_min = step * key.z + header.min.z;
-    x_max = x_min + step;
-    y_max = y_min + step;
-    z_max = z_min + step;
+    x_max = x_min + side;
+    y_max = y_min + side;
+    z_max = z_min + side;
 }
 
 Box Box::MaxBox()
