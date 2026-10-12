@@ -6,7 +6,6 @@ import numpy as np
 from tqdm import tqdm
 import os
 
-
 DATADIRECTORY = os.path.join(os.path.dirname(__file__), "..", "test", "data")
 if not os.path.exists(os.path.join(os.path.join(DATADIRECTORY, "out"))):
     os.makedirs(os.path.join(DATADIRECTORY, "out"))
