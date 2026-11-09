@@ -8,6 +8,7 @@ DATADIRECTORY = os.path.join(os.path.dirname(__file__), "..", "test", "data")
 if not os.path.exists(os.path.join(os.path.join(DATADIRECTORY, "out"))):
     os.makedirs(os.path.join(DATADIRECTORY, "out"))
 
+
 # In this example, we'll filter the autzen dataset to only contain depth levels 0-3.
 def TrimFileExample(compressor_example_flag):
 
